@@ -1,0 +1,9 @@
+{
+  "name": "streamrpg",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch apps/api/src/server.ts",
+    "start": "tsx apps/api/src/server.ts"
+  }
+}
