@@ -8,11 +8,12 @@ import type { PingResponse } from "@streamrpg/shared";
 import { getDb, nowUnix, todayDate } from "../config/database.js";
 import { rollDrop } from "./drop.service.js";
 import { ensureChannel } from "./channel.service.js";
+import { isChannelLive } from "./twitch.service.js";
 
-export function applyPing(
+export async function applyPing(
   characterId: string,
   channelLogin: string,
-): PingResponse {
+): Promise<PingResponse> {
   const db = getDb();
   const character = db
     .prepare("SELECT xp, level, gold, last_ping_at FROM characters WHERE id = ?")
@@ -44,6 +45,23 @@ export function applyPing(
         drop: null,
       };
     }
+  }
+
+  // Verifica se o canal está ao vivo antes de dar XP
+  const live = await isChannelLive(channelLogin);
+  if (!live) {
+    const progress = getProgress(character.xp);
+    return {
+      xp_gained: 0,
+      gold_gained: 0,
+      new_xp: progress.xp,
+      level: progress.level,
+      leveled_up: false,
+      xp_to_next: progress.xp_to_next,
+      percent: progress.percent,
+      cooldown_seconds: 60,
+      drop: null,
+    };
   }
 
   const channel = ensureChannel(channelLogin);
@@ -185,64 +203,4 @@ export function getRanking(channelLogin: string | null, profileId: string | null
     ? (db
         .prepare(
           `SELECT cr.position, c.id AS character_id, c.display_name, c.xp, c.total_minutes, p.avatar_url
-           FROM channel_rankings cr
-           JOIN characters c ON c.id = cr.character_id
-           JOIN profiles p ON p.id = c.profile_id
-           WHERE cr.channel_id = ? AND c.is_shadow_banned = 0
-           ORDER BY cr.position ASC
-           LIMIT 50`,
-        )
-        .all(channelId) as Array<{
-        position: number;
-        character_id: string;
-        display_name: string;
-        xp: number;
-        total_minutes: number;
-        avatar_url: string | null;
-      }>)
-    : (db
-        .prepare(
-          `SELECT c.id AS character_id, c.display_name, c.xp, c.total_minutes, p.avatar_url
-           FROM characters c
-           JOIN profiles p ON p.id = c.profile_id
-           WHERE c.is_shadow_banned = 0
-           ORDER BY c.xp DESC
-           LIMIT 50`,
-        )
-        .all() as Array<{
-        position?: number;
-        character_id: string;
-        display_name: string;
-        xp: number;
-        total_minutes: number;
-        avatar_url: string | null;
-      }>);
-
-  let myPosition: number | null = null;
-  if (profileId) {
-    const mine = db
-      .prepare("SELECT id FROM characters WHERE profile_id = ?")
-      .get(profileId) as { id: string } | undefined;
-    if (mine) {
-      const idx = rows.findIndex((r) => r.character_id === mine.id);
-      myPosition = idx >= 0 ? (rows[idx].position ?? idx + 1) : null;
-    }
-  }
-
-  return {
-    channel: channelId,
-    entries: rows.map((row, i) => {
-      const progress = getProgress(row.xp);
-      return {
-        position: row.position ?? i + 1,
-        character_id: row.character_id,
-        display_name: row.display_name,
-        level: progress.level,
-        xp: row.xp,
-        total_minutes: row.total_minutes,
-        avatar_url: row.avatar_url,
-      };
-    }),
-    my_position: myPosition,
-  };
-}
+           FROM
