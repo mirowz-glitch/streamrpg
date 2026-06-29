@@ -26,7 +26,7 @@ export const env = {
   twitchClientId: process.env.TWITCH_CLIENT_ID ?? "",
   twitchClientSecret: process.env.TWITCH_CLIENT_SECRET ?? "",
   twitchRedirectUri:
-    process.env.TWITCH_REDIRECT_URI ?? "http://localhost:4000/api/auth/callback",
+    process.env.TWITCH_REDIRECT_URI ?? "http://localhost:4000/auth/twitch/callback",
   sessionSecret: process.env.SESSION_SECRET ?? process.env.JWT_SECRET ?? "dev-secret-change-me-min-32-chars",
   dbPath: process.env.DB_PATH ?? "./data/streamrpg.db",
 } as const;
