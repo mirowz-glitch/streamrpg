@@ -20,7 +20,7 @@ export const pingRoutes = [
         return;
       }
 
-      const result = applyPing(characterId, channel);
+      const result = await applyPing(characterId, channel);
       json(res, 200, result);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Ping failed";
