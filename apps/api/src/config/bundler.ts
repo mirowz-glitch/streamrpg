@@ -16,26 +16,24 @@ const MIME: Record<string, string> = {
   ".ico": "image/x-icon",
 };
 
-let buildPromise: Promise<void> | null = null;
+let buildDone = false;
 
-async function ensureWebBuild(): Promise<void> {
-  if (!buildPromise) {
-    buildPromise = esbuild
-      .build({
-        entryPoints: [WEB_SRC],
-        bundle: true,
-        outfile: resolve(WEB_DIST, "main.js"),
-        format: "esm",
-        jsx: "automatic",
-        loader: { ".tsx": "tsx", ".ts": "ts" },
-        sourcemap: true,
-        define: {
-          "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV ?? "development"),
-        },
-      })
-      .then(() => undefined);
-  }
-  await buildPromise;
+export async function buildWebOnce(): Promise<void> {
+  if (buildDone) return;
+  await esbuild.build({
+    entryPoints: [WEB_SRC],
+    bundle: true,
+    outfile: resolve(WEB_DIST, "main.js"),
+    format: "esm",
+    jsx: "automatic",
+    loader: { ".tsx": "tsx", ".ts": "ts" },
+    sourcemap: true,
+    define: {
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV ?? "development"),
+    },
+  });
+  buildDone = true;
+  console.log("Web bundle built successfully");
 }
 
 function isSpaRoute(url: string): boolean {
@@ -64,7 +62,6 @@ export async function handleStatic(
   }
 
   if (url === "/main.js" || url.endsWith(".js.map")) {
-    await ensureWebBuild();
     const filePath = url === "/main.js" ? resolve(WEB_DIST, "main.js") : resolve(WEB_DIST, url.slice(1));
     if (existsSync(filePath)) {
       const ext = filePath.slice(filePath.lastIndexOf("."));
@@ -75,7 +72,6 @@ export async function handleStatic(
   }
 
   if (isSpaRoute(url)) {
-    await ensureWebBuild();
     const htmlPath = resolve(WEB_ROOT, "index.html");
     if (existsSync(htmlPath)) {
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
