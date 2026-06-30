@@ -18,7 +18,10 @@ export interface ActiveSession {
   provider: string;
 }
 
-const SESSION_TIMEOUT_MS = 90_000; // 1.5x o intervalo de ping (60s)
+// TODO: migrar para GameConfig/GameRules quando essa camada for criada.
+// Valor atual: 1.5x o intervalo de ping (60s), garantindo tolerância a
+// um ping atrasado antes de expirar a sessão.
+const SESSION_TIMEOUT_MS = 90_000;
 
 export class SessionManager {
   private sessions = new Map<string, ActiveSession>();
@@ -29,8 +32,15 @@ export class SessionManager {
 
   /**
    * Registra que um personagem está presente num canal agora.
-   * Chamado pelo ping do frontend (WebsitePresenceProvider).
-   * No futuro, pode ser chamado por qualquer PresenceProvider.
+   *
+   * IMPORTANTE: este método APENAS registra presença. Ele nunca executa
+   * lógica de jogo, nunca concede XP, nunca rola drops e nunca acessa
+   * o banco de dados. Toda lógica de jogo é responsabilidade da GameEngine
+   * e dos sistemas registrados no EventBus.
+   *
+   * Chamado atualmente pelo ping do frontend (WebsitePresenceProvider).
+   * No futuro, pode ser chamado por qualquer PresenceProvider sem que
+   * nenhuma outra parte do sistema precise mudar.
    */
   reportPresent(
     characterId: string,
@@ -47,7 +57,10 @@ export class SessionManager {
   }
 
   /**
-   * Retorna todas as sessões ativas no momento.
+   * Retorna cópias das sessões ativas no momento.
+   *
+   * Retorna cópias shallow dos objetos de sessão para garantir que
+   * nenhum consumidor externo possa mutar o estado interno do SessionManager.
    * Uma sessão é considerada ativa se foi vista nos últimos SESSION_TIMEOUT_MS.
    * Remove sessões expiradas como efeito colateral (lazy cleanup).
    */
@@ -59,7 +72,7 @@ export class SessionManager {
       if (now - session.lastSeenAt > SESSION_TIMEOUT_MS) {
         this.sessions.delete(key);
       } else {
-        active.push(session);
+        active.push({ ...session }); // cópia shallow — imutável para o consumidor
       }
     }
 
@@ -76,12 +89,23 @@ export class SessionManager {
 
   /**
    * Remove todas as sessões.
-   * Útil para testes.
+   * Útil para testes e reset de estado.
    */
   clear(): void {
     this.sessions.clear();
   }
 }
 
-// Singleton — uma única instância compartilhada pelo processo
+/**
+ * Singleton do SessionManager.
+ *
+ * DECISÃO TEMPORÁRIA: este singleton funciona corretamente apenas em
+ * ambientes de processo único (modelo atual do Railway com 1 réplica).
+ * Se o projeto escalar para múltiplas réplicas ou workers, esta instância
+ * precisará ser substituída por uma implementação distribuída
+ * (ex: Redis-backed SessionManager) sem alterar a interface pública.
+ *
+ * Enquanto o projeto rodar em processo único, este singleton é suficiente
+ * e correto.
+ */
 export const sessionManager = new SessionManager();
