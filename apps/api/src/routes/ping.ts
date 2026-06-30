@@ -2,6 +2,7 @@ import { requireAuth } from "../middleware/auth.js";
 import { json, readBody, route } from "../middleware/router.js";
 import { applyPing } from "../services/xp.service.js";
 import { getCharacterIdByProfileId } from "./character.js";
+import { sessionManager } from "../engine/SessionManager.js";
 
 export const pingRoutes = [
   route("POST", "/api/ping", async (req, res, ctx) => {
@@ -12,13 +13,14 @@ export const pingRoutes = [
         json(res, 404, { error: "Character not found" });
         return;
       }
-
       const body = JSON.parse(await readBody(req)) as { channel?: string };
       const channel = body.channel?.trim().toLowerCase();
       if (!channel) {
         json(res, 400, { error: "channel is required (Twitch login of the streamer)" });
         return;
       }
+
+      sessionManager.reportPresent(characterId, channel);
 
       const result = await applyPing(characterId, channel);
       json(res, 200, result);
