@@ -13,11 +13,27 @@ export function setStoredChannel(channel: string): void {
   localStorage.setItem(CHANNEL_KEY, channel.toLowerCase());
 }
 
+// Lê o parâmetro ?canal= da URL e salva automaticamente, se existir
+function applyChannelFromUrl(): void {
+  const params = new URLSearchParams(window.location.search);
+  const fromUrl = params.get("canal");
+  if (fromUrl && fromUrl.trim()) {
+    setStoredChannel(fromUrl.trim());
+  }
+}
+
 export function usePing(enabled = true, channel?: string) {
   const [lastPing, setLastPing] = useState<PingResponse | null>(null);
   const [cooldownMs, setCooldownMs] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const timerRef = useRef<number | null>(null);
+
+  // Aplica o canal da URL uma única vez, antes de calcular o canal ativo
+  useEffect(() => {
+    applyChannelFromUrl();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const activeChannel = channel || getStoredChannel();
 
   const ping = useCallback(async () => {
@@ -33,13 +49,11 @@ export function usePing(enabled = true, channel?: string) {
     } else if (result.cooldown_seconds > 0) {
       setCooldownMs(result.cooldown_seconds * 1000);
     } else {
-      // canal offline ou sem XP — tenta de novo em 30s
       setCooldownMs(30000);
     }
     return result;
   }, [activeChannel]);
 
-  // Contador regressivo do cooldown
   useEffect(() => {
     if (cooldownMs <= 0) return;
     timerRef.current = window.setInterval(() => {
@@ -50,7 +64,6 @@ export function usePing(enabled = true, channel?: string) {
     };
   }, [cooldownMs]);
 
-  // Ping inicial ao montar
   useEffect(() => {
     if (!enabled || !activeChannel) return;
     void ping().catch((err) => {
@@ -59,29 +72,5 @@ export function usePing(enabled = true, channel?: string) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, activeChannel]);
 
-  // Ping automático: dispara sozinho quando o cooldown zera
   useEffect(() => {
-    if (!enabled || !activeChannel) return;
-    if (cooldownMs > 0) return;
-    if (lastPing === null) return; // espera o ping inicial acontecer primeiro
-
-    const autoTimer = window.setTimeout(() => {
-      void ping().catch((err) => {
-        setError(err instanceof Error ? err.message : "Ping failed");
-      });
-    }, 500);
-
-    return () => window.clearTimeout(autoTimer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cooldownMs, enabled, activeChannel, lastPing]);
-
-  return {
-    lastPing,
-    cooldownMs,
-    ping,
-    canPing: cooldownMs <= 0,
-    error,
-    channel: activeChannel,
-    setChannel: setStoredChannel,
-  };
-}
+    if (!enabled ||
