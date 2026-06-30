@@ -32,10 +32,14 @@ export function usePing(enabled = true, channel?: string) {
       setCooldownMs(PING_COOLDOWN_MS);
     } else if (result.cooldown_seconds > 0) {
       setCooldownMs(result.cooldown_seconds * 1000);
+    } else {
+      // canal offline ou sem XP — tenta de novo em 30s
+      setCooldownMs(30000);
     }
     return result;
   }, [activeChannel]);
 
+  // Contador regressivo do cooldown
   useEffect(() => {
     if (cooldownMs <= 0) return;
     timerRef.current = window.setInterval(() => {
@@ -46,12 +50,30 @@ export function usePing(enabled = true, channel?: string) {
     };
   }, [cooldownMs]);
 
+  // Ping inicial ao montar
   useEffect(() => {
     if (!enabled || !activeChannel) return;
     void ping().catch((err) => {
       setError(err instanceof Error ? err.message : "Ping failed");
     });
-  }, [enabled, activeChannel, ping]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, activeChannel]);
+
+  // Ping automático: dispara sozinho quando o cooldown zera
+  useEffect(() => {
+    if (!enabled || !activeChannel) return;
+    if (cooldownMs > 0) return;
+    if (lastPing === null) return; // espera o ping inicial acontecer primeiro
+
+    const autoTimer = window.setTimeout(() => {
+      void ping().catch((err) => {
+        setError(err instanceof Error ? err.message : "Ping failed");
+      });
+    }, 500);
+
+    return () => window.clearTimeout(autoTimer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cooldownMs, enabled, activeChannel, lastPing]);
 
   return {
     lastPing,
