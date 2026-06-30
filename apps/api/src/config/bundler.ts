@@ -20,6 +20,9 @@ let buildDone = false;
 
 export async function buildWebOnce(): Promise<void> {
   if (buildDone) return;
+  console.log("DEBUG cwd:", process.cwd());
+  console.log("DEBUG WEB_SRC:", WEB_SRC);
+  console.log("DEBUG WEB_DIST:", WEB_DIST);
   await esbuild.build({
     entryPoints: [WEB_SRC],
     bundle: true,
@@ -34,6 +37,7 @@ export async function buildWebOnce(): Promise<void> {
   });
   buildDone = true;
   console.log("Web bundle built successfully");
+  console.log("DEBUG main.js exists after build:", existsSync(resolve(WEB_DIST, "main.js")));
 }
 
 function isSpaRoute(url: string): boolean {
@@ -63,6 +67,7 @@ export async function handleStatic(
 
   if (url === "/main.js" || url.endsWith(".js.map")) {
     const filePath = url === "/main.js" ? resolve(WEB_DIST, "main.js") : resolve(WEB_DIST, url.slice(1));
+    console.log("DEBUG requesting main.js, filePath:", filePath, "exists:", existsSync(filePath));
     if (existsSync(filePath)) {
       const ext = filePath.slice(filePath.lastIndexOf("."));
       res.writeHead(200, { "Content-Type": MIME[ext] ?? "application/octet-stream" });
