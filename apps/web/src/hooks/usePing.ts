@@ -13,7 +13,6 @@ export function setStoredChannel(channel: string): void {
   localStorage.setItem(CHANNEL_KEY, channel.toLowerCase());
 }
 
-// Lê o parâmetro ?canal= da URL e salva automaticamente, se existir
 function applyChannelFromUrl(): void {
   const params = new URLSearchParams(window.location.search);
   const fromUrl = params.get("canal");
@@ -28,7 +27,6 @@ export function usePing(enabled = true, channel?: string) {
   const [error, setError] = useState<string | null>(null);
   const timerRef = useRef<number | null>(null);
 
-  // Aplica o canal da URL uma única vez, antes de calcular o canal ativo
   useEffect(() => {
     applyChannelFromUrl();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -73,4 +71,27 @@ export function usePing(enabled = true, channel?: string) {
   }, [enabled, activeChannel]);
 
   useEffect(() => {
-    if (!enabled ||
+    if (!enabled || !activeChannel) return;
+    if (cooldownMs > 0) return;
+    if (lastPing === null) return;
+
+    const autoTimer = window.setTimeout(() => {
+      void ping().catch((err) => {
+        setError(err instanceof Error ? err.message : "Ping failed");
+      });
+    }, 500);
+
+    return () => window.clearTimeout(autoTimer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cooldownMs, enabled, activeChannel, lastPing]);
+
+  return {
+    lastPing,
+    cooldownMs,
+    ping,
+    canPing: cooldownMs <= 0,
+    error,
+    channel: activeChannel,
+    setChannel: setStoredChannel,
+  };
+}
