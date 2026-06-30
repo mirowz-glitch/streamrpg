@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { InventoryItem, ItemSlot } from "@streamrpg/shared";
+import { getItemPower, comparePower } from "@streamrpg/shared";
 import { api } from "../lib/api";
 import { AppNav } from "../components/ui/AppNav";
 
@@ -52,6 +53,39 @@ export function InventoryPage() {
     }
   }
 
+  function getEquippedInSlot(slot: ItemSlot): InventoryItem | null {
+    return items.find((i) => i.is_equipped && i.equipped_slot === slot) ?? null;
+  }
+
+  function renderComparison(item: InventoryItem) {
+    if (item.is_equipped) return null;
+
+    const equipped = getEquippedInSlot(item.slot);
+    const newPower = getItemPower(item.rarity, item.slot);
+    const currentPower = equipped ? getItemPower(equipped.rarity, equipped.slot) : null;
+    const result = comparePower(newPower, currentPower);
+
+    if (!equipped) {
+      return <span className="compare-badge compare-new">Novo slot</span>;
+    }
+
+    if (result === "better") {
+      return <span className="compare-badge compare-better">▲ Melhor</span>;
+    }
+    if (result === "worse") {
+      return <span className="compare-badge compare-worse">▼ Pior</span>;
+    }
+    return <span className="compare-badge compare-equal">= Igual</span>;
+  }
+
+  function renderPower(item: InventoryItem) {
+    const power = getItemPower(item.rarity, item.slot);
+    if (item.slot === "weapon") {
+      return `ATQ ${power.attack}`;
+    }
+    return `DEF ${power.defense}`;
+  }
+
   return (
     <main className="page">
       <AppNav />
@@ -61,7 +95,7 @@ export function InventoryPage() {
         {loading ? (
           <p>Carregando...</p>
         ) : items.length === 0 ? (
-          <p>Nenhum item ainda. Continue assistindo — drops têm ~0,8% de chance por ping.</p>
+          <p>Nenhum item ainda. Continue assistindo — drops têm boa chance a cada minuto.</p>
         ) : (
           <ul className="inventory-list">
             {items.map((item) => (
@@ -69,9 +103,10 @@ export function InventoryPage() {
                 <div>
                   <strong style={{ color: RARITY_COLOR[item.rarity] ?? "#fff" }}>{item.name}</strong>
                   <div className="item-meta">
-                    {item.rarity} · {item.slot} · nv. {item.min_level}
+                    {item.rarity} · {item.slot} · nv. {item.min_level} · {renderPower(item)}
                     {item.is_equipped ? ` · equipado (${item.equipped_slot})` : ""}
                   </div>
+                  {!item.is_equipped ? <div className="item-compare">{renderComparison(item)}</div> : null}
                   <p className="item-desc">{item.description}</p>
                 </div>
                 <div className="item-actions">
