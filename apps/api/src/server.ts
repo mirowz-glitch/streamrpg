@@ -1,6 +1,6 @@
 import { createServer } from "node:http";
 import { env } from "./config/env.js";
-import { handleStatic } from "./config/bundler.js";
+import { handleStatic, buildWebOnce } from "./config/bundler.js";
 import { closeDb, getDb } from "./config/database.js";
 import { resolveAuth } from "./middleware/auth.js";
 import { matchRoute, json, type Route } from "./middleware/router.js";
@@ -51,11 +51,19 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(env.port, () => {
-  console.log(`StreamRPG running on http://localhost:${env.port}`);
-  if (!env.twitchClientId) {
-    console.log("Warning: TWITCH_CLIENT_ID not set — configure .env for OAuth");
-  }
+async function start() {
+  await buildWebOnce();
+  server.listen(env.port, () => {
+    console.log(`StreamRPG running on http://localhost:${env.port}`);
+    if (!env.twitchClientId) {
+      console.log("Warning: TWITCH_CLIENT_ID not set — configure .env for OAuth");
+    }
+  });
+}
+
+start().catch((err) => {
+  console.error("Failed to start server:", err);
+  process.exit(1);
 });
 
 process.on("SIGINT", () => {
