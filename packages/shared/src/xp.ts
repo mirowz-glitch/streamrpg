@@ -2,7 +2,7 @@ export const MAX_LEVEL = 30;
 export const XP_PER_PING = 10;
 export const GOLD_PER_PING = 0.3;
 export const PING_COOLDOWN_MS = 60_000;
-export const DROP_CHANCE = 0.008;
+export const DROP_CHANCE = 0.15;
 export const OVERLAY_ACTIVE_SECONDS = 300;
 
 export function xpForLevel(level: number): number {
