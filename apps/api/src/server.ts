@@ -14,6 +14,7 @@ import { seedItems } from "./services/items.service.js";
 import { sessionManager } from "./engine/SessionManager.js";
 import { EventBus } from "./engine/EventBus.js";
 import { GameEngine } from "./engine/GameEngine.js";
+import { XPSystem } from "./systems/XPSystem.js";
 
 const routes: Route[] = [
   ...authRoutes,
@@ -31,7 +32,11 @@ seedItems();
 const bus = new EventBus();
 const engine = new GameEngine(bus, sessionManager);
 
-// Subscriber de diagnóstico — confirma que o coração está batendo
+// Sistemas registrados no EventBus
+const xpSystem = new XPSystem();
+xpSystem.register(bus);
+
+// Subscriber de diagnóstico da Engine
 // TODO: remover antes da release formal
 bus.subscribe("world.tick", (event) => {
   console.log(`[Engine] World Tick #${event.tickNumber} — sessões ativas: ${event.sessions.length}`);
