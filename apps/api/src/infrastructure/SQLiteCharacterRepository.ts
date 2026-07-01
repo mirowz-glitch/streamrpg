@@ -14,15 +14,16 @@
  *
  * MÉTODOS IMPLEMENTADOS:
  * - findById(): leitura — usado pelo XPSystem em modo shadow (M-006/M-007)
- * - applyXP(): escrita — implementado mas não usado até M-008+
+ * - applyXP(): escrita — usado pelo XPSystem e WelcomeRewardSystem (M-008)
  * - addMinutesWatched(): escrita — implementado mas não usado até M-008+
+ * - hasReceivedWelcomeReward(): leitura — usado pelo WelcomeRewardSystem (M-008)
+ * - markWelcomeRewardGranted(): escrita — usado pelo WelcomeRewardSystem (M-008)
  *
  * NÃO conhece:
  * - EventBus, GameEngine, GameClock
  * - Frontend, Twitch ou Railway
  * - Nenhum sistema de jogo (XPSystem, DropSystem, etc.)
  */
-
 import { getDb, nowUnix } from "../config/database.js";
 import { getProgress } from "@streamrpg/shared";
 import type {
@@ -54,9 +55,7 @@ export class SQLiteCharacterRepository implements CharacterRepository {
         xp: number;
         gold: number;
       } | undefined;
-
     if (!row) return null;
-
     return {
       id: row.id,
       displayName: row.display_name,
@@ -71,9 +70,6 @@ export class SQLiteCharacterRepository implements CharacterRepository {
    *
    * Calcula o novo nível automaticamente usando getProgress() do shared.
    * Atualiza xp, level e last_ping_at no banco atomicamente.
-   *
-   * ATENÇÃO: este método NÃO é chamado ainda — está preparado para M-008+
-   * quando o XPSystem assumir o controle oficial da progressão.
    */
   async applyXP(
     characterId: string,
@@ -82,26 +78,21 @@ export class SQLiteCharacterRepository implements CharacterRepository {
   ): Promise<XPResult> {
     const db = getDb();
     const now = Math.floor(timestamp / 1000); // converte ms para unix seconds
-
     const current = db
       .prepare("SELECT xp, level FROM characters WHERE id = ?")
       .get(characterId) as { xp: number; level: number } | undefined;
-
     if (!current) {
       throw new Error(`CharacterRepository: character ${characterId} not found`);
     }
-
     const oldLevel = current.level;
     const newTotalXp = current.xp + amount;
     const progress = getProgress(newTotalXp);
     const newLevel = progress.level;
-
     db.prepare(
       `UPDATE characters
        SET xp = ?, level = ?, last_ping_at = ?, updated_at = ?
        WHERE id = ?`,
     ).run(newTotalXp, newLevel, now, now, characterId);
-
     return {
       characterId,
       xpGained: amount,
@@ -128,5 +119,38 @@ export class SQLiteCharacterRepository implements CharacterRepository {
          WHERE id = ?`,
       )
       .run(minutes, nowUnix(), characterId);
+  }
+
+  /**
+   * Verifica se o personagem já recebeu a Welcome Reward.
+   * Usado pelo WelcomeRewardSystem para garantir concessão única
+   * ao longo da vida inteira do personagem, independente de quantas
+   * vezes session.started for disparado (ex: reconexões).
+   */
+  async hasReceivedWelcomeReward(characterId: string): Promise<boolean> {
+    const db = getDb();
+    const row = db
+      .prepare("SELECT first_join_reward_at FROM characters WHERE id = ?")
+      .get(characterId) as { first_join_reward_at: number | null } | undefined;
+    if (!row) {
+      throw new Error(`CharacterRepository: character ${characterId} not found`);
+    }
+    return row.first_join_reward_at !== null;
+  }
+
+  /**
+   * Marca que a Welcome Reward foi concedida, gravando o timestamp.
+   * Responsabilidade exclusiva do WelcomeRewardSystem — nenhum outro
+   * sistema deve escrever nesta coluna.
+   */
+  async markWelcomeRewardGranted(
+    characterId: string,
+    timestamp: number,
+  ): Promise<void> {
+    const db = getDb();
+    const now = Math.floor(timestamp / 1000);
+    db.prepare(
+      "UPDATE characters SET first_join_reward_at = ? WHERE id = ?",
+    ).run(now, characterId);
   }
 }
