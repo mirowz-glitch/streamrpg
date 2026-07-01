@@ -1,4 +1,5 @@
-import type { ActiveSession } from "./types.js";
+import type { ActiveSession, SessionStartedEvent } from "./types.js";
+import type { EventBus } from "./EventBus.js";
 
 /**
  * SessionManager
@@ -7,12 +8,13 @@ import type { ActiveSession } from "./types.js";
  * estão ativos em quais canais, e quando foram vistos pela última vez.
  *
  * Esta classe não conhece XP, drops, banco de dados, Twitch ou frontend.
- * Ela apenas responde: "quem está ativo agora?"
+ * Ela apenas responde: "quem está ativo agora?" — e, adicionalmente,
+ * anuncia no EventBus quando uma presença é vista pela primeira vez
+ * (session.started), sem decidir o que fazer com isso.
  *
  * Sprint 1: integrada ao ping existente sem alterar nenhum comportamento de jogo.
  * Futuramente: alimentada por ChatPresenceProvider, ExtensionPresenceProvider, etc.
  */
-
 // TODO: migrar para GameConfig/GameRules quando essa camada for criada.
 // Valor atual: 1.5x o intervalo de ping (60s), garantindo tolerância a
 // um ping atrasado antes de expirar a sessão.
@@ -20,9 +22,21 @@ const SESSION_TIMEOUT_MS = 90_000;
 
 export class SessionManager {
   private sessions = new Map<string, ActiveSession>();
+  private bus: EventBus | null = null;
 
   private sessionKey(characterId: string, channelId: string): string {
     return `${characterId}:${channelId}`;
+  }
+
+  /**
+   * Injeta o EventBus após a construção.
+   * Necessário porque o SessionManager é um singleton criado antes
+   * do EventBus existir em server.ts. Emitir eventos é opcional —
+   * se nunca for chamado, reportPresent() continua funcionando
+   * normalmente, só sem emitir session.started.
+   */
+  setEventBus(bus: EventBus): void {
+    this.bus = bus;
   }
 
   /**
@@ -32,6 +46,10 @@ export class SessionManager {
    * lógica de jogo, nunca concede XP, nunca rola drops e nunca acessa
    * o banco de dados. Toda lógica de jogo é responsabilidade da GameEngine
    * e dos sistemas registrados no EventBus.
+   *
+   * Quando a chave (characterId:channelId) é vista pela primeira vez
+   * desde que o processo subiu (ou desde que expirou por timeout),
+   * emite session.started — independente do GameClock, sem gerar tick.
    *
    * Chamado atualmente pelo ping do frontend (WebsitePresenceProvider).
    * No futuro, pode ser chamado por qualquer PresenceProvider sem que
@@ -43,12 +61,24 @@ export class SessionManager {
     provider = "website",
   ): void {
     const key = this.sessionKey(characterId, channelId);
+    const isNew = !this.sessions.has(key);
+
     this.sessions.set(key, {
       characterId,
       channelId,
       lastSeenAt: Date.now(),
       provider,
     });
+
+    if (isNew && this.bus) {
+      const event: SessionStartedEvent = {
+        type: "session.started",
+        characterId,
+        channelId,
+        timestamp: Date.now(),
+      };
+      this.bus.emit(event);
+    }
   }
 
   /**
@@ -62,7 +92,6 @@ export class SessionManager {
   getActiveSessions(): ActiveSession[] {
     const now = Date.now();
     const active: ActiveSession[] = [];
-
     for (const [key, session] of this.sessions.entries()) {
       if (now - session.lastSeenAt > SESSION_TIMEOUT_MS) {
         this.sessions.delete(key);
@@ -70,7 +99,6 @@ export class SessionManager {
         active.push({ ...session });
       }
     }
-
     return active;
   }
 
