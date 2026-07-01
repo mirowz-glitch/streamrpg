@@ -15,6 +15,7 @@ import { sessionManager } from "./engine/SessionManager.js";
 import { EventBus } from "./engine/EventBus.js";
 import { GameEngine } from "./engine/GameEngine.js";
 import { XPSystem } from "./systems/XPSystem.js";
+import { SQLiteCharacterRepository } from "./infrastructure/SQLiteCharacterRepository.js";
 
 const routes: Route[] = [
   ...authRoutes,
@@ -28,12 +29,15 @@ const routes: Route[] = [
 getDb();
 seedItems();
 
+// Infrastructure
+const characterRepository = new SQLiteCharacterRepository();
+
 // Engine — núcleo do jogo
 const bus = new EventBus();
 const engine = new GameEngine(bus, sessionManager);
 
 // Sistemas registrados no EventBus
-const xpSystem = new XPSystem();
+const xpSystem = new XPSystem(characterRepository);
 xpSystem.register(bus);
 
 // Subscriber de diagnóstico da Engine
