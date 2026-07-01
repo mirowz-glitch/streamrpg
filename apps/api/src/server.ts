@@ -14,7 +14,7 @@ import { seedItems } from "./services/items.service.js";
 import { sessionManager } from "./engine/SessionManager.js";
 import { EventBus } from "./engine/EventBus.js";
 import { GameEngine } from "./engine/GameEngine.js";
-import { XPSystem } from "./systems/XPSystem.js";
+import { XPSystem } from "./systems/XPSystemV2.js";
 import { SQLiteCharacterRepository } from "./infrastructure/SQLiteCharacterRepository.js";
 
 const routes: Route[] = [
@@ -29,19 +29,14 @@ const routes: Route[] = [
 getDb();
 seedItems();
 
-// Infrastructure
 const characterRepository = new SQLiteCharacterRepository();
 
-// Engine — núcleo do jogo
 const bus = new EventBus();
 const engine = new GameEngine(bus, sessionManager);
 
-// Sistemas registrados no EventBus
 const xpSystem = new XPSystem(characterRepository);
 xpSystem.register(bus);
 
-// Subscriber de diagnóstico da Engine
-// TODO: remover antes da release formal
 bus.subscribe("world.tick", (event) => {
   console.log(`[Engine] World Tick #${event.tickNumber} — sessões ativas: ${event.sessions.length}`);
 });
