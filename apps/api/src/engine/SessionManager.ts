@@ -1,3 +1,5 @@
+import type { ActiveSession } from "./types.js";
+
 /**
  * SessionManager
  *
@@ -10,13 +12,6 @@
  * Sprint 1: integrada ao ping existente sem alterar nenhum comportamento de jogo.
  * Futuramente: alimentada por ChatPresenceProvider, ExtensionPresenceProvider, etc.
  */
-
-export interface ActiveSession {
-  characterId: string;
-  channelId: string;
-  lastSeenAt: number;
-  provider: string;
-}
 
 // TODO: migrar para GameConfig/GameRules quando essa camada for criada.
 // Valor atual: 1.5x o intervalo de ping (60s), garantindo tolerância a
@@ -72,7 +67,7 @@ export class SessionManager {
       if (now - session.lastSeenAt > SESSION_TIMEOUT_MS) {
         this.sessions.delete(key);
       } else {
-        active.push({ ...session }); // cópia shallow — imutável para o consumidor
+        active.push({ ...session });
       }
     }
 
