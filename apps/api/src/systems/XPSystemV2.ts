@@ -18,32 +18,35 @@ export class XPSystem {
       if (event.sessions.length === 0) return;
 
       // Mapa channelId -> live?, existe apenas durante este tick.
-      // Nunca é reaproveitado entre ticks — recriado do zero a cada chamada.
       const liveByChannel = await checkLiveStatusPerChannel(event.sessions);
 
-      for (const session of event.sessions) {
+      // Reduz sessões (uma por characterId:channelId) para personagens
+      // únicos. Progressão é sempre por Character — um personagem
+      // presente em múltiplas sessões/canais/plataformas simultaneamente
+      // é processado uma única vez por tick, nunca uma vez por sessão.
+      const liveByCharacter = reduceSessionsToCharacters(event.sessions, liveByChannel);
+
+      for (const [characterId, isLive] of liveByCharacter) {
         try {
-          const live = liveByChannel.get(session.channelId) ?? false;
-          if (!live) continue;
+          if (!isLive) continue;
 
           if (!env.useEngineXp) {
             // Shadow mode: apenas loga o que seria concedido, sem escrever nada.
-            const character = await repo.findById(session.characterId);
+            const character = await repo.findById(characterId);
             if (!character) continue;
-            console.log(`[XPSystem] Character: ${character.displayName} | Would grant: +${XP_PER_PING} XP | Tick: ${event.tickNumber} | Channel: ${session.channelId}`);
+            console.log(`[XPSystem] Character: ${character.displayName} | Would grant: +${XP_PER_PING} XP | Tick: ${event.tickNumber}`);
             continue;
           }
 
           // USE_ENGINE_XP=true — ainda NÃO ativado em produção nesta Sprint.
-          const result = await repo.applyXP(session.characterId, XP_PER_PING, event.timestamp);
-          await repo.addMinutesWatched(session.characterId, 1);
+          const result = await repo.applyXP(characterId, XP_PER_PING, event.timestamp);
+          await repo.addMinutesWatched(characterId, 1);
 
-          console.log(`[XPSystem] Character: ${session.characterId} | Granted: +${XP_PER_PING} XP | Tick: ${event.tickNumber} | Channel: ${session.channelId}`);
+          console.log(`[XPSystem] Character: ${characterId} | Granted: +${XP_PER_PING} XP | Tick: ${event.tickNumber}`);
 
           const xpGranted: XPGrantedEvent = {
             type: "xp.granted",
-            characterId: session.characterId,
-            channelId: session.channelId,
+            characterId,
             amount: XP_PER_PING,
             newTotalXp: result.newTotalXp,
             newLevel: result.newLevel,
@@ -55,8 +58,7 @@ export class XPSystem {
           if (result.leveledUp) {
             const levelUp: LevelUpEvent = {
               type: "level.up",
-              characterId: session.characterId,
-              channelId: session.channelId,
+              characterId,
               oldLevel: result.oldLevel,
               newLevel: result.newLevel,
               timestamp: event.timestamp,
@@ -64,7 +66,7 @@ export class XPSystem {
             bus.emit(levelUp);
           }
         } catch (err) {
-          console.error(`[XPSystem] Erro sessão ${session.characterId}:`, err);
+          console.error(`[XPSystem] Erro personagem ${characterId}:`, err);
         }
       }
     });
@@ -74,20 +76,10 @@ export class XPSystem {
 /**
  * Verifica o status de "ao vivo" de cada canal único presente nas sessões
  * do tick atual, em paralelo — uma única chamada por canal, nunca uma
- * chamada por sessão.
- *
- * O mapa retornado existe apenas durante este tick. Nunca é cacheado
- * ou reaproveitado entre ticks — cada chamada a esta função começa do zero.
+ * chamada por sessão. O mapa retornado existe apenas durante este tick.
  *
  * Em caso de erro na consulta de um canal específico, esse canal é
- * tratado como offline neste tick (comportamento conservador: não concede
- * XP quando não há confirmação de que o canal está ao vivo). O erro é
- * logado uma única vez por canal, nunca por sessão. Um canal com erro
- * nunca impede o processamento dos demais canais no mesmo tick.
- *
- * Isolado nesta função para que, no futuro, isChannelLive() seja
- * substituído por PlatformProvider.isLive() sem alterar a lógica de
- * agrupamento e paralelização abaixo.
+ * tratado como offline neste tick (comportamento conservador).
  */
 async function checkLiveStatusPerChannel(
   sessions: WorldTickEvent["sessions"],
@@ -109,4 +101,30 @@ async function checkLiveStatusPerChannel(
   );
 
   return new Map(results.map((r) => [r.channelId, r.live] as const));
+}
+
+/**
+ * Reduz a lista de sessões (uma por characterId:channelId) para um mapa
+ * de personagens únicos, decidindo se cada um está "ao vivo" neste tick.
+ *
+ * Um personagem é considerado ao vivo se pelo menos uma de suas sessões
+ * ativas está associada a um canal que está ao vivo. Isso garante que
+ * XP é concedido uma única vez por personagem por tick, independentemente
+ * de quantas sessões/canais/plataformas ele tenha simultaneamente —
+ * Session representa presença, nunca uma oportunidade adicional de
+ * progresso.
+ */
+function reduceSessionsToCharacters(
+  sessions: WorldTickEvent["sessions"],
+  liveByChannel: Map<string, boolean>,
+): Map<string, boolean> {
+  const liveByCharacter = new Map<string, boolean>();
+
+  for (const session of sessions) {
+    const channelIsLive = liveByChannel.get(session.channelId) ?? false;
+    const alreadyLive = liveByCharacter.get(session.characterId) ?? false;
+    liveByCharacter.set(session.characterId, alreadyLive || channelIsLive);
+  }
+
+  return liveByCharacter;
 }
