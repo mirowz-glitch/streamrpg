@@ -1,5 +1,5 @@
 /**
- * XPSystem — M-006
+ * XPSystem — M-006 / atualizado M-007
  *
  * Sistema responsável pela concessão de XP a jogadores ativos.
  *
@@ -9,9 +9,14 @@
  * Serve para validar que a Engine processa sessões reais corretamente
  * antes de assumir o controle oficial da progressão.
  *
+ * MILESTONE 7:
+ * Removido acesso direto ao banco (getDb()).
+ * O XPSystem agora depende exclusivamente do CharacterRepository
+ * injetado no construtor — conforme arquitetura aprovada.
+ *
  * Quando o modo shadow for validado:
  * - applyPing() deixará de conceder XP
- * - XPSystem passará a escrever no banco via CharacterRepository
+ * - XPSystem passará a chamar characterRepository.applyXP()
  * - O log de shadow será removido
  *
  * O XPSystem NÃO conhece:
@@ -19,19 +24,25 @@
  * - GameEngine ou GameClock
  * - Frontend, Twitch ou Railway
  * - Outros sistemas (DropSystem, BossSystem, etc.)
+ * - SQLite ou qualquer banco de dados
  *
  * Ele conhece apenas:
  * - WorldTickEvent (via EventBus)
- * - O banco de dados (apenas leitura nesta Milestone)
+ * - CharacterRepository (via injeção no construtor)
  * - XP_PER_PING (constante do shared)
  */
 
 import { XP_PER_PING } from "@streamrpg/shared";
-import { getDb } from "../config/database.js";
 import type { EventBus } from "../engine/EventBus.js";
-import type { WorldTickEvent } from "../engine/types.js";
+import type { CharacterRepository, WorldTickEvent } from "../engine/types.js";
 
 export class XPSystem {
+  private readonly characters: CharacterRepository;
+
+  constructor(characters: CharacterRepository) {
+    this.characters = characters;
+  }
+
   /**
    * Registra o XPSystem no EventBus.
    * A partir deste momento, o sistema passa a escutar WorldTickEvent.
@@ -49,25 +60,20 @@ export class XPSystem {
    *
    * MODO SHADOW: apenas calcula e loga. Não escreve no banco.
    *
-   * Para cada sessão ativa, busca o display_name do personagem
+   * Para cada sessão ativa, busca o personagem via repository
    * e loga o XP que seria concedido.
    */
   private async onWorldTick(event: WorldTickEvent): Promise<void> {
     if (event.sessions.length === 0) return;
 
-    const db = getDb();
-
     for (const session of event.sessions) {
       try {
-        const character = db
-          .prepare("SELECT display_name FROM characters WHERE id = ?")
-          .get(session.characterId) as { display_name: string } | undefined;
-
+        const character = await this.characters.findById(session.characterId);
         if (!character) continue;
 
         // MODO SHADOW — apenas loga, nunca escreve
         console.log(
-          `[XPSystem] Character: ${character.display_name} | Would grant: +${XP_PER_PING} XP | Tick: ${event.tickNumber} | Channel: ${session.channelId}`,
+          `[XPSystem] Character: ${character.displayName} | Would grant: +${XP_PER_PING} XP | Tick: ${event.tickNumber} | Channel: ${session.channelId}`,
         );
       } catch (err) {
         console.error(
