@@ -70,6 +70,22 @@ export interface WorldTickEvent {
 }
 
 /**
+ * Emitido pelo SessionManager quando um personagem começa uma nova
+ * sessão de presença (chave characterId:channelId inédita no mapa
+ * de sessões ativas). Não está atrelado ao GameClock — é disparado
+ * no momento exato em que a presença é reportada, não no próximo tick.
+ *
+ * Usado pelo WelcomeRewardSystem e por futuros sistemas que precisem
+ * reagir à chegada de um jogador sem esperar o relógio do mundo.
+ */
+export interface SessionStartedEvent {
+  type: "session.started";
+  characterId: string;
+  channelId: string;
+  timestamp: number;
+}
+
+/**
  * Emitido pelo XPSystem após conceder XP a um personagem.
  * Outros sistemas podem reagir a este evento (ex: notificações,
  * conquistas, ranking em tempo real).
@@ -140,6 +156,7 @@ export interface BossActivatedEvent {
  */
 export type GameEvent =
   | WorldTickEvent
+  | SessionStartedEvent
   | XPGrantedEvent
   | DropGrantedEvent
   | LevelUpEvent
@@ -229,6 +246,8 @@ export interface CharacterRepository {
     timestamp: number,
   ): Promise<XPResult>;
   addMinutesWatched(characterId: string, minutes: number): Promise<void>;
+  hasReceivedWelcomeReward(characterId: string): Promise<boolean>;
+  markWelcomeRewardGranted(characterId: string, timestamp: number): Promise<void>;
 }
 
 /**
