@@ -1,5 +1,5 @@
 /**
- * WelcomeRewardSystem — M-008 (complementar)
+ * WelcomeRewardSystem — M-008 (parte da migração de XP)
  *
  * Concede uma recompensa única de boas-vindas ao personagem na
  * primeira vez que ele é visto pelo SessionManager, SEM depender
@@ -14,9 +14,15 @@
  * personagem pode disparar session.started várias vezes na vida
  * (ex: reconexão após timeout de sessão) sem receber a recompensa de novo.
  *
- * Desenhado para crescer: hoje concede só XP, mas a estrutura permite
- * adicionar ouro, itens ou mensagens no futuro sem alterar o GameClock,
- * o XPSystem ou a GameEngine.
+ * IMPORTANTE — respeita USE_ENGINE_XP:
+ * Este sistema só existe para preservar a equivalência de comportamento
+ * entre o applyPing() antigo e a Engine nova. Enquanto USE_ENGINE_XP=false,
+ * o applyPing() já concede o primeiro XP instantaneamente por conta própria
+ * (via last_ping_at IS NULL) — se o WelcomeRewardSystem também agisse nesse
+ * momento, o personagem receberia XP em dobro no primeiro ping.
+ * Por isso, com a flag false, este sistema ignora session.started
+ * completamente, sem logar nem tocar no banco. Só passa a agir quando
+ * USE_ENGINE_XP=true, quando o applyPing() para de conceder XP.
  */
 import { XP_PER_PING } from "@streamrpg/shared";
 import type { EventBus } from "../engine/EventBus.js";
@@ -27,6 +33,7 @@ import type {
   LevelUpEvent,
 } from "../engine/types.js";
 import { isChannelLive } from "../services/twitch.service.js";
+import { env } from "../config/env.js";
 
 // Mantém paridade com o comportamento atual do applyPing():
 // primeiro ping de um personagem novo concede XP_PER_PING (10) imediatamente.
@@ -38,6 +45,11 @@ export class WelcomeRewardSystem {
   register(bus: EventBus): () => void {
     const repo = this.repo;
     return bus.subscribe("session.started", async (event) => {
+      // Enquanto a Engine não assumiu o XP, o applyPing() já cuida do
+      // primeiro XP instantâneo. Este sistema fica inativo para não
+      // duplicar a concessão.
+      if (!env.useEngineXp) return;
+
       const { characterId, channelId, timestamp } = event as SessionStartedEvent;
       try {
         const alreadyRewarded = await repo.hasReceivedWelcomeReward(characterId);
