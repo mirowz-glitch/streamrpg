@@ -1,6 +1,7 @@
 import { XP_PER_PING } from "@streamrpg/shared";
 import type { EventBus } from "../engine/EventBus.js";
 import type { CharacterRepository, WorldTickEvent } from "../engine/types.js";
+import { isChannelLive } from "../services/twitch.service.js";
 
 export class XPSystem {
   constructor(private repo: CharacterRepository) {}
@@ -11,6 +12,9 @@ export class XPSystem {
       if (event.sessions.length === 0) return;
       for (const session of event.sessions) {
         try {
+          const live = await isChannelLive(session.channelId);
+          if (!live) continue;
+
           const character = await repo.findById(session.characterId);
           if (!character) continue;
           console.log(`[XPSystem] Character: ${character.displayName} | Would grant: +${XP_PER_PING} XP | Tick: ${event.tickNumber} | Channel: ${session.channelId}`);
