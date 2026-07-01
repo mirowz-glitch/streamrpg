@@ -15,6 +15,7 @@ import { sessionManager } from "./engine/SessionManager.js";
 import { EventBus } from "./engine/EventBus.js";
 import { GameEngine } from "./engine/GameEngine.js";
 import { XPSystem } from "./systems/XPSystemV2.js";
+import { WelcomeRewardSystem } from "./systems/WelcomeRewardSystem.js";
 import { SQLiteCharacterRepository } from "./infrastructure/SQLiteCharacterRepository.js";
 
 const routes: Route[] = [
@@ -30,12 +31,13 @@ getDb();
 seedItems();
 
 const characterRepository = new SQLiteCharacterRepository();
-
 const bus = new EventBus();
+sessionManager.setEventBus(bus);
 const engine = new GameEngine(bus, sessionManager);
-
 const xpSystem = new XPSystem(characterRepository);
 xpSystem.register(bus);
+const welcomeRewardSystem = new WelcomeRewardSystem(characterRepository);
+welcomeRewardSystem.register(bus);
 
 bus.subscribe("world.tick", (event) => {
   console.log(`[Engine] World Tick #${event.tickNumber} — sessões ativas: ${event.sessions.length}`);
@@ -45,7 +47,6 @@ const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? "/", env.baseUrl);
     const ctx = await resolveAuth(req);
-
     if (url.pathname.startsWith("/api/") || url.pathname === "/health") {
       const matched = matchRoute(routes, req.method ?? "GET", url.pathname);
       if (matched) {
@@ -55,7 +56,6 @@ const server = createServer(async (req, res) => {
       json(res, 404, { error: "Not found" });
       return;
     }
-
     const served = await handleStatic(req, res);
     if (!served) {
       json(res, 404, { error: "Not found" });
