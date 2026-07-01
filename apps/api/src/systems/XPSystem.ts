@@ -41,6 +41,8 @@ export class XPSystem {
 
   constructor(characters: CharacterRepository) {
     this.characters = characters;
+    // bind explícito para garantir contexto correto quando chamado via EventBus
+    this.onWorldTick = this.onWorldTick.bind(this);
   }
 
   /**
