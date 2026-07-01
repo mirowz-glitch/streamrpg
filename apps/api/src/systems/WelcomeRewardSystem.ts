@@ -5,24 +5,17 @@
  * primeira vez que ele é visto pelo SessionManager, SEM depender
  * do GameClock — reage a session.started, não a world.tick.
  *
- * Isso preserva o GameClock como única fonte oficial de tempo do
- * mundo: esta recompensa é independente do relógio, não gera tick
- * adicional, e não afeta a cadência sincronizada de XP por tick.
- *
- * A unicidade da concessão é garantida pela coluna first_join_reward_at
- * no banco (via CharacterRepository), não pelo evento em si — o mesmo
- * personagem pode disparar session.started várias vezes na vida
- * (ex: reconexão após timeout de sessão) sem receber a recompensa de novo.
- *
  * IMPORTANTE — respeita USE_ENGINE_XP:
- * Este sistema só existe para preservar a equivalência de comportamento
- * entre o applyPing() antigo e a Engine nova. Enquanto USE_ENGINE_XP=false,
- * o applyPing() já concede o primeiro XP instantaneamente por conta própria
- * (via last_ping_at IS NULL) — se o WelcomeRewardSystem também agisse nesse
- * momento, o personagem receberia XP em dobro no primeiro ping.
- * Por isso, com a flag false, este sistema ignora session.started
- * completamente, sem logar nem tocar no banco. Só passa a agir quando
- * USE_ENGINE_XP=true, quando o applyPing() para de conceder XP.
+ * Enquanto USE_ENGINE_XP=false, o applyPing() já concede o primeiro XP
+ * instantaneamente por conta própria — este sistema fica inativo para
+ * não duplicar a concessão.
+ *
+ * Os eventos de gameplay emitidos (xp.granted, level.up) não carregam
+ * channelId — progressão pertence ao Character, nunca à sessão ou
+ * canal onde a presença foi detectada. O channelId do evento
+ * session.started que originou esta concessão é usado apenas
+ * internamente (para a checagem de isChannelLive), nunca repassado
+ * para os eventos de gameplay emitidos.
  */
 import { XP_PER_PING } from "@streamrpg/shared";
 import type { EventBus } from "../engine/EventBus.js";
@@ -45,9 +38,6 @@ export class WelcomeRewardSystem {
   register(bus: EventBus): () => void {
     const repo = this.repo;
     return bus.subscribe("session.started", async (event) => {
-      // Enquanto a Engine não assumiu o XP, o applyPing() já cuida do
-      // primeiro XP instantâneo. Este sistema fica inativo para não
-      // duplicar a concessão.
       if (!env.useEngineXp) return;
 
       const { characterId, channelId, timestamp } = event as SessionStartedEvent;
@@ -62,13 +52,12 @@ export class WelcomeRewardSystem {
         await repo.markWelcomeRewardGranted(characterId, timestamp);
 
         console.log(
-          `[WelcomeRewardSystem] Character: ${characterId} | Welcome Reward: +${WELCOME_XP} XP | Channel: ${channelId}`,
+          `[WelcomeRewardSystem] Character: ${characterId} | Welcome Reward: +${WELCOME_XP} XP`,
         );
 
         const xpGranted: XPGrantedEvent = {
           type: "xp.granted",
           characterId,
-          channelId,
           amount: WELCOME_XP,
           newTotalXp: result.newTotalXp,
           newLevel: result.newLevel,
@@ -81,7 +70,6 @@ export class WelcomeRewardSystem {
           const levelUp: LevelUpEvent = {
             type: "level.up",
             characterId,
-            channelId,
             oldLevel: result.oldLevel,
             newLevel: result.newLevel,
             timestamp,
