@@ -28,14 +28,16 @@
  *     etc.
  *
  * PRINCÍPIO ARQUITETURAL (registrado após auditoria de escopo):
- * - Eventos de Gameplay (xp.granted, level.up, drop.granted) representam
- *   mudanças de estado do Character e NUNCA carregam contexto de
- *   plataforma (channelId, platform). Progressão pertence ao personagem,
- *   nunca à sessão ou ao canal onde ele estava presente.
+ * - Eventos de Gameplay (xp.granted, level.up) representam mudanças
+ *   de estado do Character e NUNCA carregam contexto de plataforma
+ *   (channelId, platform). Progressão pertence ao personagem, nunca
+ *   à sessão ou ao canal onde ele estava presente.
  * - Eventos de Platform (session.started) representam presença e
  *   carregam characterId + channelId (e, futuramente, platform).
  * - Eventos de World (boss.activated) representam algo compartilhado
  *   por um contexto (hoje: canal), sem characterId.
+ * - DropGrantedEvent ainda não foi revisado sob este princípio —
+ *   será tratado junto da implementação do DropSystem, não isoladamente.
  */
 
 // ============================================================
@@ -120,11 +122,14 @@ export interface XPGrantedEvent {
  * Outros sistemas podem reagir (ex: notificações, log de eventos,
  * histórico de drops).
  *
- * Evento de Gameplay: mesma regra do XPGrantedEvent — sem channelId.
+ * Mantido inalterado nesta Sprint — a revisão deste evento (remoção
+ * de channelId) será feita junto da implementação do DropSystem,
+ * não isoladamente aqui. Uma responsabilidade por Sprint.
  */
 export interface DropGrantedEvent {
   type: "drop.granted";
   characterId: string;
+  channelId: string;
   itemId: number;
   itemName: string;
   itemRarity: string;
