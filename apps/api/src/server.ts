@@ -11,6 +11,9 @@ import { overlayRoutes } from "./routes/overlay.js";
 import { pingRoutes } from "./routes/ping.js";
 import { rankingRoutes } from "./routes/ranking.js";
 import { seedItems } from "./services/items.service.js";
+import { sessionManager } from "./engine/SessionManager.js";
+import { EventBus } from "./engine/EventBus.js";
+import { GameEngine } from "./engine/GameEngine.js";
 
 const routes: Route[] = [
   ...authRoutes,
@@ -23,6 +26,16 @@ const routes: Route[] = [
 
 getDb();
 seedItems();
+
+// Engine — núcleo do jogo
+const bus = new EventBus();
+const engine = new GameEngine(bus, sessionManager);
+
+// Subscriber de diagnóstico — confirma que o coração está batendo
+// TODO: remover antes da release formal
+bus.subscribe("world.tick", (event) => {
+  console.log(`[Engine] World Tick #${event.tickNumber} — sessões ativas: ${event.sessions.length}`);
+});
 
 const server = createServer(async (req, res) => {
   try {
@@ -53,6 +66,7 @@ const server = createServer(async (req, res) => {
 
 async function start() {
   await buildWebOnce();
+  engine.start();
   server.listen(env.port, () => {
     console.log(`StreamRPG running on http://localhost:${env.port}`);
     if (!env.twitchClientId) {
@@ -67,6 +81,7 @@ start().catch((err) => {
 });
 
 process.on("SIGINT", () => {
+  engine.stop();
   closeDb();
   server.close(() => process.exit(0));
 });
