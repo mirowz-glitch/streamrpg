@@ -8,6 +8,10 @@
  * Quem chama já decide a raridade e o personagem; este Repository
  * só sabe responder "existe um item elegível?" e "conceda este item".
  *
+ * obtained_at é preenchido pelo DEFAULT do schema
+ * (strftime('%s','now')) — nenhum timestamp é recebido ou controlado
+ * por este Repository, conforme a interface ItemRepository já aprovada.
+ *
  * Isolada, sem consumidores nesta Sprint.
  */
 import { getDb } from "../config/database.js";
@@ -56,9 +60,11 @@ export class SQLiteItemRepository implements ItemRepository {
   }
 
   /**
-   * Concede um item a um personagem. obtained_at é preenchido pelo
-   * DEFAULT do schema (strftime('%s','now')) — nenhum timestamp
-   * explícito é passado ou controlado por este método.
+   * Concede um item a um personagem.
+   *
+   * obtained_at é preenchido pelo DEFAULT do schema
+   * (strftime('%s','now')) — este método não recebe nem grava
+   * nenhum timestamp explícito.
    */
   async grantToCharacter(
     characterId: string,
