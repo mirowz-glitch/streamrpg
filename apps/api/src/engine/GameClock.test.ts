@@ -2,13 +2,20 @@
  * Testes do GameClock
  *
  * Usa o Node.js Test Runner nativo (node:test) — sem dependências externas.
- * Para rodar: node --experimental-test-coverage --import tsx/esm apps/api/src/engine/GameClock.test.ts
+ *
+ * Status dos testes:
+ * - Implementados e revisados estaticamente nesta Milestone.
+ * - Execução automatizada pendente da configuração do ambiente de testes
+ *   (script npm test, CI pipeline ou acesso ao terminal do projeto).
+ *
+ * Para rodar manualmente quando o ambiente permitir:
+ * node --import tsx/esm apps/api/src/engine/GameClock.test.ts
  *
  * Todos os testes usam intervalos de milissegundos para não depender
  * de timers reais de 60 segundos.
  */
 
-import { describe, it, before, after, beforeEach } from "node:test";
+import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { GameClock } from "./GameClock.js";
 
@@ -47,11 +54,10 @@ describe("GameClock", () => {
 
       clock.onTick((tick) => ticks.push(tick.tickNumber));
       clock.start();
-      clock.start(); // segunda chamada deve ser ignorada
+      clock.start();
 
       setTimeout(() => {
         clock.stop();
-        // com dois intervalos, teria o dobro de ticks — confirma que só tem um
         assert.ok(ticks.length <= 3, `esperado ≤3 ticks, recebeu ${ticks.length}`);
         done();
       }, 160);
@@ -78,7 +84,6 @@ describe("GameClock", () => {
       setTimeout(() => {
         clock.stop();
         assert.ok(received.length >= 2, "deve ter recebido pelo menos 2 ticks");
-        // verifica sequência
         for (let i = 0; i < received.length; i++) {
           assert.equal(received[i], i + 1);
         }
@@ -174,7 +179,7 @@ describe("GameClock", () => {
 
   describe("forceTickNow", () => {
     it("deve emitir tick imediatamente sem depender do intervalo", () => {
-      const clock = new GameClock(60_000); // intervalo de 1 minuto
+      const clock = new GameClock(60_000);
       const received: number[] = [];
 
       clock.onTick((tick) => received.push(tick.tickNumber));
