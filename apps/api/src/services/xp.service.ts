@@ -6,6 +6,7 @@ import {
 } from "@streamrpg/shared";
 import type { PingResponse } from "@streamrpg/shared";
 import { getDb, nowUnix, todayDate } from "../config/database.js";
+import { env } from "../config/env.js";
 import { rollDrop } from "./drop.service.js";
 import { ensureChannel } from "./channel.service.js";
 import { isChannelLive } from "./twitch.service.js";
@@ -65,18 +66,33 @@ export async function applyPing(
 
   const channel = ensureChannel(channelLogin);
   const oldProgress = getProgress(character.xp);
-  const newTotalXp = character.xp + XP_PER_PING;
+
+  // Quando a Engine assume o XP (flag true), applyPing() não concede
+  // XP nem incrementa total_minutes — isso passa a ser responsabilidade
+  // exclusiva do XPSystem via tick. Ainda não ativado nesta Sprint.
+  const engineHandlesXp = env.useEngineXp;
+  const xpGain = engineHandlesXp ? 0 : XP_PER_PING;
+  const newTotalXp = character.xp + xpGain;
   const goldGain = GOLD_PER_PING;
   const newGold = character.gold + goldGain;
   const newProgress = getProgress(newTotalXp);
   const sessionDate = todayDate();
 
-  db.prepare(
-    `UPDATE characters
-     SET xp = ?, level = ?, gold = ?, last_ping_at = ?, total_minutes = total_minutes + 1,
-         primary_channel_id = COALESCE(primary_channel_id, ?), updated_at = ?
-     WHERE id = ?`,
-  ).run(newTotalXp, newProgress.level, newGold, now, channel.id, now, characterId);
+  if (engineHandlesXp) {
+    db.prepare(
+      `UPDATE characters
+       SET gold = ?, last_ping_at = ?,
+           primary_channel_id = COALESCE(primary_channel_id, ?), updated_at = ?
+       WHERE id = ?`,
+    ).run(newGold, now, channel.id, now, characterId);
+  } else {
+    db.prepare(
+      `UPDATE characters
+       SET xp = ?, level = ?, gold = ?, last_ping_at = ?, total_minutes = total_minutes + 1,
+           primary_channel_id = COALESCE(primary_channel_id, ?), updated_at = ?
+       WHERE id = ?`,
+    ).run(newTotalXp, newProgress.level, newGold, now, channel.id, now, characterId);
+  }
 
   const existingSession = db
     .prepare(
@@ -115,7 +131,7 @@ export async function applyPing(
   const drop = rollDrop(characterId, channel.id, newProgress.level);
 
   return {
-    xp_gained: XP_PER_PING,
+    xp_gained: xpGain,
     gold_gained: goldGain,
     new_xp: newProgress.xp,
     level: newProgress.level,
