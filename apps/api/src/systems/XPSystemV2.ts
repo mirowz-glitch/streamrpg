@@ -113,6 +113,10 @@ async function checkLiveStatusPerChannel(
  * de quantas sessões/canais/plataformas ele tenha simultaneamente —
  * Session representa presença, nunca uma oportunidade adicional de
  * progresso.
+ *
+ * Regra de negócio: um Character pode possuir múltiplas Sessions
+ * simultaneamente, mas progresso é concedido apenas uma vez por tick.
+ * Esta função reduz múltiplas sessões para um único Character elegível.
  */
 function reduceSessionsToCharacters(
   sessions: WorldTickEvent["sessions"],
