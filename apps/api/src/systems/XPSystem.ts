@@ -1,148 +1,80 @@
-
 /**
- * Testes do XPSystem — M-006
+ * XPSystem — M-006
  *
- * Usa o Node.js Test Runner nativo (node:test) — sem dependências externas.
+ * Sistema responsável pela concessão de XP a jogadores ativos.
  *
- * Status dos testes:
- * - Implementados e revisados estaticamente nesta Milestone.
- * - Execução automatizada pendente da configuração do ambiente de testes.
+ * MILESTONE 6 — MODO SHADOW:
+ * Este sistema roda em paralelo com o applyPing() existente.
+ * Ele calcula o XP que seria concedido mas NÃO escreve no banco.
+ * Serve para validar que a Engine processa sessões reais corretamente
+ * antes de assumir o controle oficial da progressão.
  *
- * Para rodar manualmente quando o ambiente permitir:
- * node --import tsx/esm apps/api/src/systems/XPSystem.test.ts
+ * Quando o modo shadow for validado:
+ * - applyPing() deixará de conceder XP
+ * - XPSystem passará a escrever no banco via CharacterRepository
+ * - O log de shadow será removido
  *
- * NOTA: os testes do XPSystem em modo shadow são limitados porque
- * o sistema apenas loga — não retorna nem persiste dados.
- * Os testes validam que o sistema se registra corretamente no EventBus
- * e não lança erros ao processar ticks.
+ * O XPSystem NÃO conhece:
+ * - EventBus (recebe via register())
+ * - GameEngine ou GameClock
+ * - Frontend, Twitch ou Railway
+ * - Outros sistemas (DropSystem, BossSystem, etc.)
+ *
+ * Ele conhece apenas:
+ * - WorldTickEvent (via EventBus)
+ * - O banco de dados (apenas leitura nesta Milestone)
+ * - XP_PER_PING (constante do shared)
  */
 
-import { describe, it, beforeEach } from "node:test";
-import assert from "node:assert/strict";
-import { EventBus } from "../engine/EventBus.js";
-import type { WorldTickEvent, ActiveSession } from "../engine/types.js";
+import { XP_PER_PING } from "@streamrpg/shared";
+import { getDb } from "../config/database.js";
+import type { EventBus } from "../engine/EventBus.js";
+import type { WorldTickEvent } from "../engine/types.js";
 
-// Mock do XPSystem que não acessa o banco — para testes isolados
-class XPSystemTestable {
-  public processed: Array<{ characterId: string; tickNumber: number }> = [];
-
+export class XPSystem {
+  /**
+   * Registra o XPSystem no EventBus.
+   * A partir deste momento, o sistema passa a escutar WorldTickEvent.
+   *
+   * Retorna uma função de cancelamento — útil para testes e teardown.
+   */
   register(bus: EventBus): () => void {
     return bus.subscribe("world.tick", (event) => {
-      for (const session of event.sessions) {
-        this.processed.push({
-          characterId: session.characterId,
-          tickNumber: event.tickNumber,
-        });
-      }
+      void this.onWorldTick(event);
     });
   }
-}
 
-function makeTickEvent(
-  tickNumber: number,
-  sessions: ActiveSession[],
-): WorldTickEvent {
-  return {
-    type: "world.tick",
-    tickNumber,
-    timestamp: Date.now(),
-    sessions,
-  };
-}
+  /**
+   * Processa um tick do mundo.
+   *
+   * MODO SHADOW: apenas calcula e loga. Não escreve no banco.
+   *
+   * Para cada sessão ativa, busca o display_name do personagem
+   * e loga o XP que seria concedido.
+   */
+  private async onWorldTick(event: WorldTickEvent): Promise<void> {
+    if (event.sessions.length === 0) return;
 
-const session: ActiveSession = {
-  characterId: "char-1",
-  channelId: "channel-1",
-  lastSeenAt: Date.now(),
-  provider: "website",
-};
+    const db = getDb();
 
-describe("XPSystem", () => {
-  let bus: EventBus;
+    for (const session of event.sessions) {
+      try {
+        const character = db
+          .prepare("SELECT display_name FROM characters WHERE id = ?")
+          .get(session.characterId) as { display_name: string } | undefined;
 
-  beforeEach(() => {
-    bus = new EventBus();
-  });
+        if (!character) continue;
 
-  it("deve se registrar no EventBus sem erro", () => {
-    const system = new XPSystemTestable();
-    assert.doesNotThrow(() => system.register(bus));
-    assert.equal(bus.listenerCount("world.tick"), 1);
-  });
-
-  it("deve processar cada sessão ativa no tick", () => {
-    const system = new XPSystemTestable();
-    system.register(bus);
-
-    bus.emit(makeTickEvent(1, [session]));
-
-    assert.equal(system.processed.length, 1);
-    assert.equal(system.processed[0].characterId, "char-1");
-    assert.equal(system.processed[0].tickNumber, 1);
-  });
-
-  it("deve processar múltiplas sessões no mesmo tick", () => {
-    const system = new XPSystemTestable();
-    system.register(bus);
-
-    const sessions: ActiveSession[] = [
-      { ...session, characterId: "char-1" },
-      { ...session, characterId: "char-2" },
-      { ...session, characterId: "char-3" },
-    ];
-
-    bus.emit(makeTickEvent(1, sessions));
-
-    assert.equal(system.processed.length, 3);
-  });
-
-  it("deve processar ticks consecutivos corretamente", () => {
-    const system = new XPSystemTestable();
-    system.register(bus);
-
-    bus.emit(makeTickEvent(1, [session]));
-    bus.emit(makeTickEvent(2, [session]));
-    bus.emit(makeTickEvent(3, [session]));
-
-    assert.equal(system.processed.length, 3);
-    assert.equal(system.processed[0].tickNumber, 1);
-    assert.equal(system.processed[2].tickNumber, 3);
-  });
-
-  it("não deve processar nada quando não há sessões ativas", () => {
-    const system = new XPSystemTestable();
-    system.register(bus);
-
-    bus.emit(makeTickEvent(1, []));
-
-    assert.equal(system.processed.length, 0);
-  });
-
-  it("deve parar de processar após unsubscribe", () => {
-    const system = new XPSystemTestable();
-    const unsubscribe = system.register(bus);
-
-    bus.emit(makeTickEvent(1, [session]));
-    unsubscribe();
-    bus.emit(makeTickEvent(2, [session]));
-
-    assert.equal(system.processed.length, 1);
-  });
-
-  it("erro em uma sessão não deve impedir as outras de serem processadas", () => {
-    const processed: string[] = [];
-    bus.subscribe("world.tick", (event) => {
-      for (const s of event.sessions) {
-        if (s.characterId === "char-erro") throw new Error("erro simulado");
-        processed.push(s.characterId);
+        // MODO SHADOW — apenas loga, nunca escreve
+        console.log(
+          `[XPSystem] Character: ${character.display_name} | Would grant: +${XP_PER_PING} XP | Tick: ${event.tickNumber} | Channel: ${session.channelId}`,
+        );
+      } catch (err) {
+        console.error(
+          `[XPSystem] Erro ao processar sessão ${session.characterId}:`,
+          err,
+        );
       }
-    });
-
-    const sessions: ActiveSession[] = [
-      { ...session, characterId: "char-erro" },
-      { ...session, characterId: "char-ok" },
-    ];
-
-    assert.doesNotThrow(() => bus.emit(makeTickEvent(1, sessions)));
-  });
-});
+    }
+  }
+}
