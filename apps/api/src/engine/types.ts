@@ -1,4 +1,3 @@
-
 /**
  * Engine Types — M-003
  *
@@ -12,9 +11,21 @@
  * - Nenhum tipo aqui depende de Twitch, SQLite, Express ou frontend.
  * - Nenhum tipo aqui duplica o que existe em packages/shared/src/types.ts.
  * - packages/shared/src/types.ts contém contratos HTTP/frontend.
- * - Este arquivo contém contratos internos do mundo do jogo.
+ * - Este arquivo contém contratos fundamentais da Engine.
  * - Quando um sistema precisar de um tipo do shared (ex: ItemRarity),
  *   ele importa diretamente do shared — não reexporta daqui.
+ *
+ * LIMITE DE RESPONSABILIDADE:
+ * - Este arquivo deve permanecer restrito aos contratos fundamentais
+ *   da Engine: sessões, eventos, repositórios, contexto e providers.
+ * - Regras de gameplay, configurações de balanceamento e estruturas
+ *   específicas de sistemas individuais NÃO pertencem aqui.
+ * - Se este arquivo começar a crescer com esses elementos, eles devem
+ *   ser movidos para arquivos próprios:
+ *     engine/config.ts      → configurações e regras de jogo
+ *     systems/xp/types.ts   → tipos específicos do XPSystem
+ *     systems/drop/types.ts → tipos específicos do DropSystem
+ *     etc.
  */
 
 // ============================================================
@@ -139,8 +150,8 @@ export type GameEvent =
  * Útil para tipagem de handlers no EventBus.
  *
  * Exemplo:
- *   type Handler = EventHandler<"xp.granted">
- *   // equivale a: (event: XPGrantedEvent) => void
+ *   type Handler = EventOfType<"xp.granted">
+ *   // equivale a: XPGrantedEvent
  */
 export type EventOfType<T extends GameEvent["type"]> = Extract
   GameEvent,
@@ -148,7 +159,7 @@ export type EventOfType<T extends GameEvent["type"]> = Extract
 >;
 
 // ============================================================
-// CONTRATOS DO EVENTSBUS
+// CONTRATOS DO EVENTBUS
 // ============================================================
 
 /**
