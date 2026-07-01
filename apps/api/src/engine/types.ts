@@ -26,6 +26,16 @@
  *     systems/xp/types.ts   → tipos específicos do XPSystem
  *     systems/drop/types.ts → tipos específicos do DropSystem
  *     etc.
+ *
+ * PRINCÍPIO ARQUITETURAL (registrado após auditoria de escopo):
+ * - Eventos de Gameplay (xp.granted, level.up, drop.granted) representam
+ *   mudanças de estado do Character e NUNCA carregam contexto de
+ *   plataforma (channelId, platform). Progressão pertence ao personagem,
+ *   nunca à sessão ou ao canal onde ele estava presente.
+ * - Eventos de Platform (session.started) representam presença e
+ *   carregam characterId + channelId (e, futuramente, platform).
+ * - Eventos de World (boss.activated) representam algo compartilhado
+ *   por um contexto (hoje: canal), sem characterId.
  */
 
 // ============================================================
@@ -75,8 +85,7 @@ export interface WorldTickEvent {
  * de sessões ativas). Não está atrelado ao GameClock — é disparado
  * no momento exato em que a presença é reportada, não no próximo tick.
  *
- * Usado pelo WelcomeRewardSystem e por futuros sistemas que precisem
- * reagir à chegada de um jogador sem esperar o relógio do mundo.
+ * Evento de Platform: representa presença, carrega contexto de canal.
  */
 export interface SessionStartedEvent {
   type: "session.started";
@@ -86,14 +95,19 @@ export interface SessionStartedEvent {
 }
 
 /**
- * Emitido pelo XPSystem após conceder XP a um personagem.
- * Outros sistemas podem reagir a este evento (ex: notificações,
- * conquistas, ranking em tempo real).
+ * Emitido pelo XPSystem (ou outro sistema de gameplay) após conceder
+ * XP a um personagem. Outros sistemas podem reagir a este evento
+ * (ex: notificações, conquistas, ranking em tempo real).
+ *
+ * Evento de Gameplay: representa mudança de estado do Character.
+ * NUNCA carrega channelId ou platform — progressão pertence ao
+ * personagem, nunca à sessão ou ao canal onde ele estava presente.
+ * Se algo precisar saber "em qual canal isso aconteceu", a resposta
+ * vem da camada de Presença (SessionManager), nunca deste evento.
  */
 export interface XPGrantedEvent {
   type: "xp.granted";
   characterId: string;
-  channelId: string;
   amount: number;
   newTotalXp: number;
   newLevel: number;
@@ -105,11 +119,12 @@ export interface XPGrantedEvent {
  * Emitido pelo DropSystem após conceder um item a um personagem.
  * Outros sistemas podem reagir (ex: notificações, log de eventos,
  * histórico de drops).
+ *
+ * Evento de Gameplay: mesma regra do XPGrantedEvent — sem channelId.
  */
 export interface DropGrantedEvent {
   type: "drop.granted";
   characterId: string;
-  channelId: string;
   itemId: number;
   itemName: string;
   itemRarity: string;
@@ -121,11 +136,12 @@ export interface DropGrantedEvent {
  * Emitido quando um personagem sobe de nível.
  * Separado do XPGrantedEvent para permitir que sistemas de
  * notificação e conquistas tratem level up como evento distinto.
+ *
+ * Evento de Gameplay: mesma regra — sem channelId.
  */
 export interface LevelUpEvent {
   type: "level.up";
   characterId: string;
-  channelId: string;
   oldLevel: number;
   newLevel: number;
   timestamp: number;
@@ -134,6 +150,11 @@ export interface LevelUpEvent {
 /**
  * Emitido quando um streamer ativa um Boss no canal.
  * Reservado para implementação futura do BossSystem.
+ *
+ * Evento de World: não representa presença nem progresso de um
+ * personagem específico — representa algo compartilhado por um
+ * contexto (hoje: canal). channelId aqui é a identidade do evento,
+ * não contaminação de plataforma.
  */
 export interface BossActivatedEvent {
   type: "boss.activated";
