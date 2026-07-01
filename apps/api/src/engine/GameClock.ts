@@ -1,16 +1,24 @@
-
 /**
  * GameClock
  *
- * Responsabilidade única: gerar ticks em intervalos configuráveis.
+ * O GameClock é o relógio canônico do mundo do StreamRPG.
  *
- * O GameClock é a fonte canônica de tempo da Engine.
- * Ele não conhece GameEngine, EventBus, SessionManager, Twitch,
- * banco de dados, frontend ou qualquer outra parte do sistema.
+ * Responsabilidade única: gerar ticks em intervalos configuráveis
+ * e notificar quem estiver inscrito.
  *
- * Toda a lógica que depende de tempo dentro do jogo deve derivar
+ * O GameClock NÃO conhece:
+ * - Regras de jogo (XP, drops, boss, economia)
+ * - GameEngine ou EventBus
+ * - SessionManager ou presença de usuários
+ * - Twitch, banco de dados, frontend ou Railway
+ *
+ * Ele apenas responde a uma pergunta: "o tempo avançou?"
+ *
+ * Toda lógica que depende de tempo dentro do jogo deve derivar
  * dos ticks emitidos pelo GameClock — nunca de Date.now() ou
  * setInterval() chamados diretamente em outros módulos.
+ * Isso garante consistência temporal e facilita testes com
+ * tempo simulado no futuro.
  *
  * Decisões de projeto:
  *
@@ -42,8 +50,8 @@
  *    O intervalo padrão é 60.000ms (1 minuto), mas pode ser sobrescrito
  *    na construção. Isso permite testes com intervalos de milissegundos.
  *
- * TODO: quando GameConfig existir, o intervalMs deve vir de EngineConfig,
- * não ser passado diretamente no construtor.
+ * TODO: quando GameConfig/EngineConfig existir, o intervalMs deve vir
+ * de lá, não ser passado diretamente no construtor.
  */
 
 export interface Tick {
