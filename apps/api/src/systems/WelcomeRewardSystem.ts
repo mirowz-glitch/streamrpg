@@ -39,13 +39,24 @@ export class WelcomeRewardSystem {
       const { characterId, channelId, timestamp } = event as SessionStartedEvent;
       try {
         const alreadyRewarded = await repo.hasReceivedWelcomeReward(characterId);
-        if (alreadyRewarded) return;
+        if (alreadyRewarded) return; // saída rápida pro caso comum (personagem já não é novo)
 
         const live = await isChannelLive(channelId);
         if (!live) return;
 
+        // Reivindicação atômica logo antes de conceder — não depois. Se
+        // duas sessões deste personagem chegarem quase juntas (ex: dois
+        // canais abertos ao mesmo tempo na primeira vez), só uma consegue
+        // reivindicar (UPDATE ... WHERE first_join_reward_at IS NULL); a
+        // outra recebe false aqui e nunca chega a conceder XP. Reivindicar
+        // antes do isChannelLive já ter confirmado "ao vivo" queimaria a
+        // Welcome Reward de quem nunca chegou a receber XP de verdade —
+        // por isso a ordem importa: isChannelLive primeiro, reivindicação
+        // por último, o mais perto possível da concessão.
+        const claimed = await repo.markWelcomeRewardGranted(characterId, timestamp);
+        if (!claimed) return;
+
         const result = await repo.applyXP(characterId, WELCOME_XP, timestamp);
-        await repo.markWelcomeRewardGranted(characterId, timestamp);
 
         console.log(
           `[WelcomeRewardSystem] Character: ${characterId} | Welcome Reward: +${WELCOME_XP} XP`,
@@ -58,6 +69,7 @@ export class WelcomeRewardSystem {
           newTotalXp: result.newTotalXp,
           newLevel: result.newLevel,
           leveledUp: result.leveledUp,
+          source: "welcome",
           timestamp,
         };
         bus.emit(xpGranted);

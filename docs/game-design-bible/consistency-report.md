@@ -1,9 +1,10 @@
 # Game Design Bible — Relatório de auditoria de consistência
 
 Auditoria da Bible completa (capítulos 1-14 + backlog de perguntas), feita
-em 2026-07-01, logo após o fechamento dos blocos Nascimento, Participação e
-Combate do capítulo 6. Não altera nenhuma decisão — só audita o que já
-existe.
+em 2026-07-01. Não altera nenhuma decisão — só audita o que já existe.
+Atualizado no mesmo dia após o fechamento dos 3 blocos restantes do
+capítulo 6 (Recompensas, Escala, Ranking/MVP) — capítulo 6 inteiro está
+decidido agora.
 
 ## Inconsistências encontradas e corrigidas nesta auditoria
 
@@ -37,12 +38,14 @@ README e batem.
   aspiração, são o estado atual verificado em código.
 - **Progressão (capítulo 5):** reflete o Marco 1.0 real, testado
   ponta a ponta (harnesses de E2/E3/E4), não uma intenção futura.
-- **Bosses — blocos Nascimento, Participação e Combate:** internamente
-  consistentes entre si (ex.: "dano coletivo" do Combate não contradiz o
-  "dano como bônus" da Participação — a nota explícita no capítulo já
-  resolve essa aparente tensão) e consistentes com a filosofia de economia
-  já registrada (o cooldown do Nascimento cita explicitamente proteção de
-  Economia/Marketplace, capítulos 10/11).
+- **Bosses (capítulo 6) — design fechado, todos os 6 blocos decididos.**
+  Internamente consistente (ex.: "dano coletivo" do Combate não contradiz o
+  "dano como bônus" da Participação; a Escala em tiers não contradiz a
+  recompensa também em tiers, ambas justificadas pela mesma lógica de
+  proteção de economia do Cooldown) e consistente com a filosofia de
+  economia já registrada. Escopo do MVP deliberadamente contido (XP+Itens
+  só, sem Gold/Hero Token/coletiva/ranking) — mesma disciplina aplicada em
+  todos os 6 blocos, não só nos 3 primeiros.
 
 ## O que depende de outro capítulo (não pode ser fechado isoladamente)
 
@@ -65,19 +68,17 @@ README e batem.
 - **Corrigir o bug de RNG isoladamente** (capítulo 10) — o próprio capítulo
   já registra esse risco explicitamente: corrigir sem revisar
   `DROP_CHANCE`/pesos junto arrisca trocar um problema por outro.
-- **Boss conceder gold antes de uma decisão mais ampla sobre a migração de
-  gold** (capítulo 6, bloco Recompensas) — seria o primeiro caso de gold
-  saindo do caminho legado; decidir isso só no contexto de Boss, sem
-  pensar na migração de gold como um todo, é candidato real a retrabalho
-  quando gold for migrado de verdade.
 - **Implementar a fórmula de dano de Boss com valores provisórios de
   Classe/Equipamento** antes de Classes e o stat de itens existirem de
   fato — quase certamente precisa ser refeita quando esses capítulos
-  fecharem.
-- **Escolher um modelo de escala (capítulo 6, bloco Escala) antes da
-  Economia 1.0 fechar `DROP_CHANCE`/pesos** — os dois números interagem
-  (recompensa por participação × escala de recompensa total); calibrar um
-  sem o outro é otimizar pela metade.
+  fecharem. Ainda um risco real (não mitigado pelas decisões do bloco
+  Recompensas/Escala).
+- **Calibrar os valores numéricos dos tiers de Escala** (vida/recompensa
+  por faixa) sem dados reais de playtest — risco baixo, não médio: o
+  próprio modelo foi escolhido (tiers em vez de fórmula contínua)
+  exatamente para que recalibrar uma faixa não exija reescrever o
+  `BossSystem` nem as outras faixas. O risco de retrabalho está isolado
+  aos números, não à arquitetura.
 - **Construir Marketplace antes de Economia 1.0** — já é a razão
   documentada para a ordem de construção inteira (capítulo 11/12); listada
   aqui só para reforçar que é o exemplo mais claro desse risco no projeto.
@@ -98,17 +99,15 @@ README e batem.
 ## O que ainda é hipótese
 
 - Praticamente todos os números concretos do capítulo 6 (Bosses) estão
-  marcados com "ex.:" no próprio texto (3 horas de cooldown, 15 minutos de
-  timeout de invocação, 10 minutos de duração) — são ilustrativos, não
-  valores calibrados. Vale não tratá-los como decisão numérica final em
-  nenhuma implementação futura.
-- Todo o bloco Escala (capítulo 6) é explicitamente hipótese — nenhum
-  modelo de escala foi escolhido, só mapeado.
+  marcados com "ex.:" ou "ilustrativo" no próprio texto (3 horas de
+  cooldown, 15 minutos de timeout de invocação, 10 minutos de duração, os
+  limites de cada tier de Escala) — são exemplos, não valores calibrados.
+  A *estrutura* das decisões (modelo por tiers, dano fixo, cooldown nunca
+  removível) é estável; os *números* dentro dessa estrutura são hipótese
+  até haver dados de playtest.
 - O comportamento do Hero Token (circular no Marketplace antes do resgate,
   ou não) — explicitamente marcado como decisão em aberto no capítulo 10.
 - A filosofia "o mercado tem que estar fluindo" (capítulo 11) é uma aposta
   de design ainda não testada contra exploits reais — a própria Bible já
   registra a ressalva de que isso precisa ser validado pela frente de
   Exploits da Auditoria de Plataforma antes do Marketplace existir.
-- Se Boss deveria ou não conceder Hero Token como recompensa — levantado
-  como pergunta, não como hipótese de design testável ainda.

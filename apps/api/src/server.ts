@@ -20,6 +20,7 @@ import { DropSystem } from "./systems/DropSystem.js";
 import { SQLiteCharacterRepository } from "./infrastructure/SQLiteCharacterRepository.js";
 import { SQLiteItemRepository } from "./infrastructure/SQLiteItemRepository.js";
 import { RandomProviderImpl } from "./infrastructure/RandomProviderImpl.js";
+import { DebugEventSubscriber } from "./debug/DebugEventSubscriber.js";
 
 const routes: Route[] = [
   ...authRoutes,
@@ -45,6 +46,14 @@ const itemRepository = new SQLiteItemRepository();
 const randomProvider = new RandomProviderImpl();
 const dropSystem = new DropSystem(itemRepository, randomProvider);
 dropSystem.register(bus);
+
+// Destacável por configuração — ver debug/DebugEventSubscriber.ts.
+// Removendo esta linha (e a variável de ambiente), nenhum comportamento
+// de jogo muda.
+if (env.debugEventSubscriber) {
+  new DebugEventSubscriber().register(bus);
+  console.log("[server] DebugEventSubscriber ativo (DEBUG_EVENT_SUBSCRIBER=true)");
+}
 
 bus.subscribe("world.tick", (event) => {
   console.log(`[Engine] World Tick #${event.tickNumber} — sessões ativas: ${event.sessions.length}`);

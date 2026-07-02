@@ -116,4 +116,58 @@ CREATE TABLE IF NOT EXISTS drop_log (
   threshold REAL NOT NULL,
   created_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
 );
+
+CREATE TABLE IF NOT EXISTS bosses (
+  id TEXT PRIMARY KEY,
+  channel_id TEXT NOT NULL REFERENCES streamer_channels(id) ON DELETE CASCADE,
+  status TEXT NOT NULL DEFAULT 'awaiting',
+  tier INTEGER NOT NULL DEFAULT 1,
+  max_hp INTEGER NOT NULL,
+  current_hp INTEGER NOT NULL,
+  invocation_deadline INTEGER NOT NULL,
+  activated_at INTEGER,
+  ends_at INTEGER,
+  resolved_at INTEGER,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_bosses_channel_status
+  ON bosses(channel_id, status);
+
+-- Só um Boss "awaiting" ou "active" por canal por vez (Sprint técnica do
+-- BossSystem, capítulo 6/Nascimento — um Boss por canal, canais
+-- independentes entre si).
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bosses_one_active_per_channel
+  ON bosses(channel_id) WHERE status IN ('awaiting', 'active');
+
+-- Sprint B2 (Participação) — responde só "quem participou" e "quanto".
+-- Nenhum dano, nenhum log de golpe: isso é escopo da B3 (Combate), não
+-- criado aqui. PRIMARY KEY (boss_id, character_id) já serve como índice
+-- para "listar participantes de um Boss" (leftmost prefix) — nenhum
+-- índice extra necessário.
+CREATE TABLE IF NOT EXISTS boss_participation (
+  boss_id TEXT NOT NULL REFERENCES bosses(id) ON DELETE CASCADE,
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  ticks_present INTEGER NOT NULL DEFAULT 0,
+  first_seen_at INTEGER NOT NULL,
+  last_seen_at INTEGER NOT NULL,
+  PRIMARY KEY (boss_id, character_id)
+);
+
+-- Sprint B4 (Recompensas) — registra o que cada participante recebeu de
+-- um Boss já resolvido. PRIMARY KEY (boss_id, character_id) serve dois
+-- papéis: índice natural para "o que este personagem recebeu deste Boss"
+-- e guarda de idempotência (mesmo Boss nunca é processado duas vezes
+-- para o mesmo personagem). item_id nulo significa "não ganhou item" —
+-- não é erro, é o resultado esperado pra quem não venceu a loteria de
+-- vagas de item (ou pra outcome = 'escaped', que nunca concede item).
+CREATE TABLE IF NOT EXISTS boss_rewards (
+  boss_id TEXT NOT NULL REFERENCES bosses(id) ON DELETE CASCADE,
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  xp_granted INTEGER NOT NULL,
+  item_id INTEGER REFERENCES items(id) ON DELETE SET NULL,
+  outcome TEXT NOT NULL CHECK (outcome IN ('defeated', 'escaped')),
+  granted_at INTEGER NOT NULL,
+  PRIMARY KEY (boss_id, character_id)
+);
 `;

@@ -22,26 +22,13 @@ nem uma direção.
 
 ## Bosses (capítulo 6)
 
-- Quem sai antes do Boss morrer recebe a recompensa de "vitória completa"
-  (loot principal), ou só quem participou até o momento da morte?
-- O timeout padrão de 90s do `SessionManager` é suficiente para a duração
-  de uma luta de Boss, ou o combate precisa de tolerância própria a
-  reconexão?
-- Existe recompensa coletiva/de canal, além da individual?
-- Quais tipos de recompensa entram no MVP: XP, Gold (seria o primeiro caso
-  de gold saindo do caminho legado), Itens, Cosméticos, Hero Token?
-- Confirmar: XP/gold seguem proporcionais à participação independente do
-  resultado (fuga ou vitória), e só a chance de item depende de vitória?
-- Qual modelo de escala (linear, logarítmica, por faixas) para vida do
-  Boss, dano do Boss, e recompensa total?
-- O dano do Boss contra jogadores escala com espectadores, não escala, ou
-  escala parcialmente?
-- Existe teto na recompensa total, independente do tamanho do canal?
-- Existe ranking de contribuição na luta?
-- Existe um "MVP" (jogador) com recompensa própria, além da distribuição
-  proporcional?
+Design fechado (todos os 6 blocos decididos, MVP consolidado). Resta apenas:
+
 - Qual a fórmula final de dano (`Base × Equipamentos × Classe × Critical`)
-  quando Equipamentos/Classe tiverem valores numéricos definidos?
+  quando Equipamentos/Classe tiverem valores numéricos definidos? Depende
+  dos capítulos 3/4, não pode ser fechado isoladamente aqui.
+- Valores reais dos tiers de escala (vida/recompensa por faixa) — os
+  números atuais são ilustrativos, a calibrar com dados de playtest.
 
 ## Quests (capítulo 7)
 
@@ -69,8 +56,6 @@ ainda.
   intransferível até resgatar?
 - Como funciona exatamente o "token de classe"?
 - Como medir e controlar inflação?
-- Hero Token pode ser recompensa de Boss (ver capítulo 6), ou fica
-  reservado só para referral?
 
 ## Marketplace (capítulo 11)
 

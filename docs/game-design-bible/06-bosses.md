@@ -1,12 +1,21 @@
 # 6. Bosses
 
-**Status:** 🚧 Em discussão
+**Status:** ✅ Estável (design fechado — MVP pronto para implementação)
 
-Design sendo fechado bloco por bloco, antes de qualquer código. Um bloco só
-é considerado decidido quando está registrado aqui como decisão confirmada,
-não como pergunta aberta.
+Design fechado bloco por bloco, antes de qualquer código, todos os 6
+blocos (Nascimento, Participação, Combate, Recompensas, Escala, Ranking/MVP)
+decididos. A implementação real do BossSystem só deve começar depois deste
+capítulo — feito.
 
 ## Nascimento — ✅ decidido
+
+**Escopo: por canal, não global.** Um único Boss ativo por canal por vez.
+Canais diferentes podem ter Bosses ativos simultaneamente, de forma
+totalmente independente — cooldown, vida, participação e recompensa não
+são compartilhados entre canais. A pergunta "existe um Boss Global do
+servidor inteiro?" é diferente desta e não foi decidida — fica registrada
+como ideia para o futuro (afeta diretamente o design de Kingdoms), não
+como algo em avaliação para o MVP atual.
 
 **Gatilho:** o Boss nasce automaticamente (por condição de tempo e/ou
 atividade acumulada do canal), mas não entra em combate sozinho. Ele fica em
@@ -66,6 +75,17 @@ a decisão de não distinguir AFK.
 
 ## Combate — ✅ decidido (MVP)
 
+> **Hipótese registrada para revisão na Sprint B3, não um bloqueador da
+> B1 (2026-07-01):** durante o design técnico, surgiu a proposta de
+> simplificar o MVP removendo os ataques do Boss por completo — luta
+> puramente cooperativa (Boss só tem HP, jogadores causam dano coletivo,
+> Boss nunca ataca de volta, sem morte de personagem, sem ultimate). O
+> bloco Combate abaixo permanece a decisão vigente e não foi reaberto —
+> essa hipótese será avaliada no início da Sprint B3 (Combate), quando
+> houver um Boss real rodando em live e dados de participação reais para
+> decidir, não antes. Sprint B1 (Nascimento) não depende desta escolha de
+> nenhuma forma.
+
 **Dano:** coletivo. O Boss tem uma única barra de vida para todo o canal —
 não uma vida por jogador. Cada personagem contribui automaticamente com seu
 próprio DPS para essa barra compartilhada. A contribuição individual
@@ -118,129 +138,114 @@ máxima se não for derrotado. Nenhuma outra forma de fuga além dessa no MVP.
 Skill Tree, Mana, Cooldown de habilidades, Tank, Healer, Buff complexo,
 Posicionamento. Tudo isso pode esperar a versão 2.
 
-## Recompensas — parcialmente em aberto
+## Recompensas — ✅ decidido (MVP)
 
-Vários itens deste bloco já estão resolvidos por decisões de blocos
-anteriores — registrados aqui como consequência, não como escolha nova.
-Os genuinamente abertos aparecem com opções, sem decisão tomada.
+**Elegibilidade e distribuição — já resolvido pelo bloco Participação.**
+Todo personagem com presença ativa durante a luta é elegível, sem piso
+mínimo; distribuição proporcional à participação medida. Quem entra depois
+ou sai antes só tem sua participação medida reduzida, nunca zerada.
 
-**Quem é elegível — já resolvido pelo bloco Participação.** Todo personagem
-com presença ativa durante a luta é elegível, sem piso mínimo (ver
-Participação). Não é uma pergunta nova.
+**Precisa possuir Character** — consequência do Princípio 1, não uma
+escolha de design: sem Character não há entidade para creditar nada.
 
-**Precisa possuir Character — não é uma escolha de design, é consequência
-do Princípio 1** (capítulo 2): progressão pertence ao Character. Sem
-Character não existe entidade para creditar XP/gold/item. Um espectador sem
-personagem simplesmente não é elegível, pela própria arquitetura, não por
-uma regra específica do BossSystem.
+**Loot principal (item, reservado à vitória):** todo personagem que
+participou em qualquer momento da luta é elegível — qualidade/quantidade
+proporcional à participação medida, sem corte mínimo artificial. Quem saiu
+antes da morte do Boss ainda concorre.
 
-**Quem entra depois recebe — já resolvido pelo bloco Participação.**
-Recebe proporcional ao tempo/dano que teve a partir do momento em que
-entrou (sem piso mínimo, qualquer presença conta). Entrar depois não exclui,
-só reduz a participação medida.
+**Reconnect:** usa o mesmo timeout de 90s do `SessionManager`, sem lógica
+de presença especial para combate — uma única definição de "presença
+ativa" em todo o jogo. Só revisitar se playtests reais mostrarem problema,
+não preventivamente.
 
-**Quem sai antes do Boss morrer recebe — parcialmente resolvido, um ponto
-genuinamente em aberto.** A participação até o momento da saída já é
-contabilizada (mesma lógica acima). **Em aberto:** a recompensa de "vitória
-completa" (loot principal, reservado à vitória — ver Nascimento) é para
-quem participou em qualquer momento da luta, ou só para quem estava
-presente no instante da morte do Boss? Nenhuma decisão tomada ainda.
+**Individual x coletiva — dois tipos de recompensa, com escopos
+diferentes:**
+1. **Individual (principal):** XP, ouro, loot, progressão — sempre
+   pertence ao Character (Princípio 1), sem exceção.
+2. **Coletiva (leve, temporária, nunca permanente/econômica):** a vitória
+   concede um benefício ao canal — ex.: +5% XP por 15 min, +5% chance de
+   drop por 10 min, efeito visual, título temporário ("Canal Vencedor"),
+   NPC comemorando, fogos, clima especial. Nunca buff permanente, nunca
+   recurso compartilhado entre jogadores — serve só para transformar a
+   vitória num momento social do canal, não para virar vantagem econômica.
+   **Conceito confirmado e permanente na visão do jogo, mas a implementação
+   fica fora do MVP** (ver seção MVP) — exige infraestrutura própria de
+   efeitos temporários/eventos de canal que ainda não existe.
 
-**Reconnect — informado por infraestrutura já existente, não totalmente
-resolvido para este caso.** `SessionManager` já expira sessão após 90s sem
-presença reportada; reconectar dentro desse intervalo não gera gap
-perceptível. **Em aberto:** se isso é suficiente para a duração de uma luta
-de Boss (até ~10 min) ou se o combate precisa de uma tolerância própria a
-reconexão, diferente do padrão geral do jogo.
+**Tipos de recompensa no MVP: XP + Itens, e só isso.**
+- **Gold fica fora do MVP.** Boss não deve ser a segunda fonte de gold
+  saindo do caminho legado antes de existir uma decisão mais ampla sobre a
+  migração de gold — introduzir isso via Boss seria antecipar uma migração
+  da Engine sem ter sido decidida em nenhum outro lugar.
+- **Hero Token fica fora.** Pertence à progressão social/Classes, não faz
+  sentido tematicamente como recompensa de combate.
+- **Itens** reutilizam `ItemRepository` no MVP (herdam o bug de RNG
+  compartilhado — só `common` até a Economia 1.0 corrigir isso), mas a
+  arquitetura fica deliberadamente aberta para uma tabela de loot própria
+  de Boss (`boss_loot_table`) no futuro, sem precisar reusar exatamente a
+  mesma fonte do drop geral.
 
-**Recompensa individual x coletiva — em aberto.** Duas direções possíveis:
-- Só individual: cada participante recebe conforme sua própria contribuição,
-  nada compartilhado. Mais simples, mais alinhado ao Princípio 1 (progressão
-  é sempre do Character).
-- Existe também uma recompensa coletiva/de canal (ex.: buff temporário para
-  o canal, cosmético de "sobrevivente da luta X"). Cria um momento social
-  mais forte, mas exige um conceito de "recompensa de canal" que não existe
-  em nenhum outro lugar da Bible hoje — seria a primeira exceção ao padrão
-  "tudo pertence ao Character".
+**Parcial x vitória completa — regra confirmada:**
+- **Participação sempre gera** XP (proporcional) e, quando a economia
+  estiver migrada, Gold (proporcional) — independente do resultado (fuga
+  ou vitória).
+- **Vitória gera, além disso:** chance de item, recompensa coletiva de
+  canal (quando existir), qualquer recompensa temática exclusiva do Boss.
+- Objetivo: participar nunca é tempo perdido (fuga ainda paga XP/Gold);
+  derrotar o Boss continua sendo o objetivo principal (só a vitória dá o
+  loot). Fuga não é equivalente à vitória, mas também não anula o que já
+  foi ganho por participação.
 
-**Tipos de recompensa — cada um com uma implicação diferente, nenhuma
-decisão tomada sobre quais entram no MVP:**
-- **XP:** trivial — reaproveita `xp.granted` já existente.
-- **Gold:** hoje gold só é concedido pelo caminho legado (capítulo 5), nunca
-  pela Engine. Se o Boss conceder gold via evento, seria o **primeiro caso**
-  de gold saindo do legado — antecipa parte de uma migração que ainda não
-  aconteceu em nenhum outro lugar.
-- **Itens:** reaproveita `DropSystem`/`ItemRepository`, mas herda o bug de
-  RNG compartilhado (capítulo 10) — enquanto não corrigido, Boss também só
-  vai dropar `common`, na prática.
-- **Cosméticos:** não existe esse conceito em nenhum lugar do jogo hoje —
-  precisaria ser inventado antes de ser uma recompensa de Boss.
-- **Hero Token:** tematicamente estranho um Boss "dropar" um token que
-  representa "trouxe alguém novo para o jogo" (capítulo 10) — não é óbvio
-  que faça sentido aqui. Vale decidir explicitamente se Hero Token entra
-  como recompensa de Boss ou fica reservado só para referral.
+### Fora do MVP (confirmado)
 
-**Recompensas parciais x vitória completa — parcialmente já decidido no
-bloco Nascimento** (fuga = recompensa parcial; vitória = loot principal
-reservado). Ainda em aberto: se XP/gold seguem proporcionais à participação
-independente do resultado (fuga ou vitória), e só a *chance* de item depende
-de vitória — essa é a leitura mais direta da decisão já tomada, mas não foi
-confirmada explicitamente.
+Gold como recompensa de Boss, Hero Token como recompensa de Boss,
+recompensa coletiva/de canal (conceito confirmado, implementação adiada),
+`boss_loot_table` dedicada (o `ItemRepository` genérico serve por ora).
 
-**Fora do MVP (candidatos, não confirmados):** cosméticos, Hero Token como
-drop de Boss, recompensa coletiva/de canal, camadas de recompensa ligadas a
-ranking/MVP (ver bloco MVP abaixo).
+## Escala — ✅ decidido (MVP)
 
-## Escala — em aberto (sem matemática definitiva)
+**Modelo: por faixas (tiers), não fórmula contínua.** Escolhido
+deliberadamente sobre linear/logarítmica: mais fácil de balancear e ajustar
+durante playtests, permite mudar uma faixa sem recalibrar as outras, e dá
+números previsíveis para quem está testando. Objetivo do MVP é aprender com
+dados reais, não encontrar a fórmula matemática perfeita antes dos
+primeiros testes. Se surgir evidência de que uma fórmula contínua funciona
+melhor, a migração é possível sem alterar o resto do BossSystem — os tiers
+são um detalhe de calibração, não uma decisão estrutural.
 
-Objetivo deste bloco: mapear o que precisa escalar e as opções de *como*,
-não fixar números. Os cinco tamanhos de referência (5, 20, 100, 500, 5.000
-espectadores) servem para testar se uma abordagem faz sentido nos dois
-extremos, não para definir a fórmula final.
+Faixas ilustrativas (números de exemplo, não calibrados):
+- Tier 1: 1–10 participantes
+- Tier 2: 11–25
+- Tier 3: 26–50
+- Tier 4: 51–100
+- Tier 5: 101+
 
-**Vida do Boss — quase forçado a crescer, dado o Combate já decidido.** Como
-o dano é coletivo (uma barra de vida somando o DPS de todo mundo), se a vida
-não escalar com o número de participantes, um canal de 5.000 pessoas mataria
-o Boss quase instantaneamente, esvaziando a luta decidida no bloco
-Nascimento (duração máxima, urgência). Não é exatamente uma escolha aberta
-— é consequência de "dano coletivo" — mas a *forma* da curva (linear,
-logarítmica, por faixas) continua em aberto.
+**Vida do Boss:** escala por tier (consequência já estabelecida do dano
+coletivo — sem isso, canais grandes matariam o Boss quase instantaneamente).
 
-**Dano do Boss contra os jogadores — genuinamente em aberto.** Três direções
-possíveis:
-- **Não escala:** favorece canais pequenos (luta "mais justa" per capita),
-  mas o Boss deixa de ser ameaça percebida em canais grandes.
-- **Escala com espectadores:** mantém tensão em qualquer escala, mas risco
-  de matar jogadores rápido demais em canais grandes se mal calibrado.
-- **Escala parcial** (menos que a vida): meio-termo, sem compromisso ainda
-  sobre a proporção.
+**Dano do Boss contra os jogadores: fixo, não escala no MVP.** Decisão
+deliberada de isolar uma variável por vez — se vida e dano escalassem
+simultaneamente, ficaria difícil saber se um Boss está difícil por ter HP
+demais ou por matar rápido demais. O desafio em canais grandes vem da
+duração do combate e da coordenação coletiva, não de dano artificialmente
+maior. Se playtests mostrarem que canais grandes derrotam o Boss com
+facilidade excessiva, reavaliar escala parcial de dano nesse momento — não
+agora, preventivamente.
 
-**Recompensa total — conecta diretamente com a proteção de economia já
-decidida no Cooldown (bloco Nascimento).** Se a recompensa total crescesse
-sem limite com o número de espectadores, canais grandes voltariam a gerar
-valor desproporcional mesmo com cooldown fixo — reabrindo o mesmo problema
-que o cooldown já existe para conter. Vale considerar um teto na recompensa
-total, independente do tamanho do canal, mas isso não foi decidido.
+**Recompensa total: também por tier, não ilimitada nem com teto único.**
+Cada tier tem um pool de recompensa conhecido e balanceado (pool maior nos
+tiers maiores, mas com limite definido por faixa — não uma fórmula onde
+cada espectador adicional aumenta indefinidamente a emissão de itens e
+recursos). Mesma lógica de proteção de economia do Cooldown (bloco
+Nascimento): canais maiores são recompensados por mobilizar mais gente, mas
+de forma previsível e calibrável, não com crescimento ilimitado.
 
-**Modelos de escala, vantagens e desvantagens (nenhum escolhido ainda):**
+## MVP — consolidação final
 
-| Modelo | Vantagem | Desvantagem |
-|---|---|---|
-| Linear | Simples de entender e prever | Nos extremos (5.000 espectadores) os números ficam absurdos se a base for calibrada para grupos pequenos |
-| Logarítmica | Suaviza o crescimento em escalas grandes, evita absurdos nos extremos | Mais difícil de calibrar e de "sentir" intuitivamente durante o design |
-| Por faixas (tiers) | Fácil de balancear e testar manualmente por faixa | Cria degraus artificiais (ex.: 50 vs. 51 espectadores comportam-se diferente); exige manutenção manual conforme o jogo cresce |
+Todos os 6 blocos estão decididos. Esta lista reúne tudo — nada aqui é
+especulação, cada item tem sua justificativa completa no bloco de origem.
 
-Nenhum modelo foi escolhido. Esta tabela existe para a decisão futura
-começar de uma base já mapeada, não do zero.
-
-## MVP — consolidação parcial
-
-Este bloco reúne o que os blocos anteriores já decidiram. Itens de
-Recompensas e Escala que ainda estão em aberto **não entram nesta lista**
-até serem fechados — listá-los aqui seria inventar uma decisão que não foi
-tomada.
-
-**Entra no MVP (já decidido):**
+**Entra no MVP:**
 - Nascimento automático com estado "Aguardando invocação" + botão do
   streamer + timeout automático.
 - Modifier de batalha escolhido pelo streamer (não buff direto, não
@@ -251,7 +256,15 @@ tomada.
 - Elegibilidade por presença ativa, sem piso mínimo de participação.
 - Métrica de participação: presença + dano como bônus.
 - Sem distinção de AFK.
-- Distribuição de recompensa proporcional à participação.
+- Distribuição de recompensa proporcional à participação (XP e Itens).
+- Loot principal para todo mundo que participou em algum momento, mesmo
+  quem saiu antes da morte — proporcional, sem corte mínimo.
+- Reconnect usa o timeout padrão de 90s do `SessionManager`, sem regra
+  especial de combate.
+- Recompensa individual (XP, Loot) sempre do Character — recompensa
+  coletiva/de canal é conceito confirmado, mas fora da implementação MVP.
+- XP/Gold-quando-migrado proporcionais à participação independente do
+  resultado (fuga paga); só a chance de item depende de vitória.
 - Dano coletivo (barra de vida única do canal), com contribuição individual
   rastreada por personagem.
 - Sem aggro, sem Tank/Healer.
@@ -260,33 +273,51 @@ tomada.
 - Morte de personagem temporária, sem penalidade, revive ao fim da luta.
 - Dano determinístico (`Base × Equipamentos × Classe`) com pequena chance
   de crítico — sem RNG pesado.
+- Escala por tiers (vida e recompensa total); dano do Boss fixo, não
+  escala.
+- Participação individual rastreada internamente para ranking futuro, sem
+  UI de ranking/MVP nesta versão.
 
-**Fica para versão futura (já sinalizado nos blocos anteriores):**
+**Fica para versão futura:**
 - Skill Tree, Mana, cooldown de habilidades, Tank, Healer, buff complexo,
   posicionamento.
 - Esquiva, bloqueio, sangramento, veneno e outros efeitos além de crítico.
 - Novos Modifiers crescendo em temporadas futuras (capítulo 9).
-- Cosméticos, Hero Token como drop de Boss, recompensa coletiva/de canal,
-  camadas de recompensa por ranking — *candidatos*, pendentes de decisão no
-  bloco Recompensas.
-- Fórmula final de escala de vida/dano/recompensa — pendente do bloco
-  Escala.
+- Gold e Hero Token como recompensa de Boss.
+- Recompensa coletiva/de canal (buffs temporários, títulos, efeitos) —
+  conceito confirmado, implementação adiada, depende de infraestrutura de
+  eventos de canal que não existe.
+- `boss_loot_table` dedicada (o `ItemRepository` genérico serve por ora).
+- Ranking visível e destaque de MVP (jogador) — depende do Frontend Event
+  Bridge.
+- Escala parcial de dano do Boss — só se playtests mostrarem necessidade.
+- Migração de fórmula de escala de tiers para curva contínua — só se
+  playtests mostrarem necessidade.
 
-**Nunca deve existir:** nada foi vetado permanentemente até agora. Registrar
-aqui só quando houver uma decisão explícita nesse sentido — não é uma lista
-para preencher por especulação.
+**Nunca deve existir:** nada foi vetado permanentemente. Registrar aqui só
+quando houver uma decisão explícita nesse sentido — não é uma lista para
+preencher por especulação.
 
-## Ranking e MVP (jogador) — em aberto
+## Ranking e MVP (jogador) — ✅ decidido (MVP)
 
-- Existe ranking de contribuição na luta?
-- Existe um "MVP" (maior contribuinte) com reconhecimento/recompensa
-  própria, ou a distribuição proporcional (já decidida) já é suficiente sem
-  precisar de um destaque adicional?
+**Ranking visível: não no MVP.** O `BossSystem` precisa calcular e
+registrar internamente a participação de cada personagem de qualquer forma
+(é o que alimenta a distribuição proporcional de XP/Gold/Loot já decidida),
+mas não existe interface mostrando esse ranking ao jogador nesta primeira
+versão. Motivo explícito: expor ranking em tempo real exige o Frontend
+Event Bridge, UI própria da luta e persistência de ranking durante o
+combate — nenhuma dessas peças é necessária para validar se o Boss
+funciona. Quando o Frontend Event Bridge existir, o ranking pode ser
+exposto sem alterar a lógica do `BossSystem` (o dado já vai estar lá).
 
-Nenhuma decisão tomada. Interage diretamente com "recompensa individual x
-coletiva" (bloco Recompensas) e com o modelo de distribuição já decidido —
-um MVP com recompensa própria seria uma camada adicional sobre a
-distribuição proporcional, não uma substituição dela.
+**MVP (jogador destaque): não no MVP.** A distribuição proporcional já
+recompensa quem mais contribuiu automaticamente, sem precisar de uma
+camada extra de reconhecimento (critério de desempate, título exclusivo,
+UI de destaque). Motivo de design, não só técnico: o objetivo do Boss no
+MVP é incentivar cooperação, não competição individual dentro de um evento
+cooperativo. Títulos/conquistas de MVP podem ser avaliados depois, como
+camada social, quando a interface do Boss estiver madura — não como parte
+da mecânica principal agora.
 
 ## Dependências
 

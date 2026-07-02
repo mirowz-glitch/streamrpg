@@ -1,7 +1,15 @@
 import { env } from "../config/env.js";
+import { recordLiveCheck } from "../debug/PlaytestMetrics.js";
 
 let appAccessToken: string | null = null;
 let tokenExpiresAt: number = 0;
+
+// Log de playtest: só emite linha quando o motivo não é óbvio (offline
+// real não precisa de explicação extra; erro/timeout sim). recordLiveCheck
+// sempre roda, para o Tick Summary conseguir contar online/offline.
+function logLiveCheckFalse(channelLogin: string, reason: string): void {
+  console.log(`[isChannelLive] channel=${channelLogin} live=false reason=${reason}`);
+}
 
 async function getAppAccessToken(): Promise<string> {
   const now = Date.now();
@@ -49,11 +57,20 @@ export async function isChannelLive(channelLogin: string): Promise<boolean> {
       },
     );
 
-    if (!res.ok) return false;
+    if (!res.ok) {
+      recordLiveCheck(false);
+      logLiveCheckFalse(channelLogin, `http_error_${res.status}`);
+      return false;
+    }
 
     const data = (await res.json()) as { data: Array<{ type: string }> };
-    return data.data.length > 0 && data.data[0].type === "live";
-  } catch {
+    const live = data.data.length > 0 && data.data[0].type === "live";
+    recordLiveCheck(live);
+    if (!live) logLiveCheckFalse(channelLogin, "offline");
+    return live;
+  } catch (err) {
+    recordLiveCheck(false);
+    logLiveCheckFalse(channelLogin, err instanceof Error ? `exception_${err.name}` : "exception");
     return false;
   }
 }

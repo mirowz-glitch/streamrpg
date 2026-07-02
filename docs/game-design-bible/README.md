@@ -20,7 +20,7 @@ revisto explicitamente ali, nunca contornado silenciosamente no código.
 | 3 | [Personagens](03-characters.md) | 🚧 Em discussão |
 | 4 | [Classes](04-classes.md) | 📌 Placeholder |
 | 5 | [Progressão](05-progression.md) | ✅ Estável |
-| 6 | [Bosses](06-bosses.md) | 🚧 Em discussão |
+| 6 | [Bosses](06-bosses.md) | ✅ Estável (MVP fechado) |
 | 7 | [Quests](07-quests.md) | 📌 Placeholder |
 | 8 | [Kingdoms](08-kingdoms.md) | 📌 Placeholder |
 | 9 | [Seasons](09-seasons.md) | 📌 Placeholder |

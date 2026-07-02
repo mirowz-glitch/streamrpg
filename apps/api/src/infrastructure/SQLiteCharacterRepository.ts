@@ -139,18 +139,24 @@ export class SQLiteCharacterRepository implements CharacterRepository {
   }
 
   /**
-   * Marca que a Welcome Reward foi concedida, gravando o timestamp.
+   * Reivindica a Welcome Reward de forma atômica: só grava se
+   * first_join_reward_at ainda estiver NULL. O WHERE aqui é a guarda de
+   * verdade contra concessão dupla — hasReceivedWelcomeReward() sozinho
+   * não fecha a janela entre duas sessões concorrentes do mesmo
+   * personagem novo (duas leituras podem ver NULL antes de qualquer
+   * escrita). Retorna true só para quem realmente reivindicou agora.
    * Responsabilidade exclusiva do WelcomeRewardSystem — nenhum outro
    * sistema deve escrever nesta coluna.
    */
   async markWelcomeRewardGranted(
     characterId: string,
     timestamp: number,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const db = getDb();
     const now = Math.floor(timestamp / 1000);
-    db.prepare(
-      "UPDATE characters SET first_join_reward_at = ? WHERE id = ?",
+    const result = db.prepare(
+      "UPDATE characters SET first_join_reward_at = ? WHERE id = ? AND first_join_reward_at IS NULL",
     ).run(now, characterId);
+    return result.changes > 0;
   }
 }

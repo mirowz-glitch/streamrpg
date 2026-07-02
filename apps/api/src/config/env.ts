@@ -29,12 +29,8 @@ export const env = {
     process.env.TWITCH_REDIRECT_URI ?? "http://localhost:4000/auth/twitch/callback",
   sessionSecret: process.env.SESSION_SECRET ?? process.env.JWT_SECRET ?? "dev-secret-change-me-min-32-chars",
   dbPath: process.env.DB_PATH ?? "./data/streamrpg.db",
-  /**
-   * Feature flag da Milestone 8.
-   * false (padrão): applyPing() continua sendo a única fonte de XP/level/minutos.
-   * true: XPSystem passa a escrever XP real via CharacterRepository,
-   * e applyPing() deixa de escrever xp/level/total_minutes.
-   * Ainda não ativada em produção — infraestrutura pronta, não ligada.
-   */
-  useEngineXp: process.env.USE_ENGINE_XP === "true",
+  // Liga o DebugEventSubscriber (playtest) — observador destacável, só
+  // lê eventos já existentes no EventBus, nunca decide nada. Ver
+  // debug/DebugEventSubscriber.ts. Desligado por padrão.
+  debugEventSubscriber: process.env.DEBUG_EVENT_SUBSCRIBER === "true",
 } as const;

@@ -25,6 +25,7 @@ const xpEvent: XPGrantedEvent = {
   newTotalXp: 110,
   newLevel: 2,
   leveledUp: false,
+  source: "tick",
   timestamp: Date.now(),
 };
 

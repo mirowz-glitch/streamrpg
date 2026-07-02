@@ -8,11 +8,27 @@ import type { PingResponse } from "@streamrpg/shared";
 import { getDb, nowUnix, todayDate } from "../config/database.js";
 import { ensureChannel } from "./channel.service.js";
 import { isChannelLive } from "./twitch.service.js";
+import { recordGoldGranted } from "../debug/PlaytestMetrics.js";
+
+// Log estruturado de playtest — uma linha por chamada, nunca múltiplas.
+// live=null significa "nem chegou a checar" (bloqueado pelo cooldown antes).
+function logPing(
+  channel: string,
+  characterId: string,
+  live: boolean | null,
+  goldGranted: number,
+  startedAt: number,
+): void {
+  console.log(
+    `[applyPing] channel=${channel} character=${characterId} live=${live ?? "n/a"} gold=${goldGranted} duration_ms=${Date.now() - startedAt}`,
+  );
+}
 
 export async function applyPing(
   characterId: string,
   channelLogin: string,
 ): Promise<PingResponse> {
+  const startedAt = Date.now();
   const db = getDb();
   const character = db
     .prepare("SELECT xp, level, gold, last_ping_at FROM characters WHERE id = ?")
@@ -32,6 +48,7 @@ export async function applyPing(
     const elapsedMs = (now - character.last_ping_at) * 1000;
     if (elapsedMs < PING_COOLDOWN_MS) {
       const progress = getProgress(character.xp);
+      logPing(channelLogin, characterId, null, 0, startedAt);
       return {
         xp_gained: 0,
         gold_gained: 0,
@@ -49,6 +66,7 @@ export async function applyPing(
   const live = await isChannelLive(channelLogin);
   if (!live) {
     const progress = getProgress(character.xp);
+    logPing(channelLogin, characterId, false, 0, startedAt);
     return {
       xp_gained: 0,
       gold_gained: 0,
@@ -71,15 +89,20 @@ export async function applyPing(
   // Gold ainda não migrou para a Engine, então continua sendo concedido
   // aqui diretamente.
   const goldGain = GOLD_PER_PING;
-  const newGold = character.gold + goldGain;
   const sessionDate = todayDate();
 
+  // Incremento atômico (gold = gold + ?) em vez de calcular newGold em JS a
+  // partir da leitura no topo da função — fecha a janela de corrida entre
+  // o SELECT (linha 33) e este UPDATE, que passava pelo único await da
+  // função (isChannelLive). Duas chamadas concorrentes agora somam
+  // corretamente, cada UPDATE lendo o valor da linha no instante em que
+  // executa, não um valor calculado antes do await.
   db.prepare(
     `UPDATE characters
-     SET gold = ?, last_ping_at = ?,
+     SET gold = gold + ?, last_ping_at = ?,
          primary_channel_id = COALESCE(primary_channel_id, ?), updated_at = ?
      WHERE id = ?`,
-  ).run(newGold, now, channel.id, now, characterId);
+  ).run(goldGain, now, channel.id, now, characterId);
 
   const existingSession = db
     .prepare(
@@ -103,17 +126,26 @@ export async function applyPing(
     ).run(characterId, channel.id, sessionDate, now, now, XP_PER_PING, goldGain);
   }
 
+  // total_xp lido do banco no instante da escrita (subquery), não da
+  // variável `character.xp` capturada no topo da função — essa era a
+  // causa do ranking ficar desatualizado: XP real é concedido de forma
+  // assíncrona pela Engine via world.tick, então o valor capturado aqui
+  // no início do ping já podia estar velho antes deste INSERT/UPDATE
+  // rodar (ver Integration Readiness Review, achado 3.9).
   db.prepare(
     `INSERT INTO channel_rankings (channel_id, character_id, total_xp, sessions_count, last_ping_at, updated_at)
-     VALUES (?, ?, ?, 1, ?, ?)
+     VALUES (?, ?, (SELECT xp FROM characters WHERE id = ?), 1, ?, ?)
      ON CONFLICT(channel_id, character_id) DO UPDATE SET
-       total_xp = excluded.total_xp,
+       total_xp = (SELECT xp FROM characters WHERE id = channel_rankings.character_id),
        sessions_count = channel_rankings.sessions_count + 1,
        last_ping_at = excluded.last_ping_at,
        updated_at = excluded.updated_at`,
-  ).run(channel.id, characterId, character.xp, now, now);
+  ).run(channel.id, characterId, characterId, now, now);
 
   refreshChannelPositions(channel.id);
+
+  recordGoldGranted(goldGain);
+  logPing(channelLogin, characterId, true, goldGain, startedAt);
 
   // xp_gained/leveled_up/drop ficam sempre "vazios": a Engine concede
   // isso de forma assíncrona via tick, desacoplada desta resposta HTTP
@@ -160,7 +192,11 @@ export function getOverlayViewers(channelLogin: string) {
     return [];
   }
 
-  const cutoff = nowUnix() - 300;
+  // 90s, não 300 — mesma janela que SessionManager usa pra decidir quem
+  // ainda ganha XP (ver engine/SessionManager.ts, SESSION_TIMEOUT_MS).
+  // Antes divergiam: alguém sem pingar entre 90s-300s aparecia "presente"
+  // no overlay público sem mais ganhar XP da Engine há minutos.
+  const cutoff = nowUnix() - 90;
   const rows = db
     .prepare(
       `SELECT c.id, c.display_name, c.xp, p.avatar_url

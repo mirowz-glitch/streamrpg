@@ -41,6 +41,7 @@ export class XPSystem {
             newTotalXp: result.newTotalXp,
             newLevel: result.newLevel,
             leveledUp: result.leveledUp,
+            source: "tick",
             timestamp: event.timestamp,
           };
           bus.emit(xpGranted);

@@ -1,5 +1,6 @@
 /**
- * DropSystem — Sprint D4 (escrita real) / E4 (fonte exclusiva)
+ * DropSystem — Sprint D4 (escrita real) / E4 (fonte exclusiva) / fix do
+ * xp.granted.source (pré-B4)
  *
  * Reage a xp.granted e concede o item de verdade via ItemRepository,
  * emitindo drop.granted.
@@ -13,6 +14,14 @@
  * não é escrito por este caminho e, com o legado removido, não é
  * mais escrito por nenhum caminho — órfão até uma decisão futura
  * sobre reativá-lo ou removê-lo.
+ *
+ * Só reage a xp.granted quando source === "tick". Sem essa checagem,
+ * qualquer concessão de XP (inclusive Welcome Reward e, futuramente,
+ * recompensa de participação de Boss) acionava um segundo drop do pool
+ * comum por cima da recompensa própria daquele caminho — bug real, já
+ * em produção via WelcomeRewardSystem, encontrado durante o design
+ * técnico do Boss (capítulo 6) e corrigido aqui, isoladamente, antes da
+ * Sprint B4 depender desse contrato.
  *
  * Dependências: apenas ItemRepository e RandomProvider, injetados no
  * construtor. Nenhum getDb() direto, nenhuma consulta a banco fora
@@ -38,7 +47,14 @@ export class DropSystem {
     const randomProvider = this.randomProvider;
 
     return bus.subscribe("xp.granted", async (event) => {
-      const { characterId, newLevel, timestamp } = event as XPGrantedEvent;
+      const { characterId, newLevel, timestamp, source } = event as XPGrantedEvent;
+
+      if (source !== "tick") {
+        // Welcome Reward e recompensa de Boss têm sua própria lógica de
+        // item (Boss) ou não concedem item nenhum (Welcome) — nenhuma
+        // delas deve acionar o drop do pool comum por cima.
+        return;
+      }
 
       try {
         const rng = randomProvider.next();
