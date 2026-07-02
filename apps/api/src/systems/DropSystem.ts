@@ -1,28 +1,27 @@
 /**
- * DropSystem — Sprint D3 (Shadow Mode)
+ * DropSystem — Sprint D4 (escrita real) / E4 (fonte exclusiva)
  *
- * Reage a xp.granted e reproduz, apenas em log, a mesma decisão que
- * rollDrop() (drop.service.ts) já toma hoje de forma síncrona dentro
- * de applyPing() — sem escrever nada.
+ * Reage a xp.granted e concede o item de verdade via ItemRepository,
+ * emitindo drop.granted.
  *
- * Objetivo desta Sprint: confirmar que o DropSystem toma exatamente
- * as mesmas decisões do sistema atual antes de qualquer escrita real
- * existir. Nenhum grantToCharacter(), nenhum drop_log, nenhum evento
- * drop.granted emitido — shadow mode é inerentemente seguro, sem
- * necessidade de feature flag, mesmo padrão usado no XPSystem (M-006).
+ * Desde a Sprint E4, esta é a única fonte de concessão de drops — o
+ * caminho legado (rollDrop() dentro de applyPing()) foi removido.
+ * DROP_CHANCE, pickRarity() e a reutilização do mesmo rng entre o
+ * gate de chance e a seleção de raridade (bug já documentado)
+ * permanecem exatamente como estavam — correção de raridade é uma
+ * decisão separada, pendente para a Sprint de economia. drop_log
+ * não é escrito por este caminho e, com o legado removido, não é
+ * mais escrito por nenhum caminho — órfão até uma decisão futura
+ * sobre reativá-lo ou removê-lo.
  *
  * Dependências: apenas ItemRepository e RandomProvider, injetados no
  * construtor. Nenhum getDb() direto, nenhuma consulta a banco fora
  * do que o ItemRepository já expõe.
- *
- * Preserva o comportamento atual do sistema de drops, incluindo a
- * reutilização do mesmo rng entre o gate de chance e a seleção de
- * raridade (pickRarity(rng)) — nenhuma correção de raridade nesta
- * Sprint, isso permanece uma decisão separada e pendente.
  */
 import { DROP_CHANCE, pickRarity } from "@streamrpg/shared";
 import type { EventBus } from "../engine/EventBus.js";
 import type {
+  DropGrantedEvent,
   ItemRepository,
   RandomProvider,
   XPGrantedEvent,
@@ -39,20 +38,18 @@ export class DropSystem {
     const randomProvider = this.randomProvider;
 
     return bus.subscribe("xp.granted", async (event) => {
-      const { characterId, newLevel } = event as XPGrantedEvent;
+      const { characterId, newLevel, timestamp } = event as XPGrantedEvent;
 
       try {
         const rng = randomProvider.next();
 
         if (rng > DROP_CHANCE) {
-          // Mesmo comportamento silencioso do rollDrop() atual:
-          // rolagem não passou no gate de chance, nada a fazer.
+          // Rolagem não passou no gate de chance, nada a fazer.
           return;
         }
 
-        // Reaproveita o mesmo rng para a raridade, replicando
-        // exatamente o comportamento atual (incluindo o efeito
-        // colateral já conhecido dessa reutilização).
+        // Reaproveita o mesmo rng para a raridade — efeito colateral
+        // já documentado (ver header do arquivo), não corrigido aqui.
         const rarity = pickRarity(rng);
 
         const eligibleItem = await itemRepo.findEligible(rarity, newLevel);
@@ -62,7 +59,20 @@ export class DropSystem {
           return;
         }
 
-        console.log(`[DropSystem] Character: ${characterId} | Would grant: ${eligibleItem.name} | Rarity: ${rarity} | Slot: ${eligibleItem.slot}`);
+        await itemRepo.grantToCharacter(characterId, eligibleItem.id);
+
+        console.log(`[DropSystem] Character: ${characterId} | Granted: ${eligibleItem.name} | Rarity: ${rarity} | Slot: ${eligibleItem.slot}`);
+
+        const dropGranted: DropGrantedEvent = {
+          type: "drop.granted",
+          characterId,
+          itemId: eligibleItem.id,
+          itemName: eligibleItem.name,
+          itemRarity: eligibleItem.rarity,
+          itemSlot: eligibleItem.slot,
+          timestamp,
+        };
+        bus.emit(dropGranted);
       } catch (err) {
         console.error(`[DropSystem] Erro personagem ${characterId}:`, err);
       }

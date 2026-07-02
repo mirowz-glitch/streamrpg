@@ -1,7 +1,5 @@
-import type { DropResult, InventoryItem, ItemSlot } from "@streamrpg/shared";
-import { DROP_CHANCE, getProgress, pickRarity } from "@streamrpg/shared";
+import type { InventoryItem, ItemSlot } from "@streamrpg/shared";
 import { getDb, nowUnix } from "../config/database.js";
-import { getItemById } from "./items.service.js";
 
 function mapInventoryRow(row: Record<string, unknown>): InventoryItem {
   return {
@@ -17,55 +15,6 @@ function mapInventoryRow(row: Record<string, unknown>): InventoryItem {
     equipped_slot: (row.equipped_slot as ItemSlot | null) ?? null,
     obtained_at: new Date((row.obtained_at as number) * 1000).toISOString(),
   };
-}
-
-export function rollDrop(
-  characterId: string,
-  channelId: string,
-  characterLevel: number,
-  rng = Math.random(),
-): DropResult {
-  if (rng > DROP_CHANCE) {
-    return { dropped: false };
-  }
-
-  const db = getDb();
-  const rarity = pickRarity(rng);
-  const item = db
-    .prepare(
-      `SELECT id FROM items
-       WHERE rarity = ? AND min_level <= ? AND is_active = 1
-       ORDER BY RANDOM() LIMIT 1`,
-    )
-    .get(rarity, characterLevel) as { id: number } | undefined;
-
-  if (!item) {
-    return { dropped: false };
-  }
-
-  const result = db
-    .prepare(
-      `INSERT INTO character_items (character_id, item_id, obtained_channel_id)
-       VALUES (?, ?, ?)`,
-    )
-    .run(characterId, item.id, channelId);
-
-  db.prepare(
-    `INSERT INTO drop_log (character_id, channel_id, item_id, rarity, rolled_value, threshold)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-  ).run(characterId, channelId, item.id, rarity, rng, DROP_CHANCE);
-
-  const row = db
-    .prepare(
-      `SELECT ci.id, ci.item_id, ci.obtained_at, i.slug, i.name, i.description, i.rarity, i.slot, i.min_level,
-              0 AS is_equipped, NULL AS equipped_slot
-       FROM character_items ci
-       JOIN items i ON i.id = ci.item_id
-       WHERE ci.id = ?`,
-    )
-    .get(result.lastInsertRowid) as Record<string, unknown>;
-
-  return { dropped: true, item: mapInventoryRow(row) };
 }
 
 export function listInventory(characterId: string): InventoryItem[] {

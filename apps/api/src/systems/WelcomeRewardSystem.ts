@@ -5,10 +5,9 @@
  * primeira vez que ele é visto pelo SessionManager, SEM depender
  * do GameClock — reage a session.started, não a world.tick.
  *
- * IMPORTANTE — respeita USE_ENGINE_XP:
- * Enquanto USE_ENGINE_XP=false, o applyPing() já concede o primeiro XP
- * instantaneamente por conta própria — este sistema fica inativo para
- * não duplicar a concessão.
+ * Desde a Sprint E4, esta é a única fonte de Welcome Reward — o
+ * caminho legado (applyPing() concedendo o primeiro XP diretamente)
+ * foi removido, não existe mais risco de concessão duplicada.
  *
  * Os eventos de gameplay emitidos (xp.granted, level.up) não carregam
  * channelId — progressão pertence ao Character, nunca à sessão ou
@@ -26,7 +25,6 @@ import type {
   LevelUpEvent,
 } from "../engine/types.js";
 import { isChannelLive } from "../services/twitch.service.js";
-import { env } from "../config/env.js";
 
 // Mantém paridade com o comportamento atual do applyPing():
 // primeiro ping de um personagem novo concede XP_PER_PING (10) imediatamente.
@@ -38,8 +36,6 @@ export class WelcomeRewardSystem {
   register(bus: EventBus): () => void {
     const repo = this.repo;
     return bus.subscribe("session.started", async (event) => {
-      if (!env.useEngineXp) return;
-
       const { characterId, channelId, timestamp } = event as SessionStartedEvent;
       try {
         const alreadyRewarded = await repo.hasReceivedWelcomeReward(characterId);

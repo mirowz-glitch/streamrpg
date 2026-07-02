@@ -36,8 +36,13 @@
  *   carregam characterId + channelId (e, futuramente, platform).
  * - Eventos de World (boss.activated) representam algo compartilhado
  *   por um contexto (hoje: canal), sem characterId.
- * - DropGrantedEvent ainda não foi revisado sob este princípio —
- *   será tratado junto da implementação do DropSystem, não isoladamente.
+ * - DropGrantedEvent segue o mesmo princípio dos demais eventos de
+ *   Gameplay: channelId é opcional e, hoje, sempre ausente — quem
+ *   concede o drop (DropSystem) não tem contexto de canal disponível
+ *   a partir de xp.granted. Quando existir um modelo de Presence/
+ *   Platform, a camada responsável pela presença poderá preencher
+ *   obtained_channel_id antes da persistência, sem que este evento
+ *   precise carregar esse dado.
  */
 
 // ============================================================
@@ -82,7 +87,7 @@ export interface XPGrantedEvent {
 export interface DropGrantedEvent {
   type: "drop.granted";
   characterId: string;
-  channelId: string;
+  channelId?: string;
   itemId: number;
   itemName: string;
   itemRarity: string;
@@ -189,10 +194,15 @@ export interface ItemRepository {
     rarity: string,
     characterLevel: number,
   ): Promise<ItemSnapshot | null>;
+  // Concede o item ao personagem. obtained_channel_id é um detalhe de
+  // persistência, não parte do contrato de concessão — este método não
+  // exige channelId. Enquanto a Engine ainda não tem um modelo de
+  // Presence/Platform, esse campo fica nulo para concessões feitas por
+  // este caminho (o caminho legado em drop.service.ts preenche o campo
+  // diretamente, fora deste Repository).
   grantToCharacter(
     characterId: string,
     itemId: number,
-    channelId: string,
   ): Promise<GrantedItem>;
 }
 

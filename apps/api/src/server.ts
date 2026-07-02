@@ -16,7 +16,10 @@ import { EventBus } from "./engine/EventBus.js";
 import { GameEngine } from "./engine/GameEngine.js";
 import { XPSystem } from "./systems/XPSystemV2.js";
 import { WelcomeRewardSystem } from "./systems/WelcomeRewardSystem.js";
+import { DropSystem } from "./systems/DropSystem.js";
 import { SQLiteCharacterRepository } from "./infrastructure/SQLiteCharacterRepository.js";
+import { SQLiteItemRepository } from "./infrastructure/SQLiteItemRepository.js";
+import { RandomProviderImpl } from "./infrastructure/RandomProviderImpl.js";
 
 const routes: Route[] = [
   ...authRoutes,
@@ -38,6 +41,10 @@ const xpSystem = new XPSystem(characterRepository);
 xpSystem.register(bus);
 const welcomeRewardSystem = new WelcomeRewardSystem(characterRepository);
 welcomeRewardSystem.register(bus);
+const itemRepository = new SQLiteItemRepository();
+const randomProvider = new RandomProviderImpl();
+const dropSystem = new DropSystem(itemRepository, randomProvider);
+dropSystem.register(bus);
 
 bus.subscribe("world.tick", (event) => {
   console.log(`[Engine] World Tick #${event.tickNumber} — sessões ativas: ${event.sessions.length}`);

@@ -7,7 +7,6 @@ import type {
   LevelUpEvent,
 } from "../engine/types.js";
 import { isChannelLive } from "../services/twitch.service.js";
-import { env } from "../config/env.js";
 
 export class XPSystem {
   constructor(private repo: CharacterRepository) {}
@@ -30,15 +29,6 @@ export class XPSystem {
         try {
           if (!isLive) continue;
 
-          if (!env.useEngineXp) {
-            // Shadow mode: apenas loga o que seria concedido, sem escrever nada.
-            const character = await repo.findById(characterId);
-            if (!character) continue;
-            console.log(`[XPSystem] Character: ${character.displayName} | Would grant: +${XP_PER_PING} XP | Tick: ${event.tickNumber}`);
-            continue;
-          }
-
-          // USE_ENGINE_XP=true — ainda NÃO ativado em produção nesta Sprint.
           const result = await repo.applyXP(characterId, XP_PER_PING, event.timestamp);
           await repo.addMinutesWatched(characterId, 1);
 

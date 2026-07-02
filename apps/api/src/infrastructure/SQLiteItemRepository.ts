@@ -12,7 +12,7 @@
  * (strftime('%s','now')) — nenhum timestamp é recebido ou controlado
  * por este Repository, conforme a interface ItemRepository já aprovada.
  *
- * Isolada, sem consumidores nesta Sprint.
+ * Consumida pelo DropSystem a partir da Sprint D4 (escrita real).
  */
 import { getDb } from "../config/database.js";
 import type {
@@ -65,11 +65,15 @@ export class SQLiteItemRepository implements ItemRepository {
    * obtained_at é preenchido pelo DEFAULT do schema
    * (strftime('%s','now')) — este método não recebe nem grava
    * nenhum timestamp explícito.
+   *
+   * obtained_channel_id fica nulo aqui — não é responsabilidade deste
+   * método conhecer o canal de origem (ver comentário em ItemRepository,
+   * engine/types.ts). O caminho legado (drop.service.ts) preenche esse
+   * campo diretamente, com seu próprio INSERT, fora deste Repository.
    */
   async grantToCharacter(
     characterId: string,
     itemId: number,
-    channelId: string,
   ): Promise<GrantedItem> {
     const db = getDb();
 
@@ -78,7 +82,7 @@ export class SQLiteItemRepository implements ItemRepository {
         `INSERT INTO character_items (character_id, item_id, obtained_channel_id)
          VALUES (?, ?, ?)`,
       )
-      .run(characterId, itemId, channelId);
+      .run(characterId, itemId, null);
 
     const row = db
       .prepare(

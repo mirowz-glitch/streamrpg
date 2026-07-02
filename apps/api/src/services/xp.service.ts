@@ -6,8 +6,6 @@ import {
 } from "@streamrpg/shared";
 import type { PingResponse } from "@streamrpg/shared";
 import { getDb, nowUnix, todayDate } from "../config/database.js";
-import { env } from "../config/env.js";
-import { rollDrop } from "./drop.service.js";
 import { ensureChannel } from "./channel.service.js";
 import { isChannelLive } from "./twitch.service.js";
 
@@ -65,34 +63,23 @@ export async function applyPing(
   }
 
   const channel = ensureChannel(channelLogin);
-  const oldProgress = getProgress(character.xp);
+  const progress = getProgress(character.xp);
 
-  // Quando a Engine assume o XP (flag true), applyPing() não concede
-  // XP nem incrementa total_minutes — isso passa a ser responsabilidade
-  // exclusiva do XPSystem via tick. Ainda não ativado nesta Sprint.
-  const engineHandlesXp = env.useEngineXp;
-  const xpGain = engineHandlesXp ? 0 : XP_PER_PING;
-  const newTotalXp = character.xp + xpGain;
+  // XP, level, welcome reward e drop são responsabilidade exclusiva da
+  // Engine (XPSystem/WelcomeRewardSystem/DropSystem via EventBus) a
+  // partir da Sprint E4 — este endpoint não concede mais nenhum deles.
+  // Gold ainda não migrou para a Engine, então continua sendo concedido
+  // aqui diretamente.
   const goldGain = GOLD_PER_PING;
   const newGold = character.gold + goldGain;
-  const newProgress = getProgress(newTotalXp);
   const sessionDate = todayDate();
 
-  if (engineHandlesXp) {
-    db.prepare(
-      `UPDATE characters
-       SET gold = ?, last_ping_at = ?,
-           primary_channel_id = COALESCE(primary_channel_id, ?), updated_at = ?
-       WHERE id = ?`,
-    ).run(newGold, now, channel.id, now, characterId);
-  } else {
-    db.prepare(
-      `UPDATE characters
-       SET xp = ?, level = ?, gold = ?, last_ping_at = ?, total_minutes = total_minutes + 1,
-           primary_channel_id = COALESCE(primary_channel_id, ?), updated_at = ?
-       WHERE id = ?`,
-    ).run(newTotalXp, newProgress.level, newGold, now, channel.id, now, characterId);
-  }
+  db.prepare(
+    `UPDATE characters
+     SET gold = ?, last_ping_at = ?,
+         primary_channel_id = COALESCE(primary_channel_id, ?), updated_at = ?
+     WHERE id = ?`,
+  ).run(newGold, now, channel.id, now, characterId);
 
   const existingSession = db
     .prepare(
@@ -124,22 +111,23 @@ export async function applyPing(
        sessions_count = channel_rankings.sessions_count + 1,
        last_ping_at = excluded.last_ping_at,
        updated_at = excluded.updated_at`,
-  ).run(channel.id, characterId, newTotalXp, now, now);
+  ).run(channel.id, characterId, character.xp, now, now);
 
   refreshChannelPositions(channel.id);
 
-  const drop = rollDrop(characterId, channel.id, newProgress.level);
-
+  // xp_gained/leveled_up/drop ficam sempre "vazios": a Engine concede
+  // isso de forma assíncrona via tick, desacoplada desta resposta HTTP
+  // (débito de UI conhecido — ver UI-001).
   return {
-    xp_gained: xpGain,
+    xp_gained: 0,
     gold_gained: goldGain,
-    new_xp: newProgress.xp,
-    level: newProgress.level,
-    leveled_up: newProgress.level > oldProgress.level,
-    xp_to_next: newProgress.xp_to_next,
-    percent: newProgress.percent,
+    new_xp: progress.xp,
+    level: progress.level,
+    leveled_up: false,
+    xp_to_next: progress.xp_to_next,
+    percent: progress.percent,
     cooldown_seconds: PING_COOLDOWN_MS / 1000,
-    drop,
+    drop: null,
   };
 }
 
