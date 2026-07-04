@@ -143,6 +143,121 @@ export interface BossEscapedEvent {
   timestamp: number;
 }
 
+// Sprint Expedition System — eventos de Gameplay (Character, nunca
+// channelId — mesmo princípio já usado por xp.granted/level.up/
+// drop.granted, capítulo 13 da Bible): expedição pertence ao
+// personagem, nunca à sessão ou ao canal onde ele estava presente.
+export interface ExpeditionStartedEvent {
+  type: "expedition.started";
+  characterId: string;
+  expeditionId: string;
+  originRegionId: string;
+  destinationRegionId: string;
+  timestamp: number;
+}
+
+export interface ExpeditionStateChangedEvent {
+  type: "expedition.state_changed";
+  characterId: string;
+  expeditionId: string;
+  status: ExpeditionStatus;
+  currentEvent: string | null;
+  timestamp: number;
+}
+
+export interface ExpeditionCompletedEvent {
+  type: "expedition.completed";
+  characterId: string;
+  expeditionId: string;
+  destinationRegionId: string;
+  timestamp: number;
+}
+
+// Sprint Encounter System — emitido toda vez que o ExpeditionSystem
+// escolhe um novo Encounter (texto + categoria + ícone) para a expedição
+// ativa. Gameplay/Character, mesmo princípio de expedition.* acima —
+// nunca carrega channelId. Nunca concede XP/Gold/Item: é só narrativa.
+// `EncounterCategory` é redefinida aqui (não importada de
+// @streamrpg/shared) — mesma decisão arquitetural já usada para
+// `ExpeditionStatus` acima: engine/types.ts não depende de nenhum
+// pacote externo (ver cabeçalho deste arquivo).
+export type EncounterCategory =
+  | "natureza"
+  | "combate"
+  | "descoberta"
+  | "descanso"
+  | "misterio"
+  | "comercio"
+  | "clima"
+  | "ruinas";
+
+export interface ExpeditionEncounterEvent {
+  type: "expedition.encounter";
+  characterId: string;
+  expeditionId: string;
+  regionId: string;
+  category: EncounterCategory;
+  icon: string;
+  text: string;
+  timestamp: number;
+}
+
+export type ExpeditionStatus =
+  | "preparing"
+  | "exploring"
+  | "combating"
+  | "resting"
+  | "returning"
+  | "completed";
+
+// Sprint Founder Identity & Prestige — puramente cosmético, nunca altera
+// XP/Gold/poder. Gameplay/Character, mesmo princípio de expedition.*
+// acima — nunca carrega channelId.
+export interface IdentityTitleUnlockedEvent {
+  type: "identity.title_unlocked";
+  characterId: string;
+  titleId: number;
+  titleName: string;
+  timestamp: number;
+}
+
+export interface IdentityFrameUnlockedEvent {
+  type: "identity.frame_unlocked";
+  characterId: string;
+  frameId: number;
+  frameName: string;
+  timestamp: number;
+}
+
+// Sprint Kingdom Prestige System — `KingdomRoleSlug` é redefinida aqui
+// (não importada de @streamrpg/shared), mesma decisão arquitetural já
+// usada para `EncounterCategory`/`ExpeditionStatus` acima: engine/types.ts
+// não depende de nenhum pacote externo (ver cabeçalho deste arquivo).
+export type KingdomRoleSlug =
+  | "guardiao"
+  | "campeao-bosses"
+  | "grande-explorador"
+  | "heroi-reino"
+  | "membro-antigo"
+  | "maior-sequencia";
+
+// World event (canal, nunca gameplay do personagem) que também carrega
+// characterId — exceção documentada ao princípio do cabeçalho, mesmo
+// espírito da exceção já aceita para DropGrantedEvent (evento de
+// Character que carrega channelId opcional): aqui é o inverso, um evento
+// de World que carrega characterId como referência de "quem passou a
+// ocupar o cargo", não como dono do evento. Puramente cosmético — nunca
+// concede XP/Gold/poder.
+export interface KingdomRoleChangedEvent {
+  type: "kingdom.role_changed";
+  channelId: string;
+  roleSlug: KingdomRoleSlug;
+  roleName: string;
+  characterId: string;
+  previousCharacterId: string | null;
+  timestamp: number;
+}
+
 export type GameEvent =
   | WorldTickEvent
   | SessionStartedEvent
@@ -152,7 +267,14 @@ export type GameEvent =
   | BossSpawnedEvent
   | BossActivatedEvent
   | BossDefeatedEvent
-  | BossEscapedEvent;
+  | BossEscapedEvent
+  | ExpeditionStartedEvent
+  | ExpeditionStateChangedEvent
+  | ExpeditionCompletedEvent
+  | ExpeditionEncounterEvent
+  | IdentityTitleUnlockedEvent
+  | IdentityFrameUnlockedEvent
+  | KingdomRoleChangedEvent;
 
 export type EventOfType<T extends GameEvent["type"]> = Extract<
   GameEvent,
@@ -185,6 +307,30 @@ export interface CharacterSnapshot {
   level: number;
   totalXp: number;
   gold: number;
+  // Sprint Character Attributes Schema — baseline de SUS (Combat Model),
+  // placeholder em 0 até Classes existir (capítulo 4, ainda Placeholder)
+  // e poder sobrescrever este valor.
+  susBase: number;
+}
+
+// ============================================================
+// Sprint Character Attributes Schema — snapshot completo dos atributos
+// de combate de um personagem, reunindo o que já existia (equipamento,
+// via getCombatAttributes do shared) com o que passou a existir nesta
+// Sprint (susBase). Não é consumido por nenhum System ainda — Etapa 4
+// desta Sprint só garante que o dado existe e chega completo até aqui,
+// sem alterar BossCombatSystem nem nenhuma fórmula de combate.
+// ============================================================
+
+export interface CombatAttributesSnapshot {
+  characterId: string;
+  level: number;
+  attackPhysical: number;
+  attackMagic: number;
+  resistancePhysical: number;
+  resistanceMagic: number;
+  susBase: number;
+  utiBonus: number;
 }
 
 export interface XPResult {
@@ -211,6 +357,13 @@ export interface CharacterRepository {
   // é essa checagem, não hasReceivedWelcomeReward(), que fecha a janela
   // de corrida entre duas sessões simultâneas do mesmo personagem novo.
   markWelcomeRewardGranted(characterId: string, timestamp: number): Promise<boolean>;
+  // Sprint Character Attributes Schema — reúne level + susBase (do
+  // personagem) e ATQ/Resistência físico/mágico + UTI (dos itens
+  // equipados) num único snapshot. Nenhuma regra de combate aqui, só
+  // leitura — mesmo princípio 6 (Repository nunca decide regra de jogo)
+  // já aplicado ao resto da Engine. Retorna null se o personagem não
+  // existir.
+  getCombatAttributes(characterId: string): Promise<CombatAttributesSnapshot | null>;
 }
 
 export interface ItemSnapshot {
@@ -350,6 +503,52 @@ export interface BossRewardRepository {
     outcome: "defeated" | "escaped",
     timestamp: number,
   ): Promise<BossRewardSnapshot>;
+}
+
+// Sprint Encounter System — Encounter é só texto + categoria + ícone,
+// nunca uma recompensa. `currentEvent` (nome já existente desde a Sprint
+// Expedition System) segue guardando o texto narrativo.
+export interface EncounterSnapshot {
+  category: EncounterCategory;
+  icon: string;
+  text: string;
+}
+
+export interface ExpeditionSnapshot {
+  id: string;
+  characterId: string;
+  originRegionId: string;
+  destinationRegionId: string;
+  currentRegionId: string;
+  status: ExpeditionStatus;
+  statusStartedAt: number;
+  progressTicks: number;
+  totalEstimatedTicks: number;
+  currentEvent: string | null;
+  currentEncounterCategory: EncounterCategory | null;
+  currentEncounterIcon: string | null;
+  startedAt: number;
+  completedAt: number | null;
+}
+
+export interface ExpeditionRepository {
+  findActiveByCharacter(characterId: string): Promise<ExpeditionSnapshot | null>;
+  create(
+    characterId: string,
+    originRegionId: string,
+    destinationRegionId: string,
+    totalEstimatedTicks: number,
+    timestamp: number,
+  ): Promise<ExpeditionSnapshot>;
+  advance(
+    expeditionId: string,
+    status: ExpeditionStatus,
+    statusStartedAt: number,
+    progressTicks: number,
+    encounter: EncounterSnapshot | null,
+    currentRegionId: string,
+  ): Promise<ExpeditionSnapshot>;
+  complete(expeditionId: string, timestamp: number): Promise<ExpeditionSnapshot>;
 }
 
 // ============================================================

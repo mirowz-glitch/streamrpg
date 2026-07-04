@@ -463,6 +463,63 @@ no momento da ativação → tier → `max_hp`/pool de recompensa). Tabela de
 tiers pode ser uma constante no código para o MVP — não precisa de tabela
 própria enquanto os valores forem os mesmos para todos os canais.
 
+**Sprint Boss Integration — ✅ Conectado a `server.ts` (ver
+docs/reviews/boss-integration-review.md).** As notas acima ("não
+conectado a `server.ts` ainda", B1-B4) descreviam o estado real até este
+ponto — corrigido. Os quatro Systems (`BossSpawnSystem`,
+`BossParticipationSystem`, `BossCombatSystem`, `BossRewardSystem`) e seus
+três Repositories (`SQLiteBossRepository`, `SQLiteBossParticipationRepository`,
+`SQLiteBossRewardRepository`) são instanciados e registrados no `EventBus`
+real em `server.ts`, reaproveitando `characterRepository`/`itemRepository`/
+`randomProvider` já existentes. Validado via harness contra um banco
+isolado (não o de desenvolvimento), provando o ciclo completo
+nascimento → ativação → participação → combate → derrota → recompensa →
+persistência, através do EventBus real registrado em produção — não mais
+um harness que instancia os Systems fora de `server.ts`.
+
+**Ainda sem rota HTTP de invocação manual** — `BossSpawnSystem.invoke()`
+existe, está registrado, mas nenhuma rota chama esse método ainda; hoje
+só o timeout automático de invocação levaria um Boss de `awaiting` a
+`active` em produção. Botão "Invocar Boss" do streamer (capítulo 6 da
+Bible) continua dependendo do Frontend Event Bridge, fora do escopo desta
+
+**Sprint Character Runtime Integration — ✅ `BossCombatSystem` agora
+carrega e loga Level e Equipamento reais por personagem presente (ver
+docs/reviews/character-runtime-integration-review.md).** `advance()` e o
+dano fixo por tick continuam idênticos — nenhuma fórmula foi trocada.
+Achado desta Sprint, não uma mudança de decisão: Classe, tipo de dano
+físico/mágico, Resistência tipada, Crítico, SUS e UTI não têm nenhuma
+coluna ou tabela no banco hoje — não é um problema de "dado que se perde
+no caminho", é dado que ainda não existe em lugar nenhum. Continuam
+bloqueados pela mesma dependência já registrada na seção 7 (Classes ainda
+Placeholder, capítulo 3/4 da Bible).
+
+**Sprint Character Attributes Schema — ✅ schema mínimo criado**
+(`characters.sus_base`, `items.damage_type`, `items.uti_bonus` — ver
+docs/reviews/character-attributes-schema-review.md). `BossCombatSystem`
+não foi alterado por essa Sprint — os três campos ficaram disponíveis via
+`CharacterRepository.getCombatAttributes()`, mas ainda não eram lidos por
+nenhum System de combate.
+
+**Sprint Combat Model Runtime — ✅ fórmula fixa
+(`DAMAGE_PER_CHARACTER_PER_TICK = 50`) substituída pela fórmula canônica**
+(docs/combat-model/canonical-formula.md; ver
+docs/reviews/combat-model-runtime-review.md). `BossCombatSystem` agora
+chama `characterRepo.getCombatAttributes()` uma vez por personagem
+presente por tick (mesma consulta que já existia, sem consulta nova) e
+calcula `Base(level) × Equipamento_ATQ(tipo) × Classe_mult × Critical`,
+mitigado por Resistência/Bloqueio, via `calculateCanonicalDamage()`
+(função pura, exportada, testável isoladamente). Termos sem fonte de
+dado — Classe (Placeholder), Penetração, Bloqueio (sem Escudo no
+schema) e Resistência do próprio Boss (`bosses` não tem essa coluna) —
+tratados como neutros (1 ou 0), nunca como exceção. SUS e UTI são
+carregados e calculados por sua própria fórmula (regen, checagem de
+limiar) — nenhum dos dois entra na multiplicação de dano, porque o
+Combat Model nunca definiu isso; hoje não têm mecânica de Boss para
+interagir (Boss não ataca personagens, não tem controle/detecção), mas
+carregam e calculam sem erro.
+Sprint de integração.
+
 ---
 
 ## 7. Dependências futuras

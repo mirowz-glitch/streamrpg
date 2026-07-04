@@ -13,26 +13,6 @@ import type {
   BossRewardSnapshot,
 } from "../engine/types.js";
 
-interface RewardRow {
-  boss_id: string;
-  character_id: string;
-  xp_granted: number;
-  item_id: number | null;
-  outcome: "defeated" | "escaped";
-  granted_at: number;
-}
-
-function mapRow(row: RewardRow): BossRewardSnapshot {
-  return {
-    bossId: row.boss_id,
-    characterId: row.character_id,
-    xpGranted: row.xp_granted,
-    itemId: row.item_id,
-    outcome: row.outcome,
-    grantedAt: row.granted_at,
-  };
-}
-
 export class SQLiteBossRewardRepository implements BossRewardRepository {
   async hasRewarded(bossId: string, characterId: string): Promise<boolean> {
     const row = getDb()

@@ -20,7 +20,8 @@ export const ITEM_CATALOG: Omit<ItemCatalogEntry, "id">[] = [
   { slug: "botas-lurker", name: "Botas do Lurker", description: "Silenciosas como presença no chat.", rarity: "common", slot: "boots", min_level: 1 },
   { slug: "sandalias-chat", name: "Sandálias do Chat Rápido", description: "Para quem digita mais rápido que pensa.", rarity: "common", slot: "boots", min_level: 1 },
   { slug: "botas-meia-noite", name: "Botas da Meia-Noite", description: "Confortáveis para lives que passam da meia-noite.", rarity: "uncommon", slot: "boots", min_level: 3 },
-  { slug: "amuleto-presenca", name: "Amuleto de Presença", description: "Brilha quando você está na live.", rarity: "uncommon", slot: "amulet", min_level: 3 },
+  { slug: "amuleto-presenca", name: "Amuleto de Presença", description: "Brilha quando você está na live.", rarity: "uncommon", slot: "amulet", min_level: 3, uti_bonus: 2 },
+  { slug: "cajado-aprendiz", name: "Cajado do Aprendiz", description: "Ainda cheira a ozônio da última vez que foi usado.", rarity: "common", slot: "weapon", min_level: 1, damage_type: "magic" },
   { slug: "pingente-streak", name: "Pingente do Streak", description: "Quente ao toque depois de dias seguidos.", rarity: "uncommon", slot: "amulet", min_level: 5 },
   { slug: "colar-xp", name: "Colar de XP", description: "Cada ping faz brilhar um pouco mais.", rarity: "uncommon", slot: "amulet", min_level: 5 },
   { slug: "anel-viewer", name: "Anel do Viewer", description: "Prova de que você esteve aqui.", rarity: "uncommon", slot: "ring", min_level: 5 },
@@ -37,15 +38,44 @@ export const ITEM_CATALOG: Omit<ItemCatalogEntry, "id">[] = [
 export function seedItems(): void {
   const db = getDb();
   const count = db.prepare("SELECT COUNT(*) AS c FROM items").get() as { c: number };
-  if (count.c >= ITEM_CATALOG.length) return;
 
-  const insert = db.prepare(`
-    INSERT OR IGNORE INTO items (slug, name, description, rarity, slot, min_level)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `);
+  if (count.c < ITEM_CATALOG.length) {
+    // damage_type/uti_bonus: infraestrutura da Sprint Character Attributes
+    // Schema — default 'physical'/0 para todo item que não declarar
+    // explicitamente (mesmo default da coluna no banco), sem precisar tocar
+    // nas ~30 entradas do catálogo que já existiam.
+    const insert = db.prepare(`
+      INSERT OR IGNORE INTO items (slug, name, description, rarity, slot, min_level, damage_type, uti_bonus)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
 
+    for (const item of ITEM_CATALOG) {
+      insert.run(
+        item.slug,
+        item.name,
+        item.description,
+        item.rarity,
+        item.slot,
+        item.min_level,
+        item.damage_type ?? "physical",
+        item.uti_bonus ?? 0,
+      );
+    }
+  }
+
+  // Sprint Equipment Experience — achado real, confirmado testando no
+  // navegador contra o banco de desenvolvimento: INSERT OR IGNORE nunca
+  // atualiza uma linha já existente. Itens cujo damage_type/uti_bonus
+  // foram definidos no catálogo DEPOIS da primeira inserção (ex.:
+  // amuleto-presenca, uti_bonus adicionado só na Sprint Character
+  // Attributes Schema) continuavam com o valor antigo no banco, mesmo já
+  // corretos no código. Sincroniza os dois campos para todo o catálogo,
+  // sempre — idempotente, poucas dezenas de linhas, sem custo
+  // perceptível. Não altera rarity/slot/min_level/nome/descrição, só os
+  // dois campos que esta Sprint depende deles estarem corretos.
+  const sync = db.prepare(`UPDATE items SET damage_type = ?, uti_bonus = ? WHERE slug = ?`);
   for (const item of ITEM_CATALOG) {
-    insert.run(item.slug, item.name, item.description, item.rarity, item.slot, item.min_level);
+    sync.run(item.damage_type ?? "physical", item.uti_bonus ?? 0, item.slug);
   }
 }
 

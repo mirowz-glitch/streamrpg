@@ -1,7 +1,9 @@
-import type { InventoryItem, ItemSlot } from "@streamrpg/shared";
+import type { DamageType, InventoryItem, ItemSlot } from "@streamrpg/shared";
 import { getDb, nowUnix } from "../config/database.js";
 
-function mapInventoryRow(row: Record<string, unknown>): InventoryItem {
+// Exportada para reaproveitamento em xp.service.ts (Sprint Player
+// Feedback Bridge) — o mesmo mapeamento de linha, sem duplicar a lógica.
+export function mapInventoryRow(row: Record<string, unknown>): InventoryItem {
   return {
     id: row.id as number,
     item_id: row.item_id as number,
@@ -14,6 +16,10 @@ function mapInventoryRow(row: Record<string, unknown>): InventoryItem {
     is_equipped: Boolean(row.is_equipped),
     equipped_slot: (row.equipped_slot as ItemSlot | null) ?? null,
     obtained_at: new Date((row.obtained_at as number) * 1000).toISOString(),
+    // Sprint Equipment Experience — colunas já existentes no banco desde
+    // a Sprint Character Attributes Schema, agora expostas pela API.
+    damage_type: (row.damage_type as DamageType | undefined) ?? "physical",
+    uti_bonus: (row.uti_bonus as number | undefined) ?? 0,
   };
 }
 
@@ -21,6 +27,7 @@ export function listInventory(characterId: string): InventoryItem[] {
   const rows = getDb()
     .prepare(
       `SELECT ci.id, ci.item_id, ci.obtained_at, i.slug, i.name, i.description, i.rarity, i.slot, i.min_level,
+              i.damage_type, i.uti_bonus,
               CASE WHEN e.character_item_id IS NOT NULL THEN 1 ELSE 0 END AS is_equipped,
               e.slot AS equipped_slot
        FROM character_items ci
@@ -78,7 +85,7 @@ export function unequipItem(characterId: string, slot: ItemSlot): void {
 export function getEquippedItems(characterId: string) {
   return getDb()
     .prepare(
-      `SELECT e.slot, e.character_item_id, i.name, i.rarity
+      `SELECT e.slot, e.character_item_id, i.name, i.rarity, i.damage_type, i.uti_bonus
        FROM equipped_items e
        JOIN character_items ci ON ci.id = e.character_item_id
        JOIN items i ON i.id = ci.item_id
@@ -89,6 +96,8 @@ export function getEquippedItems(characterId: string) {
       character_item_id: number;
       name: string;
       rarity: string;
+      damage_type: DamageType;
+      uti_bonus: number;
     }>;
 }
 

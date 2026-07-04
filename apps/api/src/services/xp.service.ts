@@ -3,12 +3,78 @@ import {
   PING_COOLDOWN_MS,
   XP_PER_PING,
   getProgress,
+  getLevel,
 } from "@streamrpg/shared";
-import type { PingResponse } from "@streamrpg/shared";
+import type { PingResponse, DropResult } from "@streamrpg/shared";
 import { getDb, nowUnix, todayDate } from "../config/database.js";
 import { ensureChannel } from "./channel.service.js";
 import { isChannelLive } from "./twitch.service.js";
 import { recordGoldGranted } from "../debug/PlaytestMetrics.js";
+import { mapInventoryRow } from "./drop.service.js";
+
+/**
+ * Sprint Player Feedback Bridge (UI-001) — ponte entre o que a Engine já
+ * concede de forma assíncrona (XP/Level/Drop via world.tick) e a resposta
+ * síncrona do ping. Não altera a Engine, o EventBus nem nenhuma regra de
+ * jogo — só compara o estado atual do personagem contra o último estado
+ * já mostrado a ele, e reporta a diferença.
+ *
+ * Checkpoint em memória do processo, mesmo padrão já aceito para
+ * SessionManager (engine/SessionManager.ts): correto em ambiente de
+ * processo único (Railway, 1 réplica), perdido num reinício. Efeito
+ * conhecido e aceitável do reinício: o próximo ping de cada personagem
+ * apenas semeia o checkpoint silenciosamente (mesmo comportamento do
+ * primeiro ping de sempre, abaixo) — nunca gera um "salto" falso de
+ * XP/level/drop acumulado.
+ */
+interface PingFeedbackCheckpoint {
+  xp: number;
+  lastItemId: number;
+}
+const feedbackCheckpoints = new Map<string, PingFeedbackCheckpoint>();
+
+function computePingFeedback(
+  characterId: string,
+  currentXp: number,
+): { xp_gained: number; leveled_up: boolean; drop: DropResult | null } {
+  const db = getDb();
+
+  const latestItemRow = db
+    .prepare(
+      `SELECT ci.id, ci.item_id, ci.obtained_at, i.slug, i.name, i.description, i.rarity, i.slot, i.min_level,
+              CASE WHEN e.character_item_id IS NOT NULL THEN 1 ELSE 0 END AS is_equipped,
+              e.slot AS equipped_slot
+       FROM character_items ci
+       JOIN items i ON i.id = ci.item_id
+       LEFT JOIN equipped_items e ON e.character_item_id = ci.id
+       WHERE ci.character_id = ?
+       ORDER BY ci.id DESC LIMIT 1`,
+    )
+    .get(characterId) as Record<string, unknown> | undefined;
+  const currentLatestItemId = (latestItemRow?.id as number | undefined) ?? 0;
+
+  const previous = feedbackCheckpoints.get(characterId);
+
+  if (!previous) {
+    // Primeiro contato deste personagem nesta execução do processo —
+    // semeia o checkpoint sem notificar, mesmo princípio já usado pelo
+    // SessionManager para "primeira vez vista" (session.started).
+    feedbackCheckpoints.set(characterId, { xp: currentXp, lastItemId: currentLatestItemId });
+    return { xp_gained: 0, leveled_up: false, drop: null };
+  }
+
+  const xpGained = Math.max(0, currentXp - previous.xp);
+  const leveledUp = xpGained > 0 && getLevel(currentXp) > getLevel(previous.xp);
+
+  const drop: DropResult | null =
+    latestItemRow && currentLatestItemId > previous.lastItemId
+      ? { dropped: true, item: mapInventoryRow(latestItemRow) }
+      : null;
+
+  feedbackCheckpoints.set(characterId, { xp: currentXp, lastItemId: currentLatestItemId });
+
+  return { xp_gained: xpGained, leveled_up: leveledUp, drop };
+}
 
 // Log estruturado de playtest — uma linha por chamada, nunca múltiplas.
 // live=null significa "nem chegou a checar" (bloqueado pelo cooldown antes).
@@ -48,17 +114,18 @@ export async function applyPing(
     const elapsedMs = (now - character.last_ping_at) * 1000;
     if (elapsedMs < PING_COOLDOWN_MS) {
       const progress = getProgress(character.xp);
+      const feedback = computePingFeedback(characterId, character.xp);
       logPing(channelLogin, characterId, null, 0, startedAt);
       return {
-        xp_gained: 0,
+        xp_gained: feedback.xp_gained,
         gold_gained: 0,
         new_xp: progress.xp,
         level: progress.level,
-        leveled_up: false,
+        leveled_up: feedback.leveled_up,
         xp_to_next: progress.xp_to_next,
         percent: progress.percent,
         cooldown_seconds: Math.ceil((PING_COOLDOWN_MS - elapsedMs) / 1000),
-        drop: null,
+        drop: feedback.drop,
       };
     }
   }
@@ -66,17 +133,18 @@ export async function applyPing(
   const live = await isChannelLive(channelLogin);
   if (!live) {
     const progress = getProgress(character.xp);
+    const feedback = computePingFeedback(characterId, character.xp);
     logPing(channelLogin, characterId, false, 0, startedAt);
     return {
-      xp_gained: 0,
+      xp_gained: feedback.xp_gained,
       gold_gained: 0,
       new_xp: progress.xp,
       level: progress.level,
-      leveled_up: false,
+      leveled_up: feedback.leveled_up,
       xp_to_next: progress.xp_to_next,
       percent: progress.percent,
       cooldown_seconds: 60,
-      drop: null,
+      drop: feedback.drop,
     };
   }
 
@@ -147,19 +215,23 @@ export async function applyPing(
   recordGoldGranted(goldGain);
   logPing(channelLogin, characterId, true, goldGain, startedAt);
 
-  // xp_gained/leveled_up/drop ficam sempre "vazios": a Engine concede
-  // isso de forma assíncrona via tick, desacoplada desta resposta HTTP
-  // (débito de UI conhecido — ver UI-001).
+  // xp_gained/leveled_up/drop refletem o que a Engine já concedeu de
+  // forma assíncrona desde o último ping deste personagem (Sprint Player
+  // Feedback Bridge, UI-001) — comparação contra o checkpoint, não uma
+  // concessão nova feita aqui. A Engine continua sendo a única fonte que
+  // concede XP/Level/Drop; este endpoint só relata.
+  const feedback = computePingFeedback(characterId, character.xp);
+
   return {
-    xp_gained: 0,
+    xp_gained: feedback.xp_gained,
     gold_gained: goldGain,
     new_xp: progress.xp,
     level: progress.level,
-    leveled_up: false,
+    leveled_up: feedback.leveled_up,
     xp_to_next: progress.xp_to_next,
     percent: progress.percent,
     cooldown_seconds: PING_COOLDOWN_MS / 1000,
-    drop: null,
+    drop: feedback.drop,
   };
 }
 

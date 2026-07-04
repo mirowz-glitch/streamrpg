@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/components/ui/XpBar.tsx"],
+  "sourcesContent": ["import { ProgressBar } from \"./ProgressBar\";\r\n\r\ninterface XpBarProps {\r\n  percent: number;\r\n  label?: string;\r\n}\r\n\r\nexport function XpBar({ percent, label }: XpBarProps) {\r\n  return (\r\n    <div>\r\n      {label ? <div style={{ marginBottom: \"0.25rem\", fontSize: \"0.875rem\" }}>{label}</div> : null}\r\n      <ProgressBar percent={percent} variant=\"xp\" label={label ?? \"XP progress\"} />\r\n    </div>\r\n  );\r\n}\r\n"],
+  "mappings": ";;;;;;;;;AASI;AAFG,SAAS,MAAM,EAAE,SAAS,MAAM,GAAe;AACpD,SACE,6CAAC,SACE;AAAA,YAAQ,4CAAC,SAAI,OAAO,EAAE,cAAc,WAAW,UAAU,WAAW,GAAI,iBAAM,IAAS;AAAA,IACxF,4CAAC,eAAY,SAAkB,SAAQ,MAAK,OAAO,SAAS,eAAe;AAAA,KAC7E;AAEJ;",
+  "names": []
+}

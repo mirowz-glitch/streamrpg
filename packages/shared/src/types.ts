@@ -31,6 +31,15 @@ export interface Character {
   updated_at: string;
 }
 
+export interface CharacterCombatSummary {
+  attack_physical: number;
+  attack_magic: number;
+  resistance_physical: number;
+  resistance_magic: number;
+  sus: number;
+  uti: number;
+}
+
 export interface CharacterResponse {
   id: string;
   display_name: string;
@@ -43,6 +52,9 @@ export interface CharacterResponse {
   avatar_url: string | null;
   primary_channel_id: string | null;
   equipped: EquippedItem[];
+  // Sprint Equipment Experience — reaproveita CharacterRepository.getCombatAttributes()
+  // (já existente desde a Sprint Character Attributes Schema), nenhum cálculo novo.
+  combat: CharacterCombatSummary;
   created_at: string;
 }
 
@@ -66,6 +78,14 @@ export interface DropResult {
 export type ItemRarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
 export type ItemSlot = "weapon" | "armor" | "helmet" | "boots" | "amulet" | "ring";
 
+// Sprint Character Attributes Schema — infraestrutura para o Combat Model
+// (docs/combat-model/canonical-formula.md). Em armas, decide se o ATQ é
+// físico ou mágico; nos demais slots, decide se a Resistência concedida é
+// física ou mágica. Opcional aqui porque o catálogo hoje é quase todo
+// físico por padrão (mesmo default da coluna `items.damage_type` no
+// banco) — não precisa ser declarado em toda entrada do catálogo.
+export type DamageType = "physical" | "magic";
+
 export interface ItemCatalogEntry {
   id: number;
   slug: string;
@@ -74,6 +94,8 @@ export interface ItemCatalogEntry {
   rarity: ItemRarity;
   slot: ItemSlot;
   min_level: number;
+  damage_type?: DamageType;
+  uti_bonus?: number;
 }
 
 export interface InventoryItem {
@@ -88,6 +110,11 @@ export interface InventoryItem {
   is_equipped: boolean;
   equipped_slot: ItemSlot | null;
   obtained_at: string;
+  // Sprint Equipment Experience — colunas já existentes desde a Sprint
+  // Character Attributes Schema (items.damage_type/uti_bonus), nunca
+  // enviadas pela API até agora.
+  damage_type: DamageType;
+  uti_bonus: number;
 }
 
 export interface EquippedItem {
@@ -95,6 +122,11 @@ export interface EquippedItem {
   character_item_id: number;
   name: string;
   rarity: ItemRarity;
+  // Sprint Identity & Progression — mesmas colunas já expostas em
+  // InventoryItem, agora também na lista de equipados (nenhum dado novo,
+  // só reaproveitado aqui para mostrar atributos/bônus no perfil).
+  damage_type: DamageType;
+  uti_bonus: number;
 }
 
 export interface RankingEntry {
@@ -105,6 +137,15 @@ export interface RankingEntry {
   xp: number;
   total_minutes: number;
   avatar_url: string | null;
+  // Sprint Founder Identity & Prestige — título/moldura equipados, só
+  // para exibição (nunca afeta posição/XP/ordenação do ranking).
+  title_name: string | null;
+  frame_tier: FrameTier | null;
+  // Sprint Kingdom Prestige System — ícones dos cargos do Reino que este
+  // personagem ocupa hoje (Etapa 7). Só populado quando o Ranking está
+  // filtrado por canal — cargo é um conceito de Reino, não existe versão
+  // "global" (mesmo motivo pelo qual channel pode ser null acima).
+  role_icons: string[];
 }
 
 export interface RankingResponse {
@@ -121,6 +162,13 @@ export interface OverlayViewer {
   percent: number;
   avatar_url: string | null;
   equipped_weapon: string | null;
+  // Sprint Expedition System — resumo compacto, mesmo formato usado no
+  // overlay (Etapa 9): região atual + estado + progresso. Null quando o
+  // personagem ainda não tem nenhuma expedição.
+  expedition: ExpeditionCompact | null;
+  // Sprint Founder Identity & Prestige — título equipado, mostrado
+  // abaixo do nome (Etapa 4), nunca ocupando muito espaço.
+  title_name: string | null;
 }
 
 export interface OverlayResponse {
@@ -128,6 +176,42 @@ export interface OverlayResponse {
   viewers: OverlayViewer[];
   total: number;
   updated_at: string;
+  // Sprint Kingdom Prestige System, Etapa 5 — só os cargos mais
+  // importantes (Guardião + Campeão dos Bosses), nunca os 6, "sem
+  // poluir" o overlay. Vazio quando nenhum dos dois tem ocupante ainda.
+  hall_of_fame_highlights: KingdomHallOfFameSlot[];
+}
+
+// Sprint Boss Experience — leitura pública, mesmo espírito de
+// OverlayResponse. "Nome" do Boss não existe em nenhuma coluna do
+// schema (docs/reviews/boss-experience-review.md) — tier é o único
+// identificador real, nunca um nome inventado.
+export interface BossParticipantSummary {
+  character_id: string;
+  display_name: string;
+}
+
+export interface BossRewardSummary {
+  character_id: string;
+  display_name: string;
+  xp_granted: number;
+  item_name: string | null;
+  item_rarity: string | null;
+}
+
+export type BossStatus = "awaiting" | "active" | "defeated" | "escaped";
+
+export interface BossStateSnapshot {
+  active: boolean;
+  status: BossStatus | null;
+  tier: number | null;
+  current_hp: number | null;
+  max_hp: number | null;
+  ends_at: number | null;
+  resolved_at: number | null;
+  participant_count: number;
+  participants: BossParticipantSummary[];
+  rewards: BossRewardSummary[] | null;
 }
 
 export interface StreamerDashboard {
@@ -136,4 +220,240 @@ export interface StreamerDashboard {
   total_viewers: number;
   overlay_url: string;
   ranking_preview: RankingEntry[];
+}
+
+// Sprint World Simulation — contratos HTTP puramente de leitura, mesmo
+// espírito de BossStateSnapshot: nenhum campo aqui é inventado, cada um
+// mapeia direto para uma leitura real (Engine em memória ou agregado de
+// banco) feita em world-state.service.ts.
+export interface TimelineEvent {
+  id: string;
+  text: string;
+  timestamp: number;
+}
+
+export interface WorldPanel {
+  server_time: number;
+  current_tick: number;
+  current_tick_timestamp: number;
+  players_online: number;
+  bosses_active_now: number;
+  last_event: TimelineEvent | null;
+}
+
+export interface KingdomState {
+  players_active: number;
+  bosses_active_now: number;
+  bosses_defeated_total: number;
+  gold_in_circulation: number;
+  // Sprint Expedition System — Exploração deixou de ser um placeholder
+  // ("exploration_available: false") assim que expedições reais
+  // passaram a existir.
+  expeditions_active: number;
+}
+
+export interface KingdomStats {
+  adventurers_total: number;
+  bosses_defeated_total: number;
+  items_found_total: number;
+}
+
+export interface RegionVisitSummary {
+  region_id: string;
+  region_name: string;
+  visits: number;
+}
+
+export type ExpeditionStatus = "preparing" | "exploring" | "combating" | "resting" | "returning" | "completed";
+
+// Sprint Encounter System — categorias já existentes em
+// docs/world-design/random-events.md (consolidadas nas 8 já propostas
+// pela própria Sprint), nunca uma taxonomia nova.
+export type EncounterCategory =
+  | "natureza"
+  | "combate"
+  | "descoberta"
+  | "descanso"
+  | "misterio"
+  | "comercio"
+  | "clima"
+  | "ruinas";
+
+export interface EncounterSummary {
+  category: EncounterCategory;
+  icon: string;
+  text: string;
+}
+
+export interface ExpeditionCompact {
+  region_name: string;
+  status: ExpeditionStatus;
+  progress_percent: number;
+  encounter: EncounterSummary | null;
+}
+
+export interface ExpeditionResponse {
+  id: string;
+  origin_region_id: string;
+  origin_region_name: string;
+  destination_region_id: string;
+  destination_region_name: string;
+  current_region_id: string;
+  current_region_name: string;
+  status: ExpeditionStatus;
+  progress_percent: number;
+  encounter: EncounterSummary | null;
+  estimated_seconds_remaining: number;
+  started_at: string;
+}
+
+export interface RegionEncounterSummary {
+  region_id: string;
+  region_name: string;
+  count: number;
+}
+
+export interface CategoryEncounterSummary {
+  category: EncounterCategory;
+  icon: string;
+  count: number;
+}
+
+export interface KingdomEncounterEvent {
+  id: string;
+  region_name: string;
+  encounter: EncounterSummary;
+  timestamp: number;
+}
+
+export interface EncounterStats {
+  recent: KingdomEncounterEvent[];
+  most_active_regions: RegionEncounterSummary[];
+  most_common_categories: CategoryEncounterSummary[];
+}
+
+export interface WorldStateResponse {
+  panel: WorldPanel;
+  kingdom: KingdomState;
+  most_visited_regions: RegionVisitSummary[];
+  encounter_stats: EncounterStats;
+  stats: KingdomStats;
+  timeline: TimelineEvent[];
+  idle_flavor: string;
+  // Sprint Kingdom Prestige System — só preenchido quando a página Mundo
+  // está filtrada por canal (mesmo padrão `?channel=` já usado pelo
+  // Ranking). `kingdom`/`stats` acima continuam sendo o agregado GLOBAL
+  // de todo o StreamRPG (nome herdado do World Simulation, não deste
+  // Reino específico) — `channel_kingdom` é o Reino de um canal só.
+  channel_kingdom: ChannelKingdomState | null;
+}
+
+// Sprint Founder Identity & Prestige — puramente cosmético (Etapa 1-3).
+// Nenhum campo aqui concede XP/Gold/poder.
+export type FrameTier = "bronze" | "prata" | "ouro" | "fundador" | "alpha" | "evento";
+
+export interface TitleSummary {
+  id: number;
+  slug: string;
+  name: string;
+  description: string;
+  unlocked: boolean;
+  unlocked_at: string | null;
+}
+
+export interface FrameSummary {
+  id: number;
+  slug: string;
+  name: string;
+  tier: FrameTier;
+  unlocked: boolean;
+  unlocked_at: string | null;
+}
+
+export interface IdentityProfile {
+  equipped_title: { id: number; name: string; description: string } | null;
+  equipped_frame: { id: number; name: string; tier: FrameTier } | null;
+  titles: TitleSummary[];
+  frames: FrameSummary[];
+  created_at: string;
+  first_expedition_at: string | null;
+  bosses_defeated: number;
+  regions_discovered: number;
+}
+
+// Sprint Kingdom Prestige System — identidade coletiva de um canal
+// (Reino), nunca do personagem. Diferente de Título/Moldura (Founder
+// Identity), um cargo pode trocar de dono — não é um desbloqueio
+// permanente. Nenhum campo aqui concede XP/Gold/poder de combate.
+export type KingdomRoleSlug =
+  | "guardiao"
+  | "campeao-bosses"
+  | "grande-explorador"
+  | "heroi-reino"
+  | "membro-antigo"
+  | "maior-sequencia";
+
+export interface KingdomRoleDefinition {
+  slug: KingdomRoleSlug;
+  name: string;
+  icon: string;
+}
+
+// Catálogo fixo de 6 cargos (Etapa 2). Crescer o catálogo no futuro é só
+// adicionar uma linha aqui + um critério de cálculo em
+// kingdom-prestige.service.ts, nunca uma migração de schema (mesma
+// extensibilidade já obtida para Títulos/Molduras).
+export const KINGDOM_ROLE_CATALOG: KingdomRoleDefinition[] = [
+  { slug: "guardiao", name: "Guardião do Reino", icon: "👑" },
+  { slug: "campeao-bosses", name: "Campeão dos Bosses", icon: "⚔" },
+  { slug: "grande-explorador", name: "Grande Explorador", icon: "🗺" },
+  { slug: "heroi-reino", name: "Herói do Reino", icon: "⭐" },
+  { slug: "membro-antigo", name: "Membro Mais Antigo", icon: "📅" },
+  { slug: "maior-sequencia", name: "Maior Sequência", icon: "🔥" },
+];
+
+export interface KingdomRoleHolder {
+  character_id: string;
+  display_name: string;
+  avatar_url: string | null;
+  held_since: string;
+}
+
+export interface KingdomHallOfFameSlot {
+  role: KingdomRoleSlug;
+  role_name: string;
+  icon: string;
+  holder: KingdomRoleHolder | null;
+}
+
+export interface KingdomPrestigeBreakdown {
+  total_xp: number;
+  bosses_defeated: number;
+  members_count: number;
+  total_minutes_watched: number;
+  regions_discovered: number;
+}
+
+// Fórmula ilustrativa (mesma honestidade de todo número não calibrado do
+// projeto): soma ponderada de dados reais, nunca editada manualmente
+// (Etapa 1). Pesos podem mudar no futuro sem afetar nenhuma regra de
+// jogo — Prestígio nunca alimenta XP/Gold/Combate, só o contrário seria
+// verdade (Etapa 8: features futuras consumindo este score).
+export interface KingdomPrestige {
+  score: number;
+  breakdown: KingdomPrestigeBreakdown;
+}
+
+export interface KingdomAchievement {
+  id: string;
+  text: string;
+  timestamp: number;
+}
+
+export interface ChannelKingdomState {
+  channel: string;
+  channel_display_name: string;
+  prestige: KingdomPrestige;
+  hall_of_fame: KingdomHallOfFameSlot[];
+  recent_achievements: KingdomAchievement[];
 }

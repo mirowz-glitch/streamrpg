@@ -15,20 +15,24 @@ nem uma direção.
 
 ## Classes (capítulo 4)
 
-- Como uma classe é obtida, além do Hero Token?
-- Existem múltiplas classes desde o início, ou uma progressão de
-  desbloqueio?
-- Classes afetam a fórmula de dano de Bosses (capítulo 6) — com que peso?
+**Resolvido — Sprint "Classes Architecture (Final Design)".** As 3
+perguntas que estavam aqui (via de obtenção além do Hero Token; classes
+desde o início ou desbloqueio progressivo; peso na fórmula de dano de
+Boss) estão todas respondidas em
+[`docs/design/classes-final-architecture.md`](../design/classes-final-architecture.md).
+Removidas desta lista.
 
 ## Bosses (capítulo 6)
 
 Design fechado (todos os 6 blocos decididos, MVP consolidado). Resta apenas:
 
-- Qual a fórmula final de dano (`Base × Equipamentos × Classe × Critical`)
-  quando Equipamentos/Classe tiverem valores numéricos definidos? Depende
-  dos capítulos 3/4, não pode ser fechado isoladamente aqui.
 - Valores reais dos tiers de escala (vida/recompensa por faixa) — os
   números atuais são ilustrativos, a calibrar com dados de playtest.
+
+A fórmula final de dano (`Base × Equipamentos × Classe × Critical`) não
+está mais em aberto — `Classe_mult` tem valores reais definidos em
+`docs/design/classes-final-architecture.md`, Etapa 7. Falta apenas a
+implementação (ver `docs/design/technical-roadmap.md`), não mais design.
 
 ## Quests (capítulo 7)
 
@@ -52,10 +56,11 @@ ainda.
   independentes — detalhes de implementação não definidos)?
 - Quais os novos valores de `DROP_CHANCE` e pesos de raridade?
 - Quais mecanismos de sink existem (craft, fusão, taxa de listagem, etc.)?
-- Hero Token pode circular no Marketplace antes do resgate, ou é
-  intransferível até resgatar?
-- Como funciona exatamente o "token de classe"?
 - Como medir e controlar inflação?
+
+Hero Token (circulação no Marketplace, "classe exclusiva") não está mais
+em aberto — resolvido em
+`docs/design/classes-final-architecture.md`, Etapa 8.
 
 ## Marketplace (capítulo 11)
 

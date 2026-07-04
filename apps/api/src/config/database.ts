@@ -14,11 +14,11 @@ let db: DatabaseSync | null = null;
  * Seguro rodar em todo boot — só executa de fato na primeira vez.
  */
 function runMigrations(database: DatabaseSync): void {
-  const columns = database
+  const characterColumns = database
     .prepare("PRAGMA table_info(characters)")
     .all() as Array<{ name: string }>;
 
-  const hasWelcomeColumn = columns.some(
+  const hasWelcomeColumn = characterColumns.some(
     (col) => col.name === "first_join_reward_at",
   );
 
@@ -35,6 +35,86 @@ function runMigrations(database: DatabaseSync): void {
     console.log(
       "[Migration] first_join_reward_at adicionada e populada para personagens existentes.",
     );
+  }
+
+  // Sprint Character Attributes Schema — SUS ainda não tem de onde ser
+  // derivado (Classe não existe, capítulo 4 da Bible ainda Placeholder;
+  // Combat Model já decidiu que equipamento não contribui para SUS no
+  // MVP). Placeholder explícito em 0 até Classes existir e poder
+  // sobrescrever este valor — nunca fica implícito.
+  const hasSusColumn = characterColumns.some((col) => col.name === "sus_base");
+  if (!hasSusColumn) {
+    database.exec(
+      "ALTER TABLE characters ADD COLUMN sus_base INTEGER NOT NULL DEFAULT 0",
+    );
+    console.log("[Migration] characters.sus_base adicionada (default 0, placeholder até Classes existir).");
+  }
+
+  const itemColumns = database
+    .prepare("PRAGMA table_info(items)")
+    .all() as Array<{ name: string }>;
+
+  // damage_type: mesma coluna serve dois papéis, pelo mesmo motivo (tipo
+  // elemental do item) — em armas, decide se o ATQ é físico ou mágico; em
+  // armadura/elmo/botas/amuleto/anel, decide se a Resistência que o item
+  // concede é física ou mágica. Default 'physical' para todo o catálogo
+  // existente — nenhum item de hoje foi desenhado como mágico, então isso
+  // não muda nenhum comportamento atual, só abre o campo para itens novos.
+  const hasDamageType = itemColumns.some((col) => col.name === "damage_type");
+  if (!hasDamageType) {
+    database.exec(
+      "ALTER TABLE items ADD COLUMN damage_type TEXT NOT NULL DEFAULT 'physical' CHECK (damage_type IN ('physical', 'magic'))",
+    );
+    console.log("[Migration] items.damage_type adicionada (default 'physical').");
+  }
+
+  // uti_bonus: contribuição bruta de UTI de um item equipado, somada em
+  // runtime entre todos os itens equipados. Default 0 — nenhum valor de
+  // calibração foi decidido nesta Sprint (é infraestrutura, não balanço).
+  const hasUtiBonus = itemColumns.some((col) => col.name === "uti_bonus");
+  if (!hasUtiBonus) {
+    database.exec(
+      "ALTER TABLE items ADD COLUMN uti_bonus INTEGER NOT NULL DEFAULT 0",
+    );
+    console.log("[Migration] items.uti_bonus adicionada (default 0).");
+  }
+
+  // Sprint Encounter System — o Encounter atual de uma expedição é só
+  // texto + categoria + ícone, nunca uma recompensa: nenhuma tabela nova,
+  // só duas colunas a mais na expedição já existente (mesma disciplina de
+  // "sem banco complexo" pedida na Sprint). `current_event` (já existente)
+  // continua sendo o texto narrativo; category/icon são novos.
+  const expeditionColumns = database
+    .prepare("PRAGMA table_info(expeditions)")
+    .all() as Array<{ name: string }>;
+
+  const hasEncounterCategory = expeditionColumns.some((col) => col.name === "current_encounter_category");
+  if (!hasEncounterCategory) {
+    database.exec("ALTER TABLE expeditions ADD COLUMN current_encounter_category TEXT");
+    console.log("[Migration] expeditions.current_encounter_category adicionada.");
+  }
+
+  const hasEncounterIcon = expeditionColumns.some((col) => col.name === "current_encounter_icon");
+  if (!hasEncounterIcon) {
+    database.exec("ALTER TABLE expeditions ADD COLUMN current_encounter_icon TEXT");
+    console.log("[Migration] expeditions.current_encounter_icon adicionada.");
+  }
+
+  // Sprint Founder Identity & Prestige — só o título/moldura *equipado*
+  // vive em characters (um de cada por vez, igual a equipped_items por
+  // slot); a lista de desbloqueados vive em character_titles/
+  // character_frames. Default NULL — nenhum personagem já existente
+  // ganha um título retroativamente só por esta migração rodar.
+  const hasEquippedTitle = characterColumns.some((col) => col.name === "equipped_title_id");
+  if (!hasEquippedTitle) {
+    database.exec("ALTER TABLE characters ADD COLUMN equipped_title_id INTEGER REFERENCES titles(id)");
+    console.log("[Migration] characters.equipped_title_id adicionada.");
+  }
+
+  const hasEquippedFrame = characterColumns.some((col) => col.name === "equipped_frame_id");
+  if (!hasEquippedFrame) {
+    database.exec("ALTER TABLE characters ADD COLUMN equipped_frame_id INTEGER REFERENCES frames(id)");
+    console.log("[Migration] characters.equipped_frame_id adicionada.");
   }
 }
 

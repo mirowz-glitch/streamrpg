@@ -74,19 +74,10 @@ nav {
   border-radius: 50%;
   border: 2px solid #9146ff;
 }
-.stat-line {
-  color: #9aa0a6;
-  margin-top: 0.75rem;
-}
 .ping-box {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid #2a2f3d;
-}
-.equipped-list ul {
-  margin: 0.5rem 0 0;
-  padding-left: 1.25rem;
-  color: #bf94ff;
 }
 .error {
   color: #ff6b6b;
@@ -131,9 +122,8 @@ nav {
 }
 .ranking-list {
   margin-top: 1rem;
-}
-.ranking-list li {
-  margin-bottom: 0.5rem;
+  padding-left: 0;
+  list-style: none;
 }
 .obs-box {
   margin: 1.5rem 0;
@@ -203,79 +193,1571 @@ nav {
 .overlay-empty {
   color: #9aa0a6;
 }
-.xp-bar {
+/* Barra de progresso genérica — reutilizada por XP, HP do Boss e
+   progresso de Expedição (normal/compacta). Cada variante só troca
+   altura/gradiente/duração da transição; a estrutura track+fill é a
+   mesma, extraída de 4 declarações que eram quase idênticas. */
+.progress-bar {
   width: 100%;
-  height: 10px;
   background: #2a2f3d;
   border-radius: 999px;
   overflow: hidden;
 }
-.xp-bar-fill {
+.progress-bar-fill {
   height: 100%;
+  transition: width 0.4s ease;
+}
+.progress-bar-xp {
+  height: 10px;
+}
+.progress-bar-xp .progress-bar-fill {
   background: linear-gradient(90deg, #9146ff, #bf94ff);
-  transition: width 0.3s ease;
+  transition-duration: 0.3s;
 }
-.login-card {
-  max-width: 420px;
-  margin: 4rem auto;
+.progress-bar-boss {
+  height: 14px;
+}
+.progress-bar-boss .progress-bar-fill {
+  background: linear-gradient(90deg, #ea4335, #fbbc04);
+}
+.progress-bar-expedition {
+  height: 10px;
+  margin-top: 0.75rem;
+}
+.progress-bar-expedition .progress-bar-fill,
+.progress-bar-expedition-compact .progress-bar-fill {
+  background: linear-gradient(90deg, #34a853, #9146ff);
+}
+.progress-bar-expedition-compact {
+  height: 6px;
+}
+.item-compare {
+  margin: 6px 0;
+}
+
+/* Sprint Equipment Experience */
+.rarity-border-common {
+  border-width: 2px;
+  border-color: #9aa0a6;
+}
+.rarity-border-uncommon {
+  border-width: 2px;
+  border-color: #34a853;
+}
+.rarity-border-rare {
+  border-width: 2px;
+  border-color: #4285f4;
+}
+.rarity-border-epic {
+  border-width: 2px;
+  border-color: #a142f4;
+}
+.rarity-border-legendary {
+  border-width: 2px;
+  border-color: #fbbc04;
+  box-shadow: 0 0 8px rgba(251, 188, 4, 0.35);
+}
+.badge-equipped,
+.badge-new,
+.badge-best {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75em;
+  font-weight: 700;
+  margin-left: 8px;
+}
+.badge-equipped {
+  background: rgba(145, 70, 255, 0.25);
+  color: #bf94ff;
+}
+.badge-new {
+  background: rgba(52, 168, 83, 0.25);
+  color: #34a853;
+}
+.badge-best {
+  background: rgba(66, 133, 244, 0.25);
+  color: #4285f4;
+}
+.item-comparison {
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  font-size: 0.85em;
+}
+.comparison-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.comparison-arrow {
   text-align: center;
+  color: #9aa0a6;
+  margin: 2px 0;
 }
-.login-card h1 {
-  font-size: 2.5rem;
+.comparison-delta-positive {
+  color: #34a853;
+  font-weight: 700;
+  text-align: right;
+}
+.comparison-delta-negative {
+  color: #ea4335;
+  font-weight: 700;
+  text-align: right;
+}
+.comparison-delta-neutral {
+  color: #9aa0a6;
+  font-style: italic;
+  text-align: right;
+}
+.card h2 {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+  color: #e8eaed;
+}
+.power-summary {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #2a2f3d;
+}
+.power-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem 1.5rem;
+  margin-top: 0.5rem;
+}
+.power-grid div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+.power-grid span {
+  color: #9aa0a6;
+}
+
+/* Sprint Boss Experience */
+.boss-card {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: rgba(191, 148, 255, 0.08);
+  border: 1px solid #9146ff;
+  border-radius: 10px;
+}
+.boss-card-resolved {
+  border-color: #34a853;
+  background: rgba(52, 168, 83, 0.08);
+}
+.boss-card-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 0.25rem;
+}
+.boss-card-name {
+  color: #bf94ff;
+  font-size: 0.9rem;
   margin-bottom: 0.5rem;
 }
-.login-card span {
+.boss-card-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #9aa0a6;
+  margin-top: 0.25rem;
+}
+.boss-card-hint {
+  color: #9aa0a6;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
+}
+.boss-card-participants {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+.boss-rewards-list {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+  font-size: 0.9rem;
+}
+.boss-event-log {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #2a2f3d;
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+.boss-event-log ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.1rem;
+}
+.boss-card-compact {
+  margin: 0 0 0.75rem;
+  padding: 0.6rem 0.75rem;
+}
+.boss-card-compact .boss-card-title {
+  font-size: 0.9rem;
+}
+.boss-card-compact .progress-bar-boss {
+  height: 8px;
+}
+.boss-card-compact .boss-card-stats {
+  font-size: 0.75rem;
+}
+
+/* Sprint Identity & Progression */
+.loading-state,
+.empty-state {
+  color: #9aa0a6;
+}
+.empty-state {
+  padding: 1.5rem;
+  text-align: center;
+  background: #0f1117;
+  border: 1px dashed #2a2f3d;
+  border-radius: 8px;
+}
+.empty-state p {
+  margin: 0.25rem 0;
+}
+.character-avatar-placeholder {
+  background: #2a2f3d;
+}
+.character-badges {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+.badge-class,
+.badge-level {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.badge-class {
+  background: rgba(154, 160, 166, 0.2);
+  color: #9aa0a6;
+}
+.badge-level {
+  background: rgba(145, 70, 255, 0.25);
+  color: #bf94ff;
+}
+.identity-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.identity-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+.identity-stat strong {
+  font-size: 1.2rem;
+  color: #e8eaed;
+}
+.identity-stat-highlight {
+  border-color: #9146ff;
+  background: rgba(145, 70, 255, 0.08);
+}
+.identity-stat-highlight strong {
+  color: #bf94ff;
+}
+.equipment-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #2a2f3d;
+}
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+.equipment-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.75rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  min-height: 4.5rem;
+}
+.equipment-slot-filled {
+  border-color: rgba(145, 70, 255, 0.4);
+}
+.equipment-slot-label {
+  font-size: 0.75rem;
+  color: #9aa0a6;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.equipment-slot-item {
+  font-weight: 700;
+}
+.equipment-slot-meta {
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+.equipment-slot-empty {
+  font-size: 0.85rem;
+  color: #565b66;
+  font-style: italic;
+}
+.inventory-group {
+  margin-bottom: 1.25rem;
+}
+.inventory-group-title {
+  font-size: 0.9rem;
+  color: #bf94ff;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0 0 0.5rem;
+}
+.overlay-log {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+.overlay-log li {
+  padding: 2px 0;
+}
+.ranking-entry {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #2a2f3d;
+}
+.ranking-entry-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+.ranking-position {
+  font-weight: 700;
+  color: #bf94ff;
+  min-width: 2rem;
+}
+.ranking-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+.ranking-avatar.placeholder {
+  background: #2a2f3d;
+}
+.ranking-entry-name {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.ranking-entry-meta {
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+.ranking-title-slot {
+  min-width: 1.5rem;
+  font-size: 0.8rem;
+  color: #fbbc04;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ranking-gap {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+.ranking-my-position {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #2a2f3d;
+  color: #bf94ff;
+  font-weight: 600;
+}
+
+/* Sprint World Simulation */
+.timeline-idle {
+  color: #9aa0a6;
+  font-style: italic;
+}
+.timeline-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.timeline-list li {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.6rem;
+  background: #0f1117;
+  border-radius: 6px;
+}
+.timeline-time {
+  color: #bf94ff;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.region-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+.region-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.85rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+}
+.region-name {
+  font-size: 1rem;
+}
+.region-difficulty {
+  font-size: 0.75rem;
+  color: #bf94ff;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.region-description {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+  color: #c4c7c5;
+  font-style: italic;
+}
+.region-theme {
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+.kingdom-stats-title {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #2a2f3d;
+}
+.kingdom-stats-list {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  color: #c4c7c5;
+}
+.kingdom-stats-list li {
+  margin-bottom: 0.3rem;
+}
+
+/* Sprint Expedition System */
+.expedition-panel {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #2a2f3d;
+}
+.expedition-trail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+.expedition-trail-arrow {
+  color: #9aa0a6;
+}
+.expedition-trail-active {
+  color: #bf94ff;
+  font-weight: 700;
+}
+.expedition-trail-visited {
+  color: #9aa0a6;
+}
+.expedition-progress-percent {
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+.expedition-current-event {
+  margin: 0.5rem 0 0;
+  font-style: italic;
+  color: #c4c7c5;
+  font-size: 0.9rem;
+}
+.expedition-compact {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.expedition-compact-region,
+.expedition-compact-status {
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+.expedition-encounter-icon {
+  margin-right: 0.15rem;
+}
+
+/* Sprint Encounter System */
+.encounter-recent-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.encounter-recent-list li {
+  font-size: 0.9rem;
+  padding: 0.5rem 0.65rem;
+  background: #0f1117;
+  border-radius: 6px;
+  color: #c4c7c5;
+}
+.encounter-recent-icon {
+  margin-right: 0.2rem;
+}
+.encounter-recent-region {
+  color: #9aa0a6;
+  font-size: 0.8rem;
+}
+
+/* Sprint Founder Identity & Prestige */
+.character-title,
+.overlay-title {
+  margin: 0.1rem 0;
+  color: #fbbc04;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.overlay-title {
+  font-size: 0.75rem;
+}
+/* border-style explícito em todas — .ranking-avatar/.overlay-avatar não
+   têm nenhum border próprio (diferente de .character-avatar), então sem
+   "solid" aqui a borda fica invisível ali mesmo com width/color certos
+   (achado real, confirmado inspecionando o Ranking no navegador). */
+.frame-border-bronze {
+  border-style: solid;
+  border-width: 3px;
+  border-color: #b08d57;
+}
+.frame-border-prata {
+  border-style: solid;
+  border-width: 3px;
+  border-color: #c0c0c8;
+}
+.frame-border-ouro {
+  border-style: solid;
+  border-width: 3px;
+  border-color: #fbbc04;
+  box-shadow: 0 0 10px rgba(251, 188, 4, 0.45);
+}
+.frame-border-fundador {
+  border-style: solid;
+  border-width: 3px;
+  border-color: #9146ff;
+  box-shadow: 0 0 10px rgba(145, 70, 255, 0.5);
+}
+.frame-border-alpha {
+  border-style: solid;
+  border-width: 3px;
+  border-color: #ea4335;
+  box-shadow: 0 0 10px rgba(234, 67, 53, 0.45);
+}
+.frame-border-evento {
+  border-style: solid;
+  border-width: 3px;
+  border-color: #34a853;
+  box-shadow: 0 0 10px rgba(52, 168, 83, 0.45);
+}
+.identity-panel {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #2a2f3d;
+}
+.identity-subtitle {
+  margin: 1rem 0 0.25rem;
+  font-size: 0.9rem;
+  color: #bf94ff;
+}
+.identity-unlock-list {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.identity-unlock-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+}
+.identity-unlock-list li.identity-unlock-equipped {
+  border-color: #9146ff;
+  background: rgba(145, 70, 255, 0.08);
+}
+
+/* Sprint Kingdom Prestige System */
+.kingdom-banner {
+  border-color: #9146ff;
+  background: rgba(145, 70, 255, 0.06);
+}
+.kingdom-prestige {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}
+.kingdom-prestige-label {
+  color: #9aa0a6;
+  font-size: 0.9rem;
+}
+.kingdom-prestige-score {
+  font-size: 1.8rem;
+  color: #bf94ff;
+}
+.hall-of-fame-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.6rem;
+}
+.hall-of-fame-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+}
+.hall-of-fame-icon {
+  font-size: 1.4rem;
+}
+.hall-of-fame-role {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.85rem;
+}
+.hall-of-fame-holder {
+  color: #bf94ff;
+}
+.hall-of-fame-empty {
+  color: #565b66;
+  font-style: italic;
+}
+.character-kingdom-roles {
+  margin: 0.5rem 0;
+  font-size: 0.85rem;
+  color: #bf94ff;
+}
+.overlay-hall-of-fame {
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: #fbbc04;
+}
+.ranking-role-icons {
+  display: block;
+  font-size: 0.9rem;
+  margin-top: 0.15rem;
+}
+
+/* Sprint Capital City */
+.city-banner label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #9aa0a6;
+}
+.city-map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.85rem;
+  margin-top: 0.75rem;
+}
+.city-building-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 1rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.city-building-card:hover {
+  border-color: #9146ff;
+  transform: translateY(-2px);
+}
+.city-building-icon {
+  font-size: 1.8rem;
+}
+.city-building-name {
+  font-size: 1rem;
+}
+.city-building-description {
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+.city-back-btn {
+  background: none;
+  border: 1px solid #2a2f3d;
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  color: #bf94ff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+.city-back-btn:hover {
+  border-color: #9146ff;
+}
+.city-building-screen h2 {
+  margin-top: 0;
+}
+.city-building-banner {
+  display: inline-block;
+  margin: 0.75rem 0;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(145, 70, 255, 0.15);
+  color: #bf94ff;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+.city-founder-list {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  color: #fbbc04;
+}
+
+/* Sprint NPCs Vivos */
+.npc-intro {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  margin: 0.75rem 0 1rem;
+  padding: 0.85rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 10px;
+}
+.npc-portrait {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+.npc-portrait-square {
+  border-radius: 10px;
+}
+.npc-portrait-circle {
+  border-radius: 50%;
+}
+.npc-portrait-hex {
+  clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
+}
+.npc-portrait-shield {
+  clip-path: polygon(50% 0%, 100% 15%, 100% 60%, 50% 100%, 0% 60%, 0% 15%);
+}
+.npc-portrait-arch {
+  clip-path: polygon(0% 100%, 0% 40%, 50% 0%, 100% 40%, 100% 100%);
+}
+.npc-intro-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.npc-name {
+  font-size: 1rem;
+}
+.npc-profession {
+  font-size: 0.75rem;
+  color: #9aa0a6;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.npc-quote {
+  margin: 0.35rem 0 0;
+  font-style: italic;
+  color: #bf94ff;
+  font-size: 0.9rem;
+}
+.npc-description {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: #c4c7c5;
+}
+
+.city-hub-bar {
+  margin-top: 0.75rem;
+}
+.city-hub-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(90deg, rgba(145, 70, 255, 0.18), rgba(145, 70, 255, 0.02));
+  border: 1px solid #2a2f3d;
+  border-left: 4px solid #9146ff;
+  border-radius: 8px;
+  font-size: 1.05rem;
+}
+.city-hub-crest {
+  font-size: 1.3rem;
+}
+.city-square-decor {
+  display: flex;
+  gap: 1rem;
+  margin: 0.75rem 0;
+  padding: 0.6rem 0;
+  border-top: 1px dashed #2a2f3d;
+  border-bottom: 1px dashed #2a2f3d;
+  font-size: 1.4rem;
+}
+.alchemist-shelf {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  font-size: 1.6rem;
+}
+
+/* ============================================================
+   Sprint Landing Page 2.0
+   ============================================================ */
+.landing-page {
+  position: relative;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+.landing-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+.landing-background-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Hero --- */
+.hero-section {
+  min-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 1.5rem 0;
+}
+.hero-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.hero-title {
+  font-size: 4.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+  text-shadow: 0 0 40px rgba(145, 70, 255, 0.35);
+}
+.hero-title-accent {
   color: #9146ff;
 }
-.item-compare {
-  margin: 6px 0;
+.hero-tagline {
+  font-size: 1.3rem;
+  color: #c4c7c5;
+  max-width: 560px;
+  margin: 0 auto 2rem;
+  line-height: 1.5;
 }
-.compare-badge {
+.hero-cta {
+  font-size: 1.15rem;
+  padding: 0.9rem 2.2rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #9146ff, #6a3bd6);
+  box-shadow: 0 8px 30px rgba(145, 70, 255, 0.45);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.hero-cta:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(145, 70, 255, 0.55);
+}
+.hero-illustration {
+  width: 100%;
+  max-width: 1400px;
+  margin: 2.5rem auto 0;
+}
+.hero-illustration-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -20px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Seções gerais --- */
+.landing-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+.landing-section-title {
+  font-size: 2rem;
+  text-align: center;
+  margin: 0 0 2rem;
+}
+.landing-example-tag {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.85em;
-  font-weight: 600;
+  margin-bottom: 0.75rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(154, 160, 166, 0.15);
+  color: #9aa0a6;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
-.compare-better {
-  background: rgba(52, 168, 83, 0.2);
-  color: #34a853;
+
+/* --- Destaques (FeatureCard) --- */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
 }
-.compare-worse {
-  background: rgba(234, 67, 53, 0.2);
-  color: #ea4335;
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(160deg, #1a1d27, #14161f);
+  border: 1px solid #2a2f3d;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, border-color 0.15s ease;
 }
-.compare-equal {
-  background: rgba(154, 160, 166, 0.2);
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: #9146ff;
+}
+.feature-card-icon {
+  font-size: 2.2rem;
+}
+.feature-card-title {
+  font-size: 1.15rem;
+}
+.feature-card-description {
+  margin: 0;
+  color: #9aa0a6;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* --- Como funciona --- */
+.how-it-works {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 480px;
+  display: grid;
+  gap: 0;
+}
+.how-it-works-step {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: #1a1d27;
+  border: 1px solid #2a2f3d;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
+}
+.how-it-works-number {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(145, 70, 255, 0.2);
+  color: #bf94ff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.how-it-works-icon {
+  font-size: 1.3rem;
+}
+.how-it-works-text {
+  font-size: 1.05rem;
+}
+
+/* --- Mundo --- */
+.world-highlights {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.world-highlight {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1.25rem 0.5rem;
+  background: #1a1d27;
+  border: 1px solid #2a2f3d;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #c4c7c5;
+}
+.world-highlight-icon {
+  font-size: 1.8rem;
+}
+
+/* --- Reino / Personagem (mock previews) --- */
+.kingdom-preview,
+.character-preview {
+  padding: 1.75rem;
+  background: linear-gradient(160deg, #1a1d27, #14161f);
+  border: 1px solid #2a2f3d;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+.kingdom-preview-prestige {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
   color: #9aa0a6;
 }
-.compare-new {
-  background: rgba(66, 133, 244, 0.2);
-  color: #4285f4;
+.kingdom-preview-prestige strong {
+  font-size: 1.8rem;
+  color: #bf94ff;
 }
-.item-compare {
-  margin: 6px 0;
+
+/* --- Chamada final --- */
+.final-cta {
+  text-align: center;
+  padding: 5rem 1.5rem 6rem;
+  background: radial-gradient(ellipse at 50% 0%, rgba(145, 70, 255, 0.12), transparent 70%);
 }
-.compare-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.85em;
+.final-cta-title {
+  font-size: 2.4rem;
+  margin: 0 0 0.5rem;
+}
+.final-cta-subtitle {
+  color: #9aa0a6;
+  font-size: 1.1rem;
+  margin: 0 0 2rem;
+}
+.final-cta-button {
+  font-size: 1.2rem;
+  padding: 1rem 2.6rem;
+}
+
+/* --- Responsivo (mobile) --- */
+@media (max-width: 720px) {
+  .hero-title {
+    font-size: 2.8rem;
+  }
+  .hero-tagline {
+    font-size: 1.05rem;
+  }
+  .hero-section {
+    min-height: auto;
+    padding: 2.5rem 1rem 0;
+  }
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+  .world-highlights {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .landing-section {
+    padding: 2.5rem 1rem;
+  }
+  .landing-section-title {
+    font-size: 1.5rem;
+  }
+  .final-cta-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* ============================================================
+   Sprint New Player Journey
+   ============================================================ */
+.nav-glow {
+  position: relative;
+  animation: nav-glow-pulse 2.2s ease-in-out infinite;
+  border-radius: 6px;
+}
+@keyframes nav-glow-pulse {
+  0%, 100% { text-shadow: 0 0 6px rgba(145, 70, 255, 0.35); }
+  50% { text-shadow: 0 0 14px rgba(145, 70, 255, 0.9); }
+}
+
+.guide-bubble {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.9rem;
+  background: rgba(145, 70, 255, 0.08);
+  border: 1px solid rgba(145, 70, 255, 0.3);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #c4c7c5;
+}
+.guide-bubble-icon {
+  flex-shrink: 0;
+}
+
+.welcome-card {
+  border-color: #9146ff;
+  background: linear-gradient(160deg, rgba(145, 70, 255, 0.12), #1a1d27);
+  margin-bottom: 1.5rem;
+}
+.welcome-card-title {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+.welcome-card-list {
+  list-style: none;
+  margin: 0.5rem 0 1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  font-size: 1.05rem;
+}
+.welcome-card-wish {
+  font-style: italic;
+  color: #bf94ff;
+}
+
+.first-steps {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #2a2f3d;
+}
+.first-steps-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.first-steps-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.75rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  color: #c4c7c5;
+}
+.first-steps-list li.first-steps-done {
+  color: #565b66;
+  text-decoration: line-through;
+}
+.first-steps-check {
+  font-size: 1.1rem;
+  color: #bf94ff;
+}
+
+.journey-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #565b66;
+}
+.journey-stage-active {
+  color: #bf94ff;
   font-weight: 600;
 }
-.compare-better {
-  background: rgba(52, 168, 83, 0.2);
-  color: #34a853;
+.journey-stage-arrow {
+  margin: 0 0.35rem;
+  color: #2a2f3d;
 }
-.compare-worse {
-  background: rgba(234, 67, 53, 0.2);
-  color: #ea4335;
+
+.eldrin-guide {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding: 0.85rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 10px;
 }
-.compare-equal {
-  background: rgba(154, 160, 166, 0.2);
+.eldrin-guide-text {
+  flex: 1;
+}
+.eldrin-guide-text p {
+  margin: 0.15rem 0 0;
+  font-style: italic;
+  color: #c4c7c5;
+}
+.eldrin-guide-dismiss {
+  background: #2a2f3d;
+  flex-shrink: 0;
+}
+
+.first-item-card {
+  border-color: #fbbc04;
+  background: linear-gradient(160deg, rgba(251, 188, 4, 0.1), #1a1d27);
+  margin: 1rem 0;
+}
+
+.first-level-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  background: rgba(251, 188, 4, 0.1);
+  border: 1px solid #fbbc04;
+  border-radius: 10px;
+}
+.first-level-banner-icon {
+  font-size: 1.8rem;
+  animation: first-level-pulse 1.4s ease-in-out infinite;
+}
+@keyframes first-level-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+.first-level-banner button {
+  margin-left: auto;
+  background: transparent;
   color: #9aa0a6;
 }
-.compare-new {
-  background: rgba(66, 133, 244, 0.2);
-  color: #4285f4;
+
+.first-boss-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: rgba(234, 67, 53, 0.12);
+  border: 1px solid #ea4335;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.first-boss-banner button {
+  background: transparent;
+  color: #9aa0a6;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 8, 20, 0.75);
+  padding: 1rem;
+}
+.new-title-modal {
+  max-width: 380px;
+  text-align: center;
+  border-color: #fbbc04;
+  box-shadow: 0 0 40px rgba(251, 188, 4, 0.25);
+}
+.new-title-modal-name {
+  display: block;
+  font-size: 1.3rem;
+  color: #fbbc04;
+  margin: 0.5rem 0;
+}
+.new-title-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.new-title-modal-later {
+  background: transparent;
+  border: 1px solid #2a2f3d;
+  color: #9aa0a6;
+}
+
+/* Sprint Library System */
+.library-screen {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.book-shelf {
+  flex: 1 1 280px;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.book-search-input {
+  margin: 0;
+}
+.book-category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.book-category-chip {
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  color: #9aa0a6;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.book-category-chip-active {
+  background: rgba(145, 70, 255, 0.2);
+  border-color: #9146ff;
+  color: #bf94ff;
+}
+.book-shelf-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 520px;
+  overflow-y: auto;
+}
+.book-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+.book-card:hover {
+  border-color: #9146ff;
+}
+.book-card-selected {
+  border-color: #9146ff;
+  background: rgba(145, 70, 255, 0.1);
+}
+.book-card-locked {
+  opacity: 0.7;
+}
+.book-card-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.book-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.book-card-title {
+  font-size: 0.9rem;
+}
+.book-card-author,
+.book-card-status {
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+.book-reader {
+  flex: 2 1 380px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.25rem;
+  background: linear-gradient(160deg, #221a35, #171326);
+  border: 1px solid #3a2f56;
+  border-radius: 10px;
+}
+.book-reader-empty,
+.book-reader-locked {
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  min-height: 200px;
+}
+.book-reader-title {
+  margin: 0;
+}
+.book-reader-author {
+  color: #bf94ff;
+  font-size: 0.85rem;
+}
+.book-reader-description {
+  color: #9aa0a6;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.book-reader-locked-message {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ea4335;
+}
+.book-page {
+  background: #14101f;
+  border: 1px solid #3a2f56;
+  border-radius: 6px;
+  padding: 1.25rem;
+  font-family: Georgia, "Times New Roman", serif;
+}
+.book-page-content {
+  color: #e8dfff;
+  line-height: 1.6;
+}
+.book-page-paragraph {
+  margin: 0 0 0.85rem;
+}
+.book-page-paragraph:last-child {
+  margin-bottom: 0;
+}
+.book-page-number {
+  margin-top: 0.75rem;
+  text-align: right;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+.book-reader-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Sprint Bestiary System — reaproveita .book-shelf/.book-search-input/
+   .book-shelf-list/.book-category-chip/.book-reader/.book-page da
+   Biblioteca (mesmo "Reader estilo Biblioteca"); só os elementos
+   próprios do Bestiário (card de criatura, filtros duplos, fatos
+   rápidos no reader) ganham classes novas abaixo. */
+.creature-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+.creature-card:hover {
+  border-color: #34a853;
+}
+.creature-card-selected {
+  border-color: #34a853;
+  background: rgba(52, 168, 83, 0.1);
+}
+.creature-card-locked {
+  opacity: 0.7;
+}
+.creature-card-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.creature-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.creature-card-name {
+  font-size: 0.9rem;
+}
+.creature-card-meta,
+.creature-card-status {
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+.creature-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.creature-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.creature-reader-facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin: 0.25rem 0 0.5rem;
+}
+.creature-reader-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.65rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+.creature-reader-fact strong {
+  color: #e8eaed;
+  font-size: 0.9rem;
 }

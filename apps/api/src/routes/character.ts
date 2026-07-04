@@ -5,8 +5,14 @@ import { getDb } from "../config/database.js";
 import { requireAuth } from "../middleware/auth.js";
 import { readBody, json, route } from "../middleware/router.js";
 import { getEquippedItems } from "../services/drop.service.js";
+import { SQLiteCharacterRepository } from "../infrastructure/SQLiteCharacterRepository.js";
 
-export function getCharacterByProfileId(profileId: string): CharacterResponse | null {
+// Instância só de leitura, reaproveitada em cada chamada — mesmo padrão
+// de instanciação leve já usado em outros pontos da API (sem estado
+// próprio, sem custo de manter viva entre requisições).
+const characterRepository = new SQLiteCharacterRepository();
+
+export async function getCharacterByProfileId(profileId: string): Promise<CharacterResponse | null> {
   const row = getDb()
     .prepare(
       `SELECT c.id, c.display_name, c.xp, c.gold, c.total_minutes, c.primary_channel_id, c.created_at, p.avatar_url
@@ -31,6 +37,10 @@ export function getCharacterByProfileId(profileId: string): CharacterResponse | 
 
   const progress = getProgress(row.xp);
   const equipped = getEquippedItems(row.id);
+  // Sprint Equipment Experience — reaproveita getCombatAttributes() já
+  // existente (Sprint Character Attributes Schema); nenhum cálculo novo,
+  // só exposto pela primeira vez na resposta do personagem.
+  const combat = await characterRepository.getCombatAttributes(row.id);
 
   return {
     id: row.id,
@@ -48,12 +58,22 @@ export function getCharacterByProfileId(profileId: string): CharacterResponse | 
       character_item_id: e.character_item_id,
       name: e.name,
       rarity: e.rarity as CharacterResponse["equipped"][number]["rarity"],
+      damage_type: e.damage_type,
+      uti_bonus: e.uti_bonus,
     })),
+    combat: {
+      attack_physical: combat?.attackPhysical ?? 0,
+      attack_magic: combat?.attackMagic ?? 0,
+      resistance_physical: combat?.resistancePhysical ?? 0,
+      resistance_magic: combat?.resistanceMagic ?? 0,
+      sus: combat?.susBase ?? 0,
+      uti: combat?.utiBonus ?? 0,
+    },
     created_at: new Date(row.created_at * 1000).toISOString(),
   };
 }
 
-export function createCharacter(profileId: string, displayName: string): CharacterResponse {
+export async function createCharacter(profileId: string, displayName: string): Promise<CharacterResponse> {
   const id = randomUUID();
   getDb()
     .prepare(
@@ -62,14 +82,14 @@ export function createCharacter(profileId: string, displayName: string): Charact
     )
     .run(id, profileId, displayName);
 
-  const character = getCharacterByProfileId(profileId);
+  const character = await getCharacterByProfileId(profileId);
   if (!character) {
     throw new Error("Failed to create character");
   }
   return character;
 }
 
-export function updateDisplayName(profileId: string, displayName: string): CharacterResponse | null {
+export async function updateDisplayName(profileId: string, displayName: string): Promise<CharacterResponse | null> {
   getDb()
     .prepare(
       `UPDATE characters SET display_name = ?, updated_at = strftime('%s','now') WHERE profile_id = ?`,
@@ -90,7 +110,7 @@ export const characterRoutes = [
   route("GET", "/api/character", async (_req, res, ctx) => {
     try {
       const profileId = requireAuth(ctx);
-      const character = getCharacterByProfileId(profileId);
+      const character = await getCharacterByProfileId(profileId);
       if (!character) {
         json(res, 404, { error: "Character not found" });
         return;
@@ -109,7 +129,7 @@ export const characterRoutes = [
         json(res, 400, { error: "display_name is required" });
         return;
       }
-      const character = updateDisplayName(profileId, body.display_name.trim());
+      const character = await updateDisplayName(profileId, body.display_name.trim());
       if (!character) {
         json(res, 404, { error: "Character not found" });
         return;

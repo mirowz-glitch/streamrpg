@@ -10,17 +10,34 @@ import { itemsRoutes } from "./routes/items.js";
 import { overlayRoutes } from "./routes/overlay.js";
 import { pingRoutes } from "./routes/ping.js";
 import { rankingRoutes } from "./routes/ranking.js";
+import { worldRoutes } from "./routes/world.js";
+import { expeditionRoutes } from "./routes/expedition.js";
+import { identityRoutes } from "./routes/identity.js";
+import { kingdomRoutes } from "./routes/kingdom.js";
 import { seedItems } from "./services/items.service.js";
+import { seedIdentityCatalog } from "./services/identity.service.js";
 import { sessionManager } from "./engine/SessionManager.js";
 import { EventBus } from "./engine/EventBus.js";
 import { GameEngine } from "./engine/GameEngine.js";
 import { XPSystem } from "./systems/XPSystemV2.js";
 import { WelcomeRewardSystem } from "./systems/WelcomeRewardSystem.js";
 import { DropSystem } from "./systems/DropSystem.js";
+import { BossSpawnSystem } from "./systems/BossSpawnSystem.js";
+import { BossParticipationSystem } from "./systems/BossParticipationSystem.js";
+import { BossCombatSystem } from "./systems/BossCombatSystem.js";
+import { BossRewardSystem } from "./systems/BossRewardSystem.js";
 import { SQLiteCharacterRepository } from "./infrastructure/SQLiteCharacterRepository.js";
 import { SQLiteItemRepository } from "./infrastructure/SQLiteItemRepository.js";
+import { SQLiteBossRepository } from "./infrastructure/SQLiteBossRepository.js";
+import { SQLiteBossParticipationRepository } from "./infrastructure/SQLiteBossParticipationRepository.js";
+import { SQLiteBossRewardRepository } from "./infrastructure/SQLiteBossRewardRepository.js";
 import { RandomProviderImpl } from "./infrastructure/RandomProviderImpl.js";
+import { SQLiteExpeditionRepository } from "./infrastructure/SQLiteExpeditionRepository.js";
+import { ExpeditionSystem } from "./systems/ExpeditionSystem.js";
+import { IdentitySystem } from "./systems/IdentitySystem.js";
+import { KingdomPrestigeSystem } from "./systems/KingdomPrestigeSystem.js";
 import { DebugEventSubscriber } from "./debug/DebugEventSubscriber.js";
+import { WorldEventSubscriber } from "./services/world-state.service.js";
 
 const routes: Route[] = [
   ...authRoutes,
@@ -29,10 +46,15 @@ const routes: Route[] = [
   ...overlayRoutes,
   ...rankingRoutes,
   ...itemsRoutes,
+  ...worldRoutes,
+  ...expeditionRoutes,
+  ...identityRoutes,
+  ...kingdomRoutes,
 ];
 
 getDb();
 seedItems();
+seedIdentityCatalog();
 
 const characterRepository = new SQLiteCharacterRepository();
 const bus = new EventBus();
@@ -47,6 +69,52 @@ const randomProvider = new RandomProviderImpl();
 const dropSystem = new DropSystem(itemRepository, randomProvider);
 dropSystem.register(bus);
 
+// BossSystem (Sprints B1-B4, docs/technical-design/boss-system.md) — código
+// já existia e era validado via harness isolado, mas nunca era registrado
+// no EventBus real. Conectado aqui pela primeira vez (Sprint Boss
+// Integration). Reaproveita characterRepository/itemRepository/
+// randomProvider já existentes acima — nenhuma instância nova além dos
+// Repositories próprios de Boss.
+const bossRepository = new SQLiteBossRepository();
+const bossParticipationRepository = new SQLiteBossParticipationRepository();
+const bossRewardRepository = new SQLiteBossRewardRepository();
+const bossSpawnSystem = new BossSpawnSystem(bossRepository);
+bossSpawnSystem.register(bus);
+const bossParticipationSystem = new BossParticipationSystem(bossRepository, bossParticipationRepository);
+bossParticipationSystem.register(bus);
+const bossCombatSystem = new BossCombatSystem(bossRepository, characterRepository, randomProvider);
+bossCombatSystem.register(bus);
+const bossRewardSystem = new BossRewardSystem(
+  bossParticipationRepository,
+  bossRewardRepository,
+  characterRepository,
+  itemRepository,
+  randomProvider,
+);
+bossRewardSystem.register(bus);
+
+// Sprint Expedition System — representação de "o que o personagem está
+// fazendo agora" (região/estado/progresso). Nunca concede XP/Gold/Drop,
+// nunca calcula dano — reaproveita randomProvider já existente, nenhuma
+// instância nova além do Repository próprio de Expedition.
+const expeditionRepository = new SQLiteExpeditionRepository();
+const expeditionSystem = new ExpeditionSystem(expeditionRepository, randomProvider);
+expeditionSystem.register(bus);
+
+// Sprint Founder Identity & Prestige — puramente cosmético (Títulos e
+// Molduras). Só observa dados que já existem (level, total_minutes,
+// boss_rewards, expeditions, viewer_sessions), nenhuma escrita em
+// nenhum outro sistema.
+const identitySystem = new IdentitySystem();
+identitySystem.register(bus);
+
+// Sprint Kingdom Prestige System — identidade coletiva de CANAL (Hall da
+// Fama, Prestígio). Só observa dados que já existem (channel_rankings,
+// bosses/boss_rewards, expeditions, viewer_sessions), nenhuma escrita em
+// nenhum outro sistema.
+const kingdomPrestigeSystem = new KingdomPrestigeSystem();
+kingdomPrestigeSystem.register(bus);
+
 // Destacável por configuração — ver debug/DebugEventSubscriber.ts.
 // Removendo esta linha (e a variável de ambiente), nenhum comportamento
 // de jogo muda.
@@ -54,6 +122,13 @@ if (env.debugEventSubscriber) {
   new DebugEventSubscriber().register(bus);
   console.log("[server] DebugEventSubscriber ativo (DEBUG_EVENT_SUBSCRIBER=true)");
 }
+
+// Sprint World Simulation — sempre ativo (não é uma ferramenta de debug,
+// é o que alimenta o painel "Mundo"/"Estado do Reino"). Só observa
+// eventos que já existem no EventBus, mesmo princípio do
+// DebugEventSubscriber: nenhuma regra de jogo, remoção não muda
+// comportamento de gameplay algum (só o painel deixaria de atualizar).
+new WorldEventSubscriber().register(bus);
 
 bus.subscribe("world.tick", (event) => {
   console.log(`[Engine] World Tick #${event.tickNumber} — sessões ativas: ${event.sessions.length}`);

@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { getProgress } from "@streamrpg/shared";
 import { getDb, nowUnix } from "../config/database.js";
 

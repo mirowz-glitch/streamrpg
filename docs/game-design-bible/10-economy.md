@@ -41,11 +41,16 @@ para o mundo do StreamRPG.
   4) — funciona como sink de economia e como ativo negociável ao mesmo
   tempo.
 
-Decisão em aberto: o token pode circular no Marketplace *antes* de ser
-resgatado, ou é intransferível até o resgate? Se circular livremente, vira
-uma moeda secundária lastreada em "trouxe alguém novo" — interessante, mas
-precisa ser avaliado contra risco de referral falso ganhando valor de
-mercado direto.
+**Decisão fechada em `docs/design/classes-final-architecture.md`
+(Etapa 8, Sprint "Classes Architecture"):** o token circula livremente no
+Marketplace uma vez emitido — o controle contra referral falso acontece
+na **emissão** (a conta indicada precisa atingir um limiar real de
+engajamento antes do token existir), não na circulação. Ver aquele
+documento para todas as 8 perguntas fechadas sobre o Hero Token (quando
+usar, quantidade, raridade, venda, troca, destruição, classe exclusiva,
+reset). Este capítulo continua sendo a fonte oficial do resto da
+Economia (RNG, `DROP_CHANCE`, pesos, sinks) — só o Hero Token tem fonte
+própria agora.
 
 ## Dependências
 

@@ -1,4 +1,4 @@
-import type { ItemRarity, ItemSlot } from "./types.js";
+import type { DamageType, ItemRarity, ItemSlot } from "./types.js";
 
 const RARITY_BASE: Record<ItemRarity, { attack: number; defense: number }> = {
   common: { attack: 5, defense: 3 },
@@ -45,3 +45,56 @@ export function comparePower(
   if (newTotal < currentTotal) return "worse";
   return "equal";
 }
+
+// ============================================================
+// Sprint Character Attributes Schema — infraestrutura para o Combat
+// Model (docs/combat-model/canonical-formula.md). Função nova, aditiva:
+// não altera getItemPower()/comparePower() acima, usados hoje pelo
+// frontend (InventoryPage) e pelo BossCombatSystem — nenhum dos dois é
+// tocado por esta Sprint.
+// ============================================================
+
+export interface CombatAttributes {
+  attackPhysical: number;
+  attackMagic: number;
+  resistancePhysical: number;
+  resistanceMagic: number;
+}
+
+/**
+ * Divide o mesmo poder de item já calculado por getItemPower() entre os
+ * dois tipos (físico/mágico), conforme damage_type. Armas contribuem só
+ * para ATQ (do tipo correspondente); os demais slots contribuem só para
+ * Resistência (do tipo correspondente) — mesma regra de
+ * getItemPower() (weapon = attack puro, resto = defense ponderado).
+ */
+export function getCombatAttributes(
+  rarity: ItemRarity,
+  slot: ItemSlot,
+  damageType: DamageType = "physical",
+): CombatAttributes {
+  const power = getItemPower(rarity, slot);
+
+  if (slot === "weapon") {
+    return {
+      attackPhysical: damageType === "physical" ? power.attack : 0,
+      attackMagic: damageType === "magic" ? power.attack : 0,
+      resistancePhysical: 0,
+      resistanceMagic: 0,
+    };
+  }
+
+  return {
+    attackPhysical: 0,
+    attackMagic: 0,
+    resistancePhysical: damageType === "physical" ? power.defense : 0,
+    resistanceMagic: damageType === "magic" ? power.defense : 0,
+  };
+}
+
+// Constante global, não um atributo por personagem — o capítulo 6 da
+// Bible já decidiu "pequena chance de crítico", igual para todos, nunca
+// modificada por atributo (reafirmado em
+// docs/combat-model/canonical-formula.md). Ilustrativo, não calibrado —
+// mesma convenção de DROP_CHANCE/TIER_MAX_HP em outras partes do projeto.
+export const CRITICAL_HIT_CHANCE = 0.05;

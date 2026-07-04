@@ -1,5 +1,10 @@
 # StreamRPG — Game Design Bible v1
 
+> Em qualquer matéria de mundo/lore/narrativa, a
+> [Constituição do Mundo](../world-constitution/README.md) tem prioridade
+> absoluta sobre este documento. Esta Bible continua sendo a fonte de
+> verdade para arquitetura/sistemas de código.
+
 Documento vivo, dividido em capítulos. Cada capítulo cresce de forma
 independente — capítulos de features ainda não construídas (Bosses, Quests,
 Kingdoms, Seasons) começam como placeholder com poucas linhas e ganham corpo

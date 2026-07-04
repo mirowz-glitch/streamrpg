@@ -25,10 +25,12 @@
  * - Nenhum sistema de jogo (XPSystem, DropSystem, etc.)
  */
 import { getDb, nowUnix } from "../config/database.js";
-import { getProgress } from "@streamrpg/shared";
+import { getProgress, getCombatAttributes as computeCombatAttributes } from "@streamrpg/shared";
+import type { DamageType, ItemRarity, ItemSlot } from "@streamrpg/shared";
 import type {
   CharacterRepository,
   CharacterSnapshot,
+  CombatAttributesSnapshot,
   XPResult,
 } from "../engine/types.js";
 
@@ -44,7 +46,7 @@ export class SQLiteCharacterRepository implements CharacterRepository {
     const db = getDb();
     const row = db
       .prepare(
-        `SELECT id, display_name, level, xp, gold
+        `SELECT id, display_name, level, xp, gold, sus_base
          FROM characters
          WHERE id = ?`,
       )
@@ -54,6 +56,7 @@ export class SQLiteCharacterRepository implements CharacterRepository {
         level: number;
         xp: number;
         gold: number;
+        sus_base: number;
       } | undefined;
     if (!row) return null;
     return {
@@ -62,6 +65,7 @@ export class SQLiteCharacterRepository implements CharacterRepository {
       level: row.level,
       totalXp: row.xp,
       gold: row.gold,
+      susBase: row.sus_base,
     };
   }
 
@@ -158,5 +162,69 @@ export class SQLiteCharacterRepository implements CharacterRepository {
       "UPDATE characters SET first_join_reward_at = ? WHERE id = ? AND first_join_reward_at IS NULL",
     ).run(now, characterId);
     return result.changes > 0;
+  }
+
+  /**
+   * Sprint Character Attributes Schema — reúne level/susBase do
+   * personagem com ATQ/Resistência físico-mágico e UTI derivados dos
+   * itens equipados (via getCombatAttributes() do shared, aditiva,
+   * getItemPower() original não é tocado). Consulta própria em vez de
+   * reaproveitar getEquippedItems() de services/drop.service.ts — um
+   * Repository não deve depender de uma Service (direção inversa à
+   * arquitetura já estabelecida), mesmo custando uma pequena duplicação
+   * de query.
+   */
+  async getCombatAttributes(characterId: string): Promise<CombatAttributesSnapshot | null> {
+    const db = getDb();
+
+    const character = db
+      .prepare("SELECT level, sus_base FROM characters WHERE id = ?")
+      .get(characterId) as { level: number; sus_base: number } | undefined;
+    if (!character) return null;
+
+    const equipped = db
+      .prepare(
+        `SELECT i.rarity, i.slot, i.damage_type, i.uti_bonus
+         FROM equipped_items e
+         JOIN character_items ci ON ci.id = e.character_item_id
+         JOIN items i ON i.id = ci.item_id
+         WHERE e.character_id = ?`,
+      )
+      .all(characterId) as Array<{
+        rarity: string;
+        slot: string;
+        damage_type: string;
+        uti_bonus: number;
+      }>;
+
+    let attackPhysical = 0;
+    let attackMagic = 0;
+    let resistancePhysical = 0;
+    let resistanceMagic = 0;
+    let utiBonus = 0;
+
+    for (const item of equipped) {
+      const combat = computeCombatAttributes(
+        item.rarity as ItemRarity,
+        item.slot as ItemSlot,
+        item.damage_type as DamageType,
+      );
+      attackPhysical += combat.attackPhysical;
+      attackMagic += combat.attackMagic;
+      resistancePhysical += combat.resistancePhysical;
+      resistanceMagic += combat.resistanceMagic;
+      utiBonus += item.uti_bonus;
+    }
+
+    return {
+      characterId,
+      level: character.level,
+      attackPhysical,
+      attackMagic,
+      resistancePhysical,
+      resistanceMagic,
+      susBase: character.sus_base,
+      utiBonus,
+    };
   }
 }

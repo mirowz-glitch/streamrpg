@@ -170,4 +170,89 @@ CREATE TABLE IF NOT EXISTS boss_rewards (
   granted_at INTEGER NOT NULL,
   PRIMARY KEY (boss_id, character_id)
 );
+
+-- Sprint Expedition System — representação pura de "o que o personagem
+-- está fazendo agora", nunca uma segunda fonte de XP/Gold/Drop/Combate.
+-- origin/destination/current_region_id são ids de região do World
+-- Design (packages/shared/src/regions.ts), nunca validados contra uma
+-- tabela própria — regiões continuam sendo conteúdo estático, não dado
+-- de banco (mesma decisão já usada para o catálogo de regiões do World
+-- Simulation).
+CREATE TABLE IF NOT EXISTS expeditions (
+  id TEXT PRIMARY KEY,
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  origin_region_id TEXT NOT NULL,
+  destination_region_id TEXT NOT NULL,
+  current_region_id TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'preparing',
+  status_started_at INTEGER NOT NULL,
+  progress_ticks INTEGER NOT NULL DEFAULT 0,
+  total_estimated_ticks INTEGER NOT NULL,
+  current_event TEXT,
+  started_at INTEGER NOT NULL,
+  completed_at INTEGER,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_expeditions_character
+  ON expeditions(character_id, created_at DESC);
+
+-- Só uma expedição não concluída por personagem por vez — mesmo padrão
+-- de índice parcial único já usado para "um Boss ativo por canal"
+-- (idx_bosses_one_active_per_channel).
+CREATE UNIQUE INDEX IF NOT EXISTS idx_expeditions_one_active_per_character
+  ON expeditions(character_id) WHERE status != 'completed';
+
+CREATE INDEX IF NOT EXISTS idx_expeditions_destination
+  ON expeditions(destination_region_id);
+
+-- Sprint Founder Identity & Prestige — catálogo de Títulos e Molduras,
+-- mesmo padrão já usado para o catálogo de Itens (linha 79): conteúdo
+-- extensível via seed, nunca hardcoded em código de gameplay. Nenhuma
+-- das duas tabelas concede XP/Gold/poder — são puramente cosméticas.
+CREATE TABLE IF NOT EXISTS titles (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  is_active INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS frames (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  slug TEXT NOT NULL UNIQUE,
+  name TEXT NOT NULL,
+  tier TEXT NOT NULL,
+  is_active INTEGER NOT NULL DEFAULT 1
+);
+
+-- PRIMARY KEY (character_id, title_id) é, ao mesmo tempo, o índice
+-- natural de consulta e a garantia de não-duplicação (Etapa 8) — mesmo
+-- papel que já cumpre em boss_rewards/boss_participation.
+CREATE TABLE IF NOT EXISTS character_titles (
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  title_id INTEGER NOT NULL REFERENCES titles(id) ON DELETE CASCADE,
+  unlocked_at INTEGER NOT NULL,
+  PRIMARY KEY (character_id, title_id)
+);
+
+CREATE TABLE IF NOT EXISTS character_frames (
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  frame_id INTEGER NOT NULL REFERENCES frames(id) ON DELETE CASCADE,
+  unlocked_at INTEGER NOT NULL,
+  PRIMARY KEY (character_id, frame_id)
+);
+
+-- Sprint Kingdom Prestige System — diferente de titles/frames acima
+-- (desbloqueio permanente por personagem), um cargo é "quem ocupa agora"
+-- por CANAL: PRIMARY KEY (channel_id, role_slug) garante um único
+-- ocupante por cargo por Reino, e o ocupante é substituído (UPDATE) — não
+-- acumulado — quando outro personagem ultrapassa o critério do cargo.
+CREATE TABLE IF NOT EXISTS kingdom_roles (
+  channel_id TEXT NOT NULL REFERENCES streamer_channels(id) ON DELETE CASCADE,
+  role_slug TEXT NOT NULL,
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  held_since INTEGER NOT NULL,
+  PRIMARY KEY (channel_id, role_slug)
+);
 `;

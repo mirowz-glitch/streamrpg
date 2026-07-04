@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/lib/rarity.ts"],
+  "sourcesContent": ["import type { ItemRarity } from \"@streamrpg/shared\";\n\n// Sprint Identity & Progression \u2014 extra\u00EDdo de InventoryPage (era\n// duplicado inline) para ser reaproveitado tamb\u00E9m no perfil do\n// personagem. Mesmas cores, nenhum valor novo.\nexport const RARITY_COLOR: Record<ItemRarity, string> = {\n  common: \"#9aa0a6\",\n  uncommon: \"#34a853\",\n  rare: \"#4285f4\",\n  epic: \"#a142f4\",\n  legendary: \"#fbbc04\",\n};\n\nexport const RARITY_LABEL: Record<ItemRarity, string> = {\n  common: \"Comum\",\n  uncommon: \"Incomum\",\n  rare: \"Raro\",\n  epic: \"\u00C9pico\",\n  legendary: \"Lend\u00E1rio\",\n};\n"],
+  "mappings": ";AAKO,IAAM,eAA2C;AAAA,EACtD,QAAQ;AAAA,EACR,UAAU;AAAA,EACV,MAAM;AAAA,EACN,MAAM;AAAA,EACN,WAAW;AACb;AAEO,IAAM,eAA2C;AAAA,EACtD,QAAQ;AAAA,EACR,UAAU;AAAA,EACV,MAAM;AAAA,EACN,MAAM;AAAA,EACN,WAAW;AACb;",
+  "names": []
+}

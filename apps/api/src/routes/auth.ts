@@ -55,7 +55,7 @@ export const authRoutes = [
           twitchUser.email ?? null,
           now,
         );
-        createCharacter(profileId, twitchUser.display_name);
+        await createCharacter(profileId, twitchUser.display_name);
         profile = { id: profileId };
       } else {
         db.prepare(

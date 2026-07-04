@@ -1,6 +1,12 @@
 # 4. Classes
 
-**Status:** 📌 Placeholder
+**Status:** 📌 Placeholder (índice) — **arquitetura fechada em
+[`docs/design/classes-final-architecture.md`](../design/classes-final-architecture.md)**,
+Sprint "Classes Architecture (Final Design)". Este capítulo permanece como
+o cartão de índice da Bible para o assunto; a decisão completa (4
+arquétipos, `Classe_mult`, Hero Token) vive no documento linkado, não
+aqui — ver `docs/ARCHITECTURE_INDEX.md` para a lista completa de fontes
+oficiais por assunto.
 
 Não existe sistema de classes hoje.
 

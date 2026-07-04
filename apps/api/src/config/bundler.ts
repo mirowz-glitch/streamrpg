@@ -23,10 +23,16 @@ export async function buildWebOnce(): Promise<void> {
   console.log("DEBUG cwd:", process.cwd());
   console.log("DEBUG WEB_SRC:", WEB_SRC);
   console.log("DEBUG WEB_DIST:", WEB_DIST);
+  // Sprint Performance Optimization — `outdir` + `splitting: true` deixa
+  // o esbuild extrair um chunk por página lazy-loaded (router.tsx usa
+  // React.lazy/import() dinâmico para cada rota principal). O entry
+  // point continua sendo emitido como "main.js" (nome do arquivo de
+  // entrada), então nada muda para quem já referenciava /main.js.
   await esbuild.build({
     entryPoints: [WEB_SRC],
     bundle: true,
-    outfile: resolve(WEB_DIST, "main.js"),
+    outdir: WEB_DIST,
+    splitting: true,
     format: "esm",
     jsx: "automatic",
     loader: { ".tsx": "tsx", ".ts": "ts" },
@@ -65,9 +71,14 @@ export async function handleStatic(
     }
   }
 
-  if (url === "/main.js" || url.endsWith(".js.map")) {
-    const filePath = url === "/main.js" ? resolve(WEB_DIST, "main.js") : resolve(WEB_DIST, url.slice(1));
-    console.log("DEBUG requesting main.js, filePath:", filePath, "exists:", existsSync(filePath));
+  // Sprint Performance Optimization — antes só servia "/main.js"
+  // literalmente; com code splitting (splitting: true), o esbuild também
+  // gera chunks separados (ex: /chunk-ABC123.js) que main.js importa via
+  // import() dinâmico. Qualquer .js/.js.map dentro de WEB_DIST é servido
+  // do mesmo jeito — main.js continua funcionando exatamente igual.
+  if (url.endsWith(".js") || url.endsWith(".js.map")) {
+    const filePath = resolve(WEB_DIST, url.slice(1));
+    console.log("DEBUG requesting js asset, filePath:", filePath, "exists:", existsSync(filePath));
     if (existsSync(filePath)) {
       const ext = filePath.slice(filePath.lastIndexOf("."));
       res.writeHead(200, { "Content-Type": MIME[ext] ?? "application/octet-stream" });
