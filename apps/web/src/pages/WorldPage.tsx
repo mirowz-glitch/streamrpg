@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { WorldStateResponse } from "@streamrpg/shared";
 import { AppNav } from "../components/ui/AppNav";
 import { Timeline } from "../components/ui/Timeline";
+import { KingdomNews } from "../components/ui/KingdomNews";
+import { WorldEventCard } from "../components/ui/WorldEventCard";
 import { RegionGallery } from "../components/ui/RegionGallery";
 import { HallOfFame } from "../components/ui/HallOfFame";
 import { StatsRow } from "../components/ui/StatsRow";
@@ -62,7 +64,7 @@ export function WorldPage() {
     );
   }
 
-  const { panel, kingdom, stats, timeline, idle_flavor, most_visited_regions, encounter_stats, channel_kingdom } = data;
+  const { panel, kingdom, stats, timeline, idle_flavor, most_visited_regions, encounter_stats, channel_kingdom, news, current_event } = data;
 
   return (
     <main className="page">
@@ -138,9 +140,16 @@ export function WorldPage() {
         </p>
       </div>
 
+      <WorldEventCard event={current_event} />
+
       <div className="card">
         <h2>Linha do tempo</h2>
         <Timeline events={timeline} idleFlavor={idle_flavor} />
+      </div>
+
+      <div className="card">
+        <h2>📰 Notícias do Reino</h2>
+        <KingdomNews items={news} />
       </div>
 
       <div className="card">

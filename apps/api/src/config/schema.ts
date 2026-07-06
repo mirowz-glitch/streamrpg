@@ -255,4 +255,27 @@ CREATE TABLE IF NOT EXISTS kingdom_roles (
   held_since INTEGER NOT NULL,
   PRIMARY KEY (channel_id, role_slug)
 );
+
+-- Sprint Kingdom Chronicles (MVP) — "Livro" permanente por personagem,
+-- ao contrário da Timeline/Jornal do Reino (buffers em memória, perdidos
+-- a cada reinício do servidor): cada linha aqui é definitiva. chapter_key
+-- identifica QUAL marco é aquele (ex: "arrival", "first_boss") — usado
+-- por ChronicleSystem para garantir no máximo uma entrada por
+-- personagem para os marcos "primeira vez" (INSERT condicional via
+-- NOT EXISTS, nunca um segundo caminho de escrita). Marcos que se
+-- repetem legitimamente (título desbloqueado, cargo assumido, drop raro)
+-- usam o mesmo chapter_key em várias linhas — cada uma é, por natureza,
+-- um evento novo e raro, não duplicação.
+CREATE TABLE IF NOT EXISTS character_chronicles (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  chapter_key TEXT NOT NULL,
+  icon TEXT NOT NULL,
+  title TEXT NOT NULL,
+  text TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_character_chronicles_character
+  ON character_chronicles(character_id, created_at ASC);
 `;

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/components/ui/Feedback.tsx"],
-  "sourcesContent": ["import type { ReactNode } from \"react\";\n\ntype FeedbackKind = \"notice\" | \"error\" | \"level-up\" | \"drop-alert\";\n\ninterface FeedbackProps {\n  kind: FeedbackKind;\n  children: ReactNode;\n}\n\n// Sprint Identity & Progression \u2014 consolida o markup de feedback que\n// antes se repetia em CharacterPage e InventoryPage (cada uma com seu\n// pr\u00F3prio <p className=\"...\">), sem criar nenhum evento novo: as classes\n// (notice/error/level-up/drop-alert) j\u00E1 existiam em styles.css.\nexport function Feedback({ kind, children }: FeedbackProps) {\n  return <p className={kind}>{children}</p>;\n}\n"],
-  "mappings": ";;;;;;AAcS;AADF,SAAS,SAAS,EAAE,MAAM,SAAS,GAAkB;AAC1D,SAAO,4CAAC,OAAE,WAAW,MAAO,UAAS;AACvC;",
-  "names": []
-}

@@ -8,6 +8,12 @@ import { isFlagSet, setFlag } from "../../lib/onboarding";
 // o jogador tem QUALQUER item (reaproveita /api/items, já existente;
 // nenhuma mudança em Drop/Economy). Mostrado uma única vez — não altera
 // o que o Drop concede, só celebra o que ele já concedeu.
+//
+// Sprint First 120 Seconds — como todo personagem novo já nasce com
+// "Luvas Rasgadas" equipada (FirstItemQuestSystem), este card passa a
+// ser, na prática, o momento em que a missão "equipar seu primeiro item"
+// vira visível. Reaproveitado tal como já era — só ganhou a fala do
+// Eldrin logo abaixo, no mesmo card, em vez de um componente novo.
 export function FirstItemCard() {
   const [firstItem, setFirstItem] = useState<InventoryItem | null>(null);
   const [dismissed, setDismissed] = useState(() => isFlagSet("first_item_announced"));
@@ -32,6 +38,7 @@ export function FirstItemCard() {
       <strong style={{ color: RARITY_COLOR[firstItem.rarity], fontSize: "1.2rem" }}>{firstItem.name}</strong>
       <span className="hint">{RARITY_LABEL[firstItem.rarity]}</span>
       <p className="item-desc">{firstItem.description}</p>
+      <p className="hint">🧙 Eldrin: "Nada mal. Agora pelo menos você consegue machucar um pão."</p>
       <button
         type="button"
         onClick={() => {

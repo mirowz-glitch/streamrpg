@@ -127,6 +127,39 @@ const RUINS_ENCOUNTERS: EncounterSnapshot[] = [
   { category: "ruinas", icon: "🏛", text: "Inscrições antigas cobrem as paredes" },
 ];
 
+// Sprint Wolves Ecosystem (Phase I) — 25 encounters dos Lobos do Bosque
+// Sussurrante, mesmo padrão de RUINS_ENCOUNTERS acima (região real,
+// categorias já existentes — nenhuma categoria nova). Só aparece quando
+// o destino é o próprio Bosque Sussurrante, casa da matilha (Bestiário).
+const WOLF_LIKE_REGIONS = new Set(["bosque-sussurrante"]);
+const WOLF_ENCOUNTERS: EncounterSnapshot[] = [
+  { category: "combate", icon: "⚔", text: "Lobos cercaram o grupo em silêncio" },
+  { category: "combate", icon: "⚔", text: "Um lobo isolado testa a coragem do grupo" },
+  { category: "combate", icon: "⚔", text: "A matilha ataca cercando o grupo por todos os lados" },
+  { category: "combate", icon: "⚔", text: "Presas afiadas surgem entre a vegetação densa" },
+  { category: "combate", icon: "⚔", text: "Dois lobos avançam de direções opostas" },
+  { category: "combate", icon: "⚔", text: "A matilha inteira cerca o grupo, em silêncio absoluto" },
+  { category: "natureza", icon: "🌲", text: "Uma matilha observa de longe, sem se aproximar" },
+  { category: "natureza", icon: "🌲", text: "Os lobos parecem seguir o grupo à distância" },
+  { category: "natureza", icon: "🌲", text: "Um filhote de lobo observa de longe, curioso" },
+  { category: "natureza", icon: "🌲", text: "O uivo da matilha ecoa por toda a floresta" },
+  { category: "natureza", icon: "🌲", text: "A matilha atravessa o caminho, ignorando o grupo" },
+  { category: "natureza", icon: "🌲", text: "Um lobo solitário atravessa a clareira, sem pressa" },
+  { category: "misterio", icon: "🧙", text: "Um uivo solitário ecoa mais alto que os outros" },
+  { category: "misterio", icon: "🧙", text: "Um uivo profundo cala todos os outros sons da floresta" },
+  { category: "misterio", icon: "🧙", text: "Um lobo de pelagem clara observa e desaparece sem atacar" },
+  { category: "misterio", icon: "🧙", text: "Um lobo marcado observa de uma distância segura, sem se mover" },
+  { category: "misterio", icon: "🧙", text: "Um uivo responde a outro, longe demais para ser da mesma matilha" },
+  { category: "misterio", icon: "🧙", text: "Um par de olhos observa por entre as árvores, depois some" },
+  { category: "misterio", icon: "🧙", text: "O Lobo Alfa aparece por um instante, antes de recuar para as sombras" },
+  { category: "descoberta", icon: "🎁", text: "Pegadas de lobo cruzam o caminho, recentes" },
+  { category: "descoberta", icon: "🎁", text: "Uma toca de lobo, vazia, é encontrada entre as raízes" },
+  { category: "descoberta", icon: "🎁", text: "Restos de uma caçada recente são encontrados no chão" },
+  { category: "descoberta", icon: "🎁", text: "Uma trilha de pegadas termina abruptamente, sem explicação" },
+  { category: "descoberta", icon: "🎁", text: "Uma presa de lobo fica presa entre as raízes de uma árvore" },
+  { category: "descoberta", icon: "🎁", text: "Um ninho de gravetos e pelos indica território de lobos por perto" },
+];
+
 function pickEncounter(
   status: ExpeditionStatus,
   destinationRegionId: string,
@@ -137,6 +170,11 @@ function pickEncounter(
   if ((status === "exploring" || status === "combating") && RUINS_LIKE_REGIONS.has(destinationRegionId) && random.next() < 0.4) {
     const idx = Math.floor(random.next() * RUINS_ENCOUNTERS.length);
     return RUINS_ENCOUNTERS[idx];
+  }
+
+  if ((status === "exploring" || status === "combating") && WOLF_LIKE_REGIONS.has(destinationRegionId) && random.next() < 0.4) {
+    const idx = Math.floor(random.next() * WOLF_ENCOUNTERS.length);
+    return WOLF_ENCOUNTERS[idx];
   }
 
   const pool = ENCOUNTERS_BY_STATE[status];

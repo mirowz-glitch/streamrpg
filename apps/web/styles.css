@@ -709,6 +709,20 @@ nav {
 .expedition-encounter-icon {
   margin-right: 0.15rem;
 }
+/* Sprint Living Expeditions (MVP) — narrativa "flicker" ambiente, uma
+   linha a mais além do Encounter (itálico como .expedition-current-event,
+   mas mais discreta — nunca compete com o evento estável). */
+.expedition-narrative {
+  margin: 0.25rem 0 0;
+  font-style: italic;
+  color: #bf94ff;
+  font-size: 0.85rem;
+}
+.expedition-compact-narrative {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: #bf94ff;
+}
 
 /* Sprint Encounter System */
 .encounter-recent-list {
@@ -1024,6 +1038,15 @@ nav {
   margin: 0.2rem 0 0;
   font-size: 0.8rem;
   color: #c4c7c5;
+}
+/* Sprint Living NPCs (MVP) — fala sorteada do catálogo de 100 falas,
+   uma por visita. Mesma cor/itálico de .npc-quote, levemente menor,
+   pra ficar claro que é uma fala diferente da frase de identidade fixa. */
+.npc-line {
+  margin: 0.35rem 0 0;
+  font-style: italic;
+  color: #9aa0a6;
+  font-size: 0.82rem;
 }
 
 .city-hub-bar {
@@ -1760,4 +1783,201 @@ nav {
 .creature-reader-fact strong {
   color: #e8eaed;
   font-size: 0.9rem;
+}
+
+/* Sprint Tavern Stories (MVP) — quatro blocos de conteúdo estático,
+   mesma paleta escura já usada no resto da Cidade (fundo #0f1117, borda
+   #2a2f3d, texto secundário #9aa0a6). */
+.tavern-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.tavern-block {
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+}
+.tavern-block h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+}
+.tavern-rumor {
+  color: #bf94ff;
+  font-style: italic;
+  margin: 0;
+}
+.tavern-conversations {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.tavern-conversation {
+  padding: 0.5rem 0.65rem;
+  background: #14101f;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+}
+.tavern-conversation p {
+  margin: 0.15rem 0;
+  font-size: 0.85rem;
+  color: #e8eaed;
+}
+.tavern-wall-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.tavern-note {
+  padding: 0.45rem 0.6rem;
+  background: #14101f;
+  border: 1px dashed #3a2f56;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: #9aa0a6;
+}
+.tavern-songs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  max-height: 320px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+  color: #e8dfff;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+/* Sprint Kingdom Chronicles (MVP) — o Livro do personagem: lista
+   vertical, mais antigo primeiro, estilo de página de livro (mesma
+   fonte serif já usada em .book-page). */
+.chronicle-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.chronicle-entry {
+  background: #14101f;
+  border: 1px solid #3a2f56;
+  border-radius: 8px;
+  padding: 1rem 1.15rem;
+}
+.chronicle-entry-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+.chronicle-entry-icon {
+  font-size: 1.1rem;
+}
+.chronicle-entry-title {
+  font-size: 1rem;
+  color: #e8dfff;
+  flex: 1;
+}
+.chronicle-entry-date {
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+.chronicle-entry-text {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  color: #c4c7c5;
+  line-height: 1.5;
+}
+
+/* Sprint Hidden Objects (MVP) — grade de pontos interativos da praça,
+   mesmo visual de .city-building-card (fundo #0f1117, borda #2a2f3d),
+   só menor: aqui não navega para lugar nenhum, só revela texto. */
+.hidden-objects-title {
+  margin: 1.25rem 0 0.25rem;
+}
+.hidden-objects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+.hidden-object {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding: 0.65rem 0.75rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  transition: border-color 0.15s ease;
+}
+.hidden-object:hover {
+  border-color: #9146ff;
+}
+.hidden-object-revealed {
+  border-color: #3a2f56;
+  background: #14101f;
+}
+.hidden-object-icon {
+  font-size: 1.3rem;
+}
+.hidden-object-name {
+  font-size: 0.85rem;
+  color: #9aa0a6;
+}
+.hidden-object-text {
+  font-size: 0.8rem;
+  color: #bf94ff;
+  font-style: italic;
+  white-space: pre-line;
+}
+
+/* Sprint Kingdom Events (MVP) — card único "Evento Atual", mesmo
+   .card genérico de sempre, sem nenhum botão/interação. */
+.world-event-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0.25rem;
+}
+.world-event-icon {
+  font-size: 1.4rem;
+}
+.world-event-name {
+  font-size: 1.05rem;
+}
+.world-event-description {
+  margin: 0.25rem 0;
+  color: #c4c7c5;
+}
+.world-event-npc-comment {
+  margin: 0.5rem 0 0;
+  font-style: italic;
+  color: #bf94ff;
+  font-size: 0.85rem;
+}
+
+/* Sprint Traveller Stories (MVP) — botão "História Aleatória", herda o
+   estilo padrão de <button> (roxo, mesmo de todo o resto do app); só
+   precisa de espaçamento próprio acima da estante/reader. */
+.traveller-random-btn {
+  margin: 0.75rem 0 1rem;
 }

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/pages/AuthCallbackPage.tsx"],
-  "sourcesContent": ["import { useEffect } from \"react\";\r\nimport { useNavigate } from \"react-router-dom\";\r\n\r\nexport function AuthCallbackPage() {\r\n  const navigate = useNavigate();\r\n\r\n  useEffect(() => {\r\n    navigate(\"/app/character\", { replace: true });\r\n  }, [navigate]);\r\n\r\n  return (\r\n    <main className=\"page\">\r\n      <div className=\"card\">Autenticando...</div>\r\n    </main>\r\n  );\r\n}\r\n"],
-  "mappings": ";;;;;;;;;;AAAA,mBAA0B;AAYpB;AATC,SAAS,mBAAmB;AACjC,QAAM,WAAW,YAAY;AAE7B,8BAAU,MAAM;AACd,aAAS,kBAAkB,EAAE,SAAS,KAAK,CAAC;AAAA,EAC9C,GAAG,CAAC,QAAQ,CAAC;AAEb,SACE,4CAAC,UAAK,WAAU,QACd,sDAAC,SAAI,WAAU,QAAO,6BAAe,GACvC;AAEJ;",
-  "names": []
-}

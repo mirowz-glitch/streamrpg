@@ -82,13 +82,15 @@ export interface XPGrantedEvent {
   newLevel: number;
   leveledUp: boolean;
   // Origem da concessão. DropSystem só rola o drop comum quando
-  // source === "tick" — welcome/boss têm sua própria recompensa
+  // source === "tick" — welcome/boss/quest têm sua própria recompensa
   // (Welcome não concede item; Boss concede via ItemRepository
-  // diretamente, capítulo 6) e não devem disparar um segundo drop do
-  // pool comum por cima. Sem este campo, qualquer xp.granted acionava
-  // o DropSystem incondicionalmente — bug real, já em produção via
-  // WelcomeRewardSystem, encontrado durante o design técnico do Boss.
-  source: "tick" | "welcome" | "boss";
+  // diretamente, capítulo 6; Quest — Sprint First 120 Seconds — também
+  // concede seu próprio item, o inicial, diretamente) e não devem
+  // disparar um segundo drop do pool comum por cima. Sem este campo,
+  // qualquer xp.granted acionava o DropSystem incondicionalmente — bug
+  // real, já em produção via WelcomeRewardSystem, encontrado durante o
+  // design técnico do Boss.
+  source: "tick" | "welcome" | "boss" | "quest";
   timestamp: number;
 }
 
@@ -357,6 +359,11 @@ export interface CharacterRepository {
   // é essa checagem, não hasReceivedWelcomeReward(), que fecha a janela
   // de corrida entre duas sessões simultâneas do mesmo personagem novo.
   markWelcomeRewardGranted(characterId: string, timestamp: number): Promise<boolean>;
+  // Sprint First 120 Seconds — mesmo par leitura/reivindicação-atômica
+  // de hasReceivedWelcomeReward()/markWelcomeRewardGranted(), agora para
+  // a missão "equipar seu primeiro item" (FirstItemQuestSystem).
+  hasCompletedFirstItemQuest(characterId: string): Promise<boolean>;
+  markFirstItemQuestCompleted(characterId: string, timestamp: number): Promise<boolean>;
   // Sprint Character Attributes Schema — reúne level + susBase (do
   // personagem) e ATQ/Resistência físico/mágico + UTI (dos itens
   // equipados) num único snapshot. Nenhuma regra de combate aqui, só
@@ -396,6 +403,11 @@ export interface ItemRepository {
     characterId: string,
     itemId: number,
   ): Promise<GrantedItem>;
+  // Sprint First 120 Seconds — lookup do item inicial ("Luvas Rasgadas")
+  // pelo slug estável do catálogo, sem depender de um ID numérico
+  // hardcoded (que muda entre bancos/seeds). Retorna null se o catálogo
+  // ainda não tiver sido semeado.
+  findBySlug(slug: string): Promise<ItemSnapshot | null>;
 }
 
 // ============================================================
@@ -557,4 +569,47 @@ export interface ExpeditionRepository {
 
 export interface RandomProvider {
   next(): number;
+}
+
+// ============================================================
+// CONTRATOS DO CHRONICLEREPOSITORY
+// ============================================================
+
+// Sprint Kingdom Chronicles (MVP) — "Livro" permanente por personagem.
+export interface ChronicleEntrySnapshot {
+  id: number;
+  chapterKey: string;
+  icon: string;
+  title: string;
+  text: string;
+  createdAt: number;
+}
+
+export interface ChronicleRepository {
+  // Só grava se este personagem ainda não tiver nenhuma entrada com este
+  // chapterKey (condicional no próprio INSERT, sem janela de corrida).
+  // Retorna true só quando esta chamada de fato gravou a entrada —
+  // mesmo contrato de markWelcomeRewardGranted/markFirstItemQuestCompleted,
+  // usado pelos marcos "primeira vez" (chegada, primeiro item, primeiro
+  // nível, primeiro Boss, primeira expedição).
+  insertOnce(
+    characterId: string,
+    chapterKey: string,
+    icon: string,
+    title: string,
+    text: string,
+    timestamp: number,
+  ): Promise<boolean>;
+  // Sempre grava uma nova entrada — usado pelos marcos que se repetem
+  // legitimamente (título desbloqueado, cargo assumido, drop raro): cada
+  // ocorrência já é, por natureza, um evento novo e raro.
+  insertAlways(
+    characterId: string,
+    chapterKey: string,
+    icon: string,
+    title: string,
+    text: string,
+    timestamp: number,
+  ): Promise<void>;
+  listByCharacter(characterId: string): Promise<ChronicleEntrySnapshot[]>;
 }

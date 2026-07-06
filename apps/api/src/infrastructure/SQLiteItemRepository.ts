@@ -120,4 +120,38 @@ export class SQLiteItemRepository implements ItemRepository {
       obtainedAt: row.obtained_at,
     };
   }
+
+  /**
+   * Sprint First 120 Seconds — busca um item ativo pelo slug estável do
+   * catálogo (ex: "luvas-rasgadas"), usado pelo FirstItemQuestSystem para
+   * conceder o item inicial sem depender de um ID numérico hardcoded.
+   */
+  async findBySlug(slug: string): Promise<ItemSnapshot | null> {
+    const db = getDb();
+    const row = db
+      .prepare(
+        `SELECT id, slug, name, rarity, slot, min_level
+         FROM items
+         WHERE slug = ? AND is_active = 1`,
+      )
+      .get(slug) as {
+        id: number;
+        slug: string;
+        name: string;
+        rarity: string;
+        slot: string;
+        min_level: number;
+      } | undefined;
+
+    if (!row) return null;
+
+    return {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      rarity: row.rarity,
+      slot: row.slot,
+      minLevel: row.min_level,
+    };
+  }
 }

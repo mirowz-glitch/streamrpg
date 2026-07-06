@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { useExpedition } from "../../hooks/useExpedition";
 import { formatRemaining, STATUS_ICON, STATUS_LABEL } from "../../lib/expedition";
+import { pickExpeditionNarrative } from "../../lib/expeditionNarratives";
 import { StatsRow } from "./StatsRow";
 import { ProgressBar } from "./ProgressBar";
 
@@ -23,6 +24,11 @@ export const ExpeditionPanel = memo(function ExpeditionPanel({ enabled }: Expedi
   if (!expedition) return null;
 
   const arrived = expedition.status === "combating" || expedition.status === "resting" || expedition.status === "returning";
+  // Sprint Living Expeditions (MVP) — sorteada de novo a cada render
+  // (cada poll do useExpedition já existente), de propósito: é o
+  // "flicker" ambiente da narrativa, complementar ao Encounter estável
+  // abaixo, não um segundo Encounter.
+  const narrative = pickExpeditionNarrative(expedition.status);
 
   return (
     <section className="expedition-panel">
@@ -56,6 +62,7 @@ export const ExpeditionPanel = memo(function ExpeditionPanel({ enabled }: Expedi
           <span className="expedition-encounter-icon">{expedition.encounter.icon}</span> {expedition.encounter.text}
         </p>
       ) : null}
+      {narrative ? <p className="expedition-narrative">"{narrative}"</p> : null}
     </section>
   );
 });

@@ -4,6 +4,7 @@ import { AppNav } from "../components/ui/AppNav";
 import { CityMap, type BuildingKey } from "../components/city/CityMap";
 import { CityHubBar } from "../components/city/CityHubBar";
 import { CitySquareDecor } from "../components/city/CitySquareDecor";
+import { HiddenObjects } from "../components/city/HiddenObjects";
 import { MerchantBuilding } from "../components/city/MerchantBuilding";
 import { BlacksmithBuilding } from "../components/city/BlacksmithBuilding";
 import { AlchemistBuilding } from "../components/city/AlchemistBuilding";
@@ -14,6 +15,8 @@ import { NorthGateBuilding } from "../components/city/NorthGateBuilding";
 import { LibraryBuilding } from "../components/city/LibraryBuilding";
 import { BestiaryBuilding } from "../components/city/BestiaryBuilding";
 import { MuseumBuilding } from "../components/city/MuseumBuilding";
+import { TavernBuilding } from "../components/city/TavernBuilding";
+import { TravellerHouseBuilding } from "../components/city/TravellerHouseBuilding";
 import { useAuth } from "../hooks/useAuth";
 import { useCharacter } from "../hooks/useCharacter";
 import { useIdentity } from "../hooks/useIdentity";
@@ -89,6 +92,8 @@ export function CityPage() {
           {selected === "biblioteca" ? <LibraryBuilding /> : null}
           {selected === "bestiario" ? <BestiaryBuilding /> : null}
           {selected === "museu" ? <MuseumBuilding /> : null}
+          {selected === "taverna" ? <TavernBuilding /> : null}
+          {selected === "casa-dos-viajantes" ? <TravellerHouseBuilding /> : null}
         </div>
       ) : (
         <div className="card">
@@ -101,6 +106,10 @@ export function CityPage() {
           <CitySquareDecor />
           <p className="hint">Escolha um edifício para visitar.</p>
           <CityMap onSelect={setSelected} />
+
+          <h3 className="hidden-objects-title">Pela praça</h3>
+          <p className="hint">Alguns cantos da praça respondem quando você clica neles.</p>
+          <HiddenObjects />
         </div>
       )}
     </main>

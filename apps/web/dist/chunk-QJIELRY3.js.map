@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/lib/compare.ts", "../src/lib/pollIntervals.ts"],
-  "sourcesContent": ["// Sprint Performance Optimization \u2014 compara\u00E7\u00E3o rasa via JSON, usada s\u00F3\n// para decidir se um poll trouxe dado realmente novo antes de chamar\n// setState. N\u00E3o muda nenhum dado, s\u00F3 evita re-renderiza\u00E7\u00F5es quando o\n// resultado \u00E9 id\u00EAntico ao anterior (comum entre polls consecutivos,\n// j\u00E1 que o backend s\u00F3 muda estado a cada world.tick).\nexport function isSameData<T>(a: T, b: T): boolean {\n  return JSON.stringify(a) === JSON.stringify(b);\n}\n", "// Sprint Performance Optimization \u2014 intervalos de poll que j\u00E1 existiam\n// espalhados como n\u00FAmeros soltos (5000/10000/1000) em v\u00E1rios hooks e\n// p\u00E1ginas. Mesmos valores de sempre, s\u00F3 nomeados uma \u00FAnica vez.\nexport const DEFAULT_POLL_MS = 5000;\nexport const WORLD_POLL_MS = 10_000;\nexport const CLOCK_TICK_MS = 1000;\n"],
-  "mappings": ";AAKO,SAAS,WAAc,GAAM,GAAe;AACjD,SAAO,KAAK,UAAU,CAAC,MAAM,KAAK,UAAU,CAAC;AAC/C;;;ACJO,IAAM,kBAAkB;AACxB,IAAM,gBAAgB;AACtB,IAAM,gBAAgB;",
-  "names": []
-}

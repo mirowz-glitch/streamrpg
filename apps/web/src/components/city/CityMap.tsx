@@ -10,7 +10,9 @@ export type BuildingKey =
   | "portao-norte"
   | "biblioteca"
   | "bestiario"
-  | "museu";
+  | "museu"
+  | "taverna"
+  | "casa-dos-viajantes";
 
 interface BuildingDef {
   key: BuildingKey;
@@ -34,6 +36,8 @@ const BUILDINGS: BuildingDef[] = [
   { key: "biblioteca", name: "Biblioteca", icon: "📚", description: "Um códice para cada história do Reino." },
   { key: "bestiario", name: "Bestiário", icon: "🔬", description: "Um registro de cada criatura já avistada." },
   { key: "museu", name: "Museu do Reino", icon: "🖼️", description: "Onde a história da comunidade fica registrada." },
+  { key: "taverna", name: "Taverna", icon: "🍺", description: "Onde o Reino descansa, conversa e inventa histórias." },
+  { key: "casa-dos-viajantes", name: "Casa dos Viajantes", icon: "📜", description: "Histórias contadas por gente comum. Ninguém sabe se são verdade." },
 ];
 
 interface CityMapProps {

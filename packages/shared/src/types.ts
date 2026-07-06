@@ -232,6 +232,18 @@ export interface TimelineEvent {
   timestamp: number;
 }
 
+// Sprint Kingdom News (MVP) — mesmo espírito de TimelineEvent (nenhum
+// campo inventado, buffer em memória no backend), só com um `icon`
+// próprio: a Timeline embute o ícone no texto quando existe, o Jornal
+// sempre tem um campo separado (Interface pedida: "horário, ícone,
+// texto").
+export interface KingdomNewsItem {
+  id: string;
+  icon: string;
+  text: string;
+  timestamp: number;
+}
+
 export interface WorldPanel {
   server_time: number;
   current_tick: number;
@@ -340,6 +352,12 @@ export interface WorldStateResponse {
   stats: KingdomStats;
   timeline: TimelineEvent[];
   idle_flavor: string;
+  // Sprint Kingdom News (MVP) — "Jornal do Reino", buffer próprio e
+  // separado da Timeline (nunca a mesma lista, nunca os mesmos textos).
+  news: KingdomNewsItem[];
+  // Sprint Kingdom Events (MVP) — evento ambiental do dia, igual para
+  // todo o Reino, nunca afeta gameplay.
+  current_event: CurrentWorldEventResponse;
   // Sprint Kingdom Prestige System — só preenchido quando a página Mundo
   // está filtrada por canal (mesmo padrão `?channel=` já usado pelo
   // Ranking). `kingdom`/`stats` acima continuam sendo o agregado GLOBAL
@@ -456,4 +474,50 @@ export interface ChannelKingdomState {
   prestige: KingdomPrestige;
   hall_of_fame: KingdomHallOfFameSlot[];
   recent_achievements: KingdomAchievement[];
+}
+
+// Sprint Kingdom Chronicles (MVP) — o "Livro" permanente de um
+// personagem. Ao contrário de TimelineEvent/KingdomNewsItem (buffers em
+// memória, perdidos a cada reinício do servidor), cada entrada aqui é
+// definitiva — persistida em character_chronicles.
+export interface ChronicleEntryResponse {
+  id: number;
+  icon: string;
+  title: string;
+  text: string;
+  created_at: string;
+}
+
+export interface ChronicleResponse {
+  entries: ChronicleEntryResponse[];
+}
+
+// Sprint Kingdom Events (MVP) — camada puramente ambiental: um evento
+// "do dia", igual para todo o Reino, trocado uma vez por dia (nunca
+// concede XP/Gold/item, nunca altera gameplay).
+export type WorldEventCategory =
+  | "clima"
+  | "celebracoes"
+  | "reino"
+  | "militar"
+  | "natureza"
+  | "cidade"
+  | "cultura"
+  | "taverna"
+  | "misterios";
+
+export interface CurrentWorldEventNpcComment {
+  npc_name: string;
+  npc_icon: string;
+  text: string;
+}
+
+export interface CurrentWorldEventResponse {
+  name: string;
+  icon: string;
+  description: string;
+  duration_label: string;
+  category: WorldEventCategory;
+  seconds_remaining: number;
+  npc_comment: CurrentWorldEventNpcComment | null;
 }

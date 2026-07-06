@@ -2,13 +2,13 @@ import {
   RouterProvider2,
   createBrowserRouter,
   require_react_dom
-} from "./chunk-DYYDBER6.js";
+} from "./chunk-ATYDFFRC.js";
 import {
   __commonJS,
   __toESM,
   require_jsx_runtime,
   require_react
-} from "./chunk-HBQ7EKFV.js";
+} from "./chunk-LURRKJSR.js";
 
 // node_modules/scheduler/cjs/scheduler.development.js
 var require_scheduler_development = __commonJS({
@@ -20200,15 +20200,16 @@ var import_client = __toESM(require_client(), 1);
 // apps/web/src/lib/router.tsx
 var import_react = __toESM(require_react(), 1);
 var import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
-var AuthCallbackPage = (0, import_react.lazy)(() => import("./AuthCallbackPage-ZDV73UV6.js").then((m) => ({ default: m.AuthCallbackPage })));
-var CharacterPage = (0, import_react.lazy)(() => import("./CharacterPage-RPYOJESD.js").then((m) => ({ default: m.CharacterPage })));
-var CityPage = (0, import_react.lazy)(() => import("./CityPage-Z7URXQPP.js").then((m) => ({ default: m.CityPage })));
-var InventoryPage = (0, import_react.lazy)(() => import("./InventoryPage-HQJIAJ7K.js").then((m) => ({ default: m.InventoryPage })));
-var LoginPage = (0, import_react.lazy)(() => import("./LoginPage-ZN4ZF545.js").then((m) => ({ default: m.LoginPage })));
-var OverlayPage = (0, import_react.lazy)(() => import("./OverlayPage-3AYZO3PV.js").then((m) => ({ default: m.OverlayPage })));
-var RankingPage = (0, import_react.lazy)(() => import("./RankingPage-H3GGFU45.js").then((m) => ({ default: m.RankingPage })));
-var StreamerPage = (0, import_react.lazy)(() => import("./StreamerPage-6F3MDM7Z.js").then((m) => ({ default: m.StreamerPage })));
-var WorldPage = (0, import_react.lazy)(() => import("./WorldPage-EWB4IQPL.js").then((m) => ({ default: m.WorldPage })));
+var AuthCallbackPage = (0, import_react.lazy)(() => import("./AuthCallbackPage-IU4QYQ5B.js").then((m) => ({ default: m.AuthCallbackPage })));
+var CharacterPage = (0, import_react.lazy)(() => import("./CharacterPage-NWA24XLM.js").then((m) => ({ default: m.CharacterPage })));
+var CityPage = (0, import_react.lazy)(() => import("./CityPage-AKFLWT2Z.js").then((m) => ({ default: m.CityPage })));
+var ChroniclePage = (0, import_react.lazy)(() => import("./ChroniclePage-RQOXMINC.js").then((m) => ({ default: m.ChroniclePage })));
+var InventoryPage = (0, import_react.lazy)(() => import("./InventoryPage-C5IDRZCC.js").then((m) => ({ default: m.InventoryPage })));
+var LoginPage = (0, import_react.lazy)(() => import("./LoginPage-RKWLBMRE.js").then((m) => ({ default: m.LoginPage })));
+var OverlayPage = (0, import_react.lazy)(() => import("./OverlayPage-EDVRNIKP.js").then((m) => ({ default: m.OverlayPage })));
+var RankingPage = (0, import_react.lazy)(() => import("./RankingPage-VME6SFXB.js").then((m) => ({ default: m.RankingPage })));
+var StreamerPage = (0, import_react.lazy)(() => import("./StreamerPage-3TJCQPU2.js").then((m) => ({ default: m.StreamerPage })));
+var WorldPage = (0, import_react.lazy)(() => import("./WorldPage-YPIZBXLK.js").then((m) => ({ default: m.WorldPage })));
 function PageFallback() {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("main", { className: "page", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "loading-state", children: "Carregando..." }) });
 }
@@ -20221,6 +20222,7 @@ var router = createBrowserRouter([
   { path: "/auth/callback", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthCallbackPage, {})) },
   { path: "/app/character", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CharacterPage, {})) },
   { path: "/app/city", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CityPage, {})) },
+  { path: "/app/chronicle", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChroniclePage, {})) },
   { path: "/app/inventory", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(InventoryPage, {})) },
   { path: "/app/ranking", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RankingPage, {})) },
   { path: "/app/world", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(WorldPage, {})) },
@@ -20267,4 +20269,3 @@ react-dom/cjs/react-dom-client.development.js:
    * LICENSE file in the root directory of this source tree.
    *)
 */
-//# sourceMappingURL=main.js.map

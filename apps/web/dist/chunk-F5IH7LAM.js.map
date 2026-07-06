@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/components/ui/StatsRow.tsx"],
-  "sourcesContent": ["import type { ReactNode } from \"react\";\n\nexport interface StatItem {\n  label: string;\n  value: ReactNode;\n  highlight?: boolean;\n}\n\ninterface StatsRowProps {\n  items: StatItem[];\n}\n\n// Extra\u00EDdo de 7 telas (Personagem, Mundo, Cidade, Arena, Banco,\n// Expedi\u00E7\u00E3o, Identidade) que repetiam a mesma estrutura\n// `.identity-stats`/`.identity-stat` \u2014 mesmo HTML e mesmas classes de\n// sempre, nenhuma mudan\u00E7a de apar\u00EAncia.\nexport function StatsRow({ items }: StatsRowProps) {\n  return (\n    <div className=\"identity-stats\">\n      {items.map((item, index) => (\n        <div key={index} className={`identity-stat${item.highlight ? \" identity-stat-highlight\" : \"\"}`}>\n          <span>{item.label}</span>\n          <strong>{item.value}</strong>\n        </div>\n      ))}\n    </div>\n  );\n}\n"],
-  "mappings": ";;;;;;AAoBQ;AAJD,SAAS,SAAS,EAAE,MAAM,GAAkB;AACjD,SACE,4CAAC,SAAI,WAAU,kBACZ,gBAAM,IAAI,CAAC,MAAM,UAChB,6CAAC,SAAgB,WAAW,gBAAgB,KAAK,YAAY,6BAA6B,EAAE,IAC1F;AAAA,gDAAC,UAAM,eAAK,OAAM;AAAA,IAClB,4CAAC,YAAQ,eAAK,OAAM;AAAA,OAFZ,KAGV,CACD,GACH;AAEJ;",
-  "names": []
-}

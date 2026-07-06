@@ -165,6 +165,39 @@ export class SQLiteCharacterRepository implements CharacterRepository {
   }
 
   /**
+   * Sprint First 120 Seconds — verifica se o personagem já completou a
+   * missão "equipar seu primeiro item". Mesmo papel de
+   * hasReceivedWelcomeReward(), coluna própria.
+   */
+  async hasCompletedFirstItemQuest(characterId: string): Promise<boolean> {
+    const db = getDb();
+    const row = db
+      .prepare("SELECT first_item_quest_completed_at FROM characters WHERE id = ?")
+      .get(characterId) as { first_item_quest_completed_at: number | null } | undefined;
+    if (!row) {
+      throw new Error(`CharacterRepository: character ${characterId} not found`);
+    }
+    return row.first_item_quest_completed_at !== null;
+  }
+
+  /**
+   * Sprint First 120 Seconds — reivindicação atômica da missão "equipar
+   * seu primeiro item", mesmo padrão de markWelcomeRewardGranted(): só
+   * grava se a coluna ainda estiver NULL, fechando a mesma janela de
+   * corrida entre duas sessões concorrentes do mesmo personagem novo.
+   */
+  async markFirstItemQuestCompleted(characterId: string, timestamp: number): Promise<boolean> {
+    const db = getDb();
+    const now = Math.floor(timestamp / 1000);
+    const result = db
+      .prepare(
+        "UPDATE characters SET first_item_quest_completed_at = ? WHERE id = ? AND first_item_quest_completed_at IS NULL",
+      )
+      .run(now, characterId);
+    return result.changes > 0;
+  }
+
+  /**
    * Sprint Character Attributes Schema — reúne level/susBase do
    * personagem com ATQ/Resistência físico-mágico e UTI derivados dos
    * itens equipados (via getCombatAttributes() do shared, aditiva,

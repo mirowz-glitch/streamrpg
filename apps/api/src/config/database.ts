@@ -116,6 +116,22 @@ function runMigrations(database: DatabaseSync): void {
     database.exec("ALTER TABLE characters ADD COLUMN equipped_frame_id INTEGER REFERENCES frames(id)");
     console.log("[Migration] characters.equipped_frame_id adicionada.");
   }
+
+  // Sprint First 120 Seconds — mesmo padrão de first_join_reward_at:
+  // concessão única (item inicial equipado + XP), reivindicada de forma
+  // atômica pelo FirstItemQuestSystem. NULL para personagens já
+  // existentes — não concede o item/XP retroativamente, só para quem
+  // for criado depois desta migração.
+  const hasFirstItemQuest = characterColumns.some((col) => col.name === "first_item_quest_completed_at");
+  if (!hasFirstItemQuest) {
+    database.exec("ALTER TABLE characters ADD COLUMN first_item_quest_completed_at INTEGER");
+    database.exec(
+      `UPDATE characters SET first_item_quest_completed_at = strftime('%s','now') WHERE first_item_quest_completed_at IS NULL`,
+    );
+    console.log(
+      "[Migration] first_item_quest_completed_at adicionada e populada para personagens existentes.",
+    );
+  }
 }
 
 export function getDb(): DatabaseSync {

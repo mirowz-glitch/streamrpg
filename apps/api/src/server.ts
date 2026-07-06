@@ -14,6 +14,7 @@ import { worldRoutes } from "./routes/world.js";
 import { expeditionRoutes } from "./routes/expedition.js";
 import { identityRoutes } from "./routes/identity.js";
 import { kingdomRoutes } from "./routes/kingdom.js";
+import { chronicleRoutes } from "./routes/chronicle.js";
 import { seedItems } from "./services/items.service.js";
 import { seedIdentityCatalog } from "./services/identity.service.js";
 import { sessionManager } from "./engine/SessionManager.js";
@@ -21,6 +22,7 @@ import { EventBus } from "./engine/EventBus.js";
 import { GameEngine } from "./engine/GameEngine.js";
 import { XPSystem } from "./systems/XPSystemV2.js";
 import { WelcomeRewardSystem } from "./systems/WelcomeRewardSystem.js";
+import { FirstItemQuestSystem } from "./systems/FirstItemQuestSystem.js";
 import { DropSystem } from "./systems/DropSystem.js";
 import { BossSpawnSystem } from "./systems/BossSpawnSystem.js";
 import { BossParticipationSystem } from "./systems/BossParticipationSystem.js";
@@ -31,6 +33,8 @@ import { SQLiteItemRepository } from "./infrastructure/SQLiteItemRepository.js";
 import { SQLiteBossRepository } from "./infrastructure/SQLiteBossRepository.js";
 import { SQLiteBossParticipationRepository } from "./infrastructure/SQLiteBossParticipationRepository.js";
 import { SQLiteBossRewardRepository } from "./infrastructure/SQLiteBossRewardRepository.js";
+import { SQLiteChronicleRepository } from "./infrastructure/SQLiteChronicleRepository.js";
+import { ChronicleSystem } from "./systems/ChronicleSystem.js";
 import { RandomProviderImpl } from "./infrastructure/RandomProviderImpl.js";
 import { SQLiteExpeditionRepository } from "./infrastructure/SQLiteExpeditionRepository.js";
 import { ExpeditionSystem } from "./systems/ExpeditionSystem.js";
@@ -38,6 +42,7 @@ import { IdentitySystem } from "./systems/IdentitySystem.js";
 import { KingdomPrestigeSystem } from "./systems/KingdomPrestigeSystem.js";
 import { DebugEventSubscriber } from "./debug/DebugEventSubscriber.js";
 import { WorldEventSubscriber } from "./services/world-state.service.js";
+import { KingdomNewsSystem } from "./systems/KingdomNewsSystem.js";
 
 const routes: Route[] = [
   ...authRoutes,
@@ -50,6 +55,7 @@ const routes: Route[] = [
   ...expeditionRoutes,
   ...identityRoutes,
   ...kingdomRoutes,
+  ...chronicleRoutes,
 ];
 
 getDb();
@@ -68,6 +74,13 @@ const itemRepository = new SQLiteItemRepository();
 const randomProvider = new RandomProviderImpl();
 const dropSystem = new DropSystem(itemRepository, randomProvider);
 dropSystem.register(bus);
+
+// Sprint First 120 Seconds — item inicial equipado + missão "equipar seu
+// primeiro item", reaproveitando characterRepository/itemRepository já
+// existentes acima. source: "quest" no xp.granted já é ignorado pelo
+// DropSystem (só reage a source === "tick"), nenhuma alteração lá.
+const firstItemQuestSystem = new FirstItemQuestSystem(characterRepository, itemRepository);
+firstItemQuestSystem.register(bus);
 
 // BossSystem (Sprints B1-B4, docs/technical-design/boss-system.md) — código
 // já existia e era validado via harness isolado, mas nunca era registrado
@@ -92,6 +105,14 @@ const bossRewardSystem = new BossRewardSystem(
   randomProvider,
 );
 bossRewardSystem.register(bus);
+
+// Sprint Kingdom Chronicles (MVP) — o "Livro" permanente de cada
+// personagem. Reaproveita bossParticipationRepository já existente
+// acima (boss.defeated não carrega characterId, então este System
+// consulta os mesmos participantes que o BossRewardSystem já lê).
+const chronicleRepository = new SQLiteChronicleRepository();
+const chronicleSystem = new ChronicleSystem(chronicleRepository, bossParticipationRepository);
+chronicleSystem.register(bus);
 
 // Sprint Expedition System — representação de "o que o personagem está
 // fazendo agora" (região/estado/progresso). Nunca concede XP/Gold/Drop,
@@ -129,6 +150,11 @@ if (env.debugEventSubscriber) {
 // DebugEventSubscriber: nenhuma regra de jogo, remoção não muda
 // comportamento de gameplay algum (só o painel deixaria de atualizar).
 new WorldEventSubscriber().register(bus);
+
+// Sprint Kingdom News (MVP) — "Jornal do Reino", buffer próprio e
+// separado da Timeline acima; mesmo espírito (sempre ativo, read-only,
+// nenhuma regra de jogo, remoção seria inócua).
+new KingdomNewsSystem().register(bus);
 
 bus.subscribe("world.tick", (event) => {
   console.log(`[Engine] World Tick #${event.tickNumber} — sessões ativas: ${event.sessions.length}`);

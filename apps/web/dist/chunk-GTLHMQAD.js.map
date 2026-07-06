@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["../src/components/ui/ProgressBar.tsx"],
-  "sourcesContent": ["export type ProgressBarVariant = \"xp\" | \"boss\" | \"expedition\" | \"expedition-compact\";\n\ninterface ProgressBarProps {\n  percent: number;\n  variant?: ProgressBarVariant;\n  label?: string;\n}\n\n// Extra\u00EDdo de 4 barras de progresso (XP, HP do Boss, progresso de\n// Expedi\u00E7\u00E3o normal/compacta) que repetiam a mesma estrutura\n// track+fill, s\u00F3 trocando altura/gradiente. Cada variante mant\u00E9m a\n// apar\u00EAncia exata que j\u00E1 tinha (ver `.progress-bar-*` em styles.css).\nexport function ProgressBar({ percent, variant = \"xp\", label }: ProgressBarProps) {\n  const clamped = Math.min(100, Math.max(0, percent));\n  return (\n    <div className={`progress-bar progress-bar-${variant}`} aria-label={label ?? \"progress\"}>\n      <div className=\"progress-bar-fill\" style={{ width: `${clamped}%` }} />\n    </div>\n  );\n}\n"],
-  "mappings": ";;;;;;AAgBM;AAJC,SAAS,YAAY,EAAE,SAAS,UAAU,MAAM,MAAM,GAAqB;AAChF,QAAM,UAAU,KAAK,IAAI,KAAK,KAAK,IAAI,GAAG,OAAO,CAAC;AAClD,SACE,4CAAC,SAAI,WAAW,6BAA6B,OAAO,IAAI,cAAY,SAAS,YAC3E,sDAAC,SAAI,WAAU,qBAAoB,OAAO,EAAE,OAAO,GAAG,OAAO,IAAI,GAAG,GACtE;AAEJ;",
-  "names": []
-}

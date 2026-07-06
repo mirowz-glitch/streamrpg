@@ -11,6 +11,7 @@ export function AppNav() {
         Personagem
       </Link>
       <Link to="/app/inventory">Inventário</Link>
+      <Link to="/app/chronicle">📖 Crônicas</Link>
       <Link to="/app/city" className={isFlagSet("city_seen") ? "" : "nav-glow"}>
         Cidade
       </Link>

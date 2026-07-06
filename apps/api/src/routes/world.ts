@@ -11,6 +11,13 @@ import {
 } from "../services/world-state.service.js";
 import { getMostVisitedRegions } from "../services/expedition-status.service.js";
 import { getChannelKingdomState } from "../services/kingdom-prestige.service.js";
+import { getKingdomNews } from "../systems/KingdomNewsSystem.js";
+import { EventOfTheDaySystem } from "../systems/EventOfTheDaySystem.js";
+
+// Sprint Kingdom Events (MVP) — determinístico/sem estado, uma
+// instância leve reaproveitada em cada chamada (mesmo padrão de
+// characterRepository em character.ts).
+const eventOfTheDaySystem = new EventOfTheDaySystem();
 
 // Sprint World Simulation — mesmo padrão de leitura de character.ts/
 // ranking.ts (autenticado, parte do app, não um overlay público). Nenhuma
@@ -42,6 +49,8 @@ export const worldRoutes = [
       stats: getKingdomStats(),
       timeline: getTimeline(),
       idle_flavor: getIdleFlavor(panel.players_online),
+      news: getKingdomNews(),
+      current_event: eventOfTheDaySystem.getCurrentEvent(Date.now()),
       channel_kingdom: channel ? getChannelKingdomState(channel) : null,
     };
     json(res, 200, response);

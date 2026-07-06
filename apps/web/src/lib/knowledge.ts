@@ -49,7 +49,8 @@ export type KnowledgeSource =
   | "grimorio"
   | "diario"
   | "cartas"
-  | "cronicas";
+  | "cronicas"
+  | "casa-dos-viajantes";
 
 export interface KnowledgeCategory<TSlug extends string = string> {
   slug: TSlug;
