@@ -6,6 +6,7 @@ import { CodexSidebar } from "../codex/CodexSidebar";
 import { CodexToolbar } from "../codex/CodexToolbar";
 import { CodexCategoryList } from "../codex/CodexCategoryList";
 import { CodexCard } from "../codex/CodexCard";
+import { resolveFeedback } from "../../lib/uiFeedback";
 
 const STATUS_LABEL: Record<BookDefinition["status"], string> = {
   bloqueado: "🔒 Bloqueado",
@@ -23,6 +24,11 @@ interface BookShelfProps {
   books: BookDefinition[];
   selectedBookId: string | null;
   onSelectBook: (id: string) => void;
+  // Sprint Reactive UI (World Feedback Phase I) — opcional/default
+  // nulo: o "Recomendado do dia" já existia como texto (LibraryBuilding);
+  // aqui o mesmo id só decide um destaque discreto no card real da
+  // estante, nunca um dado novo.
+  highlightedBookId?: string | null;
 }
 
 // Sprint Knowledge System — painel esquerdo do códice, agora sem lógica
@@ -31,7 +37,7 @@ interface BookShelfProps {
 // excluiu livros bloqueados da busca — por isso `searchText` é sempre o
 // título real (nunca `""`), preservando o comportamento original sem
 // precisar de um parâmetro especial.
-export function BookShelf({ books, selectedBookId, onSelectBook }: BookShelfProps) {
+export function BookShelf({ books, selectedBookId, onSelectBook, highlightedBookId = null }: BookShelfProps) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<BookCategorySlug | null>(null);
 
@@ -72,6 +78,7 @@ export function BookShelf({ books, selectedBookId, onSelectBook }: BookShelfProp
             locked={book.locked}
             selected={book.id === selectedBookId}
             onSelect={() => onSelectBook(book.id)}
+            feedbackState={resolveFeedback(book.id === highlightedBookId, "highlight")}
           />
         );
       })}

@@ -1,14 +1,28 @@
 import { useEffect, useRef, useState } from "react";
-import type { InventoryItem, ItemSlot } from "@streamrpg/shared";
+import type { ExpeditionApproach, InventoryItem, ItemSlot } from "@streamrpg/shared";
 import { getItemPower, getCombatAttributes } from "@streamrpg/shared";
 import { api } from "../lib/api";
 import { AppNav } from "../components/ui/AppNav";
 import { Feedback } from "../components/ui/Feedback";
 import { RARITY_COLOR } from "../lib/rarity";
+import { getItemRelated } from "../lib/knowledgeLinks";
+import { useCharacter } from "../hooks/useCharacter";
+import { useIdentity } from "../hooks/useIdentity";
+import { useKingdomRole } from "../hooks/useKingdomRole";
+import { getStoredChannel } from "../hooks/usePing";
+import { buildPlayerFacts } from "../lib/playerFacts";
+import { getCharacterStage, STAGE_INVENTORY_HINT } from "../lib/characterPresence";
+import { buildCollectionInsightContext, getInventoryInsight } from "../lib/collectionInsights";
+import { getItemIdentityLine } from "../lib/itemIdentity";
+import { getItemDiscoveryCandidates } from "../lib/discoveryChains";
+import { getItemNpcThreadCandidates } from "../lib/knowledgeThreads";
+import { getNextSteps } from "../lib/knowledgeNetwork";
+import { useExpedition } from "../hooks/useExpedition";
+import { buildExpeditionEchoContext } from "../lib/expeditionEchoes";
 
 const SLOT_ORDER: ItemSlot[] = ["weapon", "armor", "helmet", "boots", "amulet", "ring"];
 
-const SLOT_LABEL: Record<ItemSlot, string> = {
+export const SLOT_LABEL: Record<ItemSlot, string> = {
   weapon: "Arma",
   armor: "Armadura",
   helmet: "Elmo",
@@ -37,6 +51,19 @@ export function InventoryPage() {
   // para as tags "NOVO" não sumirem sozinhas enquanto o jogador olha a
   // página. A próxima visita (novo mount) já lê o valor atualizado.
   const seenWatermarkRef = useRef<number>(Number(localStorage.getItem(SEEN_WATERMARK_KEY) ?? 0));
+
+  // Sprint Character Evolution Presence Phase I — mesmos dados já
+  // buscados em CharacterPage/CityPage/Crônicas, só reaproveitados aqui
+  // pra uma mensagem discreta conforme o estágio de evolução.
+  const { character } = useCharacter(true);
+  const { identity } = useIdentity(true);
+  const channel = getStoredChannel();
+  const kingdomRoles = useKingdomRole(channel || undefined, true);
+  // Sprint Expedition Discovery Phase IV (Knowledge Rewards) — mesmo
+  // hook já usado por CityPage/ExpeditionPanel; aqui só pra saber o
+  // Approach ativo, nunca pra exibir a Expedição em si nesta página.
+  const { expedition } = useExpedition(true);
+  const echoContext = buildExpeditionEchoContext(expedition);
 
   async function refresh() {
     setLoading(true);
@@ -135,11 +162,23 @@ export function InventoryPage() {
     (bySlot[item.slot] ??= []).push(item);
   }
 
+  // Sprint Collections & Discovery Phase I — espaços de equipamento
+  // preenchidos, via a camada central (lib/collectionInsights.ts).
+  const collectionInsight = getInventoryInsight(
+    buildCollectionInsightContext({ equippedSlotCount: items.filter((i) => i.is_equipped).length }),
+  );
+
   return (
     <main className="page">
       <AppNav />
       <div className="card">
         <h1>Inventário</h1>
+        {character && identity ? (
+          <p className="hint">
+            {STAGE_INVENTORY_HINT[getCharacterStage(buildPlayerFacts(character, identity, kingdomRoles))]}
+          </p>
+        ) : null}
+        {collectionInsight ? <p className="hint">{collectionInsight}</p> : null}
         {message ? <Feedback kind="notice">{message}</Feedback> : null}
         {loading ? (
           <p className="loading-state">Carregando inventário...</p>
@@ -176,6 +215,9 @@ export function InventoryPage() {
                           <div className="item-compare">{renderComparisonDetail(item, equippedInSlot)}</div>
                         ) : null}
                         <p className="item-desc">{item.description}</p>
+                        {renderItemOrigin(item)}
+                        {renderItemIdentity(item)}
+                        {renderNextStep(item, echoContext.approach)}
                       </div>
                       <div className="item-actions">
                         {item.is_equipped ? (
@@ -194,6 +236,50 @@ export function InventoryPage() {
       </div>
     </main>
   );
+}
+
+// Sprint Living Knowledge — "Origem" / "Encontrado em" / "Citado por",
+// só quando alguma criatura do Bestiário referencia este item (via
+// `connections.itemSlug`, Sprint Content Connections). Nenhum dado
+// novo: só reaproveita o que já existe em lib/knowledgeLinks.ts.
+function renderItemOrigin(item: InventoryItem) {
+  const related = getItemRelated(item.slug);
+  if (related.length === 0) return null;
+  return (
+    <p className="item-origin">
+      {related.map((r) => `${r.label}: ${r.value}`).join(" · ")}
+    </p>
+  );
+}
+
+// Sprint Item Identity Phase I — no máximo UMA observação por item,
+// vinda da camada central (lib/itemIdentity.ts); nunca a descrição do
+// item, sempre um dado real de outro catálogo. Reaproveita a mesma
+// classe visual de renderItemOrigin (nenhum estilo novo).
+function renderItemIdentity(item: InventoryItem) {
+  const line = getItemIdentityLine({ slug: item.slug, name: item.name });
+  if (!line) return null;
+  return <p className="item-origin">{line}</p>;
+}
+
+// Sprint Discovery Chains Phase I — reaproveita o mesmo getItemRelated
+// já usado em renderItemOrigin acima, fraseado como sugestão ("o que
+// isto menciona") em vez de lista factual.
+//
+// Sprint Knowledge Threads Phase I — o NPC real que cita este item
+// ("Citado por", getItemRelated), fechando uma conexão que já existia
+// nos dados mas nunca virava sugestão (Discovery Chains só usava
+// "Origem"/"Profissão") — "o que é parecido com isto".
+//
+// Sprint Knowledge Network Phase I — as duas fontes acima eram
+// renderizadas como DUAS linhas separadas (renderDiscoveryChain +
+// renderItemThread) — dívida eliminada: `getNextSteps` combina, remove
+// repetições e decide quantos revelar (pickKnowledge, cap 1/3 por
+// Approach) — uma única linha "Próximo Passo".
+function renderNextStep(item: InventoryItem, approach: ExpeditionApproach | null) {
+  const lines = getNextSteps([getItemDiscoveryCandidates(item.slug), getItemNpcThreadCandidates(item.slug)], approach);
+  if (lines.length === 0) return null;
+  return <p className="item-origin">{lines.join(" ")}</p>;
 }
 
 // Etapa 3 — comparação detalhada, nunca escondendo números. Arma: ATQ

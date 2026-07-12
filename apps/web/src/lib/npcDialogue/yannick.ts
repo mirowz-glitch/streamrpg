@@ -93,6 +93,8 @@ export const YANNICK_DIALOGUE: NpcDialogueCatalog = {
     "Cada nova espécie que descubro me faz perceber o quanto ainda não sei.",
     "Prefiro perguntas sem resposta a respostas sem pergunta.",
     "O Reino é maior do que qualquer catálogo pode registrar.",
+    // Sprint Social Fabric (Phase I)
+    "Já viajamos juntos, eu e o Idris, atrás de uma expedição que ninguém mais quis fazer. Ele queria voltar inteiro. Eu queria anotar tudo. Os dois conseguimos, por pouco.",
   ],
   humor: [
     "Uma vez me disfarcei de arbusto pra observar uma criatura. Funcionou bem demais.",
@@ -100,6 +102,8 @@ export const YANNICK_DIALOGUE: NpcDialogueCatalog = {
     "Um lobo uma vez me observou observando ele. Empate técnico.",
     "Já anotei o comportamento errado numa página certa. Foi uma bagunça acadêmica e tanto.",
     "Rio pouco, mas quando uma criatura faz algo inesperado, eu rio sozinho, tarde da noite.",
+    // Sprint Social Fabric (Phase I)
+    "O Zoltar acha que previsão é ciência. Eu acho que é sorte com roupa nova. Discutimos isso toda semana, e nenhum dos dois cede.",
   ],
   conselhos: [
     "Observe antes de agir. Isso salva vidas.",
@@ -107,6 +111,8 @@ export const YANNICK_DIALOGUE: NpcDialogueCatalog = {
     "Anote o que aprender. A memória falha, o papel não.",
     "Nunca subestime uma criatura só porque parece pequena.",
     "Curiosidade é uma ferramenta tão útil quanto qualquer espada.",
+    // Sprint Social Fabric (Phase I)
+    "O Roth me deixa passar pelo Portão Norte sem revistar minhas amostras, mesmo desconfiando um pouco do que carrego. Isso é respeito, do jeito dele.",
   ],
   fofocas: [
     "Ouvi dizer que a Talia vendeu a mesma espada três vezes. Comportamento comercial curioso.",
@@ -118,6 +124,23 @@ export const YANNICK_DIALOGUE: NpcDialogueCatalog = {
     "Tenho um caderno só de rastros de lobo, catalogados por tamanho da pegada. Ainda incompleto.",
     "Nunca confirmei se as presas do lobo dos Picos realmente brilham, ou se é só a neve. Sigo tentando.",
     "Dedicaria anos só pra entender por que uma noite inteira, há muito tempo, nenhum lobo uivou no Bosque.",
+    // Sprint Ravens Ecosystem (Phase I)
+    "Tenho um caderno inteiro só sobre o comportamento dos corvos. Ainda incompleto.",
+    "Nunca resolvi se os corvos entendem o que dizemos. Prefiro deixar a pergunta em aberto do que inventar uma resposta.",
+    "Um corvo parece saber, antes de qualquer caçador, onde a matilha de lobos vai atacar. Ainda não sei explicar como.",
+    // Sprint Ancient Ruins Ecosystem (Phase I)
+    "Medi a profundidade do poço seco do Deserto de Vidro três vezes. Três resultados diferentes. Vou medir de novo.",
+    "Os símbolos do penhasco nos Picos Congelados não batem com meu esboço da primeira visita. Prefiro achar que errei eu, não que mudaram.",
+    "Adoraria catalogar as doze Ruínas Antigas com o mesmo rigor que catalogo criaturas. Ainda não encontrei um método que funcione com pedra que não se explica.",
+    // Sprint First WOW Moment (Phase I)
+    "Estudei o desgaste de umas luvas rasgadas outro dia. Cientificamente, deveriam ter se desfeito há semanas.",
+    // Sprint StreamRPG Identity (Phase I)
+    "O Bosque Sussurrante continua sendo o lugar que mais estudo, depois de todos esses anos. Sempre acho algo que não tinha visto antes.",
+    // Sprint StreamRPG Identity (Phase II)
+    "O Corvo Ancião nunca me deixou perto o bastante pra estudar de verdade. Isso, sozinho, já vira uma nota de campo interessante.",
+    "Entre a Loba Prateada e o Lobo Marcado, aposto que um dia vão provar ser a mesma linhagem. Ainda não tenho como provar. Ainda.",
+    // Sprint Place Identity (Phase I)
+    "Levei um instrumento de medição pra Câmara das Vozes, uma vez. Ele registrou um som que eu não consegui ouvir.",
   ],
   comentarios_reino: [
     "Esse Reino tem uma biodiversidade fascinante ao redor.",
@@ -125,6 +148,10 @@ export const YANNICK_DIALOGUE: NpcDialogueCatalog = {
     "O Reino cresce, e as criaturas ao redor se adaptam a isso.",
     "Vivemos cercados de mistérios que a maioria nunca para pra observar.",
     "Esse lugar merece décadas de estudo, não anos.",
+    // Sprint History of the Kingdom (Phase I)
+    "A Grande Migração me interessa tanto quanto qualquer criatura que já estudei. Motivo nunca esclarecido, efeito visível até hoje.",
+    "Tenho quinze diários antigos catalogados. Nenhum conta a história completa de nada — juntos, formam só um mosaico incompleto.",
+    "Adoraria aplicar o mesmo rigor às Eras do Reino que aplico ao Bestiário. O problema é que pedra e papel velho não respondem perguntas como criatura viva.",
   ],
   comentarios_npcs: [
     "O Borin entende de metal como eu entendo de comportamento animal.",

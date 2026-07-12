@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { CodexStatusBadge } from "./CodexStatusBadge";
+import { feedbackClassName, type UiFeedbackState } from "../../lib/uiFeedback";
 
 // Sprint Codex Framework — os dois "temas" de card que já existiam:
 // Biblioteca/Museu usavam `.book-card-*` (destaque roxo); Bestiário usa
@@ -38,6 +39,11 @@ interface CodexCardProps {
   locked: boolean;
   selected: boolean;
   onSelect: () => void;
+  // Sprint Reactive UI (World Feedback Phase I) — opcional/default
+  // nulo: toda chamada existente sem o prop continua com o
+  // comportamento de sempre. CodexCard nunca decide o estado sozinho,
+  // só pergunta a lib/uiFeedback.ts e aplica a classe correspondente.
+  feedbackState?: UiFeedbackState | null;
 }
 
 // Sprint Codex Framework — item de estante genérico. Era BookCard/
@@ -54,12 +60,14 @@ export const CodexCard = memo(function CodexCard({
   locked,
   selected,
   onSelect,
+  feedbackState = null,
 }: CodexCardProps) {
   const cls = VARIANT_CLASSES[variant];
+  const feedbackCls = feedbackClassName(feedbackState);
   return (
     <button
       type="button"
-      className={`${cls.root}${selected ? ` ${cls.selected}` : ""}${locked ? ` ${cls.locked}` : ""}`}
+      className={`${cls.root}${selected ? ` ${cls.selected}` : ""}${locked ? ` ${cls.locked}` : ""}${feedbackCls ? ` ${feedbackCls}` : ""}`}
       onClick={onSelect}
     >
       <span className={cls.icon}>{icon}</span>

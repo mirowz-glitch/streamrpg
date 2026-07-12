@@ -34,6 +34,10 @@ export const NPC_DIALOGUE: Record<string, NpcDialogueCatalog> = {
 
 export * from "./types";
 export * from "./recognition";
+export * from "./foreshadowing";
+export * from "./livingConsequences";
+export * from "./heroJourney";
+export * from "./livingConversations";
 
 // Achata todas as categorias de um NPC num único pool — usado para
 // sortear "uma fala qualquer" sem se preocupar com estado do jogador

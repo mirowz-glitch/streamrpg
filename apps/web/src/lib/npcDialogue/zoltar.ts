@@ -94,6 +94,8 @@ export const ZOLTAR_DIALOGUE: NpcDialogueCatalog = {
     "Os frascos nunca param de borbulhar. Nem eu sei por quê.",
     "Uma vez misturei duas coisas que não deveriam se misturar. Ainda estou aqui, então deu certo. Ou quase.",
     "O tempo é só uma sugestão, na minha experiência.",
+    // Sprint Social Fabric (Phase I)
+    "A Elenya conseguiu recursos pra minha pesquisa numa hora em que eu mais precisava, sem eu nem ter pedido direito. Não esqueço esse tipo de coisa.",
   ],
   humor: [
     "Já tentei fazer poção de sono. Dormi três dias. Funcionou bem demais.",
@@ -101,6 +103,8 @@ export const ZOLTAR_DIALOGUE: NpcDialogueCatalog = {
     "As pessoas acham que eu sei tudo. Eu só finjo bem.",
     "Já confundi ingrediente de poção com o jantar. Foi uma noite interessante.",
     "Previ que ia chover. Estava certo. Também previ que ia nevar no mesmo dia. Errei feio.",
+    // Sprint Social Fabric (Phase I)
+    "O Kade nunca aceita nada que eu ofereço antes de uma luta. Uma vez aceitou. Só uma vez.",
   ],
   conselhos: [
     "Nunca cheira algo que borbulha sozinho.",
@@ -115,6 +119,27 @@ export const ZOLTAR_DIALOGUE: NpcDialogueCatalog = {
     "A Greta sabe de tudo. Eu sei de quase tudo. A diferença é pequena.",
     "O Dorwin não gasta nem em ingredientes básicos. Isso eu não previ, mas não me surpreende.",
     "Escutei um rumor sobre mim mesmo outro dia. Nem tudo era mentira.",
+    // Sprint Kingdom Folk (Phase I)
+    "Compro ervas de uma coletora que anda no escuro antes do sol nascer. Previ que ela chegaria cedo hoje. Óbvio.",
+    "Disputo cliente com a curandeira da vila às vezes. Ela cura mais rápido. Eu explico melhor por que funcionou.",
+    "Um catador de cogumelos me vende as espécies raras. Nunca perguntei onde encontra. Prefiro não saber.",
+    // Sprint Kingdom Folklore (Phase I)
+    "Nunca conto moedas durante tempestade. Não é superstição, é método científico não testado o suficiente pra descartar.",
+    "Todo mundo ri da superstição do sal emprestado. Eu já vi o que acontece com quem não devolve. Coincidência, com certeza. Mas sempre devolvo.",
+    "Colecionar superstição é meu segundo ofício. A primeira que anotei foi sobre espelho dentro de mina. Ainda não descartei nenhuma.",
+    // Sprint Kingdom Memories (Phase I)
+    "Estudo os registros da Epidemia da Água Parada até hoje. A enfermeira que cuidou de tudo aquilo nunca adoeceu. Isso não é sorte, é dado sem explicação.",
+    "Old Senna cuidou de quem ninguém mais queria cuidar durante a Peste dos Animais. Nunca tive coragem de perguntar como ela não desistiu.",
+    "Toda grande vitória tem um custo que os livros preferem não detalhar. Prefiro estudar justamente essa parte.",
+    // Sprint First WOW Moment (Phase I)
+    "Previ que você chegaria com equipamento ruim. Não foi uma previsão difícil.",
+    // Sprint StreamRPG Identity (Phase I)
+    "As histórias do Idris nunca são exatamente verdade. Mas nunca são exatamente mentira, também. Isso é mais raro do que parece.",
+    // Sprint StreamRPG Identity (Phase II)
+    "Tentei catalogar a Dama da Neblina como fenômeno natural. Desisti. Algumas coisas resistem até à minha melhor tentativa de explicação.",
+    // Sprint Place Identity (Phase I)
+    "Já joguei um frasco de tintura no poço da Vila do Bosque, só pra ver se a água mudava de cor. Não mudou. Ainda assim, não bebo de lá.",
+    "Recuso qualquer encomenda que peça ingrediente vindo da Fortaleza Sombria. Não é medo. É prudência com preço embutido.",
   ],
   comentarios_reino: [
     "Esse Reino tem uma energia estranha. Boa estranha, acho eu.",

@@ -20,13 +20,20 @@ const ELDRIN: NpcDefinition = {
   shape: "circle",
 };
 
-// Sprint New Player Journey — 3 falas, em ordem, nunca repetidas
+// Sprint New Player Journey — falas em ordem, nunca repetidas
 // (avançadas por `eldrin_step`, nunca reiniciadas). Cada fala só aparece
 // depois que o marco correspondente já aconteceu de verdade (mesmas
 // flags de `welcome_seen`/`city_seen`/`tutorial_completed`).
+//
+// Sprint First 15 Minutes Experience — uma fala a mais, entre
+// `city_seen` e `tutorial_completed`, presa a `first_item_announced`
+// (já existe desde o First 120 Seconds — todo personagem novo recebe
+// item de partida). Só aponta pra Biblioteca/Bestiário/Taverna
+// existentes, nunca explica o que tem lá dentro.
 const LINES: { after: OnboardingFlag; text: string }[] = [
   { after: "welcome_seen", text: "Comece conhecendo nossa Cidade." },
   { after: "city_seen", text: "Veja como seu personagem evolui." },
+  { after: "first_item_announced", text: "Já que está equipado, vale explorar os outros prédios da Cidade." },
   { after: "tutorial_completed", text: "Nos encontramos novamente." },
 ];
 

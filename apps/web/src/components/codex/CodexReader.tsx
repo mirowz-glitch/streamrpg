@@ -6,6 +6,7 @@ import { CodexHeader } from "./CodexHeader";
 import { CodexInfoPanel } from "./CodexInfoPanel";
 import { CodexFacts } from "./CodexFacts";
 import { CodexPagination } from "./CodexPagination";
+import { feedbackClassName, type UiFeedbackState } from "../../lib/uiFeedback";
 
 interface CodexReaderProps {
   isEmpty: boolean;
@@ -21,6 +22,12 @@ interface CodexReaderProps {
   description: string;
   facts?: CodexFact[];
   pages: string[];
+  // Sprint Reactive UI (World Feedback Phase I) — opcional/default
+  // nulo: toda chamada existente sem o prop continua com o
+  // comportamento de sempre. CodexReader nunca decide o estado
+  // sozinho, só aplica a classe que quem chama já resolveu via
+  // lib/uiFeedback.ts.
+  feedbackState?: UiFeedbackState | null;
 }
 
 // Sprint Codex Framework — painel direito genérico (era BookReader/
@@ -44,8 +51,10 @@ export function CodexReader({
   description,
   facts,
   pages,
+  feedbackState = null,
 }: CodexReaderProps) {
   const [pageIndex, setPageIndex] = useState(0);
+  const feedbackCls = feedbackClassName(feedbackState);
 
   if (isEmpty) {
     return (
@@ -68,7 +77,7 @@ export function CodexReader({
   const currentPage = pages[Math.min(pageIndex, totalPages - 1)];
 
   return (
-    <div className="book-reader">
+    <div className={`book-reader${feedbackCls ? ` ${feedbackCls}` : ""}`}>
       <CodexHeader icon={icon} title={title} subtitle={subtitle} />
       <p className="book-reader-description">{description}</p>
 

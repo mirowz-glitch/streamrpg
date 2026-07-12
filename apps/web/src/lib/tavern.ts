@@ -42,6 +42,116 @@ export const TAVERN_RUMORS: string[] = [
   "Uma criança jura ter dado comida pra um lobo e ele simplesmente foi embora, sem atacar.",
   "Dizem que existe um lobo tão velho que já foi visto pela avó de quem conta a história agora.",
   "Alguém ouviu uivos vindos de três direções diferentes na mesma noite, no Bosque Sussurrante.",
+
+  // Sprint Ravens Ecosystem (Phase I) — 15 rumores sobre os Corvos do
+  // Reino.
+  "Dizem que os corvos sabem quando alguém vai morrer antes de acontecer. Ninguém confirma.",
+  "Um viajante jura que um corvo o seguiu por três dias inteiros, sem motivo aparente.",
+  "Contam que centenas de corvos levantaram voo ao mesmo tempo nas Ruínas Esquecidas, sem ninguém saber por quê.",
+  "Miriam garante que um corvo pousou na janela da Biblioteca e ficou ali a tarde inteira.",
+  "Dizem que existe um corvo tão velho que já foi visto observando o mesmo aventureiro por anos.",
+  "Idris afirma que já confiou uma mensagem a um corvo. Só uma vez. Nunca mais repetiu.",
+  "Um caçador jura que os corvos sempre sabem onde a matilha de lobos caçou, antes de qualquer humano perceber.",
+  "Greta diz que um corvo entra na Taverna toda noite de chuva e só vai embora de madrugada.",
+  "Borin jura que um corvo já roubou um prego da bigorna, na frente dele, sem pressa nenhuma.",
+  "Dizem que ver um corvo sozinho é sinal de boa sorte. Ver muitos juntos, ninguém sabe dizer.",
+  "Um explorador dos Picos Congelados jura que um bando de corvos o seguiu até o topo, sem nunca pousar.",
+  "Yannick tem um caderno inteiro só sobre o comportamento dos corvos. Ainda incompleto.",
+  "Contam que um corvo pousou sobre uma lápide vazia nas Ruínas Esquecidas e ficou ali dias.",
+  "Alguém jura ter visto um corvo observar uma expedição inteira, do início ao fim, sem nunca se aproximar.",
+  "Dizem que os corvos entendem tudo que os humanos falam. Ninguém consegue provar.",
+
+  // Sprint Ancient Ruins Ecosystem (Phase I) — 20 rumores sobre as
+  // Ruínas Antigas, sempre contraditórios entre si.
+  "Dizem que as Ruínas Esquecidas são mais antigas que o próprio Reino. Meu avô jurava o contrário.",
+  "Alguns dizem que ninguém nunca voltou de dentro da Câmara das Vozes. Outros dizem que voltam sempre, só não lembram.",
+  "Ninguém entra na Torre Sem Entrada. Não porque seja proibido — porque ninguém encontra a porta.",
+  "Dizem que a Estátua Sem Rosto já teve rosto, sim. Alguém jura o contrário.",
+  "Meu avô jurava que via luzes na Arena Afundada, à noite. Meu pai nunca viu nada.",
+  "Alguns dizem que os símbolos do penhasco mudam sozinhos. Outros dizem que é só a luz enganando.",
+  "Dizem que o Poço Seco nunca teve água. Um velho pescador jura o contrário, sem explicar como sabia.",
+  "Ninguém sabe quem fez o Portal de Pedra da Fronteira. Todo mundo tem uma teoria diferente, e nenhuma prova.",
+  "Dizem que a Máscara Enterrada do Pântano está afundando, devagar, há anos. Outros dizem que está exatamente na mesma posição desde sempre.",
+  "Alguns dizem que o Vestígio do Acampamento Antigo foi abandonado às pressas. Outros dizem que foi abandonado com calma, tudo arrumado.",
+  "Meu avô jurava que essas Ruínas foram feitas por gente como a gente. Um estudioso da Capital discorda, sem dizer por quê.",
+  "Dizem que essas Ruínas não pertencem a nenhum povo conhecido. Ninguém confirma, ninguém nega.",
+  "Ninguém entra na Escadaria que Termina na Pedra achando que é só uma parede. Alguns dizem que já ouviram passos do outro lado.",
+  "Alguns dizem que as Ruínas têm mais de mil anos. Outros dizem que ninguém tem como saber isso.",
+  "Dizem que existe uma décima terceira ruína, ainda não encontrada. Ninguém confirma a contagem oficial.",
+  "Meu avô jurava ter visto alguém saindo de dentro da Estátua Sem Rosto. Ninguém mais na família acredita nele.",
+  "Alguns dizem que as Ruínas foram feitas por magia. Outros dizem que magia não tinha nada a ver com aquilo.",
+  "Dizem que quem entra na Câmara das Vozes ouve a própria voz responder primeiro. Ninguém confirma isso de perto.",
+  "Ninguém sabe se as Ruínas foram abandonadas ou se ainda têm alguém morando lá dentro.",
+  "Alguns dizem que os corvos evitam pousar perto de certas Ruínas. Outros dizem que é exatamente o contrário.",
+
+  // Sprint Kingdom Folk (Phase I) — 40 rumores sobre moradores comuns
+  // do Reino, nunca sobre heróis.
+  "Dizem que o lenhador novo derruba árvore mais rápido que qualquer um da vila. Outros dizem que ele só chegou primeiro nas mais fáceis.",
+  "Um carvoeiro jura que não dorme há três dias vigiando o forno. A esposa dele jura que ele dormiu, sim, e roncou a noite inteira.",
+  "Contam que a pescadora do Litoral Quebrado devolve todo peixe grande demais. Alguém jura que ela só não consegue puxar os maiores.",
+  "Dizem que o oleiro novo já quebrou cem potes aprendendo o ofício. Ele mesmo diz que foram só uns vinte.",
+  "Meu avô jurava que a pastora das Colinas reconhece cada ovelha pelo nome. Minha avó dizia que ela só finge.",
+  "Alguns dizem que o pedreiro velho constrói parede mais forte que qualquer um. Outros dizem que ele só usa mais pedra que o necessário.",
+  "Dizem que a mensageira nunca se perdeu em vinte anos de estrada. Ninguém confirma, porque ninguém andou com ela o tempo todo.",
+  "Um ferreiro itinerante consertou a vila inteira de graça, dizem. Outros dizem que ele só queria a companhia, não a bondade.",
+  "Meu avô jurava que a curandeira nunca errou um diagnóstico. Meu pai lembra de pelo menos duas vezes que ela errou feio.",
+  "Dizem que o caçador novo poupa filhote de qualquer animal. Alguns acham isso nobre. Outros acham que ele só tem pontaria ruim.",
+  "Ninguém sabe explicar como a mineira sente o veio acabar antes de qualquer instrumento. Alguns dizem que é sorte, não talento.",
+  "Dizem que o apicultor nunca leva picada. Um vizinho jura que já viu ele inchado feito um sapo, mês passado.",
+  "Alguns dizem que o fabricante de cordas trança mais rápido de noite. Outros dizem que ele só erra menos quando está sozinho.",
+  "Dizem que o fabricante de barris nunca vendeu um que vazasse. A cervejeira da vila discorda, e tem prova guardada em casa.",
+  "Meu avô jurava que o lavrador reza pra chuva na mesma data todo ano. Meu pai diz que é só coincidência de estação.",
+  "Dizem que o barqueiro atravessa o rio de olhos fechados. Ninguém nunca teve coragem de pedir pra ele provar.",
+  "Alguns dizem que o moleiro parou o próprio moinho por um pássaro preso na engrenagem. Outros dizem que foi só um defeito comum.",
+  "Dizem que a tecelã reproduz qualquer padrão de memória. Uma cliente jura que ela errou o dela, semana passada.",
+  "Meu avô jurava que o tintureiro nunca repete a mesma cor duas vezes de propósito. Outros dizem que ele simplesmente não consegue.",
+  "Dizem que o curtidor não sente mais o próprio cheiro. A esposa dele garante que sente, sim, e reclama todo santo dia.",
+  "Alguns dizem que a sapateira reconhece o dono de um sapato só pelo desgaste. Outros dizem que ela só decora os clientes de tanto vê-los.",
+  "Dizem que o alfaiate não usa fita métrica há anos. Um cliente jura que a roupa dele ficou torta mês passado, sim.",
+  "Meu avô jurava que a padeira acorda a vila inteira com o cheiro do pão. Minha avó dizia que era o galo, não o pão.",
+  "Dizem que o cervejeiro guarda o barril que estragou só de lembrança. Outros dizem que ele só não teve coragem de jogar fora.",
+  "Alguns dizem que a vinicultora guarda um barril há doze anos esperando o ano perfeito. Outros acham que ela só esqueceu dele lá.",
+  "Dizem que o queijeiro reconhece o rebanho só pelo sabor do queijo. Um cliente garante que ele errou da última vez.",
+  "Meu avô jurava que a açougueira não desperdiça nada do animal. Outros dizem que ela só é econômica demais, e chamam de outro nome.",
+  "Dizem que o carpinteiro só errou a medida uma vez na vida. A vizinhança discorda, e lembra de outras casas tortas.",
+  "Alguns dizem que a marceneira guarda o primeiro móvel torto que fez. Outros dizem que ela só não teve coragem de queimar.",
+  "Dizem que o vidreiro soprou, uma vez, a garrafa perfeita. Ninguém mais viu essa garrafa depois daquele dia.",
+  "Meu avô jurava que a cesteira trança de olhos fechados. Minha avó dizia que ela só decorou o movimento de tanto repetir.",
+  "Dizem que o ceramista perdeu uma fornada inteira por causa do vento. Outros dizem que ele só errou a temperatura mesmo.",
+  "Alguns dizem que o cordoalheiro testa a corda com o próprio peso. Outros dizem que ele só gosta de se pendurar nela sem motivo.",
+  "Dizem que o estivador carregou um piano inteiro sozinho. Um colega jura que eram quatro pessoas ajudando, não uma.",
+  "Meu avô jurava que a salineira perdeu três tanques numa única tempestade. Outros dizem que foi só um tanque, exagerado com o tempo.",
+  "Dizem que o carroceiro conhece atalho que nem mapa nenhum mostra. Ninguém nunca conseguiu seguir ele até esses lugares.",
+  "Alguns dizem que a ferradora nunca encontrou cavalo nervoso demais. Outros dizem que ela só evita os mais difíceis.",
+  "Dizem que a criadora de cavalos dá nome a cada potro, mesmo os vendidos rápido. Um comprador jura que ela chorou na despedida de um deles.",
+  "Meu avô jurava que o tosquiador é o mais rápido do Reino. Outros dizem que ele só tosquia mal, e por isso é rápido.",
+  "Dizem que a coletora de ervas anda no escuro reconhecendo tudo pelo cheiro. Ninguém nunca a acompanhou pra confirmar.",
+
+  // Sprint First WOW Moment (Phase I) — 2 rumores sobre as Luvas
+  // Rasgadas, o equipamento inicial de todo aventureiro novo.
+  "Dizem que um aventureiro novo apareceu com luvas tão rasgadas que nem os fios seguravam mais nada. Ainda assim, seguiu em frente.",
+  "Contam que alguém tentou consertar as próprias luvas rasgadas com um fio de pescar. Não funcionou. Virou piada da Taverna até hoje.",
+
+  // Sprint StreamRPG Identity (Phase I) — pequenas menções aos
+  // símbolos do Reino, espalhadas pelo mesmo rumor do dia de sempre.
+  "Dizem que o primeiro corvo estudado no Reino era um Corvo-de-Ferro que roubava moeda da Talia. Ainda rouba, segundo ela.",
+  "Ninguém sabe o que tem dentro do barril da praça. Alguém já chutou, já bateu, já perguntou. O barril continua vazio, ou continua guardando segredo.",
+  "Dizem que quem lava as mãos na fonte da praça sai com sorte. As Luvas Rasgadas de alguém continuaram sujas mesmo assim.",
+  "Contam que a Primeira Ponte nunca precisou de reparo de verdade. Alguns acham isso um milagre. Outros acham que ninguém teve coragem de checar direito.",
+
+  // Sprint StreamRPG Identity (Phase II) — segunda leva de símbolos.
+  "Dizem que o poço da Vila do Bosque não tem fundo mesmo. Alguém já jogou uma pedra há anos. Ninguém ouviu ela bater em lugar nenhum ainda.",
+  "Contam que o Sino da Torre já tocou sozinho, sem vento e sem mão nenhuma por perto. Duas vezes, dizem os mais velhos. Ninguém concorda no resto dos detalhes.",
+  "Dizem que ninguém que entra na Fortaleza Sombria sai exatamente do mesmo jeito que entrou. Ninguém explica o que muda.",
+  "Contam que a Quebra do Primeiro Reino começou com uma discussão pequena, numa mesa de taverna parecida com essa. Ninguém sabe dizer sobre o quê.",
+
+  // Sprint Place Identity (Phase I)
+  "Dizem que a árvore da praça já foi maior ainda, antes de um raio atingir um galho, décadas atrás. Ainda cresce, devagar, como se não tivesse pressa nenhuma.",
+  "Contam que a Torre do Portão Norte range à noite, mesmo sem vento nenhum. Os guardas mais antigos dizem que sempre foi assim, desde que se lembram.",
+
+  // Sprint Cross References & Narrative Cohesion (Phase I)
+  "Um pastor da Planície Dourada jura que a Coluna Partida já foi cercada de pedras, faz muito tempo. Ninguém mais viu essas pedras, nem os filhos dele.",
+  "Um velho das Colinas Áridas jura ter visto o muro inteiro em volta do Portão, décadas atrás. Ninguém da idade dele lembra do mesmo jeito.",
 ];
 
 // "Mesa dos Aventureiros" — pelo menos 30 diálogos curtos, todos

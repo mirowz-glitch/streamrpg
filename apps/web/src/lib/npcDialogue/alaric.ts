@@ -94,6 +94,8 @@ export const ALARIC_DIALOGUE: NpcDialogueCatalog = {
     "A história nunca é neutra. Alguém sempre decide o que vale a pena guardar.",
     "Cada geração reescreve um pouco do que a anterior deixou.",
     "O tempo apaga detalhes, mas raramente apaga o essencial.",
+    // Sprint Social Fabric (Phase I)
+    "O Roth escoltou um artefato instável até o Museu, anos atrás, sem perguntar o motivo. Nunca esqueci esse favor.",
   ],
   humor: [
     "Uma vez catalogei um item errado por semanas. Um historiador também erra, apesar do que dizem.",
@@ -101,6 +103,8 @@ export const ALARIC_DIALOGUE: NpcDialogueCatalog = {
     "Um visitante uma vez tentou vender de volta um item que doou. Recusei, educadamente.",
     "Prefiro rir baixo, entre as exposições. Não convém perturbar os artefatos.",
     "Já perdi um documento importante dentro do próprio Museu. Levei um mês pra achar.",
+    // Sprint Social Fabric (Phase I)
+    "Vou à Taverna da Greta uma vez por semana, sempre sozinho, sempre calado. Ela nunca pergunta por quê. Isso, sozinho, já é uma forma de amizade.",
   ],
   conselhos: [
     "Aprenda com quem veio antes. Isso poupa muitos erros.",
@@ -115,6 +119,21 @@ export const ALARIC_DIALOGUE: NpcDialogueCatalog = {
     "A Greta sabe de tudo antes de todo mundo. Ela seria uma cronista e tanto.",
     "O Dorwin registra cada moeda com mais rigor que muitos historiadores registram fatos.",
     "Prefiro fato a fofoca, mas reconheço quando uma é boa o bastante para virar a outra, com o tempo.",
+    // Sprint Ancient Ruins Ecosystem (Phase I)
+    "Doze sítios de ruínas, e nenhum me deu um único registro que eu pudesse fechar de verdade. Isso me tira o sono, com prazer.",
+    "Tentei mover o bloco caído do Portal de Pedra da Fronteira pra uma exposição. Não consegui nem arranhar.",
+    "A Estátua Sem Rosto é o item mais frustrante da minha carreira. Também é o mais valioso. As duas coisas, ao mesmo tempo.",
+    // Sprint Kingdom Folklore (Phase I)
+    "Recuso-me a expor 'a Viúva de Pedra' como fato histórico. Mas admito: guardo um registro dela, só por precaução.",
+    "Folclore não é história. Mas às vezes acerta detalhes que a história oficial nunca documentou. Isso me incomoda profissionalmente.",
+    "Quinze festas populares no Reino, e nenhuma delas está catalogada no Museu. Talvez devesse. Talvez perca a graça se eu catalogar.",
+    // Sprint First WOW Moment (Phase I)
+    "Deveria expor um par de Luvas Rasgadas aqui no Museu. 'Primeiros Passos', seria o nome da peça.",
+    // Sprint StreamRPG Identity (Phase I)
+    "As Ruínas Esquecidas não são só um sítio arqueológico pra mim. São parte de quem somos, gostemos ou não da resposta que dão.",
+    // Sprint StreamRPG Identity (Phase II)
+    "Gritei o próprio nome dentro da Câmara das Vozes, uma vez. O eco que voltou não soou como eu. Nunca mais repeti o teste.",
+    "Levei uma equipe inteira pra tentar mover o bloco caído do Portal de Pedra da Fronteira. Nem com corda, nem com alavanca. Ele decide quando quer ser movido, aparentemente.",
   ],
   comentarios_reino: [
     "Esse Reino já viveu mais eras do que a maioria imagina.",
@@ -122,6 +141,10 @@ export const ALARIC_DIALOGUE: NpcDialogueCatalog = {
     "O Reino de hoje é só mais um capítulo de uma história muito mais longa.",
     "Gosto de pensar que ainda estamos escrevendo os melhores capítulos.",
     "Esse lugar merece ser lembrado com precisão, não com exagero.",
+    // Sprint History of the Kingdom (Phase I)
+    "Dez Eras eu já catalogo com alguma confiança. Suspeito que existam mais, perdidas antes de qualquer registro.",
+    "A Quebra do Primeiro Reino é o evento que mais me tira o sono. Três causas possíveis, e nenhuma prova decisiva.",
+    "Tenho um monumento inteiro dedicado a nomes que não aparecem em nenhum outro registro do Reino. Isso deveria me incomodar mais do que me incomoda.",
   ],
   comentarios_npcs: [
     "O Borin forja objetos que um dia serão peças de museu, sem saber disso.",

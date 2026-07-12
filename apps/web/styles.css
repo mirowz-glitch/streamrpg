@@ -117,6 +117,15 @@ nav {
   color: #c4c7c5;
   font-size: 0.9rem;
 }
+/* Sprint Living Knowledge — "Origem"/"Encontrado em"/"Citado por",
+   derivado das conexões já existentes do Bestiário. Mesma família
+   visual de .item-desc, levemente menor por ser um dado secundário. */
+.item-origin {
+  margin: 0.3rem 0 0;
+  color: #9aa0a6;
+  font-size: 0.78rem;
+  font-style: italic;
+}
 .item-actions {
   flex-shrink: 0;
 }
@@ -140,6 +149,16 @@ nav {
 .hint {
   color: #9aa0a6;
   font-size: 0.875rem;
+}
+/* Sprint Living World (Phase I) — "recomendado/destaque/observado do
+   dia", determinístico, mesmo padrão em Biblioteca/Museu/Bestiário. */
+.city-of-the-day {
+  margin-top: 0.4rem;
+  color: #bf94ff;
+}
+.city-of-the-day span {
+  color: #9aa0a6;
+  font-style: normal;
 }
 .overlay-page {
   background: transparent;
@@ -348,6 +367,13 @@ nav {
   border-color: #34a853;
   background: rgba(52, 168, 83, 0.08);
 }
+/* Sprint Gameplay Feel 03 — "Boss fugiu" precisa parecer diferente de
+   "Boss derrotado", não a mesma cor de vitória. Mesmo âmbar já usado em
+   level-up/raridade lendária, nenhuma cor nova inventada. */
+.boss-card-escaped {
+  border-color: #fbbc04;
+  background: rgba(251, 188, 4, 0.08);
+}
 .boss-card-title {
   font-weight: 700;
   font-size: 1.05rem;
@@ -378,6 +404,13 @@ nav {
   margin: 0.5rem 0;
   padding-left: 1.25rem;
   font-size: 0.9rem;
+}
+/* Sprint Gameplay Feel 03 — a própria recompensa precisa ser localizada
+   em menos de 3 segundos numa lista com várias outras. Mesma cor de
+   destaque já usada em `.boss-card-name`/`.journey-stage-active`. */
+.boss-reward-mine {
+  color: #bf94ff;
+  font-weight: 700;
 }
 .boss-event-log {
   margin-top: 0.75rem;
@@ -647,6 +680,16 @@ nav {
   font-size: 0.8rem;
   color: #9aa0a6;
 }
+/* Sprint Living Knowledge — "Histórias"/"Ruínas" por região, derivado
+   de dados já existentes (regionId em travellerStories.ts/ruins.ts). */
+.region-knowledge {
+  margin: 0.2rem 0 0;
+  font-size: 0.76rem;
+  color: #9aa0a6;
+}
+.region-knowledge span {
+  color: #7a7f83;
+}
 .kingdom-stats-title {
   margin-top: 1.25rem;
   padding-top: 1rem;
@@ -722,6 +765,85 @@ nav {
   font-size: 0.72rem;
   font-style: italic;
   color: #bf94ff;
+}
+
+/* Sprint Combat Feel Phase I — combate precisa chamar atenção de
+   imediato, sem efeito pesado: mesmo vermelho já usado em
+   .first-boss-banner, só como contorno + fundo leve. Aplicado nos dois
+   lugares que já mostram expedição (Personagem completo e a versão
+   compacta do Overlay/Landing Preview) — mesmo CSS, nenhuma cor nova. */
+.expedition-panel-combat {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #ea4335;
+  border-radius: 10px;
+  background: rgba(234, 67, 53, 0.06);
+}
+.expedition-compact-combat {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid #ea4335;
+  border-radius: 8px;
+  background: rgba(234, 67, 53, 0.08);
+}
+/* Reaproveita a mesma animação já criada em World Immersion Phase I
+   (city-arrive) — troca de estado (key={expedition.status}) remonta
+   este bloco e a animação toca sozinha, sem nenhuma lógica nova. */
+.expedition-state-block {
+  animation: city-arrive 0.35s ease;
+}
+/* Encounter + narrativa como uma única história, não dois blocos
+   soltos — só agrupa o espaçamento que já existia. */
+.expedition-story .expedition-narrative {
+  margin-top: 0.15rem;
+}
+
+/* Sprint Gameplay First Phase I — primeira decisão real da Expedição:
+   dois botões pequenos, lado a lado, no mesmo bloco de história (nunca
+   um popup/painel novo). Resultado escolhido vira uma linha de
+   confirmação, mesma tipografia de .expedition-narrative, mas em
+   destaque (cor de sucesso já usada em Feedback), pra reforçar "eu
+   influenciei isso". */
+.expedition-choice-options {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  flex-wrap: wrap;
+}
+.expedition-choice-button {
+  background: #2a2f3d;
+  color: #e8eaed;
+  border: 1px solid #3a3f4d;
+  border-radius: 8px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.expedition-choice-button:hover {
+  background: #3a3f4d;
+  border-color: #bf94ff;
+}
+.expedition-choice-outcome {
+  color: #7ee081;
+}
+
+/* Sprint Expedition Choice Phase II — Persistent Identity: mesma
+   classe usada em dois lugares (cor do badge "Estado • Abordagem" e um
+   contorno sutil do bloco inteiro da expedição) — nunca um banner
+   novo, só um accent color persistente enquanto a expedição durar. */
+.expedition-approach-investigate {
+  color: #58c4dc;
+}
+.expedition-approach-continue {
+  color: #f2b84b;
+}
+.expedition-state-block.expedition-approach-investigate {
+  border-left: 3px solid #58c4dc;
+  padding-left: 0.6rem;
+}
+.expedition-state-block.expedition-approach-continue {
+  border-left: 3px solid #f2b84b;
+  padding-left: 0.6rem;
 }
 
 /* Sprint Encounter System */
@@ -957,6 +1079,26 @@ nav {
 .city-back-btn:hover {
   border-color: #9146ff;
 }
+/* Sprint World Immersion Phase I — entrar/sair de um prédio (e voltar
+   à Praça) era uma troca instantânea de conteúdo, sem nenhuma sensação
+   de deslocamento. Mesma técnica de @keyframes já usada em
+   nav-glow-pulse/first-level-pulse — toca sozinha sempre que o React
+   monta um desses dois blocos (a cada troca Praça↔Prédio), sem
+   nenhum estado novo, sem popup, sem bloquear nada. */
+@keyframes city-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.city-building,
+.city-square-view {
+  animation: city-arrive 0.35s ease;
+}
 .city-building-screen h2 {
   margin-top: 0;
 }
@@ -1047,6 +1189,38 @@ nav {
   font-style: italic;
   color: #9aa0a6;
   font-size: 0.82rem;
+}
+/* Sprint Living Knowledge — "Últimos assuntos", derivado das conexões
+   já existentes do Bestiário. Mesma família visual de .npc-description,
+   levemente destacado só no rótulo. */
+.npc-subjects {
+  margin: 0.35rem 0 0;
+  font-size: 0.78rem;
+  color: #9aa0a6;
+}
+.npc-subjects span {
+  color: #7a7f83;
+}
+/* Sprint Living Kingdom Phase I (Daily NPC Activities) — deliberadamente
+   NÃO itálico e SEM aspas (ao contrário de .npc-line/.npc-quote): é uma
+   atividade física, nunca uma fala. Cor esverdeada e discreta, pra
+   diferenciar de propósito das linhas de diálogo (roxo/itálico). */
+.npc-activity-line {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: #6bbf8a;
+}
+/* Sprint Living World (Phase I) — "Hoje está falando sobre...",
+   determinístico por dia (mesmo catálogo de falas já existente). */
+.npc-topic-today {
+  margin: 0.35rem 0 0;
+  font-style: italic;
+  color: #bf94ff;
+  font-size: 0.82rem;
+}
+.npc-topic-today span {
+  font-style: normal;
+  color: #9aa0a6;
 }
 
 .city-hub-bar {
@@ -1381,6 +1555,32 @@ nav {
 }
 .guide-bubble-icon {
   flex-shrink: 0;
+}
+
+/* Sprint Reactive UI — World Feedback Phase I — vocabulário único de
+   micro feedbacks visuais (lib/uiFeedback.ts decide QUAL estado se
+   aplica; esta é a ÚNICA definição de como cada estado aparece,
+   reaproveitada em todo lugar). Todos usam outline/box-shadow (nunca
+   border/padding/margin) de propósito — não alteram nenhuma dimensão
+   de layout, só cor/luz. Nenhum pisca, nenhum anima continuamente. */
+.ui-feedback-highlight {
+  outline: 1px solid rgba(191, 148, 255, 0.6);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.ui-feedback-softGlow {
+  box-shadow: 0 0 10px rgba(191, 148, 255, 0.25);
+  border-radius: 8px;
+}
+.ui-feedback-attention {
+  box-shadow: inset 3px 0 0 #f2b84b;
+}
+.ui-feedback-subtleBorder {
+  box-shadow: inset 0 0 0 1px rgba(191, 148, 255, 0.35);
+  border-radius: 6px;
+}
+.ui-feedback-quiet {
+  opacity: 0.85;
 }
 
 .welcome-card {
@@ -1808,6 +2008,24 @@ nav {
   color: #bf94ff;
   font-style: italic;
   margin: 0;
+}
+/* Sprint Discovery Graph (Phase I) — "Outros rumores semelhantes",
+   derivado por menção de nome conhecido (NPC/criatura/região). */
+.tavern-similar-rumors {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+.tavern-similar-rumors span {
+  color: #7a7f83;
+}
+.tavern-similar-rumors ul {
+  margin: 0.3rem 0 0;
+  padding-left: 1.1rem;
+}
+.tavern-similar-rumors li {
+  font-style: italic;
+  margin: 0.15rem 0;
 }
 .tavern-conversations {
   display: flex;

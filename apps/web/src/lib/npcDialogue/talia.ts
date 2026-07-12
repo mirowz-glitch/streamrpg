@@ -93,6 +93,8 @@ export const TALIA_DIALOGUE: NpcDialogueCatalog = {
     "Todo item aqui tem uma história. Umas mais verdadeiras que outras.",
     "Vendi um item pra mim mesma outro dia. Boa compra, aliás.",
     "Silêncio incomoda essa loja. Por isso eu falo tanto.",
+    // Sprint Social Fabric (Phase I)
+    "O Idris me trouxe mercadoria rara numa colheita ruim, quando ninguém mais tinha o que vender. Ainda devo essa a ele, de um jeito ou de outro.",
   ],
   humor: [
     "Já tentei vender a mesma coisa duas vezes pro mesmo cliente. Ele nem percebeu!",
@@ -100,6 +102,8 @@ export const TALIA_DIALOGUE: NpcDialogueCatalog = {
     "Uma vez vendi um item quebrado como 'edição especial'. Funcionou.",
     "Eu falo tanto que às vezes esqueço o que ia dizer no meio da frase.",
     "Já perdi a conta de quantas vezes chamei o mesmo item de 'raríssimo'.",
+    // Sprint Social Fabric (Phase I)
+    "O Dorwin nunca confia em nenhum preço que eu dou, nem quando é justo. Um dia ele vai perceber que eu tinha razão. Um dia.",
   ],
   conselhos: [
     "Nunca compra o primeiro preço. Nem de mim.",
@@ -107,6 +111,8 @@ export const TALIA_DIALOGUE: NpcDialogueCatalog = {
     "Escuta o vendedor, mas confia no seu bolso.",
     "Todo item bom vale a pena negociar. Todo mesmo.",
     "Compra o que você precisa. Depois compra o que você quer. Nessa ordem, se conseguir.",
+    // Sprint Social Fabric (Phase I)
+    "O Zoltar cobra caro demais pelos frascos dele. Eu cobro caro demais pelos meus itens. Nenhum dos dois admite isso pro outro.",
   ],
   fofocas: [
     "Ouvi dizer que o Dorwin nunca gasta nada. NUNCA. Nem um Gold.",
@@ -114,6 +120,26 @@ export const TALIA_DIALOGUE: NpcDialogueCatalog = {
     "O Borin reclama dos meus preços mas nunca deixou de comprar ferro de mim.",
     "Escutei que alguém ofereceu flores pro Borin. Ninguém sabe quem.",
     "Não devia contar isso, mas... ah, quem estou enganando, eu conto tudo.",
+    // Sprint Kingdom Folk (Phase I)
+    "Compro queijo da mesma queijeira há anos. Ela diz que reconhece o rebanho só de provar. Eu só quero saber se rende troco.",
+    "O apicultor da Planície Dourada me vende o melhor mel do Reino. Nunca perguntei o segredo, só o preço.",
+    "Tem um vinicultor que guarda um barril há doze anos esperando o ano perfeito. Já ofereci comprar. Ele nunca vende.",
+    // Sprint Kingdom Government (Phase I)
+    "Já reconheci três Fiscais de Mercado disfarçados, só pela forma de regatear. Eles acham que enganam. Eu só finjo não perceber.",
+    "Edital de preço de feira muda toda estação, e nunca a meu favor. Um dia descubro quem escreve esses editais.",
+    "Governo bom, pra mim, é aquele que cobra taxa justa e não aparece toda semana pra 'fiscalizar' o que já paguei pra fiscalizar ano passado.",
+    // Sprint Kingdom Memories (Phase I)
+    "Meu avô vendeu ferramenta fiada durante anos pra quem reconstruía depois do Grande Incêndio. Ainda tenho os cadernos de dívida dele, nunca cobrados.",
+    "Um carroceiro levou famílias inteiras pra fora da Vila Queimada de graça. Já tentei pagar ele, anos depois. Recusou.",
+    "Vitória cara é a que ninguém quer comemorar de novo. Ouvi isso de um cliente velho. Nunca esqueci.",
+    // Sprint First WOW Moment (Phase I)
+    "Tentei vender uma luva nova pra um aventureiro de luvas rasgadas. Ele preferiu ficar com as velhas. Respeito.",
+    // Sprint StreamRPG Identity (Phase I)
+    "Toda negociação importante desse Reino, cedo ou tarde, acaba discutida na mesa da Greta. Ela nem cobra pelo espaço. Devia.",
+    // Sprint StreamRPG Identity (Phase II)
+    "Dizem que a Rainha Meira negociou a reunificação numa mesa parecida com essa. Prefiro acreditar que sim — dá mais sentido ao meu trabalho.",
+    // Sprint Place Identity (Phase I)
+    "Vendo perto da Fonte da praça sempre que posso. O povo passa por ali pra beber água e acaba comprando alguma coisa no caminho.",
   ],
   comentarios_reino: [
     "Esse Reino cresce mais rápido do que minha prateleira consegue acompanhar!",

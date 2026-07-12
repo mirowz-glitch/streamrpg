@@ -100,6 +100,17 @@ function runMigrations(database: DatabaseSync): void {
     console.log("[Migration] expeditions.current_encounter_icon adicionada.");
   }
 
+  // Sprint Expedition Choice Phase III — Meaningful Consequences. NULL
+  // até o jogador escolher uma abordagem (Investigar/Seguir em Frente)
+  // durante Exploring+Descoberta; usada só para enviesar levemente a
+  // geração de Encounters (ExpeditionSystem.getApproachWeight) — nunca
+  // uma recompensa, nunca XP/Gold/Item.
+  const hasApproach = expeditionColumns.some((col) => col.name === "approach");
+  if (!hasApproach) {
+    database.exec("ALTER TABLE expeditions ADD COLUMN approach TEXT");
+    console.log("[Migration] expeditions.approach adicionada.");
+  }
+
   // Sprint Founder Identity & Prestige — só o título/moldura *equipado*
   // vive em characters (um de cada por vez, igual a equipped_items por
   // slot); a lista de desbloqueados vive em character_titles/

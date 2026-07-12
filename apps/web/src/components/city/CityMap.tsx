@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { feedbackClassName } from "../../lib/uiFeedback";
 
 export type BuildingKey =
   | "arena"
@@ -42,26 +43,36 @@ const BUILDINGS: BuildingDef[] = [
 
 interface CityMapProps {
   onSelect: (key: BuildingKey) => void;
+  // Sprint Live Readiness Phase I (First 5 Minutes) — já decidida por
+  // CityPage (lib/liveReadiness.ts, getLiveHighlights: World Event/
+  // Expedição ativa/Kingdom Memory distribuídos, nunca mais de 3);
+  // CityMap nunca decide sozinho, só aplica a mesma classe de destaque
+  // já usada pelo evento do Reino ("highlight").
+  highlightedBuildings?: readonly BuildingKey[];
 }
 
 // Sprint Performance Optimization — `onSelect` (setState do CityPage) é
 // uma referência estável; memo evita recriar os 7 cards do mapa a cada
 // re-renderização da Praça Central (ex: o relógio a cada segundo).
-export const CityMap = memo(function CityMap({ onSelect }: CityMapProps) {
+export const CityMap = memo(function CityMap({ onSelect, highlightedBuildings = [] }: CityMapProps) {
+  const highlightCls = feedbackClassName("highlight");
   return (
     <div className="city-map-grid">
-      {BUILDINGS.map((building) => (
-        <button
-          key={building.key}
-          type="button"
-          className="city-building-card"
-          onClick={() => onSelect(building.key)}
-        >
-          <span className="city-building-icon">{building.icon}</span>
-          <strong className="city-building-name">{building.name}</strong>
-          <span className="city-building-description">{building.description}</span>
-        </button>
-      ))}
+      {BUILDINGS.map((building) => {
+        const isHighlighted = highlightedBuildings.includes(building.key);
+        return (
+          <button
+            key={building.key}
+            type="button"
+            className={`city-building-card${isHighlighted ? ` ${highlightCls}` : ""}`}
+            onClick={() => onSelect(building.key)}
+          >
+            <span className="city-building-icon">{building.icon}</span>
+            <strong className="city-building-name">{building.name}</strong>
+            <span className="city-building-description">{building.description}</span>
+          </button>
+        );
+      })}
     </div>
   );
 });

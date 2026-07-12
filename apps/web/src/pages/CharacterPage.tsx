@@ -14,6 +14,7 @@ import { useCharacter } from "../hooks/useCharacter";
 import { useIdentity } from "../hooks/useIdentity";
 import { useKingdomRole } from "../hooks/useKingdomRole";
 import { usePing } from "../hooks/usePing";
+import { useExpedition } from "../hooks/useExpedition";
 import { WelcomeCard } from "../components/onboarding/WelcomeCard";
 import { GuideBubble } from "../components/onboarding/GuideBubble";
 import { FirstSteps } from "../components/onboarding/FirstSteps";
@@ -23,6 +24,18 @@ import { FirstItemCard } from "../components/onboarding/FirstItemCard";
 import { FirstLevelBanner } from "../components/onboarding/FirstLevelBanner";
 import { FirstBossBanner } from "../components/onboarding/FirstBossBanner";
 import { NewTitleModal } from "../components/onboarding/NewTitleModal";
+import { PlayerGoals } from "../components/ui/PlayerGoals";
+import { buildPlayerFacts } from "../lib/playerFacts";
+import { getCharacterStage, STAGE_CHARACTER_DESCRIPTION } from "../lib/characterPresence";
+import { buildCollectionInsightContext, getRegionsInsight } from "../lib/collectionInsights";
+import { getLegacyLine } from "../lib/legacy";
+import { getKingdomReputationLine } from "../lib/kingdomReputation";
+import { getPersonalChronicleLine } from "../lib/personalChronicle";
+import { buildExpeditionSpecializationContext, getExpeditionSpecialization } from "../lib/expeditionSpecialization";
+import { feedbackClassName, resolveFeedback } from "../lib/uiFeedback";
+import { CHARACTER_TRAIT_PRIORITY, getSingleHighlight } from "../lib/liveReadiness";
+import { buildExpeditionEchoContext } from "../lib/expeditionEchoes";
+import { buildLiveGuideContext, getRecommendedSurface } from "../lib/liveGuide";
 
 // Sprint Identity & Progression — indicador visual único, soma dos
 // atributos já mostrados na grade abaixo. Não é um stat de combate: o
@@ -49,6 +62,82 @@ export function CharacterPage() {
     channelInput || undefined,
   );
   const kingdomRoles = useKingdomRole(channel || undefined, !!profile);
+  // Sprint Live Experience Phase II (Guided Discovery) — mesmo hook já
+  // usado por ExpeditionPanel/CityPage (nenhum fetch novo), só pra
+  // repassar `approach` pra camada central; CharacterPage nunca decide
+  // nada com isso além disso.
+  const { expedition } = useExpedition(!!profile);
+
+  // Sprint Collections & Discovery Phase I — regiões descobertas
+  // (identity.regions_discovered) via a camada central; calculado aqui
+  // em cima porque JSX não aceita `const` no meio de uma fragment.
+  const regionsInsight = identity
+    ? getRegionsInsight(buildCollectionInsightContext({ regionsDiscovered: identity.regions_discovered }))
+    : null;
+
+  // Sprint Legacy Phase I — mesmos PlayerFacts já usados acima; camada
+  // central e independente (lib/legacy.ts), nunca reutiliza o texto de
+  // Character Presence/Collection Insights, só os dados.
+  const legacyLine = character && identity ? getLegacyLine(buildPlayerFacts(character, identity, kingdomRoles)) : null;
+
+  // Sprint Kingdom Reputation Phase I — mesmos PlayerFacts já usados
+  // acima; camada central e independente (lib/kingdomReputation.ts),
+  // nunca fala em primeira pessoa, sempre um boato coletivo do Reino.
+  const kingdomReputationLine =
+    character && identity ? getKingdomReputationLine(buildPlayerFacts(character, identity, kingdomRoles)) : null;
+
+  // Sprint Personal Chronicle Phase I — mesmos PlayerFacts já usados
+  // acima; camada central e independente (lib/personalChronicle.ts),
+  // sempre retrospectiva ("sua jornada"), nunca estado atual (Character
+  // Presence), fato consolidado (Legacy) ou boato do Reino (Kingdom
+  // Reputation).
+  const personalChronicleLine =
+    character && identity ? getPersonalChronicleLine(buildPlayerFacts(character, identity, kingdomRoles)) : null;
+
+  // Sprint Live Readiness Phase I — antes só Legacy tinha destaque
+  // visual (`legacyFeedbackCls`, sempre aplicado quando existia, sem
+  // checar Kingdom Reputation/Personal Chronicle). Agora os 3 disputam
+  // via a camada central: nunca três brilhos iguais, sempre no máximo
+  // um (mesma prioridade já documentada em legacy.ts/
+  // personalChronicle.ts — fato consolidado > boato em circulação >
+  // retrospectiva).
+  const characterTraitHighlight = getSingleHighlight(CHARACTER_TRAIT_PRIORITY, {
+    legacy: legacyLine !== null,
+    kingdomReputation: kingdomReputationLine !== null,
+    personalChronicle: personalChronicleLine !== null,
+  });
+  const legacyFeedbackCls = feedbackClassName(resolveFeedback(characterTraitHighlight === "legacy", "subtleBorder"));
+  const kingdomReputationFeedbackCls = feedbackClassName(
+    resolveFeedback(characterTraitHighlight === "kingdomReputation", "subtleBorder"),
+  );
+  const personalChronicleFeedbackCls = feedbackClassName(
+    resolveFeedback(characterTraitHighlight === "personalChronicle", "subtleBorder"),
+  );
+
+  // Sprint Gameplay Phase I (Expedition Specializations) — mesmos
+  // PlayerFacts já usados acima; calculada uma única vez aqui e
+  // repassada para ExpeditionPanel (nunca duas linhas iguais na mesma
+  // página — só o widget de expedição a exibe, CharacterPage não
+  // duplica com um segundo hint solto).
+  const expeditionSpecializationLine =
+    character && identity
+      ? getExpeditionSpecialization(buildExpeditionSpecializationContext(buildPlayerFacts(character, identity, kingdomRoles)))
+      : null;
+
+  // Sprint Live Experience Phase II (Guided Discovery) — mesmos
+  // PlayerFacts já usados acima + booksRead/creaturesViewed (Collection
+  // Insights) + approach (Expedition Echoes); responde "para onde pode
+  // ser interessante ir", nunca "o que fazer" (isso já é PlayerGoals).
+  const liveGuideLine =
+    character && identity
+      ? getRecommendedSurface(
+          buildLiveGuideContext(
+            buildPlayerFacts(character, identity, kingdomRoles),
+            buildCollectionInsightContext(),
+            buildExpeditionEchoContext(expedition),
+          ),
+        )
+      : null;
 
   // Sprint Performance Optimization — referências estáveis para que o
   // memo de IdentityPanel funcione (senão uma arrow function nova a
@@ -104,6 +193,21 @@ export function CharacterPage() {
               </div>
             </div>
 
+            {identity ? (
+              <p className="hint">
+                {STAGE_CHARACTER_DESCRIPTION[getCharacterStage(buildPlayerFacts(character, identity, kingdomRoles))]}
+              </p>
+            ) : null}
+
+            {regionsInsight ? <p className="hint">{regionsInsight}</p> : null}
+            {legacyLine ? <p className={`hint${legacyFeedbackCls ? ` ${legacyFeedbackCls}` : ""}`}>{legacyLine}</p> : null}
+            {kingdomReputationLine ? (
+              <p className={`hint${kingdomReputationFeedbackCls ? ` ${kingdomReputationFeedbackCls}` : ""}`}>{kingdomReputationLine}</p>
+            ) : null}
+            {personalChronicleLine ? (
+              <p className={`hint${personalChronicleFeedbackCls ? ` ${personalChronicleFeedbackCls}` : ""}`}>{personalChronicleLine}</p>
+            ) : null}
+
             <FirstLevelBanner level={character.level} />
 
             <XpBar percent={character.percent} label={`${character.xp} XP no nível · faltam ${character.xp_to_next} para o próximo nível`} />
@@ -116,8 +220,11 @@ export function CharacterPage() {
               ]}
             />
 
+            <PlayerGoals character={character} identity={identity} kingdomRoles={kingdomRoles} />
+            {liveGuideLine ? <p className="guide-bubble">{liveGuideLine}</p> : null}
+
             <FirstBossBanner channel={channel || undefined} />
-            <BossCard channel={channel || undefined} />
+            <BossCard channel={channel || undefined} myCharacterId={character.id} />
 
             {channel && kingdomRoles.length > 0 ? (
               <p className="character-kingdom-roles">
@@ -126,7 +233,7 @@ export function CharacterPage() {
               </p>
             ) : null}
 
-            <ExpeditionPanel enabled={!!profile} />
+            <ExpeditionPanel enabled={!!profile} specializationLine={expeditionSpecializationLine} />
 
             {identity ? (
               <IdentityPanel

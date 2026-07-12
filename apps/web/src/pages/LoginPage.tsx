@@ -9,6 +9,7 @@ import { KingdomPreview } from "../components/landing/KingdomPreview";
 import { CityPreview } from "../components/landing/CityPreview";
 import { CharacterPreview } from "../components/landing/CharacterPreview";
 import { FinalCTA } from "../components/landing/FinalCTA";
+import { GLOBAL_HIGHLIGHT_PRIORITY, getLiveHighlights } from "../lib/liveReadiness";
 
 const FEATURES = [
   { icon: "⚔", title: "Evolua", description: "Ganhe experiência automaticamente enquanto assiste." },
@@ -26,6 +27,21 @@ const FEATURES = [
 export function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Sprint Live Readiness Phase I (First 5 Minutes) — a Landing Page é
+  // a vitrine da live: sem jogador real, nenhuma camada reativa (Legacy/
+  // Kingdom Reputation/Personal Chronicle/Expedition Specialization)
+  // jamais teria algo pra mostrar num visitante anônimo — exatamente o
+  // achado da auditoria ("informações importantes aparecem tarde
+  // demais"). Por isso os 3 candidatos aqui são fixos e determinísticos
+  // (nunca dependem de dado real), decididos pela mesma camada central
+  // (lib/liveReadiness.ts) que todo o resto do app usa — garante nunca
+  // mais que 3 e nunca menos que 1, sem depender de sorte.
+  const landingHighlights = getLiveHighlights(GLOBAL_HIGHLIGHT_PRIORITY, {
+    expedition: true,
+    npc: true,
+    region: true,
+  });
 
   async function handleLogin() {
     setLoading(true);
@@ -60,7 +76,7 @@ export function LoginPage() {
 
       <section className="landing-section">
         <h2 className="landing-section-title">Um mundo para explorar</h2>
-        <WorldPreview />
+        <WorldPreview highlighted={landingHighlights.includes("region")} />
       </section>
 
       <section className="landing-section">
@@ -70,7 +86,7 @@ export function LoginPage() {
 
       <section className="landing-section">
         <h2 className="landing-section-title">A Capital espera por você</h2>
-        <CityPreview />
+        <CityPreview highlighted={landingHighlights.includes("npc")} />
       </section>
 
       <section className="landing-section">

@@ -93,6 +93,8 @@ export const ELENYA_DIALOGUE: NpcDialogueCatalog = {
     "A Guilda existe para lembrar que ninguém precisa enfrentar tudo sozinho.",
     "Já vi muitos aventureiros passarem por essa porta. Poucos ficam.",
     "Silêncio, às vezes, é a resposta mais honesta que tenho.",
+    // Sprint Social Fabric (Phase I)
+    "Negociei financiamento pra Arena do Kade numa época em que ninguém mais achava que valia a pena. Foi uma aposta. Acertei.",
   ],
   humor: [
     "Já ri de verdade uma vez. Foi memorável, pelo menos pra mim.",
@@ -100,6 +102,8 @@ export const ELENYA_DIALOGUE: NpcDialogueCatalog = {
     "Um aventureiro uma vez tentou me impressionar tropeçando na entrada. Funcionou, de um jeito.",
     "Se você me fizer rir, considere isso uma conquista rara.",
     "Tenho senso de humor. Guardo ele para ocasiões especiais.",
+    // Sprint Social Fabric (Phase I)
+    "O Dorwin aprova meus métodos com a Guilda mais do que aprova qualquer outra coisa nesse Reino. Isso já diz muito sobre os dois.",
   ],
   conselhos: [
     "Escolha suas batalhas. Nem todas precisam ser suas.",
@@ -107,6 +111,8 @@ export const ELENYA_DIALOGUE: NpcDialogueCatalog = {
     "Liderar não é mandar. É responder por quem segue você.",
     "Nunca subestime quem parece fraco no começo.",
     "O Reino lembra de quem ajuda, não só de quem vence.",
+    // Sprint Social Fabric (Phase I)
+    "O Idris me manda relatório de cada região que cruza, sem eu nunca ter pedido. Confio nesses relatórios mais do que em muitos oficiais.",
   ],
   fofocas: [
     "Não costumo repetir fofoca. Mas sei de quase tudo que acontece aqui.",
@@ -114,6 +120,20 @@ export const ELENYA_DIALOGUE: NpcDialogueCatalog = {
     "Dizem que a Greta sabe de tudo antes de todo mundo. Talvez seja verdade.",
     "O Dorwin reclama até de mim, ocasionalmente. Eu deixo passar.",
     "Prefiro observar a fofoca do que participar dela.",
+    // Sprint Kingdom Folk (Phase I)
+    "A Guilda registra aventureiro. Deveria registrar também quem sustenta as vilas todo santo dia — lenhador, pescador, moleiro.",
+    "Um guia de caravana conhece o Reino inteiro de cor. Já pensei em contratá-lo só pra ensinar geografia aos novatos.",
+    "O Reino não seria nada sem quem planta, tece e constrói. Isso nunca vira crônica, mas eu não esqueço.",
+    // Sprint Kingdom Government (Phase I)
+    "Já negociei com o Tribunal sobre jurisdição de aventureiro mais de uma vez. Prefiro resolver informalmente do que virar precedente formal.",
+    "O Decreto de Reconhecimento da Guilda cita Dorel. Ou Garrick. Depende de qual arquivo você consulta na Capital.",
+    "Governo bom é aquele que deixa a Guilda trabalhar sem pedir permissão a cada passo. Até agora, funciona assim.",
+    // Sprint First WOW Moment (Phase I)
+    "Registrei um aventureiro novo hoje. Luvas rasgadas, coragem inteira. Bom começo.",
+    // Sprint StreamRPG Identity (Phase II)
+    "As previsões do Zoltar nunca erram o suficiente pra eu parar de escutar. Isso já diz alguma coisa.",
+    // Sprint Place Identity (Phase I)
+    "Nenhum aventureiro da Guilda aceita missão relacionada à Fortaleza Sombria duas vezes. Na primeira, quase todos aceitam.",
   ],
   comentarios_reino: [
     "Esse Reino sobrevive porque as pessoas escolhem ficar, não porque são obrigadas.",
@@ -121,6 +141,10 @@ export const ELENYA_DIALOGUE: NpcDialogueCatalog = {
     "O Reino é feito de quem escolhe ficar. Sempre acreditei nisso.",
     "Cada geração fortalece esse lugar um pouco mais. Ou o enfraquece. Depende de nós.",
     "Esse Reino já passou por coisas piores. Ainda está de pé.",
+    // Sprint History of the Kingdom (Phase I)
+    "Dizem que Garrick, meu antecessor, era irmão de Dorel, o Fundador da Guilda. Outros dizem que eram a mesma pessoa. Nunca resolvi qual versão acreditar.",
+    "Registro cada aventureiro que passa por aqui, do jeito que Garrick registrava. A lista é de nomes, não de garantias — ele escreveu isso, e eu levo a sério.",
+    "A Guilda sobreviveu à Quebra do Primeiro Reino inteira. Isso me diz mais sobre nós do que qualquer crônica de herói.",
   ],
   comentarios_npcs: [
     "O Borin é confiável. Não fala muito, mas cumpre.",

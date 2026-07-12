@@ -278,6 +278,14 @@ export interface RegionVisitSummary {
 
 export type ExpeditionStatus = "preparing" | "exploring" | "combating" | "resting" | "returning" | "completed";
 
+// Sprint Expedition Choice Phase III — Meaningful Consequences. Mesma
+// opção binária já existente no cliente (Phase I/II, lib/expeditionChoice.ts),
+// agora compartilhada com o backend: ExpeditionSystem usa isto para
+// enviesar levemente (3-8 pontos percentuais) a geração de Encounters
+// durante "exploring" — nunca uma classe/skill, só uma leve inclinação
+// estatística sobre Encounters que já existiam.
+export type ExpeditionApproach = "investigate" | "continue";
+
 // Sprint Encounter System — categorias já existentes em
 // docs/world-design/random-events.md (consolidadas nas 8 já propostas
 // pela própria Sprint), nunca uma taxonomia nova.
@@ -302,6 +310,12 @@ export interface ExpeditionCompact {
   status: ExpeditionStatus;
   progress_percent: number;
   encounter: EncounterSummary | null;
+  // Sprint Expedition Consequences Phase I — mesmo campo já exposto em
+  // ExpeditionResponse abaixo, aqui também cobrindo Overlay/Landing
+  // Preview (que reaproveitam ExpeditionCompact). Sempre opcional/null:
+  // nenhuma expedição antiga quebra, nenhum viewer sem escolha muda de
+  // comportamento.
+  approach: ExpeditionApproach | null;
 }
 
 export interface ExpeditionResponse {
@@ -317,6 +331,11 @@ export interface ExpeditionResponse {
   encounter: EncounterSummary | null;
   estimated_seconds_remaining: number;
   started_at: string;
+  // Sprint Expedition Consequences Phase I — mesma abordagem já
+  // persistida no backend (Phase III), agora exposta pro cliente poder
+  // reutilizá-la fora do ExpeditionPanel (CreatureReader, BookReader,
+  // etc. — nenhum deles tem acesso ao estado local do painel).
+  approach: ExpeditionApproach | null;
 }
 
 export interface RegionEncounterSummary {

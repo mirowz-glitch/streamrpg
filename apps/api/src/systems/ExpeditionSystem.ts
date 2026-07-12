@@ -35,7 +35,9 @@
 import { allRegionIds, shortestPathLength, STARTING_REGION_ID } from "@streamrpg/shared";
 import type { EventBus } from "../engine/EventBus.js";
 import type {
+  EncounterCategory,
   EncounterSnapshot,
+  ExpeditionApproach,
   ExpeditionCompletedEvent,
   ExpeditionEncounterEvent,
   ExpeditionRepository,
@@ -160,10 +162,57 @@ const WOLF_ENCOUNTERS: EncounterSnapshot[] = [
   { category: "descoberta", icon: "🎁", text: "Um ninho de gravetos e pelos indica território de lobos por perto" },
 ];
 
+// Sprint Expedition Choice Phase III — Meaningful Consequences.
+//
+// REQUISITO OBRIGATÓRIO — auditoria antes de implementar: dos 6
+// estados, só "exploring" tem mais de uma categoria real convivendo no
+// mesmo pool (natureza x2, clima x2, descoberta x2, misterio x1,
+// comercio x1) — combating/resting/returning/preparing têm pools
+// dominados por uma única categoria (ou pouca diversidade), sem o que
+// enviesar sem inventar uma categoria nova (fora de escopo). Por isso
+// esta é a ÚNICA função afetada por `approach` — nenhuma mudança em
+// duração (stateDurations), XP, Gold ou Drop (nenhum destes existe
+// neste arquivo, Combat Model intocado).
+//
+// Pesos pequenos, nunca reordenam o resultado, só inclinam a chance
+// relativa: "investigate" favorece descoberta/misterio (o "custo" é a
+// proporção menor de natureza/clima/comercio, mais calmos); "continue"
+// favorece natureza/comercio (previsível/seguro), reduzindo
+// descoberta/misterio. Calibrado para deslocar cada categoria em
+// ~3-8 pontos percentuais (Balance da própria Sprint) — nunca o
+// suficiente para se tornar obrigatório. Ilustrativo, não calibrado
+// por playtest, mesma convenção de todo peso não validado neste
+// projeto (Tiers de Boss, Evolution Score).
+const APPROACH_WEIGHT: Record<ExpeditionApproach, Partial<Record<EncounterCategory, number>>> = {
+  investigate: { descoberta: 1.25, misterio: 1.25, natureza: 0.9, clima: 0.9, comercio: 0.9 },
+  continue: { natureza: 1.2, comercio: 1.3, descoberta: 0.75, misterio: 0.75 },
+};
+
+// Pura e exportada para ser testável isoladamente (mesmo espírito de
+// calculateOverallProgress/estimatedSecondsRemaining abaixo). `null`
+// (nenhuma abordagem escolhida ainda) sempre retorna 1 — nenhum viés,
+// comportamento idêntico ao de antes desta Sprint.
+export function getApproachWeight(category: EncounterCategory, approach: ExpeditionApproach | null): number {
+  if (!approach) return 1;
+  return APPROACH_WEIGHT[approach][category] ?? 1;
+}
+
+function weightedPick(pool: EncounterSnapshot[], approach: ExpeditionApproach | null, random: RandomProvider): EncounterSnapshot {
+  const weights = pool.map((e) => getApproachWeight(e.category, approach));
+  const total = weights.reduce((sum, w) => sum + w, 0);
+  let roll = random.next() * total;
+  for (let i = 0; i < pool.length; i++) {
+    roll -= weights[i];
+    if (roll <= 0) return pool[i];
+  }
+  return pool[pool.length - 1];
+}
+
 function pickEncounter(
   status: ExpeditionStatus,
   destinationRegionId: string,
   random: RandomProvider,
+  approach: ExpeditionApproach | null,
 ): EncounterSnapshot | null {
   if (status === "completed") return null;
 
@@ -178,6 +227,9 @@ function pickEncounter(
   }
 
   const pool = ENCOUNTERS_BY_STATE[status];
+  if (status === "exploring") {
+    return weightedPick(pool, approach, random);
+  }
   const idx = Math.floor(random.next() * pool.length);
   return pool[idx];
 }
@@ -267,7 +319,7 @@ export class ExpeditionSystem {
 
     // Primeiro Encounter já na criação — sem isso, "preparing" ficaria
     // sem nenhuma narrativa até o próximo tick (até 60s de tela vazia).
-    const firstEncounter = pickEncounter("preparing", destination, this.randomProvider);
+    const firstEncounter = pickEncounter("preparing", destination, this.randomProvider, null);
     if (firstEncounter) {
       await this.repo.advance(expedition.id, "preparing", timestamp, 0, firstEncounter, STARTING_REGION_ID);
       this.emitEncounter(characterId, expedition.id, STARTING_REGION_ID, firstEncounter, timestamp, bus);
@@ -331,7 +383,7 @@ export class ExpeditionSystem {
     // ao entrar em combating (chegou ao destino, exploring terminou) ou
     // ao entrar em completed (chegou de volta ao hub, tratado acima).
     const arrivedRegionId = nextStatus === "combating" ? expedition.destinationRegionId : expedition.currentRegionId;
-    const encounter = pickEncounter(nextStatus, expedition.destinationRegionId, this.randomProvider);
+    const encounter = pickEncounter(nextStatus, expedition.destinationRegionId, this.randomProvider, expedition.approach);
     await this.repo.advance(expedition.id, nextStatus, timestamp, 0, encounter, arrivedRegionId);
 
     if (encounter) {

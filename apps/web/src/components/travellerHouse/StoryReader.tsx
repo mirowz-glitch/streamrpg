@@ -1,6 +1,9 @@
+import { useEffect } from "react";
 import { getRegionName } from "@streamrpg/shared";
 import type { TravellerStory } from "../../lib/travellerStories";
 import { STORY_CATEGORIES } from "../../lib/travellerStories";
+import { getRelatedStoriesAcrossRegions } from "../../lib/knowledgeLinks";
+import { recordEvent } from "../../lib/personalTimeline";
 import { CodexReader } from "../codex/CodexReader";
 
 interface StoryReaderProps {
@@ -15,6 +18,27 @@ interface StoryReaderProps {
 // os exige.
 export function StoryReader({ story }: StoryReaderProps) {
   const category = story ? STORY_CATEGORIES.find((c) => c.slug === story.category) : undefined;
+
+  // Sprint Reactive World Phase I — cada história efetivamente aberta
+  // vira um registro no Personal Timeline, usado por
+  // TravellerHouseBuilding pra decidir a reação de "gosta de ouvir
+  // histórias".
+  useEffect(() => {
+    if (!story) return;
+    recordEvent("story_read", { storyId: story.id });
+  }, [story]);
+
+  // Sprint Discovery Graph (Phase I) — "Também aconteceu em": outra
+  // história da mesma categoria, ocorrida numa região diferente.
+  const related = story ? getRelatedStoriesAcrossRegions(story) : [];
+  const pages = story
+    ? related.length > 0
+      ? [
+          story.text,
+          `**Também aconteceu em**\n\n${related.map((s) => `**${getRegionName(s.regionId)}:** ${s.title}`).join("\n\n")}`,
+        ]
+      : [story.text]
+    : [];
 
   return (
     <CodexReader
@@ -36,7 +60,7 @@ export function StoryReader({ story }: StoryReaderProps) {
             ]
           : []
       }
-      pages={story ? [story.text] : []}
+      pages={pages}
     />
   );
 }

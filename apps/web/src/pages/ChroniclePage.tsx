@@ -3,6 +3,12 @@ import type { ChronicleResponse } from "@streamrpg/shared";
 import { AppNav } from "../components/ui/AppNav";
 import { api } from "../lib/api";
 import { useAuth } from "../hooks/useAuth";
+import { useCharacter } from "../hooks/useCharacter";
+import { useIdentity } from "../hooks/useIdentity";
+import { useKingdomRole } from "../hooks/useKingdomRole";
+import { getStoredChannel } from "../hooks/usePing";
+import { buildPlayerFacts } from "../lib/playerFacts";
+import { getCharacterStage, STAGE_CHRONICLE_INTRO } from "../lib/characterPresence";
 
 // Sprint Kingdom Chronicles (MVP) — o "Livro" de um personagem: capítulos
 // permanentes, mais antigo primeiro (ordem de leitura de um livro real).
@@ -12,6 +18,13 @@ import { useAuth } from "../hooks/useAuth";
 export function ChroniclePage() {
   const { profile, loading } = useAuth();
   const [data, setData] = useState<ChronicleResponse | null>(null);
+  // Sprint Character Evolution Presence Phase I — mesmos dados já
+  // buscados em CharacterPage/CityPage, só reaproveitados aqui pra uma
+  // frase introdutória do Livro conforme o estágio de evolução.
+  const { character } = useCharacter(!!profile);
+  const { identity } = useIdentity(!!profile);
+  const channel = getStoredChannel();
+  const kingdomRoles = useKingdomRole(channel || undefined, !!profile);
 
   useEffect(() => {
     if (!profile) return;
@@ -38,6 +51,11 @@ export function ChroniclePage() {
       <div className="card">
         <h1>📖 Crônicas</h1>
         <p className="hint">O Livro do seu aventureiro — os momentos que ele contaria anos depois.</p>
+        {character && identity ? (
+          <p className="hint">
+            {STAGE_CHRONICLE_INTRO[getCharacterStage(buildPlayerFacts(character, identity, kingdomRoles))]}
+          </p>
+        ) : null}
 
         {!data ? (
           <p className="loading-state">Abrindo o Livro...</p>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { WorldStateResponse } from "@streamrpg/shared";
 import { AppNav } from "../components/ui/AppNav";
 import { CityMap, type BuildingKey } from "../components/city/CityMap";
@@ -20,14 +20,55 @@ import { TravellerHouseBuilding } from "../components/city/TravellerHouseBuildin
 import { useAuth } from "../hooks/useAuth";
 import { useCharacter } from "../hooks/useCharacter";
 import { useIdentity } from "../hooks/useIdentity";
+import { useKingdomRole } from "../hooks/useKingdomRole";
+import { useExpedition } from "../hooks/useExpedition";
 import { api } from "../lib/api";
 import { getStoredChannel, setStoredChannel } from "../hooks/usePing";
 import { GuideBubble } from "../components/onboarding/GuideBubble";
+import { EldrinGuide } from "../components/onboarding/EldrinGuide";
 import { CLOCK_TICK_MS } from "../lib/pollIntervals";
+import { pickOfTheDay } from "../lib/dailyRotation";
+import { HIDDEN_OBJECTS } from "../lib/hiddenObjects";
+import { TRAVELLER_STORIES } from "../lib/travellerStories";
+import { RAVEN_ENCOUNTERS } from "../lib/ravens";
+import { NPC_DIALOGUE } from "../lib/npcDialogue";
+import type { WorldPresenceContext } from "../lib/worldPresence";
+import { WorldPresenceLine } from "../components/ui/WorldPresenceLine";
+import { getEnvironmentalLine } from "../lib/environmentalStorytelling";
+import { getWorldSimulationLine } from "../lib/worldSimulation";
+import { getLandmarkIdentityLine } from "../lib/landmarkIdentity";
+import { buildExpeditionEchoContext } from "../lib/expeditionEchoes";
+import { getCityAmbientLine } from "../lib/cityAmbientState";
+import { feedbackClassName, resolveFeedback } from "../lib/uiFeedback";
+import { buildPlayerFacts } from "../lib/playerFacts";
+import { buildExpeditionSpecializationContext, getExpeditionSpecialization } from "../lib/expeditionSpecialization";
+import { buildCollectionInsightContext } from "../lib/collectionInsights";
+import { getKingdomMemoryLine } from "../lib/kingdomMemory";
+import { getLiveHighlights } from "../lib/liveReadiness";
+import { buildMicroEventContext, getMicroEvent } from "../lib/microEvents";
+import { buildWorldCohesionContext, getWorldCohesionLine } from "../lib/worldCohesion";
+import { buildLiveGuideContext, getRecommendedSurface } from "../lib/liveGuide";
 
 function formatClock(ms: number): string {
   return new Date(ms).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
+
+// Sprint Living World (Phase I) — "Objeto curioso do dia" (Praça) e
+// "Hoje muitos viajantes comentam sobre..." (Cidade), ambos
+// determinísticos por dia, reaproveitando catálogos já existentes
+// (Hidden Objects e Histórias dos Viajantes) — nenhum dado novo.
+const objectOfTheDay = pickOfTheDay(HIDDEN_OBJECTS, 1);
+const rumorTopicOfTheDay = pickOfTheDay(TRAVELLER_STORIES, 2);
+
+// Sprint World Presence Phase I — o Reino precisa parecer que continua
+// acontecendo mesmo longe da Praça. Mesma técnica de rotação diária
+// acima, dois catálogos que já existiam mas nunca apareciam na Cidade:
+// RAVEN_ENCOUNTERS (Sprint Ravens Ecosystem, "conteúdo isolado, pronto
+// pra conectar a uma UI futura" — esta é essa conexão) e o próprio
+// catálogo de falas de Roth (comentarios_reino), o guarda do Portão
+// Norte — nenhum texto novo, nenhum dado novo.
+const ravenAmbient = pickOfTheDay(RAVEN_ENCOUNTERS, 3);
+const guardComment = pickOfTheDay(NPC_DIALOGUE.guarda.comentarios_reino, 4);
 
 // Sprint Capital City — hub central, só apresentação/navegação. Reaproveita
 // dados já existentes (Personagem, Identidade, Reino de um canal via
@@ -37,6 +78,34 @@ export function CityPage() {
   const { character } = useCharacter(!!profile);
   const { identity } = useIdentity(!!profile);
   const [channel, setChannel] = useState(getStoredChannel());
+  // Sprint Character Evolution Presence Phase I — mesmo hook já usado
+  // por CharacterPage/NpcIntro, só pra alimentar o estágio de evolução
+  // (getCharacterStage precisa do mesmo PlayerFacts em todo lugar).
+  const kingdomRoles = useKingdomRole(channel || undefined, !!profile);
+  // Sprint Expedition Consequences Phase I — mesmo hook já usado por
+  // ExpeditionPanel; aqui só pra repassar dados da expedição atual pra
+  // prédios que não têm acesso ao painel de Expedição (Bestiário,
+  // Biblioteca, ...), nunca pra exibir a Expedição em si dentro da
+  // Cidade.
+  const { expedition } = useExpedition(!!profile);
+  // Sprint Expedition Echoes Phase I — substitui o `expeditionApproach`
+  // solto da Sprint anterior (dívida técnica eliminada, ver
+  // expeditionEchoes.ts): um único contexto (approach + região de
+  // destino real da expedição atual) repassado pra todo prédio que
+  // precisar. `useMemo` mantém a referência estável entre polls
+  // idênticos de `expedition` (useExpedition já pula o setState quando
+  // o dado não muda), preservando o `memo()` de RegionGallery.
+  const echoContext = useMemo(() => buildExpeditionEchoContext(expedition), [expedition]);
+  // Sprint Kingdom Memory Phase I — mesmos PlayerFacts já usados por
+  // CharacterPage/NpcIntro/PlayerGoals, calculados aqui uma única vez
+  // (character/identity/kingdomRoles já buscados por CityPage) e
+  // repassados aos 5 prédios que precisam — nenhum fetch novo, nenhum
+  // recálculo duplicado.
+  const playerFacts = character && identity ? buildPlayerFacts(character, identity, kingdomRoles) : null;
+  // Sprint Gameplay Phase I (Expedition Specializations) — mesmo
+  // playerFacts acima, repassado só até NorthGateBuilding -> ExpeditionPanel
+  // (único prédio que hospeda o painel de Expedição na Cidade).
+  const expeditionSpecializationLine = playerFacts ? getExpeditionSpecialization(buildExpeditionSpecializationContext(playerFacts)) : null;
   const [worldState, setWorldState] = useState<WorldStateResponse | null>(null);
   const [selected, setSelected] = useState<BuildingKey | null>(null);
   const [clock, setClock] = useState(() => formatClock(Date.now()));
@@ -56,10 +125,101 @@ export function CityPage() {
 
   const kingdom = worldState?.channel_kingdom ?? null;
 
+  // Sprint Dynamic World Presence Phase I — construído uma única vez
+  // aqui a partir do worldState que CityPage já buscava; cada prédio só
+  // recebe esse contexto pronto, nenhum decide sozinho.
+  const worldPresenceCtx: WorldPresenceContext | undefined = worldState
+    ? { eventCategory: worldState.current_event.category, playersOnline: worldState.panel.players_online }
+    : undefined;
+
+  // Sprint Environmental Storytelling Phase I — detalhe físico fixo da
+  // Praça, sem relação com o evento atual (esse já é o assunto de
+  // WorldPresenceLine logo abaixo).
+  const environmentalLine = getEnvironmentalLine("praca");
+
+  // Sprint World Simulation Phase I — "o que aconteceu recentemente
+  // aqui?", diferente em eixo de World Presence (humor/movimento
+  // contínuo) e de Environmental Storytelling (marca física parada).
+  const worldSimulationLine = getWorldSimulationLine("praca");
+
+  // Sprint Landmark Identity Phase I — assinatura permanente do lugar,
+  // nunca muda (ao contrário das linhas acima).
+  const landmarkIdentityLine = getLandmarkIdentityLine("praca");
+
+  // Sprint Living City (Ambient Life Phase I) — vestígio físico de
+  // atividade recente (bancos ocupados), reage a players_online, eixo
+  // diferente de World Presence (movimento/humor) e World Simulation
+  // (evento narrado com agente).
+  const cityAmbientLine = getCityAmbientLine("praca", {
+    worldEventCategory: worldPresenceCtx?.eventCategory,
+    playersOnline: worldPresenceCtx?.playersOnline,
+  });
+
+  // Sprint Living Kingdom Phase I (Micro Events) — pequena coisa
+  // cotidiana acontecendo agora, sem motivo especial (nunca cita
+  // jogador/NPC/World Event); eixo novo, distinto dos 6 já existentes
+  // pra este lugar (ver auditoria em lib/microEvents.ts).
+  const microEventLine = getMicroEvent("praca", buildMicroEventContext(worldPresenceCtx));
+  // Sprint World Cohesion Phase I (Connected World) — pequena conexão
+  // natural entre dois sistemas já existentes (aqui: Praça + Expedição),
+  // nunca informação nova.
+  const worldCohesionLine = getWorldCohesionLine("praca", buildWorldCohesionContext(worldPresenceCtx, echoContext));
+
+  // Sprint Reactive UI (World Feedback Phase I) — quando o evento atual
+  // do Reino é de uma categoria mais rara/dramática (mesmas 3 categorias
+  // que World Presence já trata com texto mais urgente pra Praça:
+  // "reino"/"misterios"/"militar"), o card do evento ganha um pequeno
+  // realce — nunca um dado novo, só uma tradução visual do mesmo
+  // current_event.category já exibido como texto.
+  const NOTABLE_EVENT_CATEGORIES = ["reino", "misterios", "militar"] as const;
+  const eventFeedbackCls = feedbackClassName(
+    resolveFeedback(
+      worldState !== null && (NOTABLE_EVENT_CATEGORIES as readonly string[]).includes(worldState.current_event.category),
+      "highlight",
+    ),
+  );
+
+  // Sprint Live Readiness Phase I (First 5 Minutes) — "Praça pareça
+  // viva": distribui destaques entre os cards do CityMap (nunca mais de
+  // 3, lib/liveReadiness.ts's getLiveHighlights), a partir de sinais já
+  // calculados/calculáveis sem nenhum fetch novo — Expedição ativa
+  // (Portão Norte, mesmo `expedition` acima) e Kingdom Memory real dos
+  // 5 prédios que já a suportam (mesmo playerFacts/insightCtx que cada
+  // prédio calcularia sozinho ao ser aberto, só antecipado aqui pra
+  // decidir QUAL prédio merece o destaque antes mesmo de entrar nele).
+  // "NPC com Living Consequence" fica de fora (ver liveReadiness.ts):
+  // duplicaria o habitContext que hoje só existe dentro de cada
+  // NpcIntro. O evento do Reino (`eventFeedbackCls` acima) não é um
+  // card do mapa — continua na própria linha "Reino, agora".
+  const cityInsightCtx = buildCollectionInsightContext();
+  const cityMapHighlights = playerFacts
+    ? getLiveHighlights(
+        ["portao-norte", "biblioteca", "bestiario", "museu", "taverna", "casa-dos-viajantes"] as const,
+        {
+          "portao-norte": expedition !== null,
+          biblioteca: getKingdomMemoryLine("biblioteca", { facts: playerFacts, ...cityInsightCtx }, echoContext.approach) !== null,
+          bestiario: getKingdomMemoryLine("bestiario", { facts: playerFacts, ...cityInsightCtx }, echoContext.approach) !== null,
+          museu: getKingdomMemoryLine("museu", { facts: playerFacts, ...cityInsightCtx }, echoContext.approach) !== null,
+          taverna: getKingdomMemoryLine("taverna", { facts: playerFacts, ...cityInsightCtx }, echoContext.approach) !== null,
+          "casa-dos-viajantes":
+            getKingdomMemoryLine("casa-dos-viajantes", { facts: playerFacts, ...cityInsightCtx }, echoContext.approach) !== null,
+        },
+      )
+    : [];
+
+  // Sprint Live Experience Phase II (Guided Discovery) — mesmos
+  // playerFacts/cityInsightCtx/echoContext já calculados acima; responde
+  // "para onde pode ser interessante ir", nunca "o que fazer" (isso já
+  // é PlayerGoals, que CityPage nem renderiza).
+  const liveGuideLine = playerFacts
+    ? getRecommendedSurface(buildLiveGuideContext(playerFacts, cityInsightCtx, echoContext))
+    : null;
+
   return (
     <main className="page">
       <AppNav />
       <GuideBubble flag="city_seen" message="Este é o centro do Reino." />
+      <EldrinGuide />
 
       <div className="card city-banner">
         <h1>Capital</h1>
@@ -82,21 +242,51 @@ export function CityPage() {
           <button type="button" className="city-back-btn" onClick={() => setSelected(null)}>
             ← Voltar à Praça Central
           </button>
-          {selected === "arena" ? <ArenaBuilding identity={identity} kingdom={kingdom} /> : null}
-          {selected === "ferreiro" ? <BlacksmithBuilding equipped={character?.equipped ?? []} /> : null}
+          {selected === "arena" ? (
+            <ArenaBuilding identity={identity} kingdom={kingdom} worldPresenceCtx={worldPresenceCtx} />
+          ) : null}
+          {selected === "ferreiro" ? (
+            <BlacksmithBuilding equipped={character?.equipped ?? []} worldPresenceCtx={worldPresenceCtx} />
+          ) : null}
           {selected === "mercador" ? <MerchantBuilding /> : null}
           {selected === "alquimista" ? <AlchemistBuilding /> : null}
-          {selected === "guilda" ? <GuildBuilding kingdom={kingdom} identity={identity} /> : null}
+          {selected === "guilda" ? (
+            <GuildBuilding
+              kingdom={kingdom}
+              identity={identity}
+              character={character}
+              kingdomRoles={kingdomRoles}
+              worldPresenceCtx={worldPresenceCtx}
+              echoContext={echoContext}
+            />
+          ) : null}
           {selected === "banco" ? <BankBuilding character={character} /> : null}
-          {selected === "portao-norte" ? <NorthGateBuilding enabled={!!profile} /> : null}
-          {selected === "biblioteca" ? <LibraryBuilding /> : null}
-          {selected === "bestiario" ? <BestiaryBuilding /> : null}
-          {selected === "museu" ? <MuseumBuilding /> : null}
-          {selected === "taverna" ? <TavernBuilding /> : null}
-          {selected === "casa-dos-viajantes" ? <TravellerHouseBuilding /> : null}
+          {selected === "portao-norte" ? (
+            <NorthGateBuilding
+              enabled={!!profile}
+              worldPresenceCtx={worldPresenceCtx}
+              echoContext={echoContext}
+              specializationLine={expeditionSpecializationLine}
+            />
+          ) : null}
+          {selected === "biblioteca" ? (
+            <LibraryBuilding worldPresenceCtx={worldPresenceCtx} echoContext={echoContext} playerFacts={playerFacts} />
+          ) : null}
+          {selected === "bestiario" ? (
+            <BestiaryBuilding worldPresenceCtx={worldPresenceCtx} echoContext={echoContext} playerFacts={playerFacts} />
+          ) : null}
+          {selected === "museu" ? (
+            <MuseumBuilding worldPresenceCtx={worldPresenceCtx} echoContext={echoContext} playerFacts={playerFacts} />
+          ) : null}
+          {selected === "taverna" ? (
+            <TavernBuilding worldPresenceCtx={worldPresenceCtx} echoContext={echoContext} playerFacts={playerFacts} />
+          ) : null}
+          {selected === "casa-dos-viajantes" ? (
+            <TravellerHouseBuilding echoContext={echoContext} playerFacts={playerFacts} />
+          ) : null}
         </div>
       ) : (
-        <div className="card">
+        <div className="card city-square-view">
           <h2>Praça Central</h2>
           <CityHubBar
             worldState={worldState}
@@ -104,11 +294,40 @@ export function CityPage() {
             channelDisplayName={kingdom?.channel_display_name ?? null}
           />
           <CitySquareDecor />
+          <WorldPresenceLine building="praca" ctx={worldPresenceCtx} />
+          {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
+          {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
+          <p className="hint">{landmarkIdentityLine}</p>
+          {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
+          {microEventLine ? <p className="hint">{microEventLine}</p> : null}
+          {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
+          {worldState ? (
+            <p className={`hint city-of-the-day${eventFeedbackCls ? ` ${eventFeedbackCls}` : ""}`}>
+              <span>{worldState.current_event.icon} No Reino, agora:</span> {worldState.current_event.name}
+            </p>
+          ) : null}
+          <p className="hint city-of-the-day">
+            <span>💬 Hoje muitos viajantes comentam sobre:</span> {rumorTopicOfTheDay.title}
+          </p>
           <p className="hint">Escolha um edifício para visitar.</p>
-          <CityMap onSelect={setSelected} />
+          {liveGuideLine ? <p className="guide-bubble">{liveGuideLine}</p> : null}
+          <CityMap onSelect={setSelected} highlightedBuildings={cityMapHighlights} />
+          <p className="hint city-of-the-day">
+            <span>🐦</span> {ravenAmbient}
+          </p>
 
           <h3 className="hidden-objects-title">Pela praça</h3>
+          <GuideBubble flag="hidden_object_seen" message="Alguns cantos comuns da praça escondem uma pequena curiosidade — vale clicar." />
           <p className="hint">Alguns cantos da praça respondem quando você clica neles.</p>
+          <p className="hint city-of-the-day">
+            <span>🛡️ Um guarda comenta:</span> "{guardComment}"
+          </p>
+          <p className="hint city-of-the-day">
+            <span>
+              {objectOfTheDay.icon} Objeto curioso do dia:
+            </span>{" "}
+            {objectOfTheDay.name}
+          </p>
           <HiddenObjects />
         </div>
       )}

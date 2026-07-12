@@ -93,6 +93,8 @@ export const MIRIAM_DIALOGUE: NpcDialogueCatalog = {
     "O conhecimento cresce devagar, mas nunca para.",
     "Prefiro o silêncio de um bom livro a qualquer barulho da Capital.",
     "Nenhuma pergunta é boba o bastante pra não merecer resposta.",
+    // Sprint Social Fabric (Phase I)
+    "O Zoltar cita meus arquivos com mais frequência do que admite. Eu finjo não perceber, ele finge não saber que eu percebo.",
   ],
   humor: [
     "Uma vez catalogei o mesmo livro duas vezes. Ninguém percebeu, exceto eu, três dias depois.",
@@ -107,6 +109,8 @@ export const MIRIAM_DIALOGUE: NpcDialogueCatalog = {
     "Pergunte sempre que tiver dúvida. Ninguém nasce sabendo tudo.",
     "Guarde o que aprender. Um dia isso faz diferença.",
     "Volte sempre que precisar entender algo melhor.",
+    // Sprint Social Fabric (Phase I)
+    "O Idris conta a mesma história de dois jeitos diferentes, dependendo do dia. Prefiro não corrigir nenhum dos dois.",
   ],
   fofocas: [
     "Ouvi dizer que a Talia vendeu a mesma espada três vezes. Prefiro não confirmar.",
@@ -114,6 +118,26 @@ export const MIRIAM_DIALOGUE: NpcDialogueCatalog = {
     "A Greta sabe de tudo antes de todo mundo. Ela deveria escrever um livro.",
     "O Dorwin conta o mesmo Gold duas vezes, segundo dizem. Isso parece exaustivo.",
     "Prefiro não repetir fofocas. Prefiro histórias com mais substância.",
+    // Sprint Ravens Ecosystem (Phase I)
+    "Um corvo pousou na janela outro dia e ficou a tarde inteira. Não saí do lugar pra não espantar.",
+    "Há um livro inteiro sobre os corvos do Reino nesta Biblioteca. Nunca conclui nada, e talvez seja assim mesmo que deva ser.",
+    "Prefiro não afirmar se os corvos entendem o que lemos em voz alta aqui dentro. Mas um deles sempre parece prestar atenção.",
+    // Sprint Ancient Ruins Ecosystem (Phase I)
+    "Temos um diário inteiro sobre as Ruínas Esquecidas nesta Biblioteca. Treze páginas, e nenhuma conclusão. Isso me incomoda mais do que deveria.",
+    "Gostaria de catalogar as Ruínas do jeito que catalogo tudo aqui. Mas não existe seção pra coisas que ninguém consegue explicar direito.",
+    "Um leitor me perguntou outro dia quantas Ruínas existem de verdade. Só pude responder: 'pelo menos doze, que a gente saiba'.",
+    // Sprint Kingdom Folklore (Phase I)
+    "Catalogo ditado popular do jeito que catalogo livro. 'Ruína velha ensina mais que livro novo' é o único que me ofende profissionalmente.",
+    "Tenho uma seção inteira só de superstição registrada. Nenhuma delas tem explicação. Todas têm gente que jura ser verdade.",
+    "Diferença entre lenda e história, pra mim, é simples: uma tem data, a outra tem gente que ainda acredita mesmo sem data nenhuma.",
+    // Sprint First WOW Moment (Phase I)
+    "Tem um livro aqui sobre os primeiros passos de um aventureiro. A capa está tão gasta quanto as primeiras luvas de qualquer um. Combina.",
+    // Sprint StreamRPG Identity (Phase I)
+    "O primeiro capítulo do Bestiário sempre foi sobre os Lobos Cinzentos. Nunca mudou, nem quando todo o resto mudou.",
+    "Recomendo o Tratado da Matilha pra quem quiser entender os Lobos de verdade. Não é o mais longo. É o mais honesto.",
+    // Sprint Place Identity (Phase I)
+    "Tem gente que deixa bilhete escondido no oco daquela árvore da praça. Já vi um, uma vez. Não li.",
+    "Tenho registro de três reformas na Torre do Portão Norte. As datas nunca batem direito com o que os guardas contam.",
   ],
   comentarios_reino: [
     "Esse Reino tem mais história guardada do que qualquer um imagina.",
@@ -121,6 +145,10 @@ export const MIRIAM_DIALOGUE: NpcDialogueCatalog = {
     "Capital pequena, memória enorme.",
     "Cada geração acrescenta algo novo à história desse lugar.",
     "Gosto de pensar que essa Biblioteca guarda um pouco de cada um que já passou por aqui.",
+    // Sprint History of the Kingdom (Phase I)
+    "Guardo vinte cartas antigas nesta Biblioteca. Nenhuma delas conta a história inteira — juntas, ainda deixam mais buracos do que respostas.",
+    "Tenho um fragmento de livro que sobreviveu a um incêndio na primeira Biblioteca. Me recuso a especular sobre o que faltava. Prefiro admitir que não sei.",
+    "Um leitor me perguntou outro dia qual era a data certa da fundação da Capital. Só pude mostrar três registros que discordam entre si.",
   ],
   comentarios_npcs: [
     "O Borin nunca lê, mas conta boas histórias mesmo assim.",
@@ -135,6 +163,8 @@ export const MIRIAM_DIALOGUE: NpcDialogueCatalog = {
     "Tive uma mestra antes de mim. Ela me ensinou a amar o silêncio dos livros.",
     "Guardo um livro que nunca mostrei a ninguém. Talvez um dia mostre.",
     "Já pensei em escrever meu próprio livro. Talvez um dia eu tenha coragem.",
+    // Sprint Social Fabric (Phase I)
+    "O Dorwin acha que gasto Gold demais com livro. Eu acho que ele guarda Gold demais pra nada. Discutimos isso todo mês, e nenhum dos dois muda de ideia.",
   ],
   extremamente_raras: [
     "Se um dia essa Biblioteca queimar, quero acreditar que o conhecimento sobrevive nas pessoas, não só nas páginas.",

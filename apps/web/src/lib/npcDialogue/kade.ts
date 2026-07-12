@@ -94,6 +94,8 @@ export const KADE_DIALOGUE: NpcDialogueCatalog = {
     "Treino todo dia. Até quando não quero.",
     "Disciplina é fazer o que precisa ser feito, mesmo sem vontade.",
     "Um bom adversário te ensina mais que dez vitórias fáceis.",
+    // Sprint Social Fabric (Phase I)
+    "A Elenya negociou financiamento pra Arena numa época em que ninguém mais achava que valia a pena. Não esqueço esse tipo de aposta.",
   ],
   humor: [
     "Já treinei tanto num dia que nem lembrava meu próprio nome depois.",
@@ -101,6 +103,8 @@ export const KADE_DIALOGUE: NpcDialogueCatalog = {
     "Treino também ajuda. Principalmente quando você acha que não precisa.",
     "Já caí de tanto treinar equilíbrio. A ironia não passou despercebida.",
     "Se disciplina fosse engraçada, eu seria o homem mais engraçado do Reino.",
+    // Sprint Social Fabric (Phase I)
+    "Nunca bebo nada que o Zoltar me oferece antes de uma luta. Uma vez bebi. Uma vez foi suficiente.",
   ],
   conselhos: [
     "Treina todo dia, mesmo que pouco.",
@@ -108,6 +112,8 @@ export const KADE_DIALOGUE: NpcDialogueCatalog = {
     "Descanso faz parte do treino. Não é preguiça, é estratégia.",
     "Foco vale mais que força bruta.",
     "Antes de correr atrás de um Boss, aprenda a se defender de um lobo.",
+    // Sprint Social Fabric (Phase I)
+    "Já caçamos lado a lado, eu e o Roth, antes dele virar guarda do Portão Norte. Ele nunca admite quem mirava melhor naquela época.",
   ],
   fofocas: [
     "Ouvi dizer que alguém enfrentou um Boss usando Luvas Rasgadas. Respeito a ousadia.",
@@ -115,6 +121,25 @@ export const KADE_DIALOGUE: NpcDialogueCatalog = {
     "A Greta sabe de tudo que acontece na Arena antes de mim, às vezes.",
     "Escutei que a Talia tentou me vender um equipamento de treino inútil. Não caí.",
     "Não repito fofoca fora da Arena. Aqui dentro, tudo bem.",
+    // Sprint Kingdom Folk (Phase I)
+    "Um palhaço de feira conseguiu, uma vez, me fazer rir. Não repito a piada. Mas aconteceu.",
+    "Ferrador bom vale tanto quanto arqueiro bom. Ninguém vence disputa nenhuma com cavalo mal ferrado.",
+    "Tosquiador mais rápido do Reino, dizem. Desafiei ele pra Arena. Recusou. Sábio da parte dele.",
+    // Sprint Kingdom Government (Phase I)
+    "Convocação urgente do Marechal, ninguém explica o motivo até hoje. Prefiro treinar do que especular sobre papelada.",
+    "O Fiscal de Mercado se disfarça de comprador nas feiras. Eu reconheceria ele em segundos, só pela postura de quem nunca lutou de verdade.",
+    "Não me importo com decreto nenhum, contanto que ninguém proíba treino na Arena. O resto é problema de conselheiro.",
+    // Sprint Kingdom Memories (Phase I)
+    "O Guia que Voltou Sozinho pros Picos Congelados não é lenda pra mim. É o tipo de coragem que eu tento ensinar aqui, sem nunca alcançar de verdade.",
+    "Todos os mineiros foram resgatados do Colapso da Mina Funda. Vitória de verdade. Ainda assim, atrasou obra do Reino por anos. Vitória cara, sempre.",
+    "Ninguém treina pra ser o último a sair de um incêndio. Mas Bram foi, e isso vale mais que qualquer torneio que eu já organizei.",
+    // Sprint First WOW Moment (Phase I)
+    "Treinar com luvas rasgadas separa quem quer treinar de quem só quer conversar.",
+    // Sprint StreamRPG Identity (Phase II)
+    "O Roth nunca larga o posto do Portão Norte. Nem quando ofereço treino gratuito na Arena. Respeito isso mais do que admito.",
+    // Sprint Place Identity (Phase I)
+    "Levo os alunos novos pra molhar o rosto na Fonte antes do primeiro treino. Ajuda a acordar de vez.",
+    "Treino perto da Torre do Portão Norte de propósito. O eco de lá me ajuda a contar o ritmo dos golpes.",
   ],
   comentarios_reino: [
     "Esse Reino precisa de mais gente disposta a treinar de verdade.",

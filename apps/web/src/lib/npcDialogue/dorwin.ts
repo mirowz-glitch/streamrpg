@@ -93,6 +93,8 @@ export const DORWIN_DIALOGUE: NpcDialogueCatalog = {
     "Já contei o mesmo Gold duas vezes essa semana. Só pra ter certeza.",
     "Uma moeda guardada vale duas moedas gastas sem pensar.",
     "Prefiro números a conversa fiada. Números não mentem.",
+    // Sprint Social Fabric (Phase I)
+    "O Roth é o único que eu deixo revisar meus números sem desconfiar de nada. Não é sobre matemática. É sobre confiança.",
   ],
   humor: [
     "Já economizei tanto numa semana que esqueci de comer direito. Não recomendo.",
@@ -100,6 +102,8 @@ export const DORWIN_DIALOGUE: NpcDialogueCatalog = {
     "Dizem que eu sou pão-duro. Eu prefiro 'cuidadoso'.",
     "Já neguei um empréstimo pra mim mesmo, teoricamente. Levando a sério a regra.",
     "Se eu risse por cada moeda economizada, riria o dia inteiro.",
+    // Sprint Social Fabric (Phase I)
+    "Nunca entro no laboratório do Zoltar sem avisar antes. Uma vez entrei sem avisar. Uma vez foi suficiente.",
   ],
   conselhos: [
     "Guarda antes de gastar. Nunca o contrário.",
@@ -107,6 +111,8 @@ export const DORWIN_DIALOGUE: NpcDialogueCatalog = {
     "Não empresta o que não pode perder.",
     "Desperdício hoje é necessidade amanhã.",
     "Antes de comprar algo caro, espera um dia. Se ainda quiser, compra.",
+    // Sprint Social Fabric (Phase I)
+    "A Miriam acha que gasto pouco com livro. Eu acho que ela gasta demais. Discutimos isso todo mês, e nenhum dos dois muda de ideia.",
   ],
   fofocas: [
     "Ouvi dizer que a Talia vendeu a mesma espada três vezes. Isso é golpe, não venda.",
@@ -114,6 +120,25 @@ export const DORWIN_DIALOGUE: NpcDialogueCatalog = {
     "A Greta sabe quanto cada um gasta nessa Capital. Prefiro nem perguntar como.",
     "Dizem que o Zoltar prevê o futuro. Duvido que ele preveja os próprios gastos.",
     "Não repito fofoca, mas registro os números por trás dela.",
+    // Sprint Kingdom Folk (Phase I)
+    "Um fabricante de barris nunca vendeu um que vazasse, segundo ele. Cobra caro por isso, e com razão.",
+    "O carroceiro cobra por atalho que só ele conhece. Justo — conhecimento também é mercadoria.",
+    "Nenhum lavrador nem pescador jamais vieram até mim pedir empréstimo. Isso diz mais sobre eles do que sobre mim.",
+    // Sprint Kingdom Government (Phase I)
+    "O Tesouro Real registra tudo. Não significa que tudo bate. Já admiti isso antes, e não vou fingir vergonha agora.",
+    "O Mestre da Moeda faz um teste de pesagem às cegas pra herdar o cargo. Eu faria o mesmo teste com os livros contábeis de qualquer conselheiro.",
+    "Governo é só um jeito bonito de dizer 'gente cuidando de moeda alheia'. Prefiro cuidar sabendo que é isso mesmo.",
+    // Sprint Kingdom Memories (Phase I)
+    "A Vitória Silenciosa dos Poços Públicos custou décadas de trabalho de poceiros que ninguém lembra o nome. Eu lembro. Guardei os registros de pagamento.",
+    "O Fim da Seca de Sete Anos foi comemorado na Capital. Duas vilas menores já tinham sido abandonadas antes. Isso nunca entra na comemoração.",
+    "Toda vitória tem uma fatura por trás. A minha função é só garantir que alguém, um dia, olhe pra ela.",
+    // Sprint First WOW Moment (Phase I)
+    "Não cobro imposto sobre luva rasgada. Nem eu sou cruel a esse ponto.",
+    // Sprint StreamRPG Identity (Phase II)
+    "A Elenya nunca gastou um Gold da Guilda em besteira, em anos de registro. Confio nela mais do que confio em mim mesmo, às vezes.",
+    // Sprint Place Identity (Phase I)
+    "O poço da Vila do Bosque nunca precisou de reparo registrado. Isso não é normal pra nenhuma estrutura daquela idade.",
+    "Contratei um afinador pro Sino da Torre, uma vez. Ele desistiu no meio do trabalho. Nunca disse por quê.",
   ],
   comentarios_reino: [
     "Esse Reino gasta mais do que devia, mas ainda se sustenta. Impressionante.",

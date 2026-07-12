@@ -93,6 +93,8 @@ export const ROTH_DIALOGUE: NpcDialogueCatalog = {
     "Poucos escapam do meu aceno.",
     "Vigilância nunca é excesso, mesmo quando parece.",
     "O portão não dorme. Eu também não, muito.",
+    // Sprint Social Fabric (Phase I)
+    "Já caçamos lado a lado, eu e o Kade, antes dele virar mestre de arena. Ele era pior atirador do que hoje admite.",
   ],
   humor: [
     "Já confundi uma cabra com um invasor. Foi uma noite longa.",
@@ -100,6 +102,8 @@ export const ROTH_DIALOGUE: NpcDialogueCatalog = {
     "Desconfio até de mim mesmo, às vezes.",
     "Já fiquei tão alerta que assustei um mercador só de olhar.",
     "Se eu rir, é porque algo saiu muito errado ou muito certo.",
+    // Sprint Social Fabric (Phase I)
+    "Já duvidei de uma história do Idris. Ele provou que eu estava errado. Não gostei, mas anotei.",
   ],
   conselhos: [
     "Nunca sai sem checar o equipamento.",
@@ -107,6 +111,8 @@ export const ROTH_DIALOGUE: NpcDialogueCatalog = {
     "Grupo é sempre mais seguro que solitário.",
     "Aprende o terreno antes de se aventurar longe.",
     "Volta antes do escuro, sempre que possível.",
+    // Sprint Social Fabric (Phase I)
+    "Se um dia essa Torre cair de verdade, quero o Borin do meu lado reconstruindo. Ninguém mais eu confiaria pra isso.",
   ],
   fofocas: [
     "Ouvi dizer que a Talia vendeu a mesma espada três vezes. Isso deveria ser investigado.",
@@ -114,6 +120,28 @@ export const ROTH_DIALOGUE: NpcDialogueCatalog = {
     "A Greta sabe de tudo antes de todo mundo. Tenho teorias sobre isso.",
     "O Dorwin desconfia de todo mundo, menos de mim. Não sei se isso é elogio.",
     "Não repito fofoca em serviço. Fora dele, às vezes.",
+    // Sprint Kingdom Folk (Phase I)
+    "Conheço o guarda-noturno de cada vila que já passei. Nenhum deles dorme direito. Reconheço o cansaço na cara.",
+    "Um vigia de torre notou um perigo antes de qualquer patrulha minha. Não gosto de admitir, mas ele viu primeiro.",
+    "Todo mensageiro que passa pelo Portão Norte, eu reviso o cavalo antes de deixar seguir. Ferrador ruim mata mais que bandido.",
+    // Sprint Kingdom Government (Phase I)
+    "Já recusei a promoção a Capitão da Guarda duas vezes. Prefiro proteger o Portão do que assinar papel na Capital.",
+    "O Marechal do Reino ficou sem ocupante por uma geração inteira. Ninguém me avisou disso quando entrei pra Guarda. Aprendi sozinho.",
+    "Hierarquia existe por motivo. Não questiono ordem que vem de cima — questiono é quem nunca aparece pra dar a ordem em pessoa.",
+    // Sprint Kingdom Memories (Phase I)
+    "A Defesa do Portão Norte custou metade da guarnição daquela noite. Todo guarda novo aprende esse nome antes de aprender a segurar escudo direito.",
+    "Ninguém que serviu aqui antes de mim fala muito da noite da defesa. Os que falam, discordam nos detalhes. Prefiro acreditar em todos eles um pouco.",
+    "Vitória cara é a que a gente comemora calado. A do Portão Norte é assim até hoje.",
+    // Sprint First WOW Moment (Phase I)
+    "Você ainda parece inteiro. Isso já é um ótimo começo, luvas rasgadas e tudo.",
+    // Sprint StreamRPG Identity (Phase I)
+    "A Torre do Portão Norte é mais velha que qualquer guarda vivo hoje. Eu só cuido dela. Não vou fingir que ela precisa de mim.",
+    // Sprint StreamRPG Identity (Phase II)
+    "A Arena do Kade nunca fica vazia. Nem nos dias de chuva mais forte. Isso diz mais sobre o Reino do que qualquer decreto.",
+    // Sprint Place Identity (Phase I)
+    "Já revistei aquele barril da praça umas três vezes. Sempre vazio. Continuo revistando, por garantia.",
+    "Evito atravessar a Primeira Ponte depois do pôr do sol. Não por medo. Por hábito antigo, dos guardas antes de mim.",
+    "Já mandei patrulha regular perto do Portal de Pedra da Fronteira. Nunca acharam nada. Nunca pararam de patrulhar, mesmo assim.",
   ],
   comentarios_reino: [
     "Esse Reino é mais seguro do que parece, mas não por acaso.",

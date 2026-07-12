@@ -2,6 +2,14 @@
 // (localStorage), nenhuma tabela/coluna nova, nenhuma regra de gameplay.
 // Mesmo espírito do "watermark" já usado em InventoryPage (Sprint
 // Equipment Experience): flags simples de "já visto", nada complexo.
+//
+// Sprint Reactive Layer Foundation — storage e evento agora vêm de
+// lib/playerMemory.ts (primitiva genérica); este arquivo só decide o
+// prefixo e o conjunto de flags válidas (OnboardingFlag). Mesmas chaves
+// de sempre (`streamrpg_onboarding_<flag>`), mesmo evento — nenhum
+// comportamento muda pra quem já usa isFlagSet/setFlag/ONBOARDING_FLAG_EVENT.
+import { hasRemembered, remember, PLAYER_MEMORY_EVENT } from "./playerMemory";
+
 const PREFIX = "streamrpg_onboarding_";
 
 export type OnboardingFlag =
@@ -14,20 +22,30 @@ export type OnboardingFlag =
   | "first_item_announced"
   | "first_level_announced"
   | "first_boss_seen"
-  | "first_title_announced";
+  | "first_title_announced"
+  // Sprint First 15 Minutes Experience — mesma flag/GuideBubble de
+  // sempre, uma por marco novo dos primeiros minutos (biblioteca,
+  // bestiário, taverna, expedição, objetos da praça, galeria do Mundo).
+  | "library_seen"
+  | "bestiary_seen"
+  | "tavern_seen"
+  | "expedition_seen"
+  | "hidden_object_seen"
+  | "world_gallery_seen";
 
 export function isFlagSet(flag: OnboardingFlag): boolean {
-  return localStorage.getItem(PREFIX + flag) === "1";
+  return hasRemembered(PREFIX + flag);
 }
 
 // Evento próprio (não é o "storage" nativo do browser, que só dispara em
 // OUTRAS abas) — avisa componentes desta mesma aba (ex: EldrinGuide) que
-// uma flag mudou, para reagir sem precisar trocar de página.
-export const ONBOARDING_FLAG_EVENT = "streamrpg:onboarding-flag";
+// uma flag mudou, para reagir sem precisar trocar de página. Mesmo
+// evento genérico de lib/playerMemory.ts, só reexportado com o nome
+// antigo (nenhum listener existente precisa mudar).
+export const ONBOARDING_FLAG_EVENT = PLAYER_MEMORY_EVENT;
 
 export function setFlag(flag: OnboardingFlag): void {
-  localStorage.setItem(PREFIX + flag, "1");
-  window.dispatchEvent(new Event(ONBOARDING_FLAG_EVENT));
+  remember(PREFIX + flag);
 }
 
 // "Primeiros Passos" — 4 dos 5 itens são visitas de página (flags acima);

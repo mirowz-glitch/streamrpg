@@ -91,14 +91,25 @@ export const HIDDEN_OBJECTS: HiddenObjectDefinition[] = [
     icon: "🕯",
     name: "Estátua",
     description: "Uma estátua de pedra escura, sem nenhuma feição.",
-    texts: ["A estátua não tem rosto.", "Ninguém sabe por quê.", "Você também não vai descobrir hoje."],
+    texts: [
+      "A estátua não tem rosto.",
+      "Ninguém sabe por quê.",
+      "Você também não vai descobrir hoje.",
+      "Dizem que ela tem uma irmã nas Ruínas Esquecidas — também sem rosto. Ninguém sabe se é coincidência.",
+    ],
   },
   {
     key: "janela",
     icon: "🪟",
     name: "Janela",
     description: "Uma janela baixa, de uma casa qualquer.",
-    texts: ["A janela está fechada.", "Você espia por ela mesmo assim.", "Não tem nada demais lá dentro.", "Ou talvez tenha, e você não percebeu."],
+    texts: [
+      "A janela está fechada.",
+      "Você espia por ela mesmo assim.",
+      "Não tem nada demais lá dentro.",
+      "Ou talvez tenha, e você não percebeu.",
+      "Um corvo solitário observa do parapeito. Alguém jura que é sempre o mesmo, o Corvo Ancião, ano após ano.",
+    ],
   },
   {
     key: "placa",
@@ -133,7 +144,13 @@ export const HIDDEN_OBJECTS: HiddenObjectDefinition[] = [
     icon: "⚒",
     name: "Bigorna",
     description: "A bigorna do Borin, fria por enquanto.",
-    texts: ["A bigorna está fria.", "Você bate nela uma vez.", "Nada acontece, exceto o barulho.", "O barulho já valeu a pena."],
+    texts: [
+      "A bigorna está fria.",
+      "Você bate nela uma vez.",
+      "Nada acontece, exceto o barulho.",
+      "O barulho já valeu a pena.",
+      "Ao lado, um par de luvas rasgadas espera por alguém. Talvez por você, de novo.",
+    ],
   },
   {
     key: "pilha-livros",
@@ -154,7 +171,13 @@ export const HIDDEN_OBJECTS: HiddenObjectDefinition[] = [
     icon: "🪞",
     name: "Espelho",
     description: "Um espelho rachado, apoiado num canto.",
-    texts: ["Um espelho rachado num canto.", "Você se olha nele.", "Parece você, só que um pouco mais cansado.", "O espelho não mente. Isso é o pior."],
+    texts: [
+      "Um espelho rachado num canto.",
+      "Você se olha nele.",
+      "Parece você, só que um pouco mais cansado.",
+      "O espelho não mente. Isso é o pior.",
+      "Suas luvas rasgadas aparecem no reflexo exatamente do jeito que estão na vida real. Nem o espelho ajuda nessa.",
+    ],
   },
   {
     key: "cesta-pao",
@@ -166,6 +189,7 @@ export const HIDDEN_OBJECTS: HiddenObjectDefinition[] = [
       "O cheiro é bom.",
       "Você não vai roubar pão. Provavelmente.",
       "As maçãs da praça continuam desaparecendo, mas não foi você dessa vez.",
+      "Você tenta cortar o pão com suas luvas rasgadas. O pão vence.",
     ],
   },
   {
@@ -187,7 +211,13 @@ export const HIDDEN_OBJECTS: HiddenObjectDefinition[] = [
     icon: "🔔",
     name: "Sino",
     description: "Um sino pequeno pendurado numa porta.",
-    texts: ["Um sino pequeno pendurado numa porta.", "Você toca o sino.", "Ninguém aparece.", "Você toca de novo, só para garantir."],
+    texts: [
+      "Um sino pequeno pendurado numa porta.",
+      "Você toca o sino.",
+      "Ninguém aparece.",
+      "Você toca de novo, só para garantir.",
+      "Não é o Sino da Torre, mas o som lembra um pouco. Talvez seja por isso que ninguém aparece rápido.",
+    ],
   },
   {
     key: "teia",

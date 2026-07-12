@@ -100,6 +100,8 @@ export const GRETA_DIALOGUE: NpcDialogueCatalog = {
     "Alguém jurou que a cerveja daqui cura ressaca. Não cura, mas não conto.",
     "Foi o que ouvi: que ninguém sai da Taverna sabendo menos do que entrou.",
     "Já vi gente brigar por causa de uma história que nem aconteceu.",
+    // Sprint Social Fabric (Phase I)
+    "Teve uma festa em que o Kade não bebeu nem uma gota, só pra provar que aguentava ficar sóbrio até o fim. Ele não aguentou.",
   ],
   conselhos: [
     "Escuta mais do que fala. Você aprende mais assim.",
@@ -107,6 +109,8 @@ export const GRETA_DIALOGUE: NpcDialogueCatalog = {
     "Cuidado com o que conta pra essa mesa. Vira história rápido.",
     "Se quiser saber de algo, senta, pede uma bebida, e espera.",
     "Nunca confia cegamente num rumor. Nem no meu.",
+    // Sprint Social Fabric (Phase I)
+    "A Talia já tentou fechar uma negociação bem aqui, nessa mesa. Não deu certo. Cobrei a rodada mesmo assim.",
   ],
   fofocas: [
     "Foi o que ouvi: que o Borin fala sozinho na forja.",
@@ -118,6 +122,28 @@ export const GRETA_DIALOGUE: NpcDialogueCatalog = {
     "Guardo uma presa de lobo debaixo do balcão. Não pergunta desde quando.",
     "Dizem que a matilha do Bosque cresceu. Aqui ninguém sabe contar quantos são de verdade.",
     "Um viajante jurou que os lobos do Pântano nadam melhor do que caçam. Bebeu antes de contar isso, mas mesmo assim.",
+    // Sprint Ravens Ecosystem (Phase I)
+    "Tem um corvo que entra aqui toda noite de chuva e só vai embora de madrugada. Ninguém mexe com ele.",
+    "Um corvo pousou no parapeito e ficou olhando pra dentro a noite inteira. Nem os bêbados quiseram espantar.",
+    "Não sei se corvo entende gente. Mas esse aí parece entender o cardápio.",
+    // Sprint Ancient Ruins Ecosystem (Phase I)
+    "Não entro em ruína nenhuma. Não porque tenha medo — porque não tenho tempo pra ficar sem resposta o dia inteiro.",
+    "Todo viajante que passa por aqui tem uma teoria diferente sobre as Ruínas. Eu só sirvo a bebida e escuto todas.",
+    "Um explorador jurou que via a mesma porta em dois lugares diferentes. Cobrei a conta e mandei ele dormir.",
+    // Sprint Kingdom Government (Phase I)
+    "Todo conselheiro que já sentou nessa mesa jura que não fala de política aqui. Todos falam, depois da segunda rodada.",
+    "Ouvi de um cliente que o Marechal sumiu por uma geração e ninguém percebeu oficialmente. Aqui na Taverna, todo mundo percebeu.",
+    "Não repito fofoca de governo pra fora dessa mesa. Fofoca de governo, aliás, é a que mais rende rodada extra.",
+    // Sprint Kingdom Folklore (Phase I)
+    "Toda noite alguém canta a cantiga do Sino da Torre errado. Já desisti de corrigir.",
+    "A Festa da Chegada é a melhor noite do ano pra essa Taverna. Mais gente, mais rumor, mais rodada.",
+    "Nunca recuso um brinde de estranho. Aprendi essa há anos, e aprendi bem antes de virar superstição de todo mundo.",
+    // Sprint First WOW Moment (Phase I)
+    "Um aventureiro entrou aqui com as luvas mais rasgadas que eu já vi. Ri baixinho. Ele nem percebeu.",
+    // Sprint StreamRPG Identity (Phase I)
+    "Aquela árvore da praça já era velha quando eu cheguei aqui. Acho que sempre vai estar lá, faça o que fizerem ao redor dela.",
+    // Sprint Place Identity (Phase I)
+    "Um cliente jurou que o barril da praça já foi cheio de moeda, uma vez. Ninguém confirma.",
   ],
   comentarios_reino: [
     "Esse Reino vive de histórias, mesmo quando finge que não.",
@@ -139,6 +165,8 @@ export const GRETA_DIALOGUE: NpcDialogueCatalog = {
     "Nem tudo que ouço eu repito. Alguns rumores morrem comigo.",
     "Já perdi a conta de quantas histórias já passaram por essa mesa.",
     "Uma vez a história era sobre mim mesma. Nem eu confirmo essa.",
+    // Sprint Social Fabric (Phase I)
+    "O Alaric vem aqui uma vez por semana, sempre sozinho, sempre calado. Nunca pergunto por quê. Só guardo a mesa dele.",
   ],
   extremamente_raras: [
     "Se um dia essa Taverna fechar, quero que seja porque o Reino não precisa mais de um lugar pra ouvir.",

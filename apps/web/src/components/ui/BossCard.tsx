@@ -5,6 +5,10 @@ import { ProgressBar } from "./ProgressBar";
 interface BossCardProps {
   channel: string | undefined;
   compact?: boolean;
+  // Sprint Gameplay Feel 03 — opcional (Overlay não tem "personagem
+  // logado", só CharacterPage tem); quando presente, só serve pra
+  // destacar a própria linha na lista de recompensas.
+  myCharacterId?: string;
 }
 
 // Sprint Performance Optimization — memo evita re-renderizar o card
@@ -13,7 +17,7 @@ interface BossCardProps {
 // (ex: o cooldown do ping contando a cada segundo). O próprio
 // useBossState continua atualizando este componente normalmente quando
 // o Boss muda de verdade.
-export const BossCard = memo(function BossCard({ channel, compact = false }: BossCardProps) {
+export const BossCard = memo(function BossCard({ channel, compact = false, myCharacterId }: BossCardProps) {
   const { state, events } = useBossState(channel);
 
   if (!state?.active) return null;
@@ -24,19 +28,28 @@ export const BossCard = memo(function BossCard({ channel, compact = false }: Bos
   const secondsLeft = state.ends_at !== null ? Math.max(0, state.ends_at - Math.floor(Date.now() / 1000)) : null;
 
   if (resolved) {
+    // Sprint Gameplay Feel 03 — "Boss derrotado" e "Boss fugiu" usavam a
+    // MESMA cor (verde de vitória, `.boss-card-resolved`) pra qualquer
+    // um dos dois desfechos. `.boss-card-escaped` é a única classe CSS
+    // nova desta Sprint — pequena extensão, mesma convenção de cores já
+    // usada no projeto (âmbar, já usado em level-up/legendário).
+    const outcomeClass = state.status === "escaped" ? " boss-card-escaped" : "";
     return (
-      <div className={`boss-card boss-card-resolved${compact ? " boss-card-compact" : ""}`}>
+      <div className={`boss-card boss-card-resolved${outcomeClass}${compact ? " boss-card-compact" : ""}`}>
         <div className="boss-card-title">
           {state.status === "defeated" ? "🏆 Boss derrotado!" : "💨 Boss fugiu"}
         </div>
         {!compact && state.rewards && state.rewards.length > 0 ? (
           <ul className="boss-rewards-list">
-            {state.rewards.map((r) => (
-              <li key={r.character_id}>
-                {r.display_name}: +{r.xp_granted} XP
-                {r.item_name ? ` · ${r.item_name} (${r.item_rarity})` : ""}
-              </li>
-            ))}
+            {state.rewards.map((r) => {
+              const isMine = myCharacterId !== undefined && r.character_id === myCharacterId;
+              return (
+                <li key={r.character_id} className={isMine ? "boss-reward-mine" : undefined}>
+                  {isMine ? "➤ Você" : r.display_name}: +{r.xp_granted} XP
+                  {r.item_name ? ` · ${r.item_name} (${r.item_rarity})` : ""}
+                </li>
+              );
+            })}
           </ul>
         ) : null}
         {!compact ? <BossEventLog events={events} /> : null}

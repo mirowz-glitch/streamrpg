@@ -93,6 +93,8 @@ export const BORIN_DIALOGUE: NpcDialogueCatalog = {
     "Aço bom não precisa se explicar.",
     "Já quebrei mais ferramentas do que promessas. E olha que quebrei bastante promessa.",
     "Trabalho, durmo, repito. Vida simples.",
+    // Sprint Social Fabric (Phase I)
+    "O Alaric já pediu minha bigorna emprestada pro Museu. Falei não. Ele ainda pergunta, de vez em quando.",
   ],
   humor: [
     "Cê já tentou consertar bota com martelo? Eu já. Não recomendo.",
@@ -100,6 +102,8 @@ export const BORIN_DIALOGUE: NpcDialogueCatalog = {
     "Minhas mãos são ferramentas. Minha cara, nem tanto.",
     "Já bati o dedo com martelo mais vezes do que consigo admitir.",
     "Se eu risse de tudo que faço de errado, riria o dia inteiro.",
+    // Sprint Social Fabric (Phase I)
+    "O Idris já tentou me vender uma 'espada lendária' que era só ferro comum com ferrugem bonita. Ainda rio disso.",
   ],
   conselhos: [
     "Cuida do que usa. O resto se cuida sozinho.",
@@ -107,6 +111,8 @@ export const BORIN_DIALOGUE: NpcDialogueCatalog = {
     "Nunca economiza em bota. Você anda com os pés, não com a carteira.",
     "Aprende a afiar sua própria lâmina. Um dia eu não vou estar aqui.",
     "Antes de sair por aí, checa o equipamento duas vezes.",
+    // Sprint Social Fabric (Phase I)
+    "Se a cozinha da Taverna pegar fogo de novo, a Greta grita primeiro e eu apareço com balde direto da forja. Já aconteceu uma vez. Vai acontecer de novo.",
   ],
   fofocas: [
     "Greta sabe de tudo. Não pergunta como.",
@@ -118,6 +124,21 @@ export const BORIN_DIALOGUE: NpcDialogueCatalog = {
     "Um lobo já roeu o cabo de um martelo esquecido do lado de fora da forja. Não pergunta como sei.",
     "Não forjo armadilha pra lobo. Nunca fui esse tipo de ferreiro.",
     "Couro de Lobo Alfa é raro de achar sem rasgo. O bicho não se entrega fácil, nem morto.",
+    // Sprint Ravens Ecosystem (Phase I)
+    "Um corvo já roubou um prego da bigorna, na minha frente, sem pressa nenhuma.",
+    "Corvo não atrapalha o trabalho. Só fica olhando. Isso incomoda mais que atrapalhar.",
+    "Não sei se corvo entende gente. Mas esse aí parece saber quando eu tô de mau humor.",
+    // Sprint Kingdom Folklore (Phase I)
+    "Conto a história do Ferreiro que Forja Pesadelos pras crianças da vizinhança. Nunca admito que aprendi ela sendo criança também.",
+    "Nunca conserto ferradura depois do pôr do sol. Não é superstição — é que meu braço já não aguenta depois do jantar.",
+    "Toda criança que passa pela forja pergunta se eu já vi o Ferreiro Fantasma. Digo que não. Isso nunca convence ninguém.",
+    // Sprint First WOW Moment (Phase I)
+    "Ainda vejo gente sair daqui com luvas rasgadas nas mãos. Um dia, quem sabe, mudo isso.",
+    // Sprint StreamRPG Identity (Phase II)
+    "Já forjei réplica da Presa do Alfa pra uma exposição. A de verdade continua mais afiada, dizem quem já viu as duas.",
+    // Sprint Place Identity (Phase I)
+    "As crianças brincam em volta daquela árvore da praça desde que eu era aprendiz. Ainda brincam do mesmo jeito.",
+    "Já forjei ferragem nova pra Primeira Ponte, duas vezes na vida. Nunca me disseram por que precisava trocar de novo tão cedo.",
   ],
   comentarios_reino: [
     "Esse Reino se sustenta na teimosia de quem não desiste.",
@@ -125,6 +146,10 @@ export const BORIN_DIALOGUE: NpcDialogueCatalog = {
     "Reino pequeno, problemas grandes. Sempre foi assim.",
     "As pessoas aqui trabalham demais e reclamam de menos do que deveriam.",
     "Esse Reino tem mais história do que aparenta.",
+    // Sprint History of the Kingdom (Phase I)
+    "Dizem que uma tal de Ferra foi 'a primeira ferreira' do Reino. Duvido. Alguém sempre forjou alguma coisa antes de qualquer registro começar.",
+    "O Museu tem um monumento pra Primeira Muralha. Eu digo: qualquer parede que ainda protege alguém já merece respeito, com ou sem monumento.",
+    "Não sei quem forjou a primeira ferramenta desse Reino. Sei que alguém forjou, com as mãos tremendo, sem saber que vinha história atrás disso.",
   ],
   comentarios_npcs: [
     "Dorwin conta moeda duas vezes. Eu só bato o martelo uma.",
@@ -139,6 +164,8 @@ export const BORIN_DIALOGUE: NpcDialogueCatalog = {
     "Já pensei em desistir disso tudo. Uma vez. Só uma.",
     "Guardo a primeira ferramenta que usei. Não pergunta onde.",
     "Nem tudo que sai daqui quebrado é falha minha. A maioria, sim, mas nem tudo.",
+    // Sprint Social Fabric (Phase I)
+    "Ajudei a segurar a linha de suprimento durante a Defesa do Portão Norte, há anos, ao lado do Roth. Nunca fomos próximos depois disso. Também nunca precisamos ser.",
   ],
   extremamente_raras: [
     "Se um dia essa forja apagar de vez, quero que alguém continue acendendo ela.",

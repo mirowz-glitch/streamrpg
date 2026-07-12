@@ -339,6 +339,48 @@ export const ITEM_CATALOG: Omit<ItemCatalogEntry, "id">[] = [
   { slug: "capuz-da-loba-prateada", name: "Capuz da Loba Prateada", description: "Cheira a floresta, não importa quanto tempo passe.", rarity: "epic", slot: "helmet", min_level: 17 },
   { slug: "colar-de-presas-do-alfa", name: "Colar de Presas do Alfa", description: "Feito só com presas de um único Lobo Alfa abatido.", rarity: "epic", slot: "amulet", min_level: 18 },
   { slug: "presa-do-alfa", name: "Presa do Alfa", description: "A presa do Lobo Alfa. Poucos chegam perto o bastante pra arrancar uma.", rarity: "legendary", slot: "weapon", min_level: 25 },
+
+  // ---- Sprint Ravens Ecosystem (Phase I) — 15 itens ligados aos Corvos
+  // do Reino.
+  { slug: "pena-escura", name: "Pena Escura", description: "Encontrada no chão, sem dono aparente.", rarity: "common", slot: "amulet", min_level: 1 },
+  { slug: "colar-de-bico-negro", name: "Colar de Bico Negro", description: "Ninguém sabe de que corvo veio.", rarity: "common", slot: "amulet", min_level: 1 },
+  { slug: "luvas-de-pena-e-garra", name: "Luvas de Pena e Garra", description: "Leve o bastante pra não atrapalhar o voo de ninguém.", rarity: "common", slot: "weapon", min_level: 1 },
+  { slug: "adaga-de-bico-afiado", name: "Adaga de Bico Afiado", description: "O corte lembra mais uma bicada do que um golpe.", rarity: "uncommon", slot: "weapon", min_level: 5 },
+  { slug: "broche-do-mensageiro", name: "Broche do Mensageiro", description: "Idris jura que já confiou uma mensagem importante a um corvo, uma vez só.", rarity: "uncommon", slot: "amulet", min_level: 4 },
+  { slug: "capuz-de-penas", name: "Capuz de Penas", description: "Penas escuras cobrindo cada costura.", rarity: "uncommon", slot: "helmet", min_level: 5 },
+  { slug: "botas-de-passo-leve-do-corvo", name: "Botas de Passo Leve do Corvo", description: "Quase não fazem barulho nenhum, nem em folhas secas.", rarity: "uncommon", slot: "boots", min_level: 5 },
+  { slug: "olho-de-corvo", name: "Olho de Corvo", description: "Ninguém sabe explicar por que ainda parece observar.", rarity: "rare", slot: "amulet", min_level: 10 },
+  { slug: "amuleto-do-vigia", name: "Amuleto do Vigia", description: "Dizem que quem o usa nunca é surpreendido de verdade.", rarity: "rare", slot: "amulet", min_level: 11 },
+  { slug: "manto-das-penas", name: "Manto das Penas", description: "Feito de penas escuras, uma por uma, com cuidado incomum.", rarity: "rare", slot: "armor", min_level: 12 },
+  { slug: "anel-do-observador", name: "Anel do Observador", description: "Parece sempre voltado pra quem está por perto.", rarity: "rare", slot: "ring", min_level: 10, uti_bonus: 2 },
+  { slug: "elmo-de-corvo-ancestral", name: "Elmo de Corvo Ancestral", description: "Ninguém sabe de qual corvo veio, só que é antigo.", rarity: "epic", slot: "helmet", min_level: 17 },
+  { slug: "manto-do-corvo-anciao", name: "Manto do Corvo Ancião", description: "Pesado demais pra ter penas de um corvo só.", rarity: "epic", slot: "armor", min_level: 18 },
+  { slug: "amuleto-de-pena-eterna", name: "Amuleto de Pena Eterna", description: "A pena nunca murcha, nem envelhece.", rarity: "legendary", slot: "amulet", min_level: 25 },
+  { slug: "anel-de-olho-antigo", name: "Anel de Olho Antigo", description: "Alguns juram que ele ainda observa, mesmo parado numa vitrine.", rarity: "legendary", slot: "ring", min_level: 25, uti_bonus: 10 },
+
+  // ---- Sprint Ancient Ruins Ecosystem (Phase I) — 20 pequenos
+  // artefatos encontrados nas Ruínas Antigas. Nenhum mágico exagerado —
+  // todos parecem objetos reais, achados, não forjados.
+  { slug: "fragmento-de-coluna", name: "Fragmento de Coluna", description: "Um pedaço de coluna, liso demais pra ter sido feito à mão comum.", rarity: "common", slot: "ring", min_level: 1 },
+  { slug: "moeda-desgastada", name: "Moeda Desgastada", description: "Nenhuma face reconhecível. Nenhum reino atual cunha algo parecido.", rarity: "common", slot: "ring", min_level: 1 },
+  { slug: "anel-quebrado", name: "Anel Quebrado", description: "Partido ao meio, mas ainda encaixa no dedo.", rarity: "common", slot: "ring", min_level: 1 },
+  { slug: "mascara-de-pedra", name: "Máscara de Pedra", description: "O rosto esculpido nela não é de ninguém que alguém reconheça.", rarity: "common", slot: "amulet", min_level: 1 },
+  { slug: "pingente-antigo", name: "Pingente Antigo", description: "Mais velho que qualquer relato escrito do Reino.", rarity: "common", slot: "amulet", min_level: 1 },
+  { slug: "placa-de-bronze", name: "Placa de Bronze", description: "Símbolos gravados que nenhum estudioso decifrou até agora.", rarity: "uncommon", slot: "amulet", min_level: 3 },
+  { slug: "fivela-de-metal-escuro", name: "Fivela de Metal Escuro", description: "Escurecida demais pelo tempo pra dizer que metal é.", rarity: "common", slot: "ring", min_level: 1 },
+  { slug: "fragmento-de-vaso-antigo", name: "Fragmento de Vaso Antigo", description: "Um pedaço só. O resto nunca foi encontrado.", rarity: "common", slot: "amulet", min_level: 1 },
+  { slug: "selo-de-pedra-lisa", name: "Selo de Pedra Lisa", description: "A marca gravada nele não corresponde a nenhum brasão conhecido.", rarity: "uncommon", slot: "ring", min_level: 4 },
+  { slug: "lamina-quebrada-sem-cabo", name: "Lâmina Quebrada Sem Cabo", description: "Só a lâmina restou. O cabo, ninguém sabe de que era feito.", rarity: "uncommon", slot: "weapon", min_level: 5 },
+  { slug: "amuleto-de-simbolos-apagados", name: "Amuleto de Símbolos Apagados", description: "Os símbolos já estavam apagados quando foi encontrado.", rarity: "uncommon", slot: "amulet", min_level: 5 },
+  { slug: "anel-de-pedra-negra", name: "Anel de Pedra Negra", description: "Frio ao toque, mesmo em dias quentes.", rarity: "uncommon", slot: "ring", min_level: 4 },
+  { slug: "broche-sem-nome", name: "Broche Sem Nome", description: "Ninguém sabe a quem pertencia, nem o que representa.", rarity: "common", slot: "amulet", min_level: 1 },
+  { slug: "cantil-de-pedra-vazio", name: "Cantil de Pedra Vazio", description: "Vazio há tanto tempo que nem cheiro restou.", rarity: "common", slot: "ring", min_level: 1 },
+  { slug: "chave-que-nao-abre-nada", name: "Chave que Não Abre Nada", description: "Já foi testada em toda fechadura conhecida do Reino. Nenhuma serve.", rarity: "uncommon", slot: "ring", min_level: 5 },
+  { slug: "estatueta-sem-rosto", name: "Estatueta Sem Rosto", description: "Uma figura em miniatura, com o mesmo rosto liso da estátua das Ruínas.", rarity: "rare", slot: "amulet", min_level: 10 },
+  { slug: "fragmento-de-mapa-ilegivel", name: "Fragmento de Mapa Ilegível", description: "As linhas não correspondem a nenhuma região conhecida do Reino.", rarity: "rare", slot: "amulet", min_level: 10 },
+  { slug: "anel-de-inscricoes-apagadas", name: "Anel de Inscrições Apagadas", description: "O que estava escrito nele foi apagado de propósito, não pelo tempo.", rarity: "rare", slot: "ring", min_level: 11 },
+  { slug: "medalhao-da-camara-das-vozes", name: "Medalhão da Câmara das Vozes", description: "Ecoa um som fraco, quase inaudível, quando sacudido perto do ouvido.", rarity: "rare", slot: "amulet", min_level: 12 },
+  { slug: "fragmento-do-portal-de-pedra", name: "Fragmento do Portal de Pedra", description: "Um pedaço quebrado que ninguém conseguiu reencaixar no bloco original.", rarity: "rare", slot: "amulet", min_level: 13 },
 ];
 
 export function seedItems(): void {

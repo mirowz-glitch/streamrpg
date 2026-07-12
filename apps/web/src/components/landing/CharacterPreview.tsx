@@ -19,6 +19,10 @@ const MOCK_EXPEDITION: ExpeditionCompactData = {
   status: "exploring",
   progress_percent: 62,
   encounter: { category: "descoberta", icon: "🎁", text: "Encontrou um baú escondido entre as raízes." },
+  // Sprint Expedition Consequences Phase I — dado fabricado (mesma
+  // convenção de todo o resto deste mock), mostra a linha ambiente
+  // nova na própria vitrine ilustrativa.
+  approach: "investigate",
 };
 
 export function CharacterPreview() {

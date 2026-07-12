@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import type { WorldStateResponse } from "@streamrpg/shared";
+import { useEffect, useMemo, useState } from "react";
+import type { KingdomNewsItem, WorldStateResponse } from "@streamrpg/shared";
 import { AppNav } from "../components/ui/AppNav";
 import { Timeline } from "../components/ui/Timeline";
 import { KingdomNews } from "../components/ui/KingdomNews";
@@ -12,6 +12,9 @@ import { getStoredChannel, setStoredChannel } from "../hooks/usePing";
 import { GuideBubble } from "../components/onboarding/GuideBubble";
 import { isSameData } from "../lib/compare";
 import { CLOCK_TICK_MS, WORLD_POLL_MS } from "../lib/pollIntervals";
+import { useIdentity } from "../hooks/useIdentity";
+import { getKingdomEchoes } from "../lib/personalTimeline";
+import { remember } from "../lib/playerMemory";
 
 function formatClock(ms: number): string {
   return new Date(ms).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
@@ -53,6 +56,20 @@ export function WorldPage() {
     return () => window.clearInterval(id);
   }, []);
 
+  // Sprint Kingdom Echoes Phase I — marcos já conquistados (Sprints
+  // anteriores) viram boatos anônimos, misturados ao Jornal do Reino já
+  // existente. Nunca cita o jogador; cada eco aparece só até a próxima
+  // vez que este componente recalcular `echoes` (marcado como visto logo
+  // abaixo), nunca mais que uma vez por jogador.
+  const { identity } = useIdentity(true);
+  const echoes = useMemo(
+    () => getKingdomEchoes({ regionsDiscovered: identity?.regions_discovered ?? 0 }),
+    [identity],
+  );
+  useEffect(() => {
+    echoes.forEach((echo) => remember(echo.id));
+  }, [echoes]);
+
   if (!data) {
     return (
       <main className="page">
@@ -65,6 +82,16 @@ export function WorldPage() {
   }
 
   const { panel, kingdom, stats, timeline, idle_flavor, most_visited_regions, encounter_stats, channel_kingdom, news, current_event } = data;
+
+  // Boatos locais (echoes) somados às notícias reais do backend — mesmo
+  // componente, mesma lista, só mais itens.
+  const echoNewsItems: KingdomNewsItem[] = echoes.map((echo) => ({
+    id: echo.id,
+    icon: echo.icon,
+    text: echo.text,
+    timestamp: Date.now(),
+  }));
+  const newsWithEchoes = [...news, ...echoNewsItems];
 
   return (
     <main className="page">
@@ -149,7 +176,7 @@ export function WorldPage() {
 
       <div className="card">
         <h2>📰 Notícias do Reino</h2>
-        <KingdomNews items={news} />
+        <KingdomNews items={newsWithEchoes} />
       </div>
 
       <div className="card">
@@ -234,6 +261,7 @@ export function WorldPage() {
 
       <div className="card">
         <h1>Regiões do Reino</h1>
+        <GuideBubble flag="world_gallery_seen" message="Onze regiões, cada uma com sua própria história — seu personagem só visitou uma fração delas até agora." />
         <RegionGallery />
       </div>
     </main>

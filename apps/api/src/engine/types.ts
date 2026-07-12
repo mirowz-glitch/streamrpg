@@ -212,6 +212,14 @@ export type ExpeditionStatus =
   | "returning"
   | "completed";
 
+// Sprint Expedition Choice Phase III — Meaningful Consequences.
+// `ExpeditionApproach` é redefinida aqui (não importada de
+// @streamrpg/shared), mesma decisão arquitetural já usada para
+// `EncounterCategory`/`ExpeditionStatus`/`KingdomRoleSlug` acima:
+// engine/types.ts não depende de nenhum pacote externo (ver cabeçalho
+// deste arquivo).
+export type ExpeditionApproach = "investigate" | "continue";
+
 // Sprint Founder Identity & Prestige — puramente cosmético, nunca altera
 // XP/Gold/poder. Gameplay/Character, mesmo princípio de expedition.*
 // acima — nunca carrega channelId.
@@ -541,6 +549,12 @@ export interface ExpeditionSnapshot {
   currentEncounterIcon: string | null;
   startedAt: number;
   completedAt: number | null;
+  // Sprint Expedition Choice Phase III — Meaningful Consequences. NULL
+  // até o jogador escolher (ou nunca, se a expedição nunca passar por
+  // Exploring+Descoberta). Travado na primeira escolha (setApproach só
+  // aplica se ainda for NULL) — mesma identidade "até a expedição
+  // acabar" já estabelecida no cliente (Phase II).
+  approach: ExpeditionApproach | null;
 }
 
 export interface ExpeditionRepository {
@@ -561,6 +575,12 @@ export interface ExpeditionRepository {
     currentRegionId: string,
   ): Promise<ExpeditionSnapshot>;
   complete(expeditionId: string, timestamp: number): Promise<ExpeditionSnapshot>;
+  // Sprint Expedition Choice Phase III — só grava se `approach` ainda
+  // for NULL e a expedição pertencer a este personagem e ainda não
+  // tiver concluído (mesmo espírito idempotente/"grava só uma vez" de
+  // ChronicleRepository.insertOnce). Retorna false se nada mudou (já
+  // escolhido antes, expedição de outro personagem, ou já concluída).
+  setApproach(expeditionId: string, characterId: string, approach: ExpeditionApproach): Promise<boolean>;
 }
 
 // ============================================================
