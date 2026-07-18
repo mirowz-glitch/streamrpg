@@ -21,6 +21,19 @@ import { buildCollectionInsightContext } from "../../lib/collectionInsights";
 import type { PlayerFacts } from "../../lib/playerFacts";
 import { buildMicroEventContext, getMicroEvent } from "../../lib/microEvents";
 import { buildWorldCohesionContext, getWorldCohesionLine } from "../../lib/worldCohesion";
+import { buildKingdomEvolutionContext, getKingdomEvolutionLine } from "../../lib/kingdomEvolution";
+import { buildBuildingProgressionContext, getBuildingStage, getBuildingStageClass, type BuildingStage } from "../../lib/buildingProgression";
+import { buildReactiveWorldContext, getReactiveClass, getReactiveState } from "../../lib/reactiveWorld";
+import { buildWorldVisualContext, getWorldVisualClass } from "../../lib/worldVisualState";
+
+// Sprint Building Visual State Phase I — decoração puramente visual por
+// estágio (sem texto/narrativa); estágio nunca decidido aqui.
+const TAVERN_DECOR: Record<BuildingStage, string> = {
+  "stage-1": "🍺",
+  "stage-2": "🍺🍺",
+  "stage-3": "🛢️",
+  "stage-4": "🛢️ 🍗",
+};
 
 interface TavernBuildingProps {
   // Sprint Dynamic World Presence Phase I — mesmo contexto que qualquer
@@ -84,12 +97,47 @@ export function TavernBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CONT
       )
     : null;
 
+  // Sprint Kingdom Evolution Phase I — evolução estrutural do Reino,
+  // reage a totalMinutes (PlayerFacts), nenhum dado novo.
+  const kingdomEvolutionLine = playerFacts
+    ? getKingdomEvolutionLine("taverna", buildKingdomEvolutionContext(playerFacts, undefined, worldPresenceCtx))
+    : null;
+  // Sprint Building Progression Phase I — evolução visual estrutural
+  // (4 estágios fixos, reage a totalMinutes), preparada pra sprites
+  // futuras; nenhum texto/hint, só uma classe CSS.
+  const buildingStageClass = playerFacts
+    ? getBuildingStageClass("taverna", buildBuildingProgressionContext(playerFacts))
+    : null;
+  const buildingStage = playerFacts ? getBuildingStage("taverna", buildBuildingProgressionContext(playerFacts)) : null;
+  // Sprint Kingdom Reactive World Phase I — estado visual leve (reage a
+  // totalMinutes), preparado pra sprites/efeitos futuros; nenhum texto
+  // novo.
+  const reactiveClass = playerFacts ? getReactiveClass("taverna", buildReactiveWorldContext(playerFacts)) : null;
+  // Sprint World Visual States Phase I — traduz o mesmo ReactiveState
+  // acima pro vocabulário visual comum (4 estados); nenhum dado novo.
+  const worldVisualClass = playerFacts
+    ? getWorldVisualClass("building", buildWorldVisualContext({ buildingReactiveState: getReactiveState("taverna", buildReactiveWorldContext(playerFacts)) }))
+    : null;
+
   return (
-    <section className="city-building-screen">
+    <section className={`city-building-screen city-building-taverna${buildingStageClass ? ` ${buildingStageClass}` : ""}${reactiveClass ? ` ${reactiveClass}` : ""}${worldVisualClass ? ` ${worldVisualClass}` : ""}`}>
       <h2>🍺 Taverna</h2>
+      {buildingStage ? <p className="building-decor">{TAVERN_DECOR[buildingStage]}</p> : null}
       <NpcIntro npc={NPCS.taverneira} worldEventCategory={worldPresenceCtx?.eventCategory} echoContext={echoContext} />
       <GuideBubble flag="tavern_seen" message="Rumores daqui nunca são confirmados — mas quase todos apontam pra algo real." />
       <p className="hint">Onde o Reino descansa, conversa e inventa histórias.</p>
+
+      <div className="tavern-grid">
+        <TavernRumor />
+        <AdventurerTable />
+        <WallNotes />
+        <NightSongs />
+      </div>
+
+      {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) — 8 linhas
+          ambientes; movidas pra depois do conteúdo interativo (Rumor/
+          Mesa/Recados/Canções). Nenhuma removida, nenhum dado/lógica
+          alterado — só reordenado. */}
       <p className="hint">{reaction}</p>
       <WorldPresenceLine building="taverna" ctx={worldPresenceCtx} />
       {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
@@ -99,13 +147,7 @@ export function TavernBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CONT
       {microEventLine ? <p className="hint">{microEventLine}</p> : null}
       {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
       {kingdomMemoryLine ? <p className="hint">{kingdomMemoryLine}</p> : null}
-
-      <div className="tavern-grid">
-        <TavernRumor />
-        <AdventurerTable />
-        <WallNotes />
-        <NightSongs />
-      </div>
+      {kingdomEvolutionLine ? <p className="hint">{kingdomEvolutionLine}</p> : null}
     </section>
   );
 }

@@ -17,6 +17,7 @@ import { EMPTY_ECHO_CONTEXT, getNpcEchoLine, type ExpeditionEchoContext } from "
 import { feedbackClassName } from "../../lib/uiFeedback";
 import { getNpcDailyActivity } from "../../lib/npcDailyActivities";
 import { getSingleHighlight } from "../../lib/liveReadiness";
+import { buildWorldVisualContext, getWorldVisualClass } from "../../lib/worldVisualState";
 
 // Sprint NPCs Vivos — bloco de apresentação reaproveitado por todo
 // edifício: retrato, nome, profissão, frase própria e descrição.
@@ -230,6 +231,14 @@ export function NpcIntro({ npc, worldEventCategory, echoContext = EMPTY_ECHO_CON
     return getNpcDailyActivity(npc.key);
   }, [npc.key, consequenceLine, heroJourneyLine, habitLine, foreshadowLine, honorificLine, livingConversationLine]);
 
+  // Sprint World Visual States Phase I — traduz Living Consequence/Hero
+  // Journey (já calculados acima) pro vocabulário visual comum (4
+  // estados); nenhum dado novo, nenhuma prioridade alterada.
+  const worldVisualClass = getWorldVisualClass(
+    "npc",
+    buildWorldVisualContext({ hasLivingConsequence: consequenceLine !== null, hasHeroJourney: heroJourneyLine !== null }),
+  );
+
   // Sprint Living Knowledge — "Últimos assuntos": criaturas do
   // Bestiário cujas conexões (Sprint Content Connections) citam este
   // NPC. Sem estado de conversa novo — é sempre a mesma lista derivada
@@ -279,7 +288,7 @@ export function NpcIntro({ npc, worldEventCategory, echoContext = EMPTY_ECHO_CON
   }, [catalog, npc.key]);
 
   return (
-    <div className={`npc-intro${feedbackCls ? ` ${feedbackCls}` : ""}`}>
+    <div className={`npc-intro${feedbackCls ? ` ${feedbackCls}` : ""} ${worldVisualClass}`}>
       <NpcPortrait npc={npc} />
       <div className="npc-intro-text">
         <strong className="npc-name">{npc.name}</strong>

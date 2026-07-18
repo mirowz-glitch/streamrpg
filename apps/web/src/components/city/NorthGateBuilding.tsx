@@ -11,6 +11,20 @@ import { EMPTY_ECHO_CONTEXT, type ExpeditionEchoContext } from "../../lib/expedi
 import { getCityAmbientLine } from "../../lib/cityAmbientState";
 import { buildMicroEventContext, getMicroEvent } from "../../lib/microEvents";
 import { buildWorldCohesionContext, getWorldCohesionLine } from "../../lib/worldCohesion";
+import { buildKingdomEvolutionContext, getKingdomEvolutionLine } from "../../lib/kingdomEvolution";
+import { buildBuildingProgressionContext, getBuildingStage, getBuildingStageClass, type BuildingStage } from "../../lib/buildingProgression";
+import { buildReactiveWorldContext, getReactiveClass, getReactiveState } from "../../lib/reactiveWorld";
+import { buildWorldVisualContext, getWorldVisualClass } from "../../lib/worldVisualState";
+
+// Sprint Building Visual State Phase I — decoração puramente visual por
+// estágio (sem texto/narrativa); estágio nunca decidido aqui.
+const NORTH_GATE_DECOR: Record<BuildingStage, string> = {
+  "stage-1": "🛡️",
+  "stage-2": "🛡️🛡️",
+  "stage-3": "🔱",
+  "stage-4": "🔱 🚩",
+};
+import type { PlayerFacts } from "../../lib/playerFacts";
 
 interface NorthGateBuildingProps {
   enabled: boolean;
@@ -23,6 +37,9 @@ interface NorthGateBuildingProps {
   // por CityPage (mesmo playerFacts dos outros prédios); só repassada
   // até ExpeditionPanel, nunca decidida aqui.
   specializationLine?: string | null;
+  // Sprint Kingdom Evolution Phase I — mesmo PlayerFacts já calculado
+  // por CityPage; opcional/default nulo, retrocompat.
+  playerFacts?: PlayerFacts | null;
 }
 
 // Sprint Capital City — reaproveita RegionGallery (World Simulation) e
@@ -36,6 +53,7 @@ export function NorthGateBuilding({
   worldPresenceCtx,
   echoContext = EMPTY_ECHO_CONTEXT,
   specializationLine,
+  playerFacts = null,
 }: NorthGateBuildingProps) {
   // Sprint Environmental Storytelling Phase I — único lugar reativo ao
   // evento atual do Reino (categoria "militar", já real e existente),
@@ -59,12 +77,49 @@ export function NorthGateBuilding({
   // natural entre dois sistemas já existentes (Portão Norte + Casa dos
   // Viajantes/Expedição), nunca informação nova.
   const worldCohesionLine = getWorldCohesionLine("portao-norte", buildWorldCohesionContext(worldPresenceCtx, echoContext));
+  // Sprint Kingdom Evolution Phase I — evolução estrutural do Reino,
+  // reage a regionsDiscovered (PlayerFacts), nenhum dado novo.
+  const kingdomEvolutionLine = playerFacts
+    ? getKingdomEvolutionLine("portao-norte", buildKingdomEvolutionContext(playerFacts, undefined, worldPresenceCtx))
+    : null;
+  // Sprint Building Progression Phase I — evolução visual estrutural
+  // (4 estágios fixos, reage a hasKingdomRole), preparada pra sprites
+  // futuras; nenhum texto/hint, só uma classe CSS.
+  const buildingStageClass = playerFacts
+    ? getBuildingStageClass("portao-norte", buildBuildingProgressionContext(playerFacts))
+    : null;
+  const buildingStage = playerFacts
+    ? getBuildingStage("portao-norte", buildBuildingProgressionContext(playerFacts))
+    : null;
+  // Sprint Kingdom Reactive World Phase I — estado visual leve (reage a
+  // hasKingdomRole), preparado pra sprites/efeitos futuros; nenhum
+  // texto novo.
+  const reactiveClass = playerFacts
+    ? getReactiveClass("portao-norte", buildReactiveWorldContext(playerFacts))
+    : null;
+  // Sprint World Visual States Phase I — traduz o mesmo ReactiveState
+  // acima pro vocabulário visual comum (4 estados); nenhum dado novo.
+  const worldVisualClass = playerFacts
+    ? getWorldVisualClass(
+        "building",
+        buildWorldVisualContext({ buildingReactiveState: getReactiveState("portao-norte", buildReactiveWorldContext(playerFacts)) }),
+      )
+    : null;
 
   return (
-    <section className="city-building-screen">
+    <section className={`city-building-screen city-building-portao-norte${buildingStageClass ? ` ${buildingStageClass}` : ""}${reactiveClass ? ` ${reactiveClass}` : ""}${worldVisualClass ? ` ${worldVisualClass}` : ""}`}>
       <h2>🚪 Portão Norte</h2>
+      {buildingStage ? <p className="building-decor">{NORTH_GATE_DECOR[buildingStage]}</p> : null}
       <NpcIntro npc={NPCS.guarda} echoContext={echoContext} />
       <p className="hint">A saída da Capital para o mundo — regiões desbloqueadas e sua expedição atual.</p>
+      <ExpeditionPanel enabled={enabled} specializationLine={specializationLine} />
+      <h3 className="identity-subtitle">Regiões desbloqueadas</h3>
+      <RegionGallery echoContext={echoContext} />
+
+      {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) — 6 linhas
+          ambientes; movidas pra depois da Expedição/Regiões (o conteúdo
+          real deste prédio). Nenhuma removida, nenhum dado/lógica
+          alterado — só reordenado. */}
       <WorldPresenceLine building="portao-norte" ctx={worldPresenceCtx} />
       {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
       {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
@@ -72,9 +127,7 @@ export function NorthGateBuilding({
       {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
       {microEventLine ? <p className="hint">{microEventLine}</p> : null}
       {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
-      <ExpeditionPanel enabled={enabled} specializationLine={specializationLine} />
-      <h3 className="identity-subtitle">Regiões desbloqueadas</h3>
-      <RegionGallery echoContext={echoContext} />
+      {kingdomEvolutionLine ? <p className="hint">{kingdomEvolutionLine}</p> : null}
     </section>
   );
 }

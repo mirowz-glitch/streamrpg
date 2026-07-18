@@ -22,6 +22,24 @@ interface BuildingDef {
   description: string;
 }
 
+// Sprint Kingdom Micro Interactions Phase I — mesma classe de
+// identidade já criada em Kingdom Visual Identity Phase I
+// (styles.css's .city-building-biblioteca/museu/...), só reaplicada
+// aqui pro card poder reagir no hover ANTES de entrar no prédio.
+// "mercador"/"alquimista"/"banco" ficam de fora (nunca tiveram
+// identidade própria — telas "em construção").
+const BUILDING_IDENTITY_CLASS: Partial<Record<BuildingKey, string>> = {
+  arena: "city-building-arena",
+  ferreiro: "city-building-ferreiro",
+  guilda: "city-building-guilda",
+  "portao-norte": "city-building-portao-norte",
+  biblioteca: "city-building-biblioteca",
+  bestiario: "city-building-bestiario",
+  museu: "city-building-museu",
+  taverna: "city-building-taverna",
+  "casa-dos-viajantes": "city-building-viajantes",
+};
+
 // Sprint Capital City — só navegação (Etapa "Centro da Cidade"), nenhuma
 // funcionalidade nova por trás de cada prédio ainda. Crescer o mapa no
 // futuro é só adicionar uma linha aqui + um componente próprio, mesma
@@ -60,11 +78,12 @@ export const CityMap = memo(function CityMap({ onSelect, highlightedBuildings = 
     <div className="city-map-grid">
       {BUILDINGS.map((building) => {
         const isHighlighted = highlightedBuildings.includes(building.key);
+        const identityCls = BUILDING_IDENTITY_CLASS[building.key];
         return (
           <button
             key={building.key}
             type="button"
-            className={`city-building-card${isHighlighted ? ` ${highlightCls}` : ""}`}
+            className={`city-building-card${identityCls ? ` ${identityCls}` : ""}${isHighlighted ? ` ${highlightCls}` : ""}`}
             onClick={() => onSelect(building.key)}
           >
             <span className="city-building-icon">{building.icon}</span>

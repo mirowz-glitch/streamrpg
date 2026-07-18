@@ -18,6 +18,8 @@ import {
 } from "../../lib/expeditionChoice";
 import { getExpeditionConsequenceLine } from "../../lib/expeditionConsequences";
 import { buildExpeditionMomentContext, getExpeditionMoment } from "../../lib/expeditionMoments";
+import { buildExpeditionReactiveContext, getExpeditionReactiveClass, getExpeditionReactiveState } from "../../lib/expeditionReactiveState";
+import { buildWorldVisualContext, getWorldVisualClass } from "../../lib/worldVisualState";
 import { recordEvent } from "../../lib/personalTimeline";
 import { EXPEDITION_HIGHLIGHT_PRIORITY, getSingleHighlight } from "../../lib/liveReadiness";
 import { feedbackClassName } from "../../lib/uiFeedback";
@@ -154,6 +156,18 @@ export const ExpeditionPanel = memo(function ExpeditionPanel({ enabled, speciali
   // Journey/Consequences acima.
   const momentLine = getExpeditionMoment(buildExpeditionMomentContext(expedition));
 
+  // Sprint Expedition Reactive World Phase II — estado visual leve
+  // (status/progresso/approach/encontro, nenhum dado novo), preparado
+  // pra sprites/efeitos futuros; nenhum texto novo.
+  const reactiveExpeditionClass = getExpeditionReactiveClass(buildExpeditionReactiveContext(expedition));
+  // Sprint World Visual States Phase I — traduz o mesmo
+  // ExpeditionReactiveState acima pro vocabulário visual comum (4
+  // estados); nenhum dado novo.
+  const worldVisualClass = getWorldVisualClass(
+    "expedition",
+    buildWorldVisualContext({ expeditionReactiveState: getExpeditionReactiveState(buildExpeditionReactiveContext(expedition)) }),
+  );
+
   // Sprint Live Readiness Phase I (First 5 Minutes) — 6 linhas de
   // história soltas, visualmente idênticas, nenhuma mais importante que
   // a outra; agora a camada central decide qual delas vence
@@ -176,7 +190,7 @@ export const ExpeditionPanel = memo(function ExpeditionPanel({ enabled, speciali
     key === expeditionHighlightKey && key !== "approach" ? ` ${expeditionFeedbackCls}` : "";
 
   return (
-    <section className={`expedition-panel${isCombating ? " expedition-panel-combat" : ""}`}>
+    <section className={`expedition-panel${isCombating ? " expedition-panel-combat" : ""} ${reactiveExpeditionClass} ${worldVisualClass}`}>
       <h2>Aventura Atual</h2>
       <GuideBubble
         flag="expedition_seen"
@@ -298,7 +312,13 @@ export const ExpeditionPanel = memo(function ExpeditionPanel({ enabled, speciali
             {specializationLine ? (
               <p className={`expedition-narrative${narrativeCls("specialization")}`}>{specializationLine}</p>
             ) : null}
-            <p className="hint">{momentLine}</p>
+            {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) —
+                achado real: `.hint` (cinza, sem itálico, margem padrão
+                de <p>) destoava visualmente dos outros 5 irmãos deste
+                mesmo bloco de história, todos `.expedition-narrative`
+                (itálico, roxo, margem justa). Corrigido pra usar a
+                mesma classe — mesmo texto, mesmo dado, só o estilo. */}
+            <p className="expedition-narrative">{momentLine}</p>
           </div>
         ) : null}
       </div>

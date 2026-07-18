@@ -47,6 +47,19 @@ import { getKingdomMemoryLine } from "../lib/kingdomMemory";
 import { getLiveHighlights } from "../lib/liveReadiness";
 import { buildMicroEventContext, getMicroEvent } from "../lib/microEvents";
 import { buildWorldCohesionContext, getWorldCohesionLine } from "../lib/worldCohesion";
+import { buildKingdomEvolutionContext, getKingdomEvolutionLine } from "../lib/kingdomEvolution";
+import { buildBuildingProgressionContext, getBuildingStage, getBuildingStageClass, type BuildingStage } from "../lib/buildingProgression";
+import { buildReactiveWorldContext, getReactiveClass, getReactiveState } from "../lib/reactiveWorld";
+import { buildWorldVisualContext, getWorldVisualClass } from "../lib/worldVisualState";
+
+// Sprint Building Visual State Phase I — decoração puramente visual por
+// estágio (sem texto/narrativa); estágio nunca decidido aqui.
+const PRACA_DECOR: Record<BuildingStage, string> = {
+  "stage-1": "⛲",
+  "stage-2": "⛲ 🪑",
+  "stage-3": "⛲ 🌷🌷",
+  "stage-4": "⛲ 🪑 🌷🌷",
+};
 import { buildLiveGuideContext, getRecommendedSurface } from "../lib/liveGuide";
 
 function formatClock(ms: number): string {
@@ -164,6 +177,42 @@ export function CityPage() {
   // natural entre dois sistemas já existentes (aqui: Praça + Expedição),
   // nunca informação nova.
   const worldCohesionLine = getWorldCohesionLine("praca", buildWorldCohesionContext(worldPresenceCtx, echoContext));
+  // Sprint Kingdom Evolution Phase I — evolução estrutural do Reino,
+  // reage a players_online (WorldPresenceContext), nenhum dado novo.
+  const kingdomEvolutionLine = playerFacts
+    ? getKingdomEvolutionLine("praca", buildKingdomEvolutionContext(playerFacts, undefined, worldPresenceCtx))
+    : null;
+  // Sprint Building Progression Phase I — evolução visual estrutural
+  // (4 estágios fixos, combina regionsDiscovered + players_online),
+  // preparada pra sprites futuras; nenhum texto/hint, só uma classe CSS.
+  const buildingStageClass = playerFacts
+    ? getBuildingStageClass("praca", buildBuildingProgressionContext(playerFacts, undefined, worldPresenceCtx))
+    : null;
+  const buildingStage = playerFacts
+    ? getBuildingStage("praca", buildBuildingProgressionContext(playerFacts, undefined, worldPresenceCtx))
+    : null;
+  // Sprint Kingdom Reactive World Phase I — estado visual leve (reage a
+  // players_online), preparado pra sprites/efeitos futuros; nenhum
+  // texto novo.
+  const reactiveClass = playerFacts
+    ? getReactiveClass("praca", buildReactiveWorldContext(playerFacts, undefined, worldPresenceCtx))
+    : null;
+  // Sprint World Visual States Phase I — superfície "building" (Praça é
+  // um dos 10 prédios do Reactive World), traduz o mesmo ReactiveState
+  // acima pro vocabulário visual comum; nenhum dado novo.
+  const buildingVisualClass = playerFacts
+    ? getWorldVisualClass(
+        "building",
+        buildWorldVisualContext({ buildingReactiveState: getReactiveState("praca", buildReactiveWorldContext(playerFacts, undefined, worldPresenceCtx)) }),
+      )
+    : null;
+  // Sprint World Visual States Phase I — superfície "city" (nível da
+  // Cidade inteira, WorldPresenceContext), regra própria e independente
+  // da Praça (evento militar/população), nenhum dado novo.
+  const cityVisualClass = getWorldVisualClass(
+    "city",
+    buildWorldVisualContext({ worldEventCategory: worldPresenceCtx?.eventCategory, playersOnline: worldPresenceCtx?.playersOnline }),
+  );
 
   // Sprint Reactive UI (World Feedback Phase I) — quando o evento atual
   // do Reino é de uma categoria mais rara/dramática (mesmas 3 categorias
@@ -221,7 +270,7 @@ export function CityPage() {
       <GuideBubble flag="city_seen" message="Este é o centro do Reino." />
       <EldrinGuide />
 
-      <div className="card city-banner">
+      <div className={`card city-banner ${cityVisualClass}`}>
         <h1>Capital</h1>
         <p className="hint">A cidade onde toda a jornada do Reino acontece.</p>
         <label>
@@ -243,10 +292,10 @@ export function CityPage() {
             ← Voltar à Praça Central
           </button>
           {selected === "arena" ? (
-            <ArenaBuilding identity={identity} kingdom={kingdom} worldPresenceCtx={worldPresenceCtx} />
+            <ArenaBuilding identity={identity} kingdom={kingdom} worldPresenceCtx={worldPresenceCtx} playerFacts={playerFacts} />
           ) : null}
           {selected === "ferreiro" ? (
-            <BlacksmithBuilding equipped={character?.equipped ?? []} worldPresenceCtx={worldPresenceCtx} />
+            <BlacksmithBuilding equipped={character?.equipped ?? []} worldPresenceCtx={worldPresenceCtx} playerFacts={playerFacts} />
           ) : null}
           {selected === "mercador" ? <MerchantBuilding /> : null}
           {selected === "alquimista" ? <AlchemistBuilding /> : null}
@@ -267,6 +316,7 @@ export function CityPage() {
               worldPresenceCtx={worldPresenceCtx}
               echoContext={echoContext}
               specializationLine={expeditionSpecializationLine}
+              playerFacts={playerFacts}
             />
           ) : null}
           {selected === "biblioteca" ? (
@@ -286,14 +336,39 @@ export function CityPage() {
           ) : null}
         </div>
       ) : (
-        <div className="card city-square-view">
+        <div className={`card city-square-view city-building-praca${buildingStageClass ? ` ${buildingStageClass}` : ""}${reactiveClass ? ` ${reactiveClass}` : ""}${buildingVisualClass ? ` ${buildingVisualClass}` : ""}`}>
           <h2>Praça Central</h2>
+          {buildingStage ? <p className="building-decor">{PRACA_DECOR[buildingStage]}</p> : null}
           <CityHubBar
             worldState={worldState}
             clock={clock}
             channelDisplayName={kingdom?.channel_display_name ?? null}
           />
           <CitySquareDecor />
+          {worldState ? (
+            <p className={`hint city-of-the-day${eventFeedbackCls ? ` ${eventFeedbackCls}` : ""}`}>
+              <span>{worldState.current_event.icon} No Reino, agora:</span> {worldState.current_event.name}
+            </p>
+          ) : null}
+          <p className="hint">Escolha um edifício para visitar.</p>
+          {liveGuideLine ? (
+            <p className="guide-bubble">
+              <span className="guide-bubble-icon" aria-hidden="true">
+                🗺️
+              </span>
+              {liveGuideLine}
+            </p>
+          ) : null}
+          <CityMap onSelect={setSelected} highlightedBuildings={cityMapHighlights} />
+
+          {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) — as
+              linhas ambientes abaixo (humor/vestígio/evento pontual/
+              conexão) são decoração, nunca ação; movidas pra depois do
+              CityMap pra um jogador novo chegar no "Escolha um
+              edifício"/mapa sem precisar rolar por 9 frases primeiro
+              (achado real da auditoria: "muitos hints juntos" antes do
+              único elemento clicável da tela). Nenhuma removida, nenhum
+              dado/lógica alterado — só reordenado. */}
           <WorldPresenceLine building="praca" ctx={worldPresenceCtx} />
           {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
           {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
@@ -301,17 +376,10 @@ export function CityPage() {
           {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
           {microEventLine ? <p className="hint">{microEventLine}</p> : null}
           {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
-          {worldState ? (
-            <p className={`hint city-of-the-day${eventFeedbackCls ? ` ${eventFeedbackCls}` : ""}`}>
-              <span>{worldState.current_event.icon} No Reino, agora:</span> {worldState.current_event.name}
-            </p>
-          ) : null}
+          {kingdomEvolutionLine ? <p className="hint">{kingdomEvolutionLine}</p> : null}
           <p className="hint city-of-the-day">
             <span>💬 Hoje muitos viajantes comentam sobre:</span> {rumorTopicOfTheDay.title}
           </p>
-          <p className="hint">Escolha um edifício para visitar.</p>
-          {liveGuideLine ? <p className="guide-bubble">{liveGuideLine}</p> : null}
-          <CityMap onSelect={setSelected} highlightedBuildings={cityMapHighlights} />
           <p className="hint city-of-the-day">
             <span>🐦</span> {ravenAmbient}
           </p>

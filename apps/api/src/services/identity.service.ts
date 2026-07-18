@@ -316,7 +316,13 @@ export function getIdentityProfile(characterId: string): IdentityProfile {
       name: t.name,
       description: t.description,
       unlocked: unlockedTitleMap.has(t.id),
-      unlocked_at: unlockedTitleMap.has(t.id) ? new Date(unlockedTitleMap.get(t.id)! * 1000).toISOString() : null,
+      // Bug fix (Live Readiness pós-live) — `unlocked_at` vem de
+      // `evaluateAndGrantUnlocks`, gravado com o `timestamp` do
+      // WorldTickEvent (Date.now(), já em milissegundos) — nunca em
+      // segundos como `characters.created_at` (esse sim usa o DEFAULT
+      // `strftime('%s','now')` do SQLite). Multiplicar por 1000 de novo
+      // aqui produzia uma data ~56000 anos no futuro.
+      unlocked_at: unlockedTitleMap.has(t.id) ? new Date(unlockedTitleMap.get(t.id)!).toISOString() : null,
     })),
     frames: allFrames.map((f) => ({
       id: f.id,
@@ -324,10 +330,17 @@ export function getIdentityProfile(characterId: string): IdentityProfile {
       name: f.name,
       tier: f.tier,
       unlocked: unlockedFrameMap.has(f.id),
-      unlocked_at: unlockedFrameMap.has(f.id) ? new Date(unlockedFrameMap.get(f.id)! * 1000).toISOString() : null,
+      unlocked_at: unlockedFrameMap.has(f.id) ? new Date(unlockedFrameMap.get(f.id)!).toISOString() : null,
     })),
     created_at: new Date(character.created_at * 1000).toISOString(),
-    first_expedition_at: firstExpedition.t ? new Date(firstExpedition.t * 1000).toISOString() : null,
+    // Bug fix (Live Readiness pós-live) — `expeditions.started_at` é
+    // gravado por SQLiteExpeditionRepository.create() com o `timestamp`
+    // do SessionStartedEvent/WorldTickEvent (Date.now(), milissegundos),
+    // nunca pelo DEFAULT `strftime('%s','now')` do SQLite (que é
+    // segundos, usado por characters.created_at acima). Mesmo bug do
+    // unlocked_at: multiplicar por 1000 de novo produzia "25/07/58477"
+    // em vez da data real.
+    first_expedition_at: firstExpedition.t ? new Date(firstExpedition.t).toISOString() : null,
     bosses_defeated: bossesDefeated.c,
     regions_discovered: regionsDiscovered.c,
   };

@@ -86,7 +86,11 @@ export function getCurrentExpedition(characterId: string): ExpeditionResponse | 
     progress_percent: calculateOverallProgress(snapshot),
     encounter: encounterFromSnapshot(snapshot),
     estimated_seconds_remaining: estimatedSecondsRemaining(snapshot),
-    started_at: new Date(snapshot.startedAt * 1000).toISOString(),
+    // Bug fix (Live Readiness pós-live) — `startedAt` já vem em
+    // milissegundos (Date.now(), gravado por SQLiteExpeditionRepository.
+    // create()), nunca em segundos — mesmo bug corrigido em
+    // identity.service.ts (first_expedition_at/unlocked_at).
+    started_at: new Date(snapshot.startedAt).toISOString(),
     approach: snapshot.approach,
   };
 }

@@ -20,6 +20,18 @@ import { getNextSteps } from "../../lib/knowledgeNetwork";
 import { getRegionName } from "../../lib/bestiary";
 import { BESTIARY_HIGHLIGHT_PRIORITY, getSingleHighlight } from "../../lib/liveReadiness";
 import { feedbackClassName } from "../../lib/uiFeedback";
+import { buildBuildingProgressionContext, getBuildingStage, getBuildingStageClass, type BuildingStage } from "../../lib/buildingProgression";
+import { buildReactiveWorldContext, getReactiveClass, getReactiveState } from "../../lib/reactiveWorld";
+import { buildWorldVisualContext, getWorldVisualClass } from "../../lib/worldVisualState";
+
+// Sprint Building Visual State Phase I — decoração puramente visual por
+// estágio (sem texto/narrativa); estágio nunca decidido aqui.
+const BESTIARY_DECOR: Record<BuildingStage, string> = {
+  "stage-1": "🐾",
+  "stage-2": "🐾🐾",
+  "stage-3": "📖",
+  "stage-4": "📖 🐾🐾",
+};
 
 interface BestiaryBuildingProps {
   worldPresenceCtx?: WorldPresenceContext;
@@ -72,6 +84,30 @@ export function BestiaryBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CO
       )
     : null;
 
+  // Sprint Building Progression Phase I — evolução visual estrutural
+  // (4 estágios fixos, reage a creaturesViewed), preparada pra sprites
+  // futuras; nenhum texto/hint, só uma classe CSS.
+  const buildingStageClass = playerFacts
+    ? getBuildingStageClass("bestiario", buildBuildingProgressionContext(playerFacts, insightCtx))
+    : null;
+  const buildingStage = playerFacts
+    ? getBuildingStage("bestiario", buildBuildingProgressionContext(playerFacts, insightCtx))
+    : null;
+  // Sprint Kingdom Reactive World Phase I — estado visual leve (reage a
+  // creaturesViewed), preparado pra sprites/efeitos futuros; nenhum
+  // texto novo.
+  const reactiveClass = playerFacts
+    ? getReactiveClass("bestiario", buildReactiveWorldContext(playerFacts, insightCtx))
+    : null;
+  // Sprint World Visual States Phase I — traduz o mesmo ReactiveState
+  // acima pro vocabulário visual comum (4 estados); nenhum dado novo.
+  const worldVisualClass = playerFacts
+    ? getWorldVisualClass(
+        "building",
+        buildWorldVisualContext({ buildingReactiveState: getReactiveState("bestiario", buildReactiveWorldContext(playerFacts, insightCtx)) }),
+      )
+    : null;
+
   // Sprint Live Readiness Phase I (First 5 Minutes) — a tela do
   // Bestiário inteira (prédio + registro aberto) tem 4 sinais reais
   // possíveis; nunca mais de 1 vence (lib/liveReadiness.ts). "nextSteps"
@@ -103,17 +139,15 @@ export function BestiaryBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CO
       : null;
 
   return (
-    <section className="city-building-screen">
+    <section className={`city-building-screen city-building-bestiario${buildingStageClass ? ` ${buildingStageClass}` : ""}${reactiveClass ? ` ${reactiveClass}` : ""}${worldVisualClass ? ` ${worldVisualClass}` : ""}`}>
       <h2>🔬 Bestiário</h2>
+      {buildingStage ? <p className="building-decor">{BESTIARY_DECOR[buildingStage]}</p> : null}
       <NpcIntro npc={NPCS.erudito} />
       <GuideBubble flag="bestiary_seen" message="Toda criatura já avistada no Reino vira um registro permanente aqui." />
       <p className="hint">Um registro de tudo que já foi visto — e do pouco que já foi entendido.</p>
       <h3 className="identity-subtitle">
         Criaturas registradas ({unlockedCreaturesCount}/{CREATURES.length})
       </h3>
-      {reaction ? <p className={`hint${bestiaryFeedbackCls ? ` ${bestiaryFeedbackCls}` : ""}`}>{reaction}</p> : null}
-      <WorldPresenceLine building="bestiario" ctx={worldPresenceCtx} />
-      {kingdomMemoryLine ? <p className="hint">{kingdomMemoryLine}</p> : null}
       {creatureOfTheDay ? (
         <p className="hint city-of-the-day">
           <span>{creatureOfTheDay.icon} Observada recentemente:</span> {creatureOfTheDay.name}
@@ -137,6 +171,13 @@ export function BestiaryBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CO
           />
         }
       />
+
+      {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) — mesma
+          correção de ordem já aplicada em Biblioteca/Museu/etc.: linhas
+          ambientes depois do catálogo interativo. Nenhuma removida. */}
+      {reaction ? <p className={`hint${bestiaryFeedbackCls ? ` ${bestiaryFeedbackCls}` : ""}`}>{reaction}</p> : null}
+      <WorldPresenceLine building="bestiario" ctx={worldPresenceCtx} />
+      {kingdomMemoryLine ? <p className="hint">{kingdomMemoryLine}</p> : null}
     </section>
   );
 }

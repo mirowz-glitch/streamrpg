@@ -36,6 +36,7 @@ import { feedbackClassName, resolveFeedback } from "../lib/uiFeedback";
 import { CHARACTER_TRAIT_PRIORITY, getSingleHighlight } from "../lib/liveReadiness";
 import { buildExpeditionEchoContext } from "../lib/expeditionEchoes";
 import { buildLiveGuideContext, getRecommendedSurface } from "../lib/liveGuide";
+import { buildWorldVisualContext, getWorldVisualClass } from "../lib/worldVisualState";
 
 // Sprint Identity & Progression — indicador visual único, soma dos
 // atributos já mostrados na grade abaixo. Não é um stat de combate: o
@@ -52,7 +53,10 @@ function totalPower(combat: { attack_physical: number; attack_magic: number; res
   );
 }
 
+type CharacterTab = "geral" | "identidade" | "expedicao";
+
 export function CharacterPage() {
+  const [activeTab, setActiveTab] = useState<CharacterTab>("geral");
   const { profile, logout } = useAuth();
   const { character, loading, refresh } = useCharacter(!!profile);
   const { identity, equipTitle, unequipTitle, equipFrame, unequipFrame } = useIdentity(!!profile);
@@ -79,6 +83,20 @@ export function CharacterPage() {
   // central e independente (lib/legacy.ts), nunca reutiliza o texto de
   // Character Presence/Collection Insights, só os dados.
   const legacyLine = character && identity ? getLegacyLine(buildPlayerFacts(character, identity, kingdomRoles)) : null;
+
+  // Sprint World Visual States Phase I — mesmos PlayerFacts/Legacy já
+  // usados acima (hasFounderTitle + legacyLine !== null), traduzidos pro
+  // vocabulário visual comum (4 estados); nenhum dado novo.
+  const characterVisualClass =
+    character && identity
+      ? getWorldVisualClass(
+          "character",
+          buildWorldVisualContext({
+            hasFounderTitle: buildPlayerFacts(character, identity, kingdomRoles).hasFounderTitle,
+            hasActiveLegacy: legacyLine !== null,
+          }),
+        )
+      : null;
 
   // Sprint Kingdom Reputation Phase I — mesmos PlayerFacts já usados
   // acima; camada central e independente (lib/kingdomReputation.ts),
@@ -167,7 +185,7 @@ export function CharacterPage() {
 
       <WelcomeCard channelDisplayName={channel || null} />
 
-      <div className="card">
+      <div className={`card${characterVisualClass ? ` ${characterVisualClass}` : ""}`}>
         {loading || !character ? (
           <p className="loading-state">Carregando personagem...</p>
         ) : (
@@ -175,128 +193,174 @@ export function CharacterPage() {
             <GuideBubble flag="profile_seen" message="Aqui você acompanha seu aventureiro." />
             <JourneyProgress totalMinutesWatched={character.total_minutes} />
 
-            <div className="character-header">
-              <FramedAvatar
-                avatarUrl={character.avatar_url}
-                frameTier={identity?.equipped_frame?.tier ?? null}
-                baseClassName="character-avatar"
-              />
-              <div>
-                <h1>{character.display_name}</h1>
-                {identity?.equipped_title ? <p className="character-title">👑 {identity.equipped_title.name}</p> : null}
-                <div className="character-badges">
-                  <span className="badge-class" title="Classes chegam em uma Sprint futura">
-                    Aventureiro
-                  </span>
-                  <span className="badge-level">Nível {character.level}</span>
+            {/* Sprint Character Page Tabs — pedido explícito do usuário:
+                Equipamento nunca escondido atrás de uma aba, sempre do
+                lado do nick/avatar, fácil acesso. */}
+            <div className="character-header-row">
+              <div className="character-header">
+                <FramedAvatar
+                  avatarUrl={character.avatar_url}
+                  frameTier={identity?.equipped_frame?.tier ?? null}
+                  baseClassName="character-avatar"
+                />
+                <div>
+                  <h1>{character.display_name}</h1>
+                  {identity?.equipped_title ? <p className="character-title">👑 {identity.equipped_title.name}</p> : null}
+                  <div className="character-badges">
+                    <span className="badge-class" title="Classes chegam em uma Sprint futura">
+                      Aventureiro
+                    </span>
+                    <span className="badge-level">Nível {character.level}</span>
+                  </div>
                 </div>
               </div>
+              <div className="character-header-equipment">
+                <h2>Equipamento</h2>
+                <EquipmentSlots equipped={character.equipped} />
+                <FirstItemCard />
+              </div>
             </div>
-
-            {identity ? (
-              <p className="hint">
-                {STAGE_CHARACTER_DESCRIPTION[getCharacterStage(buildPlayerFacts(character, identity, kingdomRoles))]}
-              </p>
-            ) : null}
-
-            {regionsInsight ? <p className="hint">{regionsInsight}</p> : null}
-            {legacyLine ? <p className={`hint${legacyFeedbackCls ? ` ${legacyFeedbackCls}` : ""}`}>{legacyLine}</p> : null}
-            {kingdomReputationLine ? (
-              <p className={`hint${kingdomReputationFeedbackCls ? ` ${kingdomReputationFeedbackCls}` : ""}`}>{kingdomReputationLine}</p>
-            ) : null}
-            {personalChronicleLine ? (
-              <p className={`hint${personalChronicleFeedbackCls ? ` ${personalChronicleFeedbackCls}` : ""}`}>{personalChronicleLine}</p>
-            ) : null}
 
             <FirstLevelBanner level={character.level} />
 
             <XpBar percent={character.percent} label={`${character.xp} XP no nível · faltam ${character.xp_to_next} para o próximo nível`} />
 
-            <StatsRow
-              items={[
-                { label: "Gold", value: character.gold.toFixed(1) },
-                { label: "Minutos assistidos", value: character.total_minutes },
-                { label: "Poder Total", value: totalPower(character.combat), highlight: true },
-              ]}
-            />
-
-            <PlayerGoals character={character} identity={identity} kingdomRoles={kingdomRoles} />
-            {liveGuideLine ? <p className="guide-bubble">{liveGuideLine}</p> : null}
-
             <FirstBossBanner channel={channel || undefined} />
-            <BossCard channel={channel || undefined} myCharacterId={character.id} />
 
-            {channel && kingdomRoles.length > 0 ? (
-              <p className="character-kingdom-roles">
-                Cargo{kingdomRoles.length > 1 ? "s" : ""} no Reino de {channel}:{" "}
-                {kingdomRoles.map((role) => `${role.icon} ${role.name}`).join(" · ")}
-              </p>
+            <div className="character-tabs">
+              <button
+                type="button"
+                className={`character-tab-button${activeTab === "geral" ? " active" : ""}`}
+                onClick={() => setActiveTab("geral")}
+              >
+                Visão Geral
+              </button>
+              <button
+                type="button"
+                className={`character-tab-button${activeTab === "identidade" ? " active" : ""}`}
+                onClick={() => setActiveTab("identidade")}
+              >
+                Identidade
+              </button>
+              <button
+                type="button"
+                className={`character-tab-button${activeTab === "expedicao" ? " active" : ""}`}
+                onClick={() => setActiveTab("expedicao")}
+              >
+                Expedição
+              </button>
+            </div>
+
+            {activeTab === "geral" ? (
+              <>
+                {identity ? (
+                  <p className="hint">
+                    {STAGE_CHARACTER_DESCRIPTION[getCharacterStage(buildPlayerFacts(character, identity, kingdomRoles))]}
+                  </p>
+                ) : null}
+
+                <StatsRow
+                  items={[
+                    { label: "Gold", value: character.gold.toFixed(1) },
+                    { label: "Minutos assistidos", value: character.total_minutes },
+                    { label: "Poder Total", value: totalPower(character.combat), highlight: true },
+                  ]}
+                />
+
+                <PlayerGoals character={character} identity={identity} kingdomRoles={kingdomRoles} />
+                {liveGuideLine ? (
+                  <p className="guide-bubble">
+                    <span className="guide-bubble-icon" aria-hidden="true">
+                      🗺️
+                    </span>
+                    {liveGuideLine}
+                  </p>
+                ) : null}
+
+                <section className="power-summary">
+                  <h2>Atributos de combate</h2>
+                  <div className="power-grid">
+                    <div><span>ATQ Físico</span><strong>{character.combat.attack_physical}</strong></div>
+                    <div><span>ATQ Mágico</span><strong>{character.combat.attack_magic}</strong></div>
+                    <div><span>Resistência Física</span><strong>{character.combat.resistance_physical}</strong></div>
+                    <div><span>Resistência Mágica</span><strong>{character.combat.resistance_magic}</strong></div>
+                    <div><span>SUS</span><strong>{character.combat.sus}</strong></div>
+                    <div><span>UTI</span><strong>{character.combat.uti}</strong></div>
+                  </div>
+                </section>
+
+                <div className="ping-box">
+                  <label htmlFor="channel">Canal da live (login Twitch)</label>
+                  <input
+                    id="channel"
+                    value={channelInput || channel}
+                    onChange={(e) => setChannelInput(e.target.value)}
+                    onBlur={() => {
+                      if (channelInput.trim()) setChannel(channelInput.trim());
+                    }}
+                    placeholder="ex: nomedostreamer"
+                  />
+                  <button
+                    onClick={() => {
+                      if (channelInput.trim()) setChannel(channelInput.trim());
+                      void ping().then(() => refresh());
+                    }}
+                    disabled={!canPing}
+                  >
+                    {canPing ? "Ping (+10 XP)" : `Aguarde ${Math.ceil(cooldownMs / 1000)}s`}
+                  </button>
+                  {error ? <Feedback kind="error">{error}</Feedback> : null}
+                  {lastPing?.leveled_up ? <Feedback kind="level-up">Level up! Agora você é nível {lastPing.level}.</Feedback> : null}
+                  {lastPing?.drop?.dropped && lastPing.drop.item ? (
+                    <Feedback kind="drop-alert">
+                      Drop: {lastPing.drop.item.name} ({lastPing.drop.item.rarity})
+                    </Feedback>
+                  ) : null}
+                </div>
+              </>
             ) : null}
 
-            <ExpeditionPanel enabled={!!profile} specializationLine={expeditionSpecializationLine} />
+            {activeTab === "identidade" ? (
+              <>
+                {regionsInsight ? <p className="hint">{regionsInsight}</p> : null}
+                {legacyLine ? <p className={`hint${legacyFeedbackCls ? ` ${legacyFeedbackCls}` : ""}`}>{legacyLine}</p> : null}
+                {kingdomReputationLine ? (
+                  <p className={`hint${kingdomReputationFeedbackCls ? ` ${kingdomReputationFeedbackCls}` : ""}`}>{kingdomReputationLine}</p>
+                ) : null}
+                {personalChronicleLine ? (
+                  <p className={`hint${personalChronicleFeedbackCls ? ` ${personalChronicleFeedbackCls}` : ""}`}>{personalChronicleLine}</p>
+                ) : null}
 
-            {identity ? (
-              <IdentityPanel
-                identity={identity}
-                onEquipTitle={handleEquipTitle}
-                onUnequipTitle={handleUnequipTitle}
-                onEquipFrame={handleEquipFrame}
-                onUnequipFrame={handleUnequipFrame}
-              />
+                {channel && kingdomRoles.length > 0 ? (
+                  <p className="character-kingdom-roles">
+                    Cargo{kingdomRoles.length > 1 ? "s" : ""} no Reino de {channel}:{" "}
+                    {kingdomRoles.map((role) => `${role.icon} ${role.name}`).join(" · ")}
+                  </p>
+                ) : null}
+
+                {identity ? (
+                  <IdentityPanel
+                    identity={identity}
+                    onEquipTitle={handleEquipTitle}
+                    onUnequipTitle={handleUnequipTitle}
+                    onEquipFrame={handleEquipFrame}
+                    onUnequipFrame={handleUnequipFrame}
+                  />
+                ) : null}
+              </>
             ) : null}
 
-            <FirstItemCard />
-
-            <section className="equipment-section">
-              <h2>Equipamento</h2>
-              <EquipmentSlots equipped={character.equipped} />
-            </section>
+            {activeTab === "expedicao" ? (
+              <>
+                <BossCard channel={channel || undefined} myCharacterId={character.id} />
+                <ExpeditionPanel enabled={!!profile} specializationLine={expeditionSpecializationLine} />
+              </>
+            ) : null}
 
             <FirstSteps totalMinutesWatched={character.total_minutes} />
             <EldrinGuide />
 
             {identity ? <NewTitleModal identity={identity} onEquipTitle={handleEquipTitle} /> : null}
-
-            <section className="power-summary">
-              <h2>Atributos de combate</h2>
-              <div className="power-grid">
-                <div><span>ATQ Físico</span><strong>{character.combat.attack_physical}</strong></div>
-                <div><span>ATQ Mágico</span><strong>{character.combat.attack_magic}</strong></div>
-                <div><span>Resistência Física</span><strong>{character.combat.resistance_physical}</strong></div>
-                <div><span>Resistência Mágica</span><strong>{character.combat.resistance_magic}</strong></div>
-                <div><span>SUS</span><strong>{character.combat.sus}</strong></div>
-                <div><span>UTI</span><strong>{character.combat.uti}</strong></div>
-              </div>
-            </section>
-
-            <div className="ping-box">
-              <label htmlFor="channel">Canal da live (login Twitch)</label>
-              <input
-                id="channel"
-                value={channelInput || channel}
-                onChange={(e) => setChannelInput(e.target.value)}
-                onBlur={() => {
-                  if (channelInput.trim()) setChannel(channelInput.trim());
-                }}
-                placeholder="ex: nomedostreamer"
-              />
-              <button
-                onClick={() => {
-                  if (channelInput.trim()) setChannel(channelInput.trim());
-                  void ping().then(() => refresh());
-                }}
-                disabled={!canPing}
-              >
-                {canPing ? "Ping (+10 XP)" : `Aguarde ${Math.ceil(cooldownMs / 1000)}s`}
-              </button>
-              {error ? <Feedback kind="error">{error}</Feedback> : null}
-              {lastPing?.leveled_up ? <Feedback kind="level-up">Level up! Agora você é nível {lastPing.level}.</Feedback> : null}
-              {lastPing?.drop?.dropped && lastPing.drop.item ? (
-                <Feedback kind="drop-alert">
-                  Drop: {lastPing.drop.item.name} ({lastPing.drop.item.rarity})
-                </Feedback>
-              ) : null}
-            </div>
           </>
         )}
       </div>

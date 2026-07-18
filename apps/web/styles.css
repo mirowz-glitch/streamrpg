@@ -62,11 +62,54 @@ nav {
   right: 1rem;
   background: #2a2f3d;
 }
+/* Sprint Character Page Tabs — cabeçalho e Equipamento lado a lado
+   (pedido explícito: equipamento sempre visível, "fácil acesso", nunca
+   escondido atrás de uma aba). Quebra em coluna única em telas
+   estreitas (mesmo breakpoint de .power-grid). */
+.character-header-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.character-header-equipment {
+  flex: 1;
+  min-width: 260px;
+}
+.character-header-equipment h2 {
+  margin-top: 0;
+}
 .character-header {
   display: flex;
   gap: 1rem;
   align-items: center;
-  margin-bottom: 1rem;
+  flex: 1;
+  min-width: 220px;
+}
+.character-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+.character-tab-button {
+  background: none;
+  border: 1px solid #2a2f3d;
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  color: #bf94ff;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.character-tab-button:hover {
+  border-color: #9146ff;
+}
+.character-tab-button.active {
+  background: #9146ff;
+  border-color: #9146ff;
+  color: white;
 }
 .character-avatar {
   width: 64px;
@@ -504,11 +547,6 @@ nav {
 .identity-stat-highlight strong {
   color: #bf94ff;
 }
-.equipment-section {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #2a2f3d;
-}
 .equipment-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -846,6 +884,45 @@ nav {
   padding-left: 0.6rem;
 }
 
+/* Sprint Expedition Reactive World Phase II — mesma técnica de
+   box-shadow inset já usada pelo Reactive World da Cidade (nenhuma
+   animação, nenhum piscar), aplicada em .expedition-panel e
+   .expedition-compact (Overlay/Landing Preview reaproveitam o mesmo
+   componente). Preparo puro para sprites/efeitos futuros. */
+.reactive-expedition-normal {
+}
+.reactive-expedition-watching {
+  box-shadow: inset 3px 0 0 #9aa0a6;
+}
+.reactive-expedition-danger {
+  box-shadow: inset 3px 0 0 #ea4335;
+  background: rgba(234, 67, 53, 0.04);
+}
+.reactive-expedition-exploring {
+  box-shadow: inset 3px 0 0 #7ee081;
+}
+.reactive-expedition-returning {
+  box-shadow: inset 3px 0 0 #58c4dc;
+}
+
+/* Sprint World Visual States Phase I — vocabulário visual comum às 5
+   superfícies (city/character/expedition/npc/building), preparo puro
+   pra sprites/efeitos/partículas futuros. Nada animado, nada piscando;
+   só cor/borda/sombra leve, aplicado por cima das classes já existentes
+   de cada superfície (nunca as substitui). */
+.visual-idle {
+}
+.visual-active {
+  box-shadow: 0 0 0 1px rgba(66, 133, 244, 0.35);
+}
+.visual-important {
+  box-shadow: 0 0 0 1px rgba(191, 148, 255, 0.6);
+}
+.visual-celebration {
+  box-shadow: 0 0 0 1px rgba(242, 184, 75, 0.6);
+  background: rgba(242, 184, 75, 0.05);
+}
+
 /* Sprint Encounter System */
 .encounter-recent-list {
   list-style: none;
@@ -1050,12 +1127,73 @@ nav {
   text-align: left;
   font-family: inherit;
   color: inherit;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, filter 0.15s ease;
 }
-.city-building-card:hover {
+.city-building-card:hover,
+.city-building-card:focus-visible {
   border-color: #9146ff;
   transform: translateY(-2px);
 }
+
+/* Sprint Kingdom Micro Interactions Phase I — só CSS, sem JS/estado;
+   cada prédio reaproveita a MESMA classe de identidade já criada em
+   Kingdom Visual Identity Phase I (city-building-biblioteca/museu/...),
+   só que agora reagindo a :hover/:focus-visible. Nenhuma regra de
+   negócio muda, nenhum texto muda — puramente decorativo, some assim
+   que o mouse sai. Base comum acima (transition/border/translateY);
+   cada bloco abaixo é a pequena especialização de UMA identidade só. */
+.city-building-card.city-building-biblioteca:hover,
+.city-building-card.city-building-biblioteca:focus-visible {
+  box-shadow: 0 4px 14px rgba(106, 59, 214, 0.28);
+}
+.city-building-card.city-building-museu:hover,
+.city-building-card.city-building-museu:focus-visible {
+  filter: brightness(1.12);
+}
+.city-building-card.city-building-guilda:hover,
+.city-building-card.city-building-guilda:focus-visible {
+  border-color: #fbbc04;
+  box-shadow: inset 0 0 0 2px rgba(251, 188, 4, 0.45);
+}
+.city-building-card.city-building-ferreiro:hover,
+.city-building-card.city-building-ferreiro:focus-visible {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+}
+.city-building-card.city-building-arena:hover .city-building-name,
+.city-building-card.city-building-arena:focus-visible .city-building-name {
+  color: #ea4335;
+  text-shadow: 0 0 6px rgba(234, 67, 53, 0.45);
+}
+.city-building-card.city-building-taverna:hover,
+.city-building-card.city-building-taverna:focus-visible {
+  background: rgba(201, 130, 42, 0.12);
+}
+.city-building-card.city-building-viajantes:hover,
+.city-building-card.city-building-viajantes:focus-visible {
+  transform: translateY(-4px);
+}
+.city-building-card.city-building-portao-norte:hover,
+.city-building-card.city-building-portao-norte:focus-visible {
+  border-color: #9aa0a6;
+  box-shadow: inset 0 0 0 2px rgba(154, 160, 166, 0.5);
+}
+.city-building-card.city-building-bestiario:hover .city-building-icon,
+.city-building-card.city-building-bestiario:focus-visible .city-building-icon {
+  filter: drop-shadow(0 0 4px rgba(52, 168, 83, 0.6));
+}
+.city-building-praca:hover {
+  box-shadow: inset 0 0 0 1px rgba(145, 70, 255, 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .city-building-card,
+  .city-building-card:hover,
+  .city-building-card:focus-visible {
+    transition: none;
+    transform: none;
+  }
+}
+
 .city-building-icon {
   font-size: 1.8rem;
 }
@@ -1102,6 +1240,141 @@ nav {
 .city-building-screen h2 {
   margin-top: 0;
 }
+/* Sprint Building Progression Phase I — pontos de integração pra
+   sprites futuras (lib/buildingProgression.ts decide QUAL estágio se
+   aplica; aqui ainda sem estilo complexo, só a classe existir já
+   basta). Quando as sprites existirem, o elemento com essas classes
+   troca por uma <img>, sem tocar em nenhuma regra de negócio. */
+.building-stage-1 {
+}
+.building-stage-2 {
+}
+.building-stage-3 {
+}
+.building-stage-4 {
+}
+/* Sprint Building Visual State Phase I — linha decorativa leve por
+   prédio (quantidade de bandeiras/caixas/livros/etc., nunca texto
+   narrativo). Nada animado, nada complexo — só um respiro visual
+   discreto, mesmo estágio já decidido por buildingProgression.ts. */
+.building-decor {
+  font-size: 1.1rem;
+  margin: 0.35rem 0;
+  opacity: 0.85;
+  letter-spacing: 0.15rem;
+}
+
+/* Sprint Kingdom Visual Identity Phase I — só CSS (cor/borda/espaço/
+   peso de fonte), nenhuma regra de negócio, nenhuma imagem/sprite.
+   Cada classe abaixo só é somada à já existente `.city-building-screen`
+   — preparação pra quando sprites reais chegarem, o layout já lê como
+   "lugares diferentes", nunca blocos de texto idênticos. */
+.city-building-biblioteca {
+  border: 1px solid #3a3f52;
+  background: linear-gradient(180deg, rgba(106, 59, 214, 0.05), transparent 60%);
+}
+.city-building-biblioteca h2 {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid #3a3f52;
+  padding-bottom: 0.5rem;
+}
+
+.city-building-museu {
+  border: 1px solid #4a4f5f;
+  padding: 2rem;
+  background: rgba(251, 188, 4, 0.03);
+}
+.city-building-museu > * {
+  margin-bottom: 1.05rem;
+}
+
+.city-building-guilda {
+  border: 2px solid #4a4f5f;
+  background: rgba(251, 188, 4, 0.04);
+}
+.city-building-guilda h2 {
+  font-weight: 800;
+  font-size: 1.6rem;
+}
+.city-building-guilda h3 {
+  border-top: 1px solid #3a3f52;
+  padding-top: 0.75rem;
+  margin-top: 1rem;
+}
+
+.city-building-ferreiro {
+  border: 3px solid #6b6f76;
+  background: linear-gradient(160deg, rgba(176, 141, 87, 0.08), transparent 65%);
+}
+.city-building-ferreiro h2 {
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.city-building-arena {
+  border: 1px solid #ea4335;
+  background: rgba(234, 67, 53, 0.04);
+  padding: 2rem 1.5rem;
+}
+.city-building-arena h2 {
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.city-building-taverna {
+  border: 1px solid #c9822a;
+  border-radius: 20px;
+  background: linear-gradient(160deg, rgba(201, 130, 42, 0.08), transparent 65%);
+}
+
+.city-building-viajantes {
+  border: 1px dashed #e07a5f;
+  background: rgba(224, 122, 95, 0.03);
+}
+
+.city-building-portao-norte {
+  border: 2px solid #9aa0a6;
+  border-radius: 4px;
+  background: rgba(154, 160, 166, 0.05);
+}
+.city-building-portao-norte h2 {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.city-building-bestiario {
+  border: 1px solid #34a853;
+  background: rgba(52, 168, 83, 0.03);
+}
+.city-building-bestiario h2 {
+  font-weight: 600;
+}
+
+.city-building-praca {
+  border: 1px solid #2a2f3d;
+}
+
+/* Sprint Kingdom Reactive World Phase I — só CSS, nenhum texto novo;
+   lib/reactiveWorld.ts decide QUAL estado se aplica, esta é a ÚNICA
+   definição de como cada um aparece. Extremamente leves, nada animado
+   — ponto de integração pra quando sprites/efeitos reais chegarem. */
+.reactive-normal {
+}
+.reactive-active {
+  border-color: #4285f4;
+}
+.reactive-busy {
+  box-shadow: inset 3px 0 0 #f2b84b;
+}
+.reactive-important {
+  box-shadow: 0 0 0 1px rgba(191, 148, 255, 0.5);
+}
+.reactive-growing {
+  filter: brightness(1.06);
+}
+
 .city-building-banner {
   display: inline-block;
   margin: 0.75rem 0;
@@ -2198,4 +2471,730 @@ nav {
    precisa de espaçamento próprio acima da estante/reader. */
 .traveller-random-btn {
   margin: 0.75rem 0 1rem;
+}
+
+/* Sprint World Simulation Phase I — primeiro renderer do mundo: HTML +
+   CSS puros, sem sprite/imagem/canvas/animação. Grid lógico simples
+   (sem mapa real); o marcador "●" existe só pra ser trocado por sprite
+   futuramente, sem alterar nenhuma lógica. */
+.world-simulation {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+/* Sprint World Simulation Phase III — `.simulation-grid` vira
+   `.simulation-track`: mesmo container relativo de sempre (o
+   marcador continua ancorado nele), agora também segurando a trilha de
+   tiles. `.simulation-player` continua exatamente igual (top: 50%,
+   transform, cor) — só ganhou um contexto novo ao redor.
+
+   Sprint World Simulation Phase XIV (Road & Path) — a trilha vira uma
+   estrada de verdade: terra + pedrinhas (gradientes radiais), sombra
+   entalhada (profundidade), grama nas bordas (borda verde) e uma
+   curva orgânica (border-radius assimétrico) em vez de um retângulo
+   perfeito. Nenhuma entidade/sistema novo — só CSS no cenário já
+   existente. */
+.simulation-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 60px;
+  padding: 0 8px;
+  margin-top: 0.75rem;
+  border-top: 3px solid #3f6b2f;
+  border-bottom: 3px solid #3f6b2f;
+  border-radius: 10px 6px 9px 7px;
+  background:
+    radial-gradient(circle at 8% 35%, rgba(0, 0, 0, 0.3) 1.5px, transparent 2px),
+    radial-gradient(circle at 22% 65%, rgba(0, 0, 0, 0.25) 1px, transparent 2px),
+    radial-gradient(circle at 38% 30%, rgba(0, 0, 0, 0.3) 1.5px, transparent 2px),
+    radial-gradient(circle at 54% 70%, rgba(0, 0, 0, 0.25) 1px, transparent 2px),
+    radial-gradient(circle at 70% 35%, rgba(0, 0, 0, 0.3) 1.5px, transparent 2px),
+    radial-gradient(circle at 86% 65%, rgba(0, 0, 0, 0.25) 1px, transparent 2px),
+    linear-gradient(180deg, #4a3d28 0%, #3a2f1e 50%, #4a3d28 100%);
+  box-shadow:
+    inset 0 4px 6px rgba(0, 0, 0, 0.4),
+    inset 0 -4px 6px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+/* Tiles deixam de ter borda própria (o grid "quadriculado" some) — só
+   uma leve tinta translúcida por bioma sobre a textura de terra do
+   container, pra parecer uma estrada contínua, não um tabuleiro. */
+.simulation-tile {
+  flex: 1;
+  height: 18px;
+  border: none;
+  background: transparent;
+}
+/* Regiões — só recolorem os tiles já existentes (nenhum novo dado, só
+   `current_region_name` classificado em WorldSimulationPreview.tsx);
+   trilha permanece fixa, só a aparência muda. Translúcidas (Phase XIV)
+   pra deixar a textura de terra/pedra do container aparecer por baixo. */
+.region-bosque .simulation-tile {
+  background-color: rgba(28, 58, 36, 0.4);
+}
+.region-deserto .simulation-tile {
+  background-color: rgba(74, 63, 26, 0.4);
+}
+.region-pantano .simulation-tile {
+  background-color: rgba(20, 32, 26, 0.4);
+}
+.region-neve .simulation-tile {
+  background-color: rgba(46, 55, 66, 0.4);
+}
+.region-default .simulation-tile {
+  background-color: rgba(26, 29, 39, 0.3);
+}
+/* Sprint World Simulation — Region Transitions Phase I — cada tile
+   agora também pode carregar sua PRÓPRIA classe de região (em vez de só
+   herdar do container ancestral); seletor composto, mesmos valores
+   rgba de cima, nenhuma cor nova, nenhuma regra antiga alterada.
+   "region-transition" é a única aparência genuinamente nova — uma
+   faixa neutra de mistura, sem animação/fade, só uma cor fixa
+   intermediária. */
+.simulation-tile.region-bosque {
+  background-color: rgba(28, 58, 36, 0.4);
+}
+.simulation-tile.region-deserto {
+  background-color: rgba(74, 63, 26, 0.4);
+}
+.simulation-tile.region-pantano {
+  background-color: rgba(20, 32, 26, 0.4);
+}
+.simulation-tile.region-neve {
+  background-color: rgba(46, 55, 66, 0.4);
+}
+.simulation-tile.region-default {
+  background-color: rgba(26, 29, 39, 0.3);
+}
+.simulation-tile.region-transition {
+  background-color: rgba(60, 55, 48, 0.35);
+}
+/* Sprint World Simulation — Entity Migration Phase I — `.entity-player`
+   reutiliza estas MESMAS regras (seletor estendido, nenhum valor
+   alterado); o Player passou a renderizar via EntityMarker
+   (WorldSimulationPreview.tsx), que já define `top` inline (50%,
+   idêntico ao valor abaixo) — mantido aqui só por retrocompatibilidade
+   visual, sem conflito. */
+.simulation-player,
+.entity-player {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.3rem;
+  color: #bf94ff;
+}
+
+/* Sprint World Simulation Phase II — o marcador deixa de teletransportar:
+   `left` já muda via `targetX` (JS); só walking/returning recebem a
+   transição CSS que faz o deslocamento parecer um passo, nunca um
+   salto. idle/combat propositalmente sem transição — "permanece
+   parado" (brief), nenhum JS extra, nenhuma máquina de estados. */
+.simulation-player.walking,
+.entity-player-walking {
+  transition: left 1.2s linear;
+}
+.simulation-player.idle,
+.entity-player-idle {
+  transition: none;
+}
+.simulation-player.combat,
+.entity-player-combat {
+  transition: none;
+  animation: simulation-combat 0.3s ease-in-out infinite;
+}
+
+/* Sprint World Simulation Phase VII — primeira sensação de combate:
+   pequeno tremor horizontal, só enquanto `.combat` (status combating);
+   inclui o mesmo translate(-50%, -50%) de centralização já usado pela
+   base `.simulation-player` pra não perder o alinhamento durante a
+   animação. walking/idle/returning/enemy inalterados. */
+@keyframes simulation-combat {
+  0% {
+    transform: translate(-50%, -50%) translateX(0);
+  }
+  25% {
+    transform: translate(-50%, -50%) translateX(2px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateX(-2px);
+  }
+  75% {
+    transform: translate(-50%, -50%) translateX(2px);
+  }
+  100% {
+    transform: translate(-50%, -50%) translateX(0);
+  }
+}
+.simulation-player.returning,
+.entity-player-returning {
+  transition: left 1.2s linear;
+}
+
+/* Sprint World Simulation Phase IV — cenário habitado: elementos fixos
+   (nunca se movem, nunca animam), posicionados por `left`/`top` inline
+   (mesma técnica de `.simulation-player`). Só formas CSS puras (borda,
+   border-radius, rotate) — sem emoji, sem imagem, sem sprite. */
+.simulation-decoration {
+  position: absolute;
+  pointer-events: none;
+}
+/* Bosque — árvore simples: triângulo via borda. */
+.decoration-tree {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid #2f6b3f;
+}
+/* Deserto — pedra: quadrado irregular (cantos assimétricos). */
+.decoration-rock {
+  width: 10px;
+  height: 8px;
+  background: #8a7226;
+  border-radius: 3px 6px 4px 5px;
+}
+/* Pântano — vegetação baixa: elipse achatada. */
+.decoration-swamp {
+  width: 12px;
+  height: 5px;
+  background: #2f4a3a;
+  border-radius: 50%;
+}
+/* Picos Congelados — cristal: quadrado rotacionado (losango). */
+.decoration-ice {
+  width: 8px;
+  height: 8px;
+  background: #a9c9e0;
+  transform: rotate(45deg);
+}
+/* Default — pedra pequena: círculo. */
+.decoration-default {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4a4f5c;
+}
+
+/* Sprint World Simulation Phase V — primeiro "alvo" no caminho: só
+   existe quando status == combating (nunca mais de 1), não anda, não
+   anima, não segue. Só forma CSS (div/background/border/border-radius)
+   — sem emoji/SVG/imagem. Anel (`box-shadow`) o diferencia das
+   decorações à primeira vista, sem precisar de texto. */
+/* Sprint World Simulation — Entity Migration Phase II — `.entity-enemy`/
+   `.entity-enemy-{variant}` reutilizam estas MESMAS regras (seletor
+   estendido, nenhum valor alterado); Enemy passou a renderizar via
+   EntityMarker (WorldSimulationPreview.tsx). As 6 variantes reais são
+   default/discovery/nature/mystery/climate/commerce (getEnemyClass,
+   Phase V) — "common"/"rare"/"gold" nunca foram categorias de Enemy
+   (são de Loot, Phase IX); manter só as 6 reais evita classes mortas. */
+.simulation-enemy,
+.entity-enemy {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  /* Sprint World Simulation Phase VIII — desaparecimento simples ao
+     sair de combating (opacidade, nada além disso). */
+  transition: opacity 0.3s ease;
+}
+.enemy-default,
+.entity-enemy-default {
+  background: #8b3a3a;
+  border: 2px solid #c94f4f;
+}
+.enemy-discovery,
+.entity-enemy-discovery {
+  background: #8a6a1f;
+  border: 2px solid #e0b84b;
+}
+.enemy-nature,
+.entity-enemy-nature {
+  background: #3f6b2f;
+  border: 2px solid #6fae4f;
+}
+.enemy-mystery,
+.entity-enemy-mystery {
+  background: #5b3f7a;
+  border: 2px solid #bf94ff;
+}
+.enemy-climate,
+.entity-enemy-climate {
+  background: #2f4f6b;
+  border: 2px solid #58c4dc;
+}
+.enemy-commerce,
+.entity-enemy-commerce {
+  background: #6b4f2f;
+  border: 2px solid #f2b84b;
+}
+
+/* Sprint World Simulation Phase IX — primeiro loot visual: fica exatamente
+   onde o inimigo estava (posição fixa vinda do mock), nunca se move.
+   Mesma técnica de opacidade condicional da Phase VIII (sempre montado,
+   `transition: opacity` só pra um fade-in simples). Só forma CSS pura
+   (border/background/border-radius) — sem imagem/emoji/sprite/SVG. */
+/* Sprint World Simulation — Entity Migration Phase III — `.entity-loot`/
+   `.entity-loot-{variant}` reutilizam estas MESMAS regras (seletor
+   estendido, nenhum valor alterado); Loot passou a renderizar via
+   EntityMarker (WorldSimulationPreview.tsx). As 4 variantes reais são
+   common/rare/gold/discovery (getLootClass, Phase IX) — "default" nunca
+   foi uma variante própria (o fallback de getLootClass já reaproveita
+   "loot-common"), então não existe `.entity-loot-default` pra estender. */
+.simulation-loot,
+.entity-loot {
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  border-radius: 3px;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.loot-common,
+.entity-loot-common {
+  background: #9aa0a6;
+  border: 1px solid #6b7076;
+}
+.loot-rare,
+.entity-loot-rare {
+  background: #58c4dc;
+  border: 1px solid #3a94ac;
+  border-radius: 50%;
+}
+.loot-gold,
+.entity-loot-gold {
+  background: #f2b84b;
+  border: 1px solid #c2921f;
+  border-radius: 2px;
+}
+.loot-discovery,
+.entity-loot-discovery {
+  background: #bf94ff;
+  border: 1px solid #8a5fd1;
+  border-radius: 50% 50% 50% 0;
+}
+
+/* Sprint World Entities (Base Reutilizável) — infraestrutura nova,
+   paralela às classes .simulation-player/.simulation-enemy/
+   .simulation-loot acima (nenhuma delas foi tocada; WorldSimulationPreview
+   continua usando as próprias). Só a base genérica de posição/
+   visibilidade; `entity-{kind}`/`entity-{kind}-{variant}` ficam vazias
+   de propósito — a Sprint que migrar cada entidade pra EntityMarker é
+   quem decide a aparência de cada uma, sem duplicar o CSS que já existe. */
+.entity-marker {
+  position: absolute;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Sprint World Simulation Phase X — Primeiro Sprite. Só o Player
+   (PlayerSprite.tsx); Enemy continua quadrado, Loot continua círculo,
+   nenhuma regra deles foi tocada. Regras novas, aditivas, escopadas por
+   `.player-sprite` (nunca alteram `.entity-player`/`.entity-player-*`
+   já existentes — combat continua usando exatamente o mesmo tremor
+   `simulation-combat`, sem nenhuma mudança aqui). Cada keyframe inclui
+   o mesmo `translate(-50%, -50%)` de centralização, mesma técnica já
+   usada pelo tremor de combate (Phase VII).
+
+   Achado ao validar o balanço de caminhada: `.entity-marker` (mais
+   abaixo no arquivo, mesma especificidade de .entity-player-walking)
+   já vencia a cascata e sobrescrevia `transition: left 1.2s linear`
+   por `transition: opacity 0.3s ease` — o Player perdeu o deslize suave
+   ao caminhar desde a Entity Migration Phase I (nunca detectado porque
+   os smoke tests anteriores só conferiam a posição final, não a
+   property de transition). `.player-sprite.entity-player-walking`
+   tem mais especificidade (2 classes) que `.entity-marker` (1 classe),
+   então repetir a mesma transition aqui resolve sem tocar nenhuma
+   regra pré-existente. */
+.player-sprite.entity-player-walking,
+.player-sprite.entity-player-returning {
+  transition: left 1.2s linear;
+  animation: player-sway 0.4s ease-in-out infinite;
+}
+@keyframes player-sway {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-2px);
+  }
+}
+
+/* Sprint World Simulation — Entity Migration Phase XI — Enemy Sprite.
+   Regras totalmente novas (EnemySprite.tsx); `.simulation-enemy`/
+   `.enemy-{categoria}`/`.entity-enemy`/`.entity-enemy-{categoria}`
+   (Phases V/II) não são tocadas — ficam paradas, sem uso, já que o
+   visual do Enemy muda de propósito nesta Sprint (forma por categoria,
+   não só cor). Sem animação: Enemy continua totalmente parado, o único
+   tremor do mundo continua sendo o do Player em combate. */
+.enemy-sprite {
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+}
+.enemy-sprite-nature {
+  border-radius: 50%;
+  background: #3f6b2f;
+}
+.enemy-sprite-mystery {
+  width: 10px;
+  height: 10px;
+  background: #5b3f7a;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+.enemy-sprite-climate {
+  background: #2f4f6b;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+.enemy-sprite-commerce {
+  border-radius: 2px;
+  background: #f2b84b;
+}
+.enemy-sprite-discovery {
+  background: #bf94ff;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+.enemy-sprite-default {
+  border-radius: 50%;
+  background: #6b7076;
+}
+
+/* Sprint World Simulation — Entity Migration Phase XII — Loot Sprite.
+   Regras totalmente novas (LootSprite.tsx); `.simulation-loot`/
+   `.loot-{tipo}`/`.entity-loot`/`.entity-loot-{tipo}` (Phases IX/III)
+   não são tocadas — ficam paradas, sem uso, já que o visual do Loot
+   muda de propósito nesta Sprint (objeto por tipo, não só cor/forma
+   simples). Sem animação; visible/opacity/transition continuam vindo
+   só de `.entity-marker` (inalterado). */
+.loot-sprite {
+  transform: translate(-50%, -50%);
+}
+.loot-sprite-common {
+  width: 8px;
+  height: 9px;
+  background: #8a6a4a;
+  border: 1px solid #5c4530;
+  border-radius: 30% 30% 50% 50%;
+}
+.loot-sprite-rare {
+  width: 12px;
+  height: 8px;
+  background: #6b4a2f;
+  border: 1px solid #f2b84b;
+  border-radius: 2px;
+  box-shadow: inset 0 3px 0 0 #f2b84b;
+}
+.loot-sprite-gold {
+  width: 10px;
+  height: 4px;
+  background: #f2b84b;
+  border: 1px solid #c2921f;
+  border-radius: 50%;
+  box-shadow: 0 -3px 0 0 #f2b84b, 0 3px 0 0 #f2b84b;
+}
+.loot-sprite-discovery {
+  width: 6px;
+  height: 12px;
+  background: #e8dcc0;
+  border: 1px solid #b8a878;
+  border-radius: 50% / 20%;
+}
+
+/* Sprint World Simulation — Living NPCs Phase I — NPC Sprite. Regras
+   totalmente novas (NpcSprite.tsx); nenhuma regra de Player/Enemy/Loot
+   é tocada. `transition: left` própria (mais lenta que a do Player,
+   condizente com "velocidade menor") — nunca reaproveita
+   `.entity-player-walking`/`.entity-marker` pra não herdar nada do
+   Player. Sem animação além do deslize de posição. */
+.npc-sprite {
+  transform: translate(-50%, -50%);
+  transition: left 2.5s linear;
+}
+.npc-sprite-villager {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a8d8f0;
+}
+.npc-sprite-merchant {
+  width: 11px;
+  height: 7px;
+  border-radius: 2px;
+  background: #8a6a4a;
+}
+.npc-sprite-guard {
+  width: 9px;
+  height: 10px;
+  background: #8a8f9a;
+  clip-path: polygon(50% 0%, 100% 20%, 100% 60%, 50% 100%, 0% 60%, 0% 20%);
+}
+.npc-sprite-traveller {
+  width: 8px;
+  height: 9px;
+  border-radius: 30% 30% 50% 50%;
+  background: #4f8a5f;
+}
+
+/* Sprint World Simulation — Layered Environment (Profundidade). Duas
+   camadas novas, puramente decorativas (nenhuma entidade), separadas
+   das `.simulation-decoration` já existentes (Phase IV, intocadas).
+   Ordem no DOM (WorldSimulationPreview.tsx) já resolve a profundidade
+   — fundo nasce antes de tudo, frente nasce depois do Player — nenhum
+   z-index novo aqui. Fundo: mais apagado/opaco, sugere distância.
+   Frente: cores mais vivas/maiores, sugere proximidade. Só CSS —
+   border/background/border-radius/clip-path/transform, sem imagem. */
+.simulation-background {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.55;
+}
+.bg-mountain {
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 22px solid #3a4048;
+}
+.bg-tree {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 16px solid #24401f;
+}
+.bg-bush {
+  width: 16px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2a3a22;
+}
+.bg-stone {
+  width: 10px;
+  height: 8px;
+  border-radius: 40% 60% 50% 50%;
+  background: #3a3f47;
+}
+.simulation-foreground {
+  position: absolute;
+  pointer-events: none;
+}
+.fg-leaves {
+  width: 10px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4f8a3f;
+  box-shadow:
+    6px -3px 0 0 #4f8a3f,
+    -5px 2px 0 0 #3f7a2f;
+}
+.fg-branch {
+  width: 18px;
+  height: 4px;
+  border-radius: 2px;
+  background: #5c4530;
+  transform: rotate(-15deg);
+}
+.fg-stone {
+  width: 13px;
+  height: 10px;
+  border-radius: 45% 55% 50% 50%;
+  background: #565c66;
+  border: 1px solid #3a3f47;
+}
+
+/* Sprint World Simulation — Ambient Life Phase I. Só CSS (formas +
+   @keyframes) — nenhum Entity/Sprite/State/Timer novo, nenhuma
+   imagem/SVG/canvas. Discreto de propósito: nunca mais de 3
+   pássaros/brilhos, 2 folhas/poeiras/insetos (limites do brief). */
+.simulation-bird {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #2a2f3d;
+  opacity: 0.6;
+  pointer-events: none;
+  animation: bird-drift 6s ease-in-out infinite;
+}
+@keyframes bird-drift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(6px);
+  }
+}
+.simulation-leaf {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50% 0 50% 50%;
+  background: #7ea34f;
+  pointer-events: none;
+  animation: leaf-fall 4s linear infinite;
+}
+@keyframes leaf-fall {
+  0% {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+}
+.simulation-dust {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #c9b98a;
+  pointer-events: none;
+  animation: dust-float 5s ease-in-out infinite;
+}
+@keyframes dust-float {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(3px, -3px);
+    opacity: 0.3;
+  }
+}
+.simulation-sparkle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #eaf6ff;
+  pointer-events: none;
+  animation: sparkle-twinkle 2s ease-in-out infinite;
+}
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.simulation-insect {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #d4d84a;
+  pointer-events: none;
+  animation: insect-jitter 1.5s ease-in-out infinite;
+}
+@keyframes insect-jitter {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(2px, -2px);
+  }
+  50% {
+    transform: translate(-2px, 1px);
+  }
+  75% {
+    transform: translate(1px, 2px);
+  }
+}
+
+/* Sprint World Simulation — Parallax Phase I. As 5 classes pedidas pelo
+   brief; nenhuma regra existente foi alterada, o `translateX` de cada
+   camada é sempre inline (calculado a partir de `state.targetX` em
+   WorldSimulationPreview.tsx). `transition: transform` própria por
+   camada — mais lenta pro fundo (reage devagar, "está longe"), mais
+   rápida pra frente (reage rápido, "está perto"), reforçando a
+   profundidade sem nenhum estado/timer novo. */
+.parallax-background {
+  transition: transform 1.6s linear;
+}
+.parallax-decoration {
+  transition: transform 1.4s linear;
+}
+.parallax-npc {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: transform 1.2s linear;
+}
+/* Player continua seguindo exatamente sua posição real — 100% na
+   tabela do brief já é sua própria posição, nenhum offset adicional.
+   Regra vazia só pra existir (pedida pelo brief); nunca aplicada, já
+   que Player está na lista de "não alterar" desta Sprint. */
+.parallax-player {
+}
+.parallax-foreground {
+  transition: transform 1s linear;
+}
+
+/* Sprint World Simulation — Landmarks Phase I. Marcos fixos ao longo da
+   estrada — não são Entity, sem colisão, sem animação própria; o
+   `translateX` de cada um é sempre inline (mesmo `decorationParallax`
+   já usado pelas decorações, WorldSimulationPreview.tsx). Só formas CSS
+   (border/background/border-radius/clip-path/box-shadow) — sem imagem/
+   SVG/canvas. */
+.landmark {
+  position: absolute;
+  pointer-events: none;
+}
+.landmark-sign {
+  width: 10px;
+  height: 7px;
+  background: #8a6a4a;
+  border: 1px solid #5c4530;
+  border-radius: 1px;
+  box-shadow: 0 6px 0 -2px #5c4530;
+}
+.landmark-ruins {
+  width: 8px;
+  height: 16px;
+  background: #6b6f78;
+  clip-path: polygon(0% 100%, 0% 20%, 40% 0%, 100% 15%, 100% 100%);
+}
+.landmark-bridge {
+  width: 22px;
+  height: 4px;
+  background: #6b4a2f;
+  border-radius: 2px;
+  box-shadow:
+    -9px -4px 0 -1px #6b4a2f,
+    9px -4px 0 -1px #6b4a2f;
+}
+.landmark-portal {
+  width: 14px;
+  height: 18px;
+  border: 3px solid #7a5fa0;
+  border-bottom: none;
+  border-radius: 50% 50% 0 0;
+  background: rgba(122, 95, 160, 0.15);
+}
+.landmark-watchtower {
+  width: 10px;
+  height: 26px;
+  background: #565c66;
+  clip-path: polygon(20% 100%, 20% 20%, 50% 0%, 80% 20%, 80% 100%);
+}
+.landmark-campfire {
+  width: 6px;
+  height: 8px;
+  background: #f2874b;
+  clip-path: polygon(50% 0%, 80% 60%, 60% 60%, 90% 100%, 10% 100%, 40% 60%, 20% 60%);
+  box-shadow: 0 4px 0 -1px #3a3f47;
 }

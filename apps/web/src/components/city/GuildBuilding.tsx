@@ -15,6 +15,19 @@ import { getCityAmbientLine } from "../../lib/cityAmbientState";
 import { getMicroEvent } from "../../lib/microEvents";
 import { buildWorldCohesionContext, getWorldCohesionLine } from "../../lib/worldCohesion";
 import { EMPTY_ECHO_CONTEXT, type ExpeditionEchoContext } from "../../lib/expeditionEchoes";
+import { buildKingdomEvolutionContext, getKingdomEvolutionLine } from "../../lib/kingdomEvolution";
+import { buildBuildingProgressionContext, getBuildingStage, getBuildingStageClass, type BuildingStage } from "../../lib/buildingProgression";
+import { buildReactiveWorldContext, getReactiveClass, getReactiveState } from "../../lib/reactiveWorld";
+import { buildWorldVisualContext, getWorldVisualClass } from "../../lib/worldVisualState";
+
+// Sprint Building Visual State Phase I — decoração puramente visual por
+// estágio (sem texto/narrativa); estágio nunca decidido aqui.
+const GUILD_DECOR: Record<BuildingStage, string> = {
+  "stage-1": "🗺️",
+  "stage-2": "🗺️ 🖼️",
+  "stage-3": "🗺️ 🖼️ 📜",
+  "stage-4": "🏆 📜📜",
+};
 
 interface GuildBuildingProps {
   kingdom: ChannelKingdomState | null;
@@ -57,24 +70,34 @@ export function GuildBuilding({
   // natural entre dois sistemas já existentes (Guilda + Taverna/Kingdom
   // Reputation), nunca informação nova.
   const worldCohesionLine = getWorldCohesionLine("guilda", buildWorldCohesionContext(worldPresenceCtx, echoContext));
+  // Sprint Kingdom Evolution Phase I — mesmo `facts` já calculado
+  // abaixo pra STAGE_GUILD_AMBIENT; reage a hasKingdomRole (PlayerFacts),
+  // nenhum dado novo, nenhum segundo buildPlayerFacts.
+  const facts = character && identity ? buildPlayerFacts(character, identity, kingdomRoles ?? []) : null;
+  const kingdomEvolutionLine = facts
+    ? getKingdomEvolutionLine("guilda", buildKingdomEvolutionContext(facts, undefined, worldPresenceCtx))
+    : null;
+  // Sprint Building Progression Phase I — evolução visual estrutural
+  // (4 estágios fixos, reage a bossesDefeated), preparada pra sprites
+  // futuras; nenhum texto/hint, só uma classe CSS.
+  const buildingStageClass = facts ? getBuildingStageClass("guilda", buildBuildingProgressionContext(facts)) : null;
+  const buildingStage = facts ? getBuildingStage("guilda", buildBuildingProgressionContext(facts)) : null;
+  // Sprint Kingdom Reactive World Phase I — estado visual leve (reage a
+  // bossesDefeated), preparado pra sprites/efeitos futuros; nenhum
+  // texto novo.
+  const reactiveClass = facts ? getReactiveClass("guilda", buildReactiveWorldContext(facts)) : null;
+  // Sprint World Visual States Phase I — traduz o mesmo ReactiveState
+  // acima pro vocabulário visual comum (4 estados); nenhum dado novo.
+  const worldVisualClass = facts
+    ? getWorldVisualClass("building", buildWorldVisualContext({ buildingReactiveState: getReactiveState("guilda", buildReactiveWorldContext(facts)) }))
+    : null;
 
   return (
-    <section className="city-building-screen">
+    <section className={`city-building-screen city-building-guilda${buildingStageClass ? ` ${buildingStageClass}` : ""}${reactiveClass ? ` ${reactiveClass}` : ""}${worldVisualClass ? ` ${worldVisualClass}` : ""}`}>
       <h2>🏛️ Guilda</h2>
+      {buildingStage ? <p className="building-decor">{GUILD_DECOR[buildingStage]}</p> : null}
       <NpcIntro npc={NPCS.guildmaster} />
       <p className="hint">O Hall da Fama do Reino — quem carrega os cargos mais importantes hoje.</p>
-      <WorldPresenceLine building="guilda" ctx={worldPresenceCtx} />
-      {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
-      {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
-      <p className="hint">{landmarkIdentityLine}</p>
-      {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
-      {microEventLine ? <p className="hint">{microEventLine}</p> : null}
-      {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
-      {character && identity ? (
-        <p className="hint">
-          {STAGE_GUILD_AMBIENT[getCharacterStage(buildPlayerFacts(character, identity, kingdomRoles ?? []))]}
-        </p>
-      ) : null}
 
       {kingdom ? (
         <HallOfFame slots={kingdom.hall_of_fame} />
@@ -92,6 +115,20 @@ export function GuildBuilding({
       ) : (
         <p className="hint">Nenhum título de fundador conquistado ainda.</p>
       )}
+
+      {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) — 6 linhas
+          ambientes; movidas pra depois do Hall da Fama/Fundadores (o
+          conteúdo real deste prédio). Nenhuma removida, nenhum dado/
+          lógica alterado — só reordenado. */}
+      <WorldPresenceLine building="guilda" ctx={worldPresenceCtx} />
+      {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
+      {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
+      <p className="hint">{landmarkIdentityLine}</p>
+      {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
+      {microEventLine ? <p className="hint">{microEventLine}</p> : null}
+      {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
+      {kingdomEvolutionLine ? <p className="hint">{kingdomEvolutionLine}</p> : null}
+      {facts ? <p className="hint">{STAGE_GUILD_AMBIENT[getCharacterStage(facts)]}</p> : null}
     </section>
   );
 }

@@ -8,6 +8,7 @@ import { WorldPreview } from "../components/landing/WorldPreview";
 import { KingdomPreview } from "../components/landing/KingdomPreview";
 import { CityPreview } from "../components/landing/CityPreview";
 import { CharacterPreview } from "../components/landing/CharacterPreview";
+import { WorldSimulationPreview } from "../components/landing/WorldSimulationPreview";
 import { FinalCTA } from "../components/landing/FinalCTA";
 import { GLOBAL_HIGHLIGHT_PRIORITY, getLiveHighlights } from "../lib/liveReadiness";
 
@@ -92,6 +93,11 @@ export function LoginPage() {
       <section className="landing-section">
         <h2 className="landing-section-title">Seu personagem, sua jornada</h2>
         <CharacterPreview />
+      </section>
+
+      <section className="landing-section">
+        <h2 className="landing-section-title">Prévia do mundo</h2>
+        <WorldSimulationPreview />
       </section>
 
       <FinalCTA onLogin={() => void handleLogin()} loading={loading} />

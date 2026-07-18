@@ -17,6 +17,19 @@ import { buildCollectionInsightContext } from "../../lib/collectionInsights";
 import type { PlayerFacts } from "../../lib/playerFacts";
 import { getMicroEvent } from "../../lib/microEvents";
 import { buildWorldCohesionContext, getWorldCohesionLine } from "../../lib/worldCohesion";
+import { buildKingdomEvolutionContext, getKingdomEvolutionLine } from "../../lib/kingdomEvolution";
+import { buildBuildingProgressionContext, getBuildingStage, getBuildingStageClass, type BuildingStage } from "../../lib/buildingProgression";
+import { buildReactiveWorldContext, getReactiveClass, getReactiveState } from "../../lib/reactiveWorld";
+import { buildWorldVisualContext, getWorldVisualClass } from "../../lib/worldVisualState";
+
+// Sprint Building Visual State Phase I — decoração puramente visual por
+// estágio (sem texto/narrativa); estágio nunca decidido aqui.
+const TRAVELLER_HOUSE_DECOR: Record<BuildingStage, string> = {
+  "stage-1": "🎒",
+  "stage-2": "🎒🎒",
+  "stage-3": "🗺️",
+  "stage-4": "🎒🎒 🗺️",
+};
 
 interface TravellerHouseBuildingProps {
   // Sprint Expedition Echoes Phase I — repassado só até NpcIntro
@@ -75,6 +88,35 @@ export function TravellerHouseBuilding({ echoContext = EMPTY_ECHO_CONTEXT, playe
         echoContext.approach,
       )
     : null;
+
+  // Sprint Kingdom Evolution Phase I — evolução estrutural do Reino,
+  // reage a creaturesViewed (Collection Insights), nenhum dado novo.
+  const kingdomEvolutionLine = playerFacts
+    ? getKingdomEvolutionLine("casa-dos-viajantes", buildKingdomEvolutionContext(playerFacts, insightCtx))
+    : null;
+  // Sprint Building Progression Phase I — evolução visual estrutural
+  // (4 estágios fixos, reage a regionsDiscovered), preparada pra
+  // sprites futuras; nenhum texto/hint, só uma classe CSS.
+  const buildingStageClass = playerFacts
+    ? getBuildingStageClass("casa-dos-viajantes", buildBuildingProgressionContext(playerFacts))
+    : null;
+  const buildingStage = playerFacts
+    ? getBuildingStage("casa-dos-viajantes", buildBuildingProgressionContext(playerFacts))
+    : null;
+  // Sprint Kingdom Reactive World Phase I — estado visual leve (reage a
+  // regionsDiscovered), preparado pra sprites/efeitos futuros; nenhum
+  // texto novo.
+  const reactiveClass = playerFacts
+    ? getReactiveClass("casa-dos-viajantes", buildReactiveWorldContext(playerFacts))
+    : null;
+  // Sprint World Visual States Phase I — traduz o mesmo ReactiveState
+  // acima pro vocabulário visual comum (4 estados); nenhum dado novo.
+  const worldVisualClass = playerFacts
+    ? getWorldVisualClass(
+        "building",
+        buildWorldVisualContext({ buildingReactiveState: getReactiveState("casa-dos-viajantes", buildReactiveWorldContext(playerFacts)) }),
+      )
+    : null;
   useEffect(() => {
     if (reaction && !hasRemembered("traveller_listener_recorded")) {
       remember("traveller_listener_recorded");
@@ -83,18 +125,11 @@ export function TravellerHouseBuilding({ echoContext = EMPTY_ECHO_CONTEXT, playe
   }, [reaction]);
 
   return (
-    <section className="city-building-screen">
+    <section className={`city-building-screen city-building-viajantes${buildingStageClass ? ` ${buildingStageClass}` : ""}${reactiveClass ? ` ${reactiveClass}` : ""}${worldVisualClass ? ` ${worldVisualClass}` : ""}`}>
       <h2>📜 Casa dos Viajantes</h2>
+      {buildingStage ? <p className="building-decor">{TRAVELLER_HOUSE_DECOR[buildingStage]}</p> : null}
       <NpcIntro npc={NPCS.viajante} echoContext={echoContext} />
       <p className="hint">Histórias contadas por gente comum. Ninguém sabe se são verdade.</p>
-      {reaction ? <p className="hint">{reaction}</p> : null}
-      {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
-      {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
-      <p className="hint">{landmarkIdentityLine}</p>
-      {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
-      {microEventLine ? <p className="hint">{microEventLine}</p> : null}
-      {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
-      {kingdomMemoryLine ? <p className="hint">{kingdomMemoryLine}</p> : null}
 
       <button type="button" className="traveller-random-btn" onClick={handleRandomStory}>
         🎲 História Aleatória
@@ -104,6 +139,19 @@ export function TravellerHouseBuilding({ echoContext = EMPTY_ECHO_CONTEXT, playe
         sidebar={<StoryShelf stories={TRAVELLER_STORIES} selectedId={selectedId} onSelect={setSelectedId} />}
         reader={<StoryReader key={selectedStory?.id ?? "empty"} story={selectedStory} />}
       />
+
+      {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) — 8 linhas
+          ambientes; movidas pra depois do botão/estante interativos.
+          Nenhuma removida, nenhum dado/lógica alterado — só reordenado. */}
+      {reaction ? <p className="hint">{reaction}</p> : null}
+      {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
+      {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
+      <p className="hint">{landmarkIdentityLine}</p>
+      {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
+      {microEventLine ? <p className="hint">{microEventLine}</p> : null}
+      {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
+      {kingdomMemoryLine ? <p className="hint">{kingdomMemoryLine}</p> : null}
+      {kingdomEvolutionLine ? <p className="hint">{kingdomEvolutionLine}</p> : null}
     </section>
   );
 }

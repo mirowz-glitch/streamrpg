@@ -25,6 +25,19 @@ import { getNextSteps } from "../../lib/knowledgeNetwork";
 import { MUSEUM_HIGHLIGHT_PRIORITY, getSingleHighlight } from "../../lib/liveReadiness";
 import { getMicroEvent } from "../../lib/microEvents";
 import { buildWorldCohesionContext, getWorldCohesionLine } from "../../lib/worldCohesion";
+import { buildKingdomEvolutionContext, getKingdomEvolutionLine } from "../../lib/kingdomEvolution";
+import { buildBuildingProgressionContext, getBuildingStage, getBuildingStageClass, type BuildingStage } from "../../lib/buildingProgression";
+import { buildReactiveWorldContext, getReactiveClass, getReactiveState } from "../../lib/reactiveWorld";
+import { buildWorldVisualContext, getWorldVisualClass } from "../../lib/worldVisualState";
+
+// Sprint Building Visual State Phase I — decoração puramente visual por
+// estágio (sem texto/narrativa); estágio nunca decidido aqui.
+const MUSEUM_DECOR: Record<BuildingStage, string> = {
+  "stage-1": "🏺",
+  "stage-2": "🏺🏺",
+  "stage-3": "🏛️",
+  "stage-4": "🏛️ 🖼️",
+};
 import type { WorldPresenceContext } from "../../lib/worldPresence";
 import { WorldPresenceLine } from "../ui/WorldPresenceLine";
 
@@ -121,6 +134,36 @@ export function MuseumBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CONT
       )
     : null;
 
+  // Sprint Kingdom Evolution Phase I — evolução estrutural do Reino,
+  // reage a museumEntriesViewed (Collection Insights), nenhum dado novo.
+  const kingdomEvolutionLine = playerFacts
+    ? getKingdomEvolutionLine("museu", buildKingdomEvolutionContext(playerFacts, insightCtx, worldPresenceCtx))
+    : null;
+
+  // Sprint Building Progression Phase I — evolução visual estrutural
+  // (4 estágios fixos, reage a museumEntriesViewed), preparada pra
+  // sprites futuras; nenhum texto/hint, só uma classe CSS.
+  const buildingStageClass = playerFacts
+    ? getBuildingStageClass("museu", buildBuildingProgressionContext(playerFacts, insightCtx))
+    : null;
+  const buildingStage = playerFacts
+    ? getBuildingStage("museu", buildBuildingProgressionContext(playerFacts, insightCtx))
+    : null;
+  // Sprint Kingdom Reactive World Phase I — estado visual leve (reage a
+  // museumEntriesViewed), preparado pra sprites/efeitos futuros; nenhum
+  // texto novo.
+  const reactiveClass = playerFacts
+    ? getReactiveClass("museu", buildReactiveWorldContext(playerFacts, insightCtx))
+    : null;
+  // Sprint World Visual States Phase I — traduz o mesmo ReactiveState
+  // acima pro vocabulário visual comum (4 estados); nenhum dado novo.
+  const worldVisualClass = playerFacts
+    ? getWorldVisualClass(
+        "building",
+        buildWorldVisualContext({ buildingReactiveState: getReactiveState("museu", buildReactiveWorldContext(playerFacts, insightCtx)) }),
+      )
+    : null;
+
   // Sprint Live Readiness Phase I (First 5 Minutes) — antes um OR entre
   // 2 sinais tratados como um só, aplicado à seção inteira (nunca
   // decidia QUAL dos dois era o motivo real). Dívida eliminada: mesmo
@@ -143,26 +186,14 @@ export function MuseumBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CONT
   const readerFeedbackState = museumHighlightKey === "nextSteps" ? "softGlow" : null;
 
   return (
-    <section className="city-building-screen">
+    <section className={`city-building-screen city-building-museu${buildingStageClass ? ` ${buildingStageClass}` : ""}${reactiveClass ? ` ${reactiveClass}` : ""}${worldVisualClass ? ` ${worldVisualClass}` : ""}`}>
       <h2>🖼️ Museu do Reino</h2>
+      {buildingStage ? <p className="building-decor">{MUSEUM_DECOR[buildingStage]}</p> : null}
       <NpcIntro npc={NPCS.curador} />
       <p className="hint">Onde a história da comunidade fica registrada — parte dela, ao menos.</p>
       <h3 className="identity-subtitle">
         Registros catalogados ({unlockedEntriesCount}/{MUSEUM_ENTRIES.length})
       </h3>
-      <p className="hint">{reaction}</p>
-      {collectionInsight ? (
-        <p className={`hint${museumHighlightKey === "collectionInsight" ? ` ${museumFeedbackCls}` : ""}`}>{collectionInsight}</p>
-      ) : null}
-      {placeMemory ? <p className="hint">{placeMemory.line}</p> : null}
-      <WorldPresenceLine building="museu" ctx={worldPresenceCtx} />
-      {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
-      {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
-      <p className="hint">{landmarkIdentityLine}</p>
-      {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
-      {microEventLine ? <p className="hint">{microEventLine}</p> : null}
-      {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
-      {kingdomMemoryLine ? <p className="hint">{kingdomMemoryLine}</p> : null}
       {entryOfTheDay ? (
         <p className="hint city-of-the-day">
           <span>🖼️ Peça em destaque:</span> {entryOfTheDay.title}
@@ -182,6 +213,24 @@ export function MuseumBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CONT
           />
         }
       />
+
+      {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) — 9 linhas
+          ambientes; movidas pra depois da estante/leitor interativo.
+          Nenhuma removida, nenhum dado/lógica alterado — só reordenado. */}
+      <p className="hint">{reaction}</p>
+      {collectionInsight ? (
+        <p className={`hint${museumHighlightKey === "collectionInsight" ? ` ${museumFeedbackCls}` : ""}`}>{collectionInsight}</p>
+      ) : null}
+      {placeMemory ? <p className="hint">{placeMemory.line}</p> : null}
+      <WorldPresenceLine building="museu" ctx={worldPresenceCtx} />
+      {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
+      {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
+      <p className="hint">{landmarkIdentityLine}</p>
+      {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
+      {microEventLine ? <p className="hint">{microEventLine}</p> : null}
+      {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
+      {kingdomMemoryLine ? <p className="hint">{kingdomMemoryLine}</p> : null}
+      {kingdomEvolutionLine ? <p className="hint">{kingdomEvolutionLine}</p> : null}
     </section>
   );
 }

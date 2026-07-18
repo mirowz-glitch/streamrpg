@@ -26,7 +26,21 @@ import { getBookDiscoveryCandidates } from "../../lib/discoveryChains";
 import { LIBRARY_HIGHLIGHT_PRIORITY, getSingleHighlight } from "../../lib/liveReadiness";
 import { buildMicroEventContext, getMicroEvent } from "../../lib/microEvents";
 import { buildWorldCohesionContext, getWorldCohesionLine } from "../../lib/worldCohesion";
+import { buildKingdomEvolutionContext, getKingdomEvolutionLine } from "../../lib/kingdomEvolution";
+import { buildBuildingProgressionContext, getBuildingStage, getBuildingStageClass, type BuildingStage } from "../../lib/buildingProgression";
+import { buildReactiveWorldContext, getReactiveClass, getReactiveState } from "../../lib/reactiveWorld";
+import { buildWorldVisualContext, getWorldVisualClass } from "../../lib/worldVisualState";
 import { feedbackClassName } from "../../lib/uiFeedback";
+
+// Sprint Building Visual State Phase I — decoração puramente visual por
+// estágio (sem texto/narrativa), preparada pra virar sprite depois;
+// estágio em si nunca decidido aqui, só consumido de buildingProgression.ts.
+const LIBRARY_DECOR: Record<BuildingStage, string> = {
+  "stage-1": "📚",
+  "stage-2": "📚📚",
+  "stage-3": "📚📚 🗂️",
+  "stage-4": "📚📚📚 🗂️📖",
+};
 
 interface LibraryBuildingProps {
   worldPresenceCtx?: WorldPresenceContext;
@@ -130,6 +144,36 @@ export function LibraryBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CON
       )
     : null;
 
+  // Sprint Kingdom Evolution Phase I — evolução estrutural do Reino
+  // (nunca humor/memória/legado/reputação, já cobertos por outras
+  // camadas), reage a booksRead (Collection Insights), nenhum dado novo.
+  const kingdomEvolutionLine = playerFacts
+    ? getKingdomEvolutionLine("biblioteca", buildKingdomEvolutionContext(playerFacts, insightCtx, worldPresenceCtx))
+    : null;
+
+  // Sprint Building Progression Phase I — evolução visual estrutural
+  // (4 estágios fixos, reage a booksRead), preparada pra sprites
+  // futuras; nenhum texto/hint, só uma classe CSS.
+  const buildingStageClass = playerFacts
+    ? getBuildingStageClass("biblioteca", buildBuildingProgressionContext(playerFacts, insightCtx))
+    : null;
+  const buildingStage = playerFacts
+    ? getBuildingStage("biblioteca", buildBuildingProgressionContext(playerFacts, insightCtx))
+    : null;
+  // Sprint Kingdom Reactive World Phase I — estado visual leve (reage a
+  // booksRead), preparado pra sprites/efeitos futuros; nenhum texto novo.
+  const reactiveClass = playerFacts
+    ? getReactiveClass("biblioteca", buildReactiveWorldContext(playerFacts, insightCtx))
+    : null;
+  // Sprint World Visual States Phase I — traduz o mesmo ReactiveState
+  // acima pro vocabulário visual comum (4 estados); nenhum dado novo.
+  const worldVisualClass = playerFacts
+    ? getWorldVisualClass(
+        "building",
+        buildWorldVisualContext({ buildingReactiveState: getReactiveState("biblioteca", buildReactiveWorldContext(playerFacts, insightCtx)) }),
+      )
+    : null;
+
   // Sprint Live Readiness Phase I (First 5 Minutes) — a tela da
   // Biblioteca inteira (prédio + livro aberto) tem 4 sinais reais
   // possíveis; nunca mais de 1 vence (lib/liveReadiness.ts). Knowledge
@@ -147,29 +191,15 @@ export function LibraryBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CON
   const readerFeedbackState = libraryHighlightKey === "discoveryChain" ? "softGlow" : null;
 
   return (
-    <section className="city-building-screen">
+    <section className={`city-building-screen city-building-biblioteca${buildingStageClass ? ` ${buildingStageClass}` : ""}${reactiveClass ? ` ${reactiveClass}` : ""}${worldVisualClass ? ` ${worldVisualClass}` : ""}`}>
       <h2>📚 Biblioteca</h2>
+      {buildingStage ? <p className="building-decor">{LIBRARY_DECOR[buildingStage]}</p> : null}
       <NpcIntro npc={NPCS.bibliotecaria} />
       <GuideBubble flag="library_seen" message="Cada livro daqui guarda um pedaço da história do Reino — nem tudo está confirmado." />
       <p className="hint">Um códice para cada história do Reino — algumas ainda por vir.</p>
       <h3 className="identity-subtitle">
         Livros catalogados ({unlockedBooksCount}/{BOOKS.length})
       </h3>
-      {reaction ? <p className="hint">{reaction}</p> : null}
-      {placeMemory ? <p className="hint">{placeMemory.line}</p> : null}
-      <WorldPresenceLine building="biblioteca" ctx={worldPresenceCtx} />
-      {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
-      {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
-      <p className="hint">{landmarkIdentityLine}</p>
-      {libraryEchoLine ? (
-        <p className={`hint${libraryHighlightKey === "expeditionEcho" ? ` ${libraryFeedbackCls}` : ""}`}>{libraryEchoLine}</p>
-      ) : null}
-      {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
-      {microEventLine ? <p className="hint">{microEventLine}</p> : null}
-      {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
-      {kingdomMemoryLine ? (
-        <p className={`hint${libraryHighlightKey === "kingdomMemory" ? ` ${libraryFeedbackCls}` : ""}`}>{kingdomMemoryLine}</p>
-      ) : null}
       {bookOfTheDay ? (
         <p className={`hint city-of-the-day${libraryHighlightKey === "bookOfTheDay" ? ` ${libraryFeedbackCls}` : ""}`}>
           <span>📖 Recomendado do dia:</span> {bookOfTheDay.title} — {bookOfTheDay.author}
@@ -194,6 +224,28 @@ export function LibraryBuilding({ worldPresenceCtx, echoContext = EMPTY_ECHO_CON
           />
         }
       />
+
+      {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) — 8 linhas
+          ambientes (achado real: "muitos hints juntos" enterrando a
+          estante/leitor antes mesmo de aparecerem); movidas pra depois
+          do conteúdo interativo. Nenhuma removida, nenhum dado/lógica
+          alterado — só reordenado. */}
+      {reaction ? <p className="hint">{reaction}</p> : null}
+      {placeMemory ? <p className="hint">{placeMemory.line}</p> : null}
+      <WorldPresenceLine building="biblioteca" ctx={worldPresenceCtx} />
+      {environmentalLine ? <p className="hint">{environmentalLine}</p> : null}
+      {worldSimulationLine ? <p className="hint">{worldSimulationLine}</p> : null}
+      <p className="hint">{landmarkIdentityLine}</p>
+      {libraryEchoLine ? (
+        <p className={`hint${libraryHighlightKey === "expeditionEcho" ? ` ${libraryFeedbackCls}` : ""}`}>{libraryEchoLine}</p>
+      ) : null}
+      {cityAmbientLine ? <p className="hint">{cityAmbientLine}</p> : null}
+      {microEventLine ? <p className="hint">{microEventLine}</p> : null}
+      {worldCohesionLine ? <p className="hint">{worldCohesionLine}</p> : null}
+      {kingdomMemoryLine ? (
+        <p className={`hint${libraryHighlightKey === "kingdomMemory" ? ` ${libraryFeedbackCls}` : ""}`}>{kingdomMemoryLine}</p>
+      ) : null}
+      {kingdomEvolutionLine ? <p className="hint">{kingdomEvolutionLine}</p> : null}
     </section>
   );
 }

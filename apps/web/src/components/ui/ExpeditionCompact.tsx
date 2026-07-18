@@ -7,6 +7,8 @@ import { getRegionIdentityLine } from "../../lib/regionIdentity";
 import { getExpeditionDecisionHint } from "../../lib/expeditionDecisionHints";
 import { getExpeditionConsequenceLine } from "../../lib/expeditionConsequences";
 import { buildExpeditionMomentContext, getExpeditionMoment } from "../../lib/expeditionMoments";
+import { buildExpeditionReactiveContext, getExpeditionReactiveClass, getExpeditionReactiveState } from "../../lib/expeditionReactiveState";
+import { buildWorldVisualContext, getWorldVisualClass } from "../../lib/worldVisualState";
 import { EXPEDITION_HIGHLIGHT_PRIORITY, getSingleHighlight } from "../../lib/liveReadiness";
 import { feedbackClassName } from "../../lib/uiFeedback";
 import { ProgressBar } from "./ProgressBar";
@@ -76,6 +78,17 @@ export function ExpeditionCompact({ expedition, specializationLine }: Expedition
   // Preview (CharacterPreview), que reaproveitam este componente.
   const momentLine = getExpeditionMoment(buildExpeditionMomentContext(expedition));
   const isCombating = expedition.status === "combating";
+  // Sprint Expedition Reactive World Phase II — mesma função central do
+  // ExpeditionPanel; automaticamente cobre Overlay e Landing Preview
+  // (CharacterPreview), que reaproveitam este componente.
+  const reactiveExpeditionClass = getExpeditionReactiveClass(buildExpeditionReactiveContext(expedition));
+  // Sprint World Visual States Phase I — traduz o mesmo
+  // ExpeditionReactiveState acima pro vocabulário visual comum (4
+  // estados); nenhum dado novo.
+  const worldVisualClass = getWorldVisualClass(
+    "expedition",
+    buildWorldVisualContext({ expeditionReactiveState: getExpeditionReactiveState(buildExpeditionReactiveContext(expedition)) }),
+  );
 
   // Sprint Live Readiness Phase I (First 5 Minutes) — mesma arbitragem
   // do ExpeditionPanel (lib/liveReadiness.ts), adaptada: ExpeditionCompact
@@ -96,7 +109,7 @@ export function ExpeditionCompact({ expedition, specializationLine }: Expedition
 
   return (
     <div
-      className={`expedition-compact${isCombating ? " expedition-compact-combat" : ""}`}
+      className={`expedition-compact${isCombating ? " expedition-compact-combat" : ""} ${reactiveExpeditionClass} ${worldVisualClass}`}
       key={expedition.status}
     >
       <span className="expedition-compact-region">📍 {expedition.region_name}</span>
