@@ -12,12 +12,14 @@
     "build:web": "esbuild apps/web/src/main.tsx --bundle --splitting --outdir=apps/web/dist --format=esm --jsx=automatic --loader:.tsx=tsx --loader:.ts=ts",
     "typecheck": "tsc -b apps/api/tsconfig.json apps/web/tsconfig.json packages/shared/tsconfig.json"
   },
+  "dependencies": {
+    "tsx": "^4.19.0"
+  },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "esbuild": "^0.25.0",
-    "tsx": "^4.19.0",
     "typescript": "^5.7.0"
   }
 }
