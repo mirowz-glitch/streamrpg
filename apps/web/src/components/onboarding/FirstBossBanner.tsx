@@ -53,7 +53,10 @@ export function FirstBossBanner({ channel }: FirstBossBannerProps) {
   if (!dismissed) {
     return (
       <div className="first-boss-banner">
-        <span>⚔ O Reino precisa de você.</span>
+        {/* Sprint Character Page — UX Polish Phase I — mensagem genérica
+            trocada por uma narrativa (mesmo gatilho/lógica de sempre,
+            só o texto muda). */}
+        <span>⚔ O Reino observa seus próximos passos.</span>
         <button
           type="button"
           onClick={() => {

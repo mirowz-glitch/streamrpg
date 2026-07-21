@@ -32,25 +32,36 @@ export function PlayerGoals({ character, identity, kingdomRoles }: PlayerGoalsPr
   if (!character || !identity) return null;
 
   const ctx = buildPlayerGoalsContext(character, identity, worldState !== null, kingdomRoles ?? []);
-  const goals = getPlayerGoals(ctx);
+  // Sprint Character Page — Adventure Goals Phase I — nunca mais uma
+  // lista: exatamente UM objetivo por vez (limit=1). GOAL_RULES agora
+  // termina numa regra catch-all (playerGoals.ts), então `goal` nunca
+  // fica undefined com character/identity presentes.
+  const [goal] = getPlayerGoals(ctx, 1);
 
-  // Sprint Reactive UI (World Feedback Phase I) — quando existe alguma
-  // meta sugerida, o bloco ganha prioridade visual — nunca um dado
-  // novo, só uma tradução visual de um sinal que já existia como texto.
-  const feedbackCls = feedbackClassName(resolveFeedback(goals.length > 0, "attention"));
+  // Sprint Reactive UI (World Feedback Phase I) — mesmo destaque visual
+  // de sempre; agora sempre há um objetivo, então a condição é sempre
+  // verdadeira, mas a função continua sendo a mesma fonte de verdade.
+  const feedbackCls = feedbackClassName(resolveFeedback(true, "attention"));
 
-  if (goals.length === 0) return null;
+  if (!goal) return null;
 
   return (
     <div className={`player-goals${feedbackCls ? ` ${feedbackCls}` : ""}`}>
-      {goals.map((goal) => (
-        <p key={goal} className="guide-bubble">
-          <span className="guide-bubble-icon" aria-hidden="true">
-            🧭
-          </span>
-          {goal}
-        </p>
-      ))}
+      <div className="goal-card">
+        <span className="goal-card-title">🧭 Objetivo Atual</span>
+        <p className="goal-card-text">{goal}</p>
+        {/*
+          Progress tracking intentionally omitted.
+
+          This area is reserved for future quest progression once backend
+          support exists. Sprint Adventure Goals Phase II removed the old
+          "Recompensa desconhecida" line (felt like an unfinished
+          placeholder) and left this empty, low-key block in its place —
+          no fake percentage, no bar, nothing animated, just reserved
+          space for whenever real progress data exists.
+        */}
+        <div className="goal-progress-placeholder" />
+      </div>
     </div>
   );
 }

@@ -207,10 +207,11 @@ export function CharacterPage() {
                   <h1>{character.display_name}</h1>
                   {identity?.equipped_title ? <p className="character-title">👑 {identity.equipped_title.name}</p> : null}
                   <div className="character-badges">
-                    <span className="badge-class" title="Classes chegam em uma Sprint futura">
-                      Aventureiro
+                    {/* Sprint Character Page — UX Polish Phase I — dois
+                        badges (classe + nível) viram um só, compacto. */}
+                    <span className="badge-compact" title="Classes chegam em uma Sprint futura">
+                      Aventureiro • Lv.{character.level}
                     </span>
-                    <span className="badge-level">Nível {character.level}</span>
                   </div>
                 </div>
               </div>
@@ -253,17 +254,37 @@ export function CharacterPage() {
 
             {activeTab === "geral" ? (
               <>
+                {/* Sprint Character Page — Adventure Goals Phase I — o
+                    resumo passa a ser sempre frases narrativas completas
+                    (nunca fragmento tipo "2 regiões descobertas."); mesma
+                    frase de estágio de sempre (STAGE_CHARACTER_DESCRIPTION/
+                    getCharacterStage, intocada) + dados já existentes
+                    (total_minutes, regions_discovered, bosses_defeated).
+                    Quando bosses_defeated === 0, mostra uma frase de
+                    convite em vez de omitir a linha em silêncio. Nenhum
+                    dado novo/backend novo. */}
                 {identity ? (
-                  <p className="hint">
-                    {STAGE_CHARACTER_DESCRIPTION[getCharacterStage(buildPlayerFacts(character, identity, kingdomRoles))]}
-                  </p>
+                  <div className="character-summary">
+                    <p className="character-summary-line">
+                      {STAGE_CHARACTER_DESCRIPTION[getCharacterStage(buildPlayerFacts(character, identity, kingdomRoles))]}
+                    </p>
+                    <p className="character-summary-line">Você já explorou o Reino por {character.total_minutes} minutos.</p>
+                    <p className="character-summary-line">
+                      Conhece {identity.regions_discovered} {identity.regions_discovered === 1 ? "região" : "regiões"}.
+                    </p>
+                    <p className="character-summary-line">
+                      {identity.bosses_defeated > 0
+                        ? `${identity.bosses_defeated} ${identity.bosses_defeated === 1 ? "Boss derrotado" : "Bosses derrotados"} até agora.`
+                        : "O Reino ainda aguarda sua primeira grande vitória."}
+                    </p>
+                  </div>
                 ) : null}
 
                 <StatsRow
                   items={[
-                    { label: "Gold", value: character.gold.toFixed(1) },
+                    { label: "Ouro", value: character.gold.toFixed(1), highlight: true },
                     { label: "Minutos assistidos", value: character.total_minutes },
-                    { label: "Poder Total", value: totalPower(character.combat), highlight: true },
+                    { label: "Poder", value: totalPower(character.combat), highlight: true },
                   ]}
                 />
 
@@ -289,34 +310,25 @@ export function CharacterPage() {
                   </div>
                 </section>
 
-                <div className="ping-box">
-                  <label htmlFor="channel">Canal da live (login Twitch)</label>
-                  <input
-                    id="channel"
-                    value={channelInput || channel}
-                    onChange={(e) => setChannelInput(e.target.value)}
-                    onBlur={() => {
-                      if (channelInput.trim()) setChannel(channelInput.trim());
-                    }}
-                    placeholder="ex: nomedostreamer"
-                  />
-                  <button
-                    onClick={() => {
-                      if (channelInput.trim()) setChannel(channelInput.trim());
-                      void ping().then(() => refresh());
-                    }}
-                    disabled={!canPing}
-                  >
-                    {canPing ? "Ping (+10 XP)" : `Aguarde ${Math.ceil(cooldownMs / 1000)}s`}
-                  </button>
-                  {error ? <Feedback kind="error">{error}</Feedback> : null}
-                  {lastPing?.leveled_up ? <Feedback kind="level-up">Level up! Agora você é nível {lastPing.level}.</Feedback> : null}
-                  {lastPing?.drop?.dropped && lastPing.drop.item ? (
-                    <Feedback kind="drop-alert">
-                      Drop: {lastPing.drop.item.name} ({lastPing.drop.item.rarity})
-                    </Feedback>
-                  ) : null}
-                </div>
+                {/* Sprint Character Page — UX Polish Phase I — o bloco
+                    técnico de canal/cooldown/ping manual saiu da tela
+                    (o ping automático do hook usePing continua rodando
+                    sozinho, sem nenhuma mudança de lógica). No lugar,
+                    um card curto de status — sem contador visível. */}
+                {expedition && channel ? (
+                  <div className="expedition-status-card">
+                    <h3 className="expedition-status-title">⚡ Expedição Ativa</h3>
+                    <p className="expedition-status-line">Explorando a live de {channel}</p>
+                    <p className="expedition-status-live">● Ao vivo</p>
+                    <p className="expedition-status-caption">Atualizações automáticas</p>
+                  </div>
+                ) : null}
+                {lastPing?.leveled_up ? <Feedback kind="level-up">Level up! Agora você é nível {lastPing.level}.</Feedback> : null}
+                {lastPing?.drop?.dropped && lastPing.drop.item ? (
+                  <Feedback kind="drop-alert">
+                    Drop: {lastPing.drop.item.name} ({lastPing.drop.item.rarity})
+                  </Feedback>
+                ) : null}
               </>
             ) : null}
 

@@ -1,0 +1,655 @@
+// apps/web/src/lib/worldVisualState.ts
+function buildWorldVisualContext(input) {
+  return { ...input };
+}
+var HIGH_POPULATION_THRESHOLD = 5;
+var EXPEDITION_STATE_TO_VISUAL = {
+  danger: "important",
+  exploring: "active",
+  returning: "active",
+  watching: "idle",
+  normal: "idle"
+};
+var BUILDING_STATE_TO_VISUAL = {
+  growing: "celebration",
+  important: "important",
+  busy: "active",
+  active: "active",
+  normal: "idle"
+};
+function getWorldVisualState(surface, ctx) {
+  switch (surface) {
+    case "city":
+      if (ctx.worldEventCategory === "militar") return "important";
+      if ((ctx.playersOnline ?? 0) >= HIGH_POPULATION_THRESHOLD) return "active";
+      return "idle";
+    case "character":
+      if (ctx.hasFounderTitle) return "celebration";
+      if (ctx.hasActiveLegacy) return "important";
+      return "idle";
+    case "expedition":
+      return ctx.expeditionReactiveState ? EXPEDITION_STATE_TO_VISUAL[ctx.expeditionReactiveState] : "idle";
+    case "npc":
+      if (ctx.hasLivingConsequence) return "important";
+      if (ctx.hasHeroJourney) return "active";
+      return "idle";
+    case "building":
+      return ctx.buildingReactiveState ? BUILDING_STATE_TO_VISUAL[ctx.buildingReactiveState] : "idle";
+  }
+}
+function getWorldVisualClass(surface, ctx) {
+  return `visual-${getWorldVisualState(surface, ctx)}`;
+}
+
+// apps/web/src/lib/liveReadiness.ts
+function getSingleHighlight(priorityOrder, candidates) {
+  return priorityOrder.find((key) => candidates[key] === true) ?? null;
+}
+var MAX_SIMULTANEOUS_HIGHLIGHTS = 3;
+function getLiveHighlights(priorityOrder, candidates, max = MAX_SIMULTANEOUS_HIGHLIGHTS) {
+  return priorityOrder.filter((key) => candidates[key] === true).slice(0, max);
+}
+var GLOBAL_HIGHLIGHT_PRIORITY = [
+  "expedition",
+  "playerGoal",
+  "npc",
+  "book",
+  "region",
+  "bestiary",
+  "museum"
+];
+var CHARACTER_TRAIT_PRIORITY = ["legacy", "kingdomReputation", "personalChronicle"];
+var LIBRARY_HIGHLIGHT_PRIORITY = ["bookOfTheDay", "discoveryChain", "kingdomMemory", "expeditionEcho"];
+var BESTIARY_HIGHLIGHT_PRIORITY = ["creatureEcology", "nextSteps", "expeditionEcho", "collectionInsight"];
+var MUSEUM_HIGHLIGHT_PRIORITY = ["nextSteps", "collectionInsight"];
+var EXPEDITION_HIGHLIGHT_PRIORITY = [
+  "approach",
+  "evolution",
+  "journey",
+  "specialization",
+  "regionIdentity",
+  "consequence"
+];
+
+// apps/web/src/lib/uiFeedback.ts
+function resolveFeedback(isActive, state) {
+  return isActive ? state : null;
+}
+function feedbackClassName(state) {
+  return state ? `ui-feedback-${state}` : "";
+}
+
+// apps/web/src/lib/expedition.ts
+var STATUS_ICON = {
+  preparing: "\u{1F392}",
+  exploring: "\u{1F6B6}",
+  combating: "\u2694\uFE0F",
+  resting: "\u{1F3D5}\uFE0F",
+  returning: "\u21A9\uFE0F",
+  completed: "\u{1F3C1}"
+};
+var STATUS_LABEL = {
+  preparing: "Preparando",
+  exploring: "Explorando",
+  combating: "Combatendo",
+  resting: "Descansando",
+  returning: "Retornando",
+  completed: "Conclu\xEDda"
+};
+function formatRemaining(seconds) {
+  if (seconds <= 0) return "menos de 1 min";
+  const minutes = Math.ceil(seconds / 60);
+  if (minutes < 60) return `~${minutes} min`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest > 0 ? `~${hours}h${rest}min` : `~${hours}h`;
+}
+
+// apps/web/src/lib/expeditionNarratives.ts
+var PREPARING_NARRATIVES = [
+  "O grupo revisa o equipamento.",
+  "Algu\xE9m esqueceu \xE1gua.",
+  "O mapa parece incompleto.",
+  "O cavalo se recusou a sair.",
+  "Algu\xE9m amarra a bota pela terceira vez.",
+  "A corda parece curta demais.",
+  "Um dos sacos est\xE1 pesado demais.",
+  "Algu\xE9m verifica a b\xFAssola duas vezes.",
+  "A comida foi dividida entre as mochilas.",
+  "Um par de botas foi trocado de \xFAltima hora.",
+  "Algu\xE9m insiste em levar mais uma tocha.",
+  "O grupo discute qual caminho seguir primeiro.",
+  "Uma faca precisou ser afiada \xE0s pressas.",
+  "Algu\xE9m verifica se trancou a porta de casa.",
+  "O clima parece incerto pela manh\xE3.",
+  "Uma \xFAltima checagem na armadura.",
+  "Algu\xE9m amarra o cabelo antes de partir.",
+  "O grupo se despede de quem fica.",
+  "Falta pouco, mas ningu\xE9m quer ser o primeiro a sair.",
+  "Um saco de provis\xF5es quase foi esquecido.",
+  "Algu\xE9m reclama do peso da bagagem.",
+  "O sol ainda n\xE3o apareceu por completo.",
+  "Um cinto foi ajustado mais uma vez.",
+  "Algu\xE9m conta as flechas do carcaz.",
+  "O grupo repassa o plano em voz baixa.",
+  "Uma bota est\xE1 apertada e ningu\xE9m percebeu antes.",
+  "Algu\xE9m amarra o escudo nas costas.",
+  "O cheiro de p\xE3o fresco ainda paira no ar.",
+  "Falta decidir quem carrega a corda.",
+  "Um cantil \xE9 enchido at\xE9 a borda.",
+  "Algu\xE9m verifica se a espada est\xE1 na bainha certa.",
+  "O grupo espera um sinal para partir.",
+  "Uma \xFAltima olhada para a Capital ao longe.",
+  "Algu\xE9m amarra os cadar\xE7os com cuidado extra hoje.",
+  "O ar da manh\xE3 ainda est\xE1 frio.",
+  "Um mapa \xE9 dobrado e guardado no bolso errado.",
+  "Algu\xE9m verifica se trouxe f\xF3sforos.",
+  "O grupo se organiza em fila, sem muita ordem.",
+  "Uma \xFAltima instru\xE7\xE3o \xE9 repetida em voz alta.",
+  "Algu\xE9m aperta as correias da mochila.",
+  "O sil\xEAncio antes da partida incomoda um pouco.",
+  "Um par de luvas \xE9 vestido, meio surrado.",
+  "Algu\xE9m pergunta se realmente precisam ir hoje.",
+  "O grupo concorda, sem muita convic\xE7\xE3o.",
+  "Uma corda extra \xE9 enrolada no ombro.",
+  "Algu\xE9m verifica o horizonte, s\xF3 para ter certeza.",
+  "O barulho da cidade ainda ecoa atr\xE1s deles.",
+  "Um \xFAltimo gole de \xE1gua antes de partir.",
+  "Algu\xE9m ajeita o capuz contra o vento.",
+  "O grupo troca olhares, sem dizer nada.",
+  "Uma bolsa de moedas \xE9 contada duas vezes.",
+  "Algu\xE9m amarra um len\xE7o no pesco\xE7o.",
+  "O caminho \xE0 frente ainda parece distante.",
+  "Um dos cavalos relincha, impaciente.",
+  "Algu\xE9m verifica se a tenda foi bem dobrada.",
+  "O grupo faz um \xFAltimo invent\xE1rio, por precau\xE7\xE3o.",
+  "Uma faca extra \xE9 guardada na bota.",
+  "Algu\xE9m aperta o passo, ansioso para come\xE7ar.",
+  "O c\xE9u est\xE1 claro, pelo menos por enquanto.",
+  "Um dos viajantes reza baixinho antes de partir.",
+  "Algu\xE9m verifica se o grupo est\xE1 completo.",
+  "O port\xE3o da Capital range ao ser aberto.",
+  "Um \xFAltimo aceno para quem ficou para tr\xE1s.",
+  "Algu\xE9m amarra as botas com um n\xF3 duplo, hoje.",
+  "O grupo respira fundo antes do primeiro passo.",
+  "Uma provis\xE3o extra \xE9 enfiada no bolso, escondida.",
+  "Algu\xE9m pergunta se algu\xE9m trouxe um mapa reserva.",
+  "O vento come\xE7a a soprar, como se desse o sinal.",
+  "Um dos viajantes olha para tr\xE1s uma \xFAltima vez.",
+  "O grupo finalmente come\xE7a a caminhar."
+];
+var EXPLORING_NARRATIVES = [
+  "A trilha desapareceu.",
+  "Pegadas recentes foram encontradas.",
+  "O vento mudou.",
+  "Um corvo acompanha o grupo.",
+  "O caminho se estreita entre as \xE1rvores.",
+  "Algu\xE9m escorrega numa pedra solta.",
+  "O som de \xE1gua corrente aparece ao longe.",
+  "Uma trilha alternativa \xE9 notada, mas ignorada.",
+  "O grupo faz uma pausa r\xE1pida para respirar.",
+  "Nuvens come\xE7am a se formar no horizonte.",
+  "Um cheiro estranho \xE9 notado no ar.",
+  "Algu\xE9m aponta para algo ao longe, sem certeza do que \xE9.",
+  "O terreno fica mais irregular.",
+  "Um galho quebra sozinho, sem vento nenhum.",
+  "O grupo segue em sil\xEAncio por um trecho.",
+  "Marcas estranhas s\xE3o vistas numa \xE1rvore.",
+  "Algu\xE9m trope\xE7a numa raiz escondida.",
+  "O caminho sobe de forma mais \xEDngreme.",
+  "Um som distante faz todos pararem por um instante.",
+  "A vegeta\xE7\xE3o muda repentinamente.",
+  "Algu\xE9m consulta o mapa, sem muita certeza.",
+  "O grupo atravessa um riacho raso.",
+  "Uma sombra passa r\xE1pido demais para ser identificada.",
+  "O sil\xEAncio da regi\xE3o incomoda um pouco.",
+  "Algu\xE9m encontra uma pena grande no ch\xE3o.",
+  "O caminho se divide em dois, sem placa nenhuma.",
+  "Um som de passos ecoa atr\xE1s do grupo.",
+  "Algu\xE9m acha uma pedra com um formato estranho.",
+  "O grupo decide seguir pela trilha mais longa.",
+  "Uma n\xE9voa fina cobre parte do caminho.",
+  "Algu\xE9m percebe que est\xE1 sendo observado.",
+  "O terreno come\xE7a a descer suavemente.",
+  "Um cheiro de fuma\xE7a \xE9 notado, distante.",
+  "O grupo evita uma po\xE7a de \xE1gua escura.",
+  "Algu\xE9m encontra restos de um acampamento antigo.",
+  "O c\xE9u come\xE7a a escurecer mais cedo que o esperado.",
+  "Um barulho de asas assusta o grupo por um instante.",
+  "A trilha volta a aparecer, mais estreita.",
+  "Algu\xE9m acha marcas de garras numa \xE1rvore.",
+  "O grupo atravessa um campo aberto, exposto.",
+  "Um eco estranho responde a um grito de teste.",
+  "Algu\xE9m encontra uma flor que n\xE3o reconhece.",
+  "O caminho passa perto de um penhasco.",
+  "Um sil\xEAncio s\xFAbito toma conta da regi\xE3o.",
+  "Algu\xE9m sente que j\xE1 passou por ali antes.",
+  "O grupo segue as pegadas encontradas mais cedo.",
+  "Uma trilha de formigas atravessa o caminho.",
+  "O vento traz um cheiro de chuva.",
+  "Algu\xE9m acha uma corda velha amarrada numa \xE1rvore.",
+  "O grupo faz uma pausa \xE0 sombra de uma pedra grande.",
+  "Um p\xE1ssaro grande sobrevoa em c\xEDrculos.",
+  "Algu\xE9m percebe uma trilha rec\xE9m-aberta na vegeta\xE7\xE3o.",
+  "O caminho atravessa uma \xE1rea queimada, antiga.",
+  "Um som de \xE1gua corrente fica mais alto.",
+  "Algu\xE9m acha uma bota velha, abandonada h\xE1 tempo.",
+  "O grupo segue por uma trilha mais alta, com melhor vis\xE3o.",
+  "Uma n\xE9voa espessa reduz a visibilidade por um momento.",
+  "Algu\xE9m acha uma pegada maior do que o esperado.",
+  "O terreno vira pedra s\xF3lida por um trecho.",
+  "Um grito distante ecoa, e ningu\xE9m comenta.",
+  "O grupo atravessa uma ponte de madeira inst\xE1vel.",
+  "Algu\xE9m percebe marcas de fogo numa \xE1rvore ca\xEDda.",
+  "O caminho se torna quase invis\xEDvel entre as pedras.",
+  "Um cheiro forte de terra molhada surge de repente.",
+  "Algu\xE9m encontra uma pequena caverna, ignorada por ora.",
+  "O grupo segue em fila \xFAnica por um trecho estreito.",
+  "Um som de asas bate perto, sem que nada seja visto.",
+  "Algu\xE9m acha restos de uma fogueira ainda morna.",
+  "O caminho come\xE7a a descer em dire\xE7\xE3o a um vale.",
+  "O destino j\xE1 pode ser avistado ao longe."
+];
+var COMBATING_NARRATIVES = [
+  "Ningu\xE9m imaginava que seriam tantos.",
+  "As armas finalmente deixaram o sil\xEAncio.",
+  "O primeiro golpe veio mais cedo que o esperado.",
+  "O arqueiro perdeu a flecha... e a coragem.",
+  "Um grito corta o ar antes de qualquer outra coisa.",
+  "Algu\xE9m grita uma ordem que ningu\xE9m segue direito.",
+  "O ch\xE3o treme sob os primeiros passos apressados.",
+  "Uma sombra se move r\xE1pido demais para ser vista com clareza.",
+  "O grupo se posiciona em c\xEDrculo, por instinto.",
+  "Algu\xE9m escorrega no meio da confus\xE3o.",
+  "Um escudo \xE9 erguido bem a tempo.",
+  "O barulho de metal contra metal ecoa longe.",
+  "Algu\xE9m grita para recuar, mas ningu\xE9m recua.",
+  "O primeiro a atacar tamb\xE9m \xE9 o primeiro a hesitar.",
+  "Uma poeira densa se levanta do ch\xE3o.",
+  "Algu\xE9m percebe tarde demais que estava cercado.",
+  "O grupo se aproxima, ombro a ombro.",
+  "Um golpe erra por pouco.",
+  "Algu\xE9m prende a respira\xE7\xE3o antes do confronto direto.",
+  "O som de passos apressados vem de todas as dire\xE7\xF5es.",
+  "Uma arma cai no ch\xE3o, e ningu\xE9m para para peg\xE1-la.",
+  "O grupo mant\xE9m a forma\xE7\xE3o, por enquanto.",
+  "Algu\xE9m grita o nome de outro companheiro, alto.",
+  "O primeiro sangue ainda n\xE3o foi derramado, mas est\xE1 perto.",
+  "Um golpe certeiro corta o sil\xEAncio.",
+  "Algu\xE9m trope\xE7a, mas se levanta r\xE1pido.",
+  "O grupo avan\xE7a devagar, testando o terreno.",
+  "Um grito de dor \xE9 abafado pelo caos.",
+  "Algu\xE9m segura a respira\xE7\xE3o antes do pr\xF3ximo movimento.",
+  "O confronto parece durar mais do que realmente dura.",
+  "Uma arma se choca contra uma superf\xEDcie dura.",
+  "Algu\xE9m percebe uma abertura e aproveita.",
+  "O grupo se reorganiza no meio do combate.",
+  "Um golpe \xE9 desviado por pouco.",
+  "Algu\xE9m grita para que todos se cubram.",
+  "O barulho da luta atrai mais aten\xE7\xE3o do que deveria.",
+  "Uma respira\xE7\xE3o ofegante se destaca em meio ao caos.",
+  "Algu\xE9m segura firme, mesmo com as m\xE3os tremendo.",
+  "O grupo avan\xE7a em conjunto, sem hesitar dessa vez.",
+  "Um golpe forte derruba algo, ou algu\xE9m.",
+  "Algu\xE9m grita que est\xE1 tudo sob controle. N\xE3o est\xE1.",
+  "O confronto muda de dire\xE7\xE3o repentinamente.",
+  "Uma arma quebra no meio do combate.",
+  "Algu\xE9m percebe que est\xE1 lutando ao lado de um estranho, n\xE3o de um amigo.",
+  "O grupo resiste, mesmo cansado.",
+  "Um golpe certeiro decide o rumo do confronto.",
+  "Algu\xE9m grita de al\xEDvio, cedo demais.",
+  "O sil\xEAncio depois de um golpe forte assusta mais que o pr\xF3prio golpe.",
+  "Uma \xFAltima investida parece decidir tudo.",
+  "Algu\xE9m cai, mas se levanta antes que algu\xE9m note.",
+  "O grupo finalmente ganha vantagem no confronto.",
+  "Um grito de vit\xF3ria sai antes da hora certa.",
+  "Algu\xE9m baixa a guarda cedo demais.",
+  "O combate se arrasta por mais um instante tenso.",
+  "Uma arma \xE9 reerguida com m\xE3os tr\xEAmulas.",
+  "Algu\xE9m percebe que o inimigo tamb\xE9m est\xE1 cansado.",
+  "O grupo aperta o cerco, sentindo a vantagem.",
+  "Um \xFAltimo golpe encerra o confronto.",
+  "Algu\xE9m respira fundo, aliviado, mas sem baixar a guarda.",
+  "O sil\xEAncio depois da luta parece esquisito.",
+  "Algu\xE9m conta os companheiros, s\xF3 para ter certeza.",
+  "O grupo verifica os ferimentos uns dos outros.",
+  "Uma arma \xE9 guardada com as m\xE3os ainda tremendo.",
+  "Algu\xE9m ri, nervoso, sem motivo aparente.",
+  "O grupo se reorganiza, ainda tenso.",
+  "Um dos companheiros ainda respira pesado.",
+  "Algu\xE9m pergunta se est\xE1 mesmo acabado.",
+  "O grupo confirma, aos poucos, que sim.",
+  "Uma poeira ainda paira no ar do confronto.",
+  "O grupo respira, finalmente, com calma."
+];
+var RESTING_NARRATIVES = [
+  "A fogueira finalmente foi acesa.",
+  "Algu\xE9m contou uma hist\xF3ria exagerada.",
+  "O sil\xEAncio parecia confort\xE1vel.",
+  "Um p\xE3o foi dividido entre todos.",
+  "Algu\xE9m tira as botas, aliviado.",
+  "O calor da fogueira espanta o frio da noite.",
+  "Uma piada ruim arranca risadas mesmo assim.",
+  "Algu\xE9m verifica os ferimentos com mais calma agora.",
+  "O grupo se acomoda em volta do fogo.",
+  "Uma can\xE7\xE3o baixa \xE9 cantarolada por algu\xE9m.",
+  "Algu\xE9m estica as pernas, cansado da caminhada.",
+  "O c\xE9u estrelado \xE9 notado pela primeira vez no dia.",
+  "Uma discuss\xE3o boba surge sobre quem cozinha melhor.",
+  "Algu\xE9m cochila antes mesmo de terminar a refei\xE7\xE3o.",
+  "O grupo divide o que sobrou das provis\xF5es.",
+  "Uma risada alta quebra o sil\xEAncio da noite.",
+  "Algu\xE9m remenda uma roupa rasgada \xE0 luz do fogo.",
+  "O cheiro de comida quente anima todo mundo.",
+  "Algu\xE9m convenceu o grupo a contar cada um uma hist\xF3ria.",
+  "O fogo estala baixinho, quase hipnotizante.",
+  "Algu\xE9m aponta uma estrela e inventa um nome pra ela.",
+  "O grupo ri de algo que aconteceu mais cedo, agora sem medo.",
+  "Uma x\xEDcara de algo quente passa de m\xE3o em m\xE3o.",
+  "Algu\xE9m se oferece para a primeira vig\xEDlia da noite.",
+  "O sil\xEAncio da noite \xE9 interrompido por um bocejo alto.",
+  "Algu\xE9m pergunta se vale a pena continuar amanh\xE3.",
+  "O grupo concorda que sim, claro que sim.",
+  "Uma velha lenda \xE9 recontada, com alguns detalhes a mais.",
+  "Algu\xE9m dorme sentado, apoiado na pr\xF3pria mochila.",
+  "O fogo diminui aos poucos, e ningu\xE9m se importa.",
+  "Algu\xE9m observa as chamas sem dizer nada por um tempo.",
+  "O grupo compara cicatrizes, algumas mais exageradas que outras.",
+  "Uma \xFAltima rodada de \xE1gua \xE9 distribu\xEDda antes de dormir.",
+  "Algu\xE9m insiste em ficar de vigia, mesmo exausto.",
+  "O sil\xEAncio da noite parece, hoje, gentil.",
+  "Algu\xE9m pergunta que horas s\xE3o, sem realmente querer saber.",
+  "O grupo se deita, um a um, perto do fogo.",
+  "Uma risada solit\xE1ria escapa antes do sono chegar.",
+  "Algu\xE9m murmura algo dormindo, e ningu\xE9m pergunta o qu\xEA.",
+  "O fogo ainda ilumina os rostos cansados do grupo.",
+  "Algu\xE9m finalmente relaxa os ombros, tensos o dia todo.",
+  "O grupo compartilha o pouco que ainda resta da comida.",
+  "Uma conversa boba sobre o futuro surge do nada.",
+  "Algu\xE9m aponta que amanh\xE3 ser\xE1 um dia mais longo.",
+  "O grupo prefere n\xE3o pensar nisso agora.",
+  "Uma coruja canta ao longe, e ningu\xE9m se assusta mais.",
+  "Algu\xE9m ajeita a fogueira antes que ela apague de vez.",
+  "O calor ainda resiste, mesmo com o fogo baixo.",
+  "Algu\xE9m sussurra boa noite, sem esperar resposta.",
+  "O grupo adormece aos poucos, um som de respira\xE7\xE3o por vez.",
+  "Uma \xFAltima brasa ainda brilha na escurid\xE3o.",
+  "Algu\xE9m acorda no meio da noite, olha ao redor, e volta a dormir.",
+  "O sil\xEAncio da madrugada \xE9 quebrado s\xF3 pelo vento.",
+  "Algu\xE9m sonha alto, e ningu\xE9m comenta de manh\xE3.",
+  "O grupo acorda aos poucos, com o corpo dolorido.",
+  "Uma \xFAltima x\xEDcara \xE9 aquecida nas brasas que sobraram.",
+  "Algu\xE9m espregui\xE7a, reclamando do ch\xE3o duro.",
+  "O grupo se prepara, devagar, para seguir em frente.",
+  "Uma piada da noite anterior ainda arranca sorrisos.",
+  "Algu\xE9m apaga o que restou da fogueira com cuidado.",
+  "O grupo verifica se esqueceu algo no acampamento.",
+  "Uma \xFAltima olhada para o lugar onde dormiram.",
+  "Algu\xE9m agradece, baixinho, por mais uma noite tranquila.",
+  "O grupo se levanta, um pouco mais leve do que ontem.",
+  "Uma sensa\xE7\xE3o de que j\xE1 valeu a pena parar, mesmo que s\xF3 por uma noite.",
+  "Algu\xE9m guarda a \xFAltima lembran\xE7a da noite antes de seguir.",
+  "O grupo faz as pazes com o cansa\xE7o, s\xF3 por hoje.",
+  "Uma \xFAltima brincadeira antes de voltar \xE0 estrada.",
+  "Algu\xE9m verifica se todos dormiram bem, \xE0 sua maneira.",
+  "O grupo se levanta, pronto para o que vier a seguir."
+];
+var RETURNING_NARRATIVES = [
+  "A estrada parece menor na volta.",
+  "As mochilas voltam mais pesadas.",
+  "Alguns voltam sorrindo.",
+  "Outros apenas voltam.",
+  "O grupo caminha mais devagar do que na ida.",
+  "Algu\xE9m conta uma hist\xF3ria do que aconteceu, j\xE1 exagerando um pouco.",
+  "O sil\xEAncio da volta \xE9 diferente do sil\xEAncio da ida.",
+  "Algu\xE9m carrega um companheiro cansado pelo bra\xE7o.",
+  "O caminho de volta parece mais familiar.",
+  "Uma m\xFAsica baixa \xE9 assobiada por algu\xE9m.",
+  "O grupo reconhece marcos que passaram na ida.",
+  "Algu\xE9m j\xE1 pensa no que vai comer ao chegar.",
+  "O cansa\xE7o aparece nos ombros de todos.",
+  "Algu\xE9m ri de algo que s\xF3 faz sentido para o grupo.",
+  "O caminho de volta parece mais curto do que realmente \xE9.",
+  "Algu\xE9m conta os passos que faltam, sem motivo.",
+  "O grupo caminha em sil\xEAncio por um bom trecho.",
+  "Uma bota machuca mais na volta do que na ida.",
+  "Algu\xE9m aponta a Capital ao longe, aliviado.",
+  "O peso das mochilas incomoda mais a cada passo.",
+  "Algu\xE9m pergunta se valeu a pena.",
+  "O grupo concorda que sim, mesmo cansado.",
+  "Uma piada antiga \xE9 repetida, e ainda funciona.",
+  "Algu\xE9m caminha mancando, discretamente.",
+  "O sol come\xE7a a baixar enquanto o grupo avan\xE7a.",
+  "Algu\xE9m sonha acordado com uma cama de verdade.",
+  "O caminho de volta parece mais tranquilo, por hora.",
+  "Algu\xE9m conta as hist\xF3rias que vai contar ao chegar.",
+  "O grupo j\xE1 discute onde v\xE3o comer primeiro.",
+  "Uma \xFAltima pausa antes da reta final.",
+  "Algu\xE9m aponta um marco conhecido no caminho.",
+  "O grupo apressa o passo, sentindo o fim pr\xF3ximo.",
+  "Uma conversa boba anima os \xFAltimos passos.",
+  "Algu\xE9m j\xE1 sente o cheiro da Capital, ou acha que sente.",
+  "O caminho de volta parece nunca terminar, mas termina.",
+  "Algu\xE9m troca de ombro a mochila, mais uma vez.",
+  "O grupo caminha em fila, cansado mas inteiro.",
+  "Uma risada quebra o sil\xEAncio da estrada vazia.",
+  "Algu\xE9m pergunta a que horas devem chegar.",
+  "O grupo n\xE3o sabe, e segue mesmo assim.",
+  "Uma \xFAltima colina separa o grupo da Capital.",
+  "Algu\xE9m acelera o passo, ansioso para chegar.",
+  "O grupo avista os port\xF5es ao longe, finalmente.",
+  "Uma sensa\xE7\xE3o de al\xEDvio toma conta de todos.",
+  "Algu\xE9m sorri, mesmo sem energia para mais nada.",
+  "O grupo se aproxima devagar dos port\xF5es da Capital.",
+  "Uma \xFAltima conversa sobre o que fazer ao chegar.",
+  "Algu\xE9m j\xE1 pensa em tirar as botas assim que poss\xEDvel.",
+  "O barulho da cidade volta a ser ouvido ao longe.",
+  "O grupo atravessa os port\xF5es, finalmente.",
+  "Algu\xE9m acena para quem os espera.",
+  "O cansa\xE7o parece menor agora que chegaram.",
+  "Algu\xE9m j\xE1 promete contar tudo direitinho, mais tarde.",
+  "O grupo se separa aos poucos, cada um para seu canto.",
+  "Uma \xFAltima risada \xE9 compartilhada antes de se despedirem.",
+  "Algu\xE9m agradece o grupo, baixinho, antes de ir embora.",
+  "O sil\xEAncio da Capital \xE0 noite parece estranhamente calmo.",
+  "Algu\xE9m j\xE1 sente falta da estrada, s\xF3 um pouco.",
+  "O grupo promete se encontrar de novo em breve.",
+  "Uma \xFAltima mochila \xE9 descarregada, com al\xEDvio.",
+  "Algu\xE9m finalmente troca de roupa, aliviado.",
+  "O cheiro de casa \xE9 diferente de tudo que viram l\xE1 fora.",
+  "Algu\xE9m guarda as coisas com cuidado, j\xE1 pensando na pr\xF3xima vez.",
+  "O grupo descansa, cada um \xE0 sua maneira, j\xE1 em casa.",
+  "Uma sensa\xE7\xE3o estranha de que a estrada ainda os espera.",
+  "Algu\xE9m dorme assim que se deita, sem nem perceber.",
+  "O grupo se separa, mas o assunto vai render por dias.",
+  "Algu\xE9m sorri sozinho, lembrando de um momento da viagem.",
+  "A Capital parece igual, mas algo mudou, um pouco.",
+  "O grupo j\xE1 sabe: vai ter uma pr\xF3xima vez."
+];
+var NARRATIVES_BY_STATUS = {
+  preparing: PREPARING_NARRATIVES,
+  exploring: EXPLORING_NARRATIVES,
+  combating: COMBATING_NARRATIVES,
+  resting: RESTING_NARRATIVES,
+  returning: RETURNING_NARRATIVES,
+  completed: []
+};
+function pickExpeditionNarrative(status) {
+  const pool = NARRATIVES_BY_STATUS[status];
+  if (!pool || pool.length === 0) return null;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+// apps/web/src/lib/expeditionEvolution.ts
+var EXPLORING_MIDPOINT = 50;
+function getExpeditionEvolutionLine(ctx) {
+  if (ctx.status === "preparing") return "O grupo ainda organiza os \xFAltimos detalhes.";
+  if (ctx.status === "combating") return "O sil\xEAncio desaparece por alguns instantes.";
+  if (ctx.status === "resting") return "O grupo aproveita para recuperar as for\xE7as.";
+  if (ctx.status === "returning") return "O caminho de volta parece sempre mais curto.";
+  if (ctx.status === "completed") return "A jornada chega ao fim, pelo menos por enquanto.";
+  if (ctx.encounterCategory === "descoberta") return "O grupo diminui o ritmo para observar algo incomum.";
+  if (ctx.progressPercent < EXPLORING_MIDPOINT) return "A estrada ainda permanece bem conhecida.";
+  return "As marcas da cidade ficam cada vez mais distantes.";
+}
+
+// apps/web/src/lib/expeditionJourney.ts
+var PROGRESS_BANDS = [
+  { max: 10, line: "A cidade ainda permanece ao alcance dos olhos." },
+  { max: 30, line: "A estrada se torna cada vez mais silenciosa." },
+  { max: 50, line: "O grupo j\xE1 parece completamente imerso na viagem." },
+  { max: 70, line: "Cada decis\xE3o come\xE7a a exigir mais aten\xE7\xE3o." },
+  { max: 90, line: "O retorno j\xE1 passa a ser considerado." },
+  { max: 100, line: "O caminho conhecido volta lentamente a aparecer." }
+];
+function getExpeditionJourneyLine(ctx) {
+  const band = PROGRESS_BANDS.find((b) => ctx.progressPercent <= b.max);
+  return (band ?? PROGRESS_BANDS[PROGRESS_BANDS.length - 1]).line;
+}
+
+// apps/web/src/lib/regionIdentity.ts
+var REGION_IDENTITY = {
+  "Porto do Amanhecer": "Aqui, cada passo ainda parece familiar.",
+  "Bosque Sussurrante": "A vegeta\xE7\xE3o parece esconder mais do que revela.",
+  "P\xE2ntano Podre": "A paisagem muda sem que ningu\xE9m perceba.",
+  "Colinas \xC1ridas": "N\xE3o h\xE1 onde se esconder por muito tempo.",
+  "Plan\xEDcie Dourada": "Tudo aqui parece calmo demais para ser verdade.",
+  "Minas Abandonadas": "As paredes parecem mais pr\xF3ximas a cada passo.",
+  "Litoral Quebrado": "O horizonte nunca parece terminar.",
+  "Picos Congelados": "O sil\xEAncio pesa mais do que o vento.",
+  "Deserto de Vidro": "Cada passo parece mais longo que o anterior.",
+  "Ru\xEDnas Esquecidas": "As pedras parecem observar quem passa.",
+  "Fortaleza Sombria": "Cada passo aqui parece o \xFAltimo antes de algo maior."
+};
+function getRegionIdentityLine(regionName) {
+  return REGION_IDENTITY[regionName] ?? null;
+}
+
+// apps/web/src/lib/expeditionDecisionHints.ts
+var DECISION_RULES = [
+  {
+    when: (ctx) => ctx.status === "exploring" && ctx.encounterCategory === "descoberta",
+    line: "Vale a pena parar para investigar, ou \xE9 melhor seguir em frente?"
+  },
+  {
+    when: (ctx) => ctx.status === "exploring" && ctx.encounterCategory === "misterio",
+    line: "Nem todo grupo se arriscaria a chegar mais perto disso."
+  },
+  {
+    when: (ctx) => ctx.status === "exploring" && ctx.encounterCategory === "clima",
+    line: "Continuar mesmo com o tempo assim nem sempre \xE9 a decis\xE3o mais segura."
+  },
+  {
+    when: (ctx) => ctx.status === "combating",
+    line: "Continuar lutando ou recuar? Cada grupo decidiria de um jeito diferente."
+  },
+  {
+    when: (ctx) => ctx.status === "resting",
+    line: "Descansar por completo ou seguir logo em frente? A escolha muda a jornada."
+  },
+  {
+    when: (ctx) => ctx.status === "returning",
+    line: "Apressar o passo ou aproveitar os \xFAltimos momentos do caminho?"
+  },
+  {
+    when: (ctx) => ctx.status === "preparing",
+    line: "Partir sem pressa ou logo de uma vez? Nem todo grupo decide igual."
+  },
+  {
+    when: (ctx) => ctx.status === "exploring",
+    line: "O caminho parece esconder mais de uma rota poss\xEDvel."
+  }
+];
+function getExpeditionDecisionHint(ctx) {
+  const rule = DECISION_RULES.find((r) => r.when(ctx));
+  return rule ? rule.line : null;
+}
+
+// apps/web/src/lib/expeditionConsequences.ts
+function getExpeditionConsequenceLine(approach) {
+  if (approach === "investigate") return "Seu grupo parece notar mais detalhes ao redor.";
+  if (approach === "continue") return "O grupo mant\xE9m um ritmo constante sem muitos desvios.";
+  return null;
+}
+
+// apps/web/src/lib/expeditionMoments.ts
+function buildExpeditionMomentContext(expedition) {
+  return {
+    status: expedition.status,
+    progressPercent: expedition.progress_percent,
+    encounterCategory: expedition.encounter?.category ?? null,
+    approach: expedition.approach
+  };
+}
+var EXPLORING_PROGRESS_MIDPOINT = 50;
+function getExpeditionMoment(ctx) {
+  if (ctx.status === "preparing") return "Uma bandeira improvisada \xE9 erguida como sinal de partida.";
+  if (ctx.status === "resting") return "Algu\xE9m amarra um curativo improvisado no bra\xE7o.";
+  if (ctx.status === "returning") return "Os primeiros sinais da Capital aparecem no horizonte.";
+  if (ctx.status === "completed") return "Os primeiros passos na Capital parecem mais leves.";
+  if (ctx.status === "combating") {
+    if (ctx.approach === "investigate") return "O grupo avalia cada movimento antes de agir.";
+    if (ctx.approach === "continue") return "O grupo age r\xE1pido, sem hesitar.";
+    return "As armas s\xE3o rapidamente reorganizadas.";
+  }
+  if (ctx.encounterCategory === "descoberta") return "Um objeto chama a aten\xE7\xE3o de todos por um instante.";
+  if (ctx.progressPercent < EXPLORING_PROGRESS_MIDPOINT) return "Algu\xE9m aponta rastros recentes no ch\xE3o.";
+  return "O passo do grupo acelera por um instante.";
+}
+
+// apps/web/src/lib/expeditionReactiveState.ts
+function buildExpeditionReactiveContext(expedition) {
+  return {
+    status: expedition.status,
+    progressPercent: expedition.progress_percent,
+    approach: expedition.approach,
+    encounterCategory: expedition.encounter?.category ?? null
+  };
+}
+var STATUS_TO_STATE = {
+  preparing: "watching",
+  exploring: "exploring",
+  combating: "danger",
+  resting: "watching",
+  returning: "returning",
+  completed: "normal"
+};
+function getExpeditionReactiveState(ctx) {
+  if (ctx.status === "completed") return "normal";
+  if (ctx.encounterCategory === "descoberta") return "exploring";
+  const base = STATUS_TO_STATE[ctx.status];
+  if (base === "watching" && ctx.approach === "investigate") return "exploring";
+  return base;
+}
+function getExpeditionReactiveClass(ctx) {
+  return `reactive-expedition-${getExpeditionReactiveState(ctx)}`;
+}
+
+export {
+  STATUS_ICON,
+  STATUS_LABEL,
+  formatRemaining,
+  pickExpeditionNarrative,
+  getExpeditionEvolutionLine,
+  getExpeditionJourneyLine,
+  getRegionIdentityLine,
+  getExpeditionDecisionHint,
+  getExpeditionConsequenceLine,
+  buildExpeditionMomentContext,
+  getExpeditionMoment,
+  buildExpeditionReactiveContext,
+  getExpeditionReactiveState,
+  getExpeditionReactiveClass,
+  buildWorldVisualContext,
+  getWorldVisualClass,
+  getSingleHighlight,
+  getLiveHighlights,
+  GLOBAL_HIGHLIGHT_PRIORITY,
+  CHARACTER_TRAIT_PRIORITY,
+  LIBRARY_HIGHLIGHT_PRIORITY,
+  BESTIARY_HIGHLIGHT_PRIORITY,
+  MUSEUM_HIGHLIGHT_PRIORITY,
+  EXPEDITION_HIGHLIGHT_PRIORITY,
+  resolveFeedback,
+  feedbackClassName
+};

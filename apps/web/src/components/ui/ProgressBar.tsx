@@ -1,4 +1,4 @@
-export type ProgressBarVariant = "xp" | "boss" | "expedition" | "expedition-compact";
+export type ProgressBarVariant = "xp" | "boss" | "expedition" | "expedition-compact" | "life" | "objective";
 
 interface ProgressBarProps {
   percent: number;

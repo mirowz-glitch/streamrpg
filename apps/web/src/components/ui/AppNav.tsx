@@ -22,6 +22,9 @@ export function AppNav() {
         Mundo
       </Link>
       <Link to="/app/streamer">Streamer</Link>
+      <Link to="/app/adventure" className="nav-glow">
+        ⚔️ Aventura
+      </Link>
     </nav>
   );
 }

@@ -122,6 +122,46 @@ nav {
   padding-top: 1.5rem;
   border-top: 1px solid #2a2f3d;
 }
+/* Sprint Character Page — UX Polish Phase I — substitui o bloco técnico
+   de canal/cooldown (.ping-box acima, agora sem uso em CharacterPage)
+   por um card curto de status, sem nenhum contador visível. */
+.expedition-status-card {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(145, 70, 255, 0.06);
+  border: 1px solid rgba(145, 70, 255, 0.3);
+  border-radius: 10px;
+}
+.expedition-status-title {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  color: #bf94ff;
+}
+.expedition-status-line {
+  margin: 0.15rem 0;
+  color: #c4c7c5;
+}
+.expedition-status-live {
+  margin: 0.15rem 0;
+  color: #7ee081;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.expedition-status-caption {
+  margin: 0.15rem 0 0;
+  color: #9aa0a6;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+/* Sprint Character Page — UX Polish Phase I — resumo narrativo curto do
+   personagem, logo no topo da aba Visão Geral. */
+.character-summary {
+  margin: 0.75rem 0;
+}
+.character-summary-line {
+  margin: 0.2rem 0;
+  color: #c4c7c5;
+}
 .error {
   color: #ff6b6b;
 }
@@ -292,6 +332,14 @@ nav {
 }
 .progress-bar-expedition-compact {
   height: 6px;
+}
+/* HUD & Gameplay UI Phase I — barra de vida do Adventure Loop, mesma
+   estrutura track+fill do resto das variantes de ProgressBar. */
+.progress-bar-life {
+  height: 14px;
+}
+.progress-bar-life .progress-bar-fill {
+  background: linear-gradient(90deg, #34a853, #7ee081);
 }
 .item-compare {
   margin: 6px 0;
@@ -519,6 +567,17 @@ nav {
   background: rgba(145, 70, 255, 0.25);
   color: #bf94ff;
 }
+/* Sprint Character Page — UX Polish Phase I — classe + nível compactados
+   num só badge (antes eram dois: .badge-class + .badge-level). */
+.badge-compact {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: rgba(145, 70, 255, 0.2);
+  color: #cdb0ff;
+}
 .identity-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -565,6 +624,13 @@ nav {
 .equipment-slot-filled {
   border-color: rgba(145, 70, 255, 0.4);
 }
+/* Sprint Character Page — Adventure Goals Phase I — faixa esquerda na
+   cor da raridade do item (cor vem inline via RARITY_COLOR), reforço
+   visual adicional sem alterar a borda geral já existente acima. */
+.equipment-slot-rarity {
+  border-left-width: 4px;
+  border-left-style: solid;
+}
 .equipment-slot-label {
   font-size: 0.75rem;
   color: #9aa0a6;
@@ -577,6 +643,23 @@ nav {
 .equipment-slot-meta {
   font-size: 0.75rem;
   color: #9aa0a6;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+/* Sprint Character Page — UX Polish Phase I — raridade com cor própria
+   (mesma paleta de RARITY_COLOR já usada no nome do item) + atributos
+   como pequenos chips ícone+valor, no lugar do texto verboso de antes. */
+.equipment-rarity {
+  font-weight: 600;
+}
+.equipment-attr-chip {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #c4c7c5;
+  font-size: 0.72rem;
 }
 .equipment-slot-empty {
   font-size: 0.85rem;
@@ -1814,6 +1897,41 @@ nav {
   50% { text-shadow: 0 0 14px rgba(145, 70, 255, 0.9); }
 }
 
+/* Sprint Character Page — Adventure Goals Phase I — card único de
+   "Objetivo Atual" (substitui a antiga lista de .guide-bubble dentro de
+   .player-goals; .guide-bubble em si continua intocada, ainda usada por
+   liveGuideLine em CharacterPage). */
+.goal-card {
+  padding: 0.75rem 1rem;
+  background: rgba(145, 70, 255, 0.08);
+  border: 1px solid rgba(145, 70, 255, 0.35);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.goal-card-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #d6b8ff;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.goal-card-text {
+  margin: 0;
+  color: #e8eaed;
+  font-size: 0.95rem;
+}
+/* Sprint Character Page — Adventure Goals Phase II — bloco reservado
+   para uma futura barra/percentual de progresso de missão. Sem dado
+   real ainda, então fica deliberadamente vazio: sem animação, sem
+   preenchimento, só o espaço e um contorno discreto. */
+.goal-progress-placeholder {
+  height: 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+}
 .guide-bubble {
   display: flex;
   align-items: center;
@@ -3197,4 +3315,1084 @@ nav {
   background: #f2874b;
   clip-path: polygon(50% 0%, 80% 60%, 60% 60%, 90% 100%, 10% 100%, 40% 60%, 20% 60%);
   box-shadow: 0 4px 0 -1px #3a3f47;
+}
+
+/* HUD & Gameplay UI Phase I — Vertical Slice. Toda a apresentação
+   consome só HudState/PresentationEvent (packages/shared); nenhuma
+   regra de gameplay vive aqui, só estilo. */
+.hud-adventure-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.hud-health-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.hud-health-bar-value {
+  font-size: 0.8rem;
+  color: #c4c7c5;
+  text-align: right;
+}
+
+.hud-session-status {
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.hud-session-status-explorando {
+  background: rgba(66, 133, 244, 0.15);
+  color: #8ab4f8;
+}
+.hud-session-status-em-combate {
+  background: rgba(251, 188, 4, 0.15);
+  color: #fbbc04;
+}
+.hud-session-status-vitoria {
+  background: rgba(52, 168, 83, 0.15);
+  color: #7ee081;
+}
+.hud-session-status-derrota {
+  background: rgba(234, 67, 53, 0.15);
+  color: #f28b82;
+}
+.hud-session-status-encerrada {
+  background: rgba(154, 160, 166, 0.15);
+  color: #9aa0a6;
+}
+
+.hud-panels-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+.hud-region-panel,
+.hud-encounter-panel {
+  padding: 0.75rem 1rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+}
+.hud-region-name {
+  margin: 0 0 0.35rem;
+}
+.hud-region-detail,
+.hud-encounter-detail {
+  margin: 0.15rem 0;
+  color: #c4c7c5;
+  font-size: 0.85rem;
+}
+.hud-encounter-state {
+  margin: 0 0 0.35rem;
+  font-weight: 700;
+}
+
+.hud-session-overlay {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  padding: 0.6rem 0.75rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #c4c7c5;
+}
+
+.hud-popups-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  min-height: 1px;
+}
+/* Preparado pra animação futura (requisito 6) — hoje só aparece/some
+   sem transição própria; a classe já existe como ponto de entrada. */
+.hud-loot-popup,
+.hud-equipment-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.85rem;
+  background: #14161d;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  min-width: 180px;
+  font-size: 0.85rem;
+}
+.hud-loot-popup {
+  border-left-width: 4px;
+}
+.hud-loot-popup-title,
+.hud-equipment-popup-title {
+  font-weight: 700;
+}
+.hud-loot-popup-line,
+.hud-equipment-popup-line {
+  color: #9aa0a6;
+}
+.hud-equipment-popup-delta {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.hud-equipment-popup-positive {
+  border-left: 4px solid #34a853;
+}
+.hud-equipment-popup-positive .hud-equipment-popup-delta {
+  color: #7ee081;
+}
+.hud-equipment-popup-negative {
+  border-left: 4px solid #ea4335;
+}
+.hud-equipment-popup-negative .hud-equipment-popup-delta {
+  color: #f28b82;
+}
+
+.hud-floating-numbers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 1.5rem;
+}
+.hud-floating-number {
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.hud-floating-number-damage.hud-floating-number-enemy {
+  color: #fbbc04;
+}
+.hud-floating-number-damage.hud-floating-number-character {
+  color: #f28b82;
+}
+.hud-floating-number-critical {
+  color: #ea4335;
+}
+.hud-floating-number-miss {
+  color: #9aa0a6;
+  font-style: italic;
+}
+.hud-floating-number-heal,
+.hud-floating-number-lifeLeech {
+  color: #7ee081;
+}
+
+.hud-controls {
+  display: flex;
+  gap: 0.75rem;
+}
+.hud-defeat-message {
+  color: #f28b82;
+  font-weight: 600;
+}
+.hud-feed-title {
+  margin-bottom: 0;
+}
+.hud-event-feed {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.hud-event-feed-empty {
+  color: #9aa0a6;
+  font-style: italic;
+}
+.hud-event-feed-item {
+  padding: 0.4rem 0.65rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #c4c7c5;
+}
+.hud-event-feed-item-CharacterDied {
+  border-color: rgba(234, 67, 53, 0.5);
+  color: #f28b82;
+}
+.hud-event-feed-item-EnemyKilled {
+  color: #fbbc04;
+}
+.hud-event-feed-item-LootDropped {
+  color: #bf94ff;
+}
+.hud-event-feed-item-ItemEquipped {
+  color: #7ee081;
+}
+
+/* Combat Feel & Animation System Phase I — só apresentação: nenhuma
+   destas regras/keyframes influencia gameplay, elas só reagem a
+   classes que o Animation Controller (packages/shared) já decidiu
+   estarem ativas. */
+.hud-combat-stage-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+.hud-combatant-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+.hud-combatant-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+.hud-combatant-label {
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+
+/* Requisito 4 — Character Hit: flash vermelho + recuo + opacidade
+   momentânea, nunca alterando HP (só a classe some sozinha quando o
+   Animation Controller finaliza a animação). */
+@keyframes hud-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+@keyframes hud-flash-red {
+  0%,
+  100% {
+    filter: none;
+  }
+  50% {
+    filter: brightness(1.6) saturate(2) hue-rotate(-20deg);
+  }
+}
+.hud-character-stage-hit {
+  animation: hud-shake 0.35s ease;
+  opacity: 0.6;
+}
+.hud-character-stage-hit .hud-combatant-icon {
+  animation: hud-flash-red 0.35s ease;
+}
+.hud-character-stage-dead {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+
+/* Requisito 3 — Enemy Hit: shake + flash + knockback leve. Critical
+   treme mais forte; Miss só um leve esmaecer (nenhum shake). */
+@keyframes hud-knockback {
+  0% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.hud-enemy-stage-hit {
+  animation:
+    hud-shake 0.3s ease,
+    hud-knockback 0.3s ease;
+}
+.hud-enemy-stage-hit .hud-combatant-icon {
+  animation: hud-flash-red 0.3s ease;
+}
+.hud-enemy-stage-critical {
+  animation:
+    hud-shake 0.42s ease,
+    hud-knockback 0.42s ease;
+}
+.hud-enemy-stage-critical .hud-combatant-icon {
+  transform: scale(1.15);
+}
+.hud-enemy-stage-miss {
+  opacity: 0.6;
+}
+/* Requisito 5 — Enemy Death: fade + escala + desaparecimento. */
+@keyframes hud-fade-scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+.hud-enemy-stage-dead {
+  animation: hud-fade-scale-out 0.6s ease forwards;
+}
+
+/* Requisito 8 — Floating Numbers: subida suave + fade + escala. A
+   duração vem do preset (Animation Controller) via `animationDuration`
+   inline (React) — esta regra só define o keyframe/timing-function. */
+@keyframes hud-floating-rise {
+  0% {
+    transform: translateY(0) scale(0.9);
+    opacity: 0;
+  }
+  15% {
+    transform: translateY(-6px) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-32px) scale(1);
+    opacity: 0;
+  }
+}
+.hud-floating-numbers .hud-floating-number {
+  animation-name: hud-floating-rise;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+
+/* Requisito 6/7 — Loot Popup/Equipment Popup: entrada preparada pra
+   animação futura (o Animation Controller já controla quando cada um
+   aparece/some; esta transição só suaviza a entrada). */
+@keyframes hud-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.hud-loot-popup,
+.hud-equipment-popup {
+  animation: hud-pop-in 0.25s ease;
+}
+
+/* Progression & Player Retention Phase I — toda a apresentação nova
+   consome só HudState/PresentationEvent/CombatAnimation, exatamente
+   como o resto do HUD; nenhuma regra de gameplay vive aqui. */
+.hud-permanent-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  padding: 0.5rem 0.75rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f2c14e;
+}
+.hud-permanent-stats-item {
+  white-space: nowrap;
+}
+
+.hud-xp-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.hud-xp-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #c4c7c5;
+}
+.hud-xp-bar-level {
+  font-weight: 700;
+  color: #f2c14e;
+}
+
+.hud-session-history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  padding: 0.6rem 0.75rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #c4c7c5;
+}
+
+.hud-session-summary {
+  padding: 1rem;
+  background: #14161d;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+}
+.hud-session-summary-title {
+  margin: 0 0 0.5rem;
+}
+.hud-session-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.4rem 1rem;
+  font-size: 0.9rem;
+  color: #c4c7c5;
+}
+
+.hud-level-up-banner {
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(90deg, rgba(242, 193, 78, 0.2), rgba(242, 193, 78, 0.05));
+  border: 1px solid #f2c14e;
+  border-radius: 8px;
+  min-width: 200px;
+  animation:
+    hud-pop-in 0.25s ease,
+    hud-level-up-glow 1.6s ease;
+}
+.hud-level-up-banner-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #f2c14e;
+}
+@keyframes hud-level-up-glow {
+  0%,
+  100% {
+    box-shadow: none;
+  }
+  30% {
+    box-shadow: 0 0 18px rgba(242, 193, 78, 0.6);
+  }
+}
+
+.hud-progression-celebration {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.hud-progression-celebration-item {
+  padding: 0.4rem 0.75rem;
+  background: rgba(242, 193, 78, 0.1);
+  border: 1px solid rgba(242, 193, 78, 0.4);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f2c14e;
+  animation: hud-pop-in 0.25s ease;
+}
+
+.hud-event-feed-item-LevelUp {
+  color: #f2c14e;
+  font-weight: 700;
+}
+
+/* Recovery & Adventure Flow Phase I — requisito 5: "número verde de
+   cura" já vem de graça do Floating Numbers existente
+   (.hud-floating-number-heal, Combat Feel & Animation System); esta
+   badge é só a "mensagem discreta" complementar, mesmo padrão visual
+   de .hud-progression-celebration-item (transitória, sem Animation
+   Controller). */
+.hud-recovery-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  background: rgba(126, 224, 129, 0.12);
+  border: 1px solid rgba(126, 224, 129, 0.4);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  animation: hud-pop-in 0.25s ease;
+  align-self: flex-start;
+}
+.hud-recovery-badge-label {
+  color: #9aa0a6;
+}
+.hud-recovery-badge-value {
+  color: #7ee081;
+  font-weight: 700;
+}
+
+.hud-event-feed-item-RecoveryApplied {
+  color: #7ee081;
+}
+
+/* Objectives, Missions & Player Goals Phase I — "Objetivo Atual" +
+   barra de progresso + banner de conclusão. Mesma convenção visual do
+   resto do HUD (cartão escuro com borda, sem cor nova inventada fora
+   do que já existe). */
+.progress-bar-objective {
+  height: 10px;
+}
+.progress-bar-objective .progress-bar-fill {
+  background: linear-gradient(90deg, #4285f4, #8ab4f8);
+}
+
+.hud-objective-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.75rem 1rem;
+  background: #0f1117;
+  border: 1px solid #2a2f3d;
+  border-radius: 8px;
+}
+.hud-objective-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.hud-objective-card-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9aa0a6;
+}
+.hud-objective-card-name {
+  font-weight: 700;
+  color: #8ab4f8;
+}
+.hud-objective-card-description {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #c4c7c5;
+}
+.hud-objective-card-progress {
+  align-self: flex-end;
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+
+.hud-objective-completed-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(90deg, rgba(66, 133, 244, 0.2), rgba(66, 133, 244, 0.05));
+  border: 1px solid #4285f4;
+  border-radius: 8px;
+  min-width: 200px;
+  animation:
+    hud-pop-in 0.25s ease,
+    hud-level-up-glow 1.5s ease;
+}
+.hud-objective-completed-banner-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #8ab4f8;
+}
+.hud-objective-completed-banner-reward {
+  font-size: 0.85rem;
+  color: #7ee081;
+  font-weight: 600;
+}
+
+.hud-event-feed-item-ObjectiveCompleted {
+  color: #8ab4f8;
+  font-weight: 700;
+}
+
+/* Biomes, Regions & World Progression Phase I — identidade visual do
+   bioma (region.biome.visualTheme) + banner de desbloqueio de região. */
+.hud-region-panel-themed {
+  border-left-width: 4px;
+}
+.hud-region-description {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: #9aa0a6;
+  font-style: italic;
+}
+
+.hud-region-unlock-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.7rem 1.1rem;
+  background: linear-gradient(90deg, rgba(139, 30, 63, 0.25), rgba(139, 30, 63, 0.05));
+  border: 1px solid #8b1e3f;
+  border-radius: 8px;
+  min-width: 220px;
+  animation:
+    hud-pop-in 0.25s ease,
+    hud-level-up-glow 1.8s ease;
+}
+.hud-region-unlock-banner-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9aa0a6;
+}
+.hud-region-unlock-banner-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #f28b82;
+}
+
+.hud-event-feed-item-RegionUnlocked {
+  color: #f28b82;
+  font-weight: 700;
+}
+.hud-event-feed-item-RegionEntered {
+  color: #9aa0a6;
+}
+
+/* Elites, Mini-Bosses & Risk/Reward Phase I — requisito 1/7: aura
+   visual (cor vem de HudEncounterInfo.auraColor via a custom property
+   --hud-aura-color, injetada inline pelo componente — nunca hardcoded
+   aqui, já que Elite/Mini-Boss têm cores diferentes). "Boss Hit"/"Elite
+   Hit" (enemy-boss-hit/enemy-elite-hit) já existiam preparados desde a
+   Sprint original de Animation — hoje é o dia em que EnemyStage.tsx
+   finalmente os alcança. */
+.hud-enemy-stage-elite-hit {
+  animation:
+    hud-shake 0.4s ease,
+    hud-knockback 0.4s ease;
+}
+.hud-enemy-stage-elite-hit .hud-combatant-icon {
+  animation: hud-flash-red 0.4s ease;
+  transform: scale(1.1);
+}
+.hud-enemy-stage-boss-hit {
+  animation:
+    hud-shake 0.5s ease,
+    hud-knockback 0.5s ease;
+}
+.hud-enemy-stage-boss-hit .hud-combatant-icon {
+  animation: hud-flash-red 0.5s ease;
+  transform: scale(1.15);
+}
+.hud-enemy-stage-aura {
+  box-shadow:
+    0 0 16px 4px var(--hud-aura-color, #ff8c1a),
+    0 0 32px 8px color-mix(in srgb, var(--hud-aura-color, #ff8c1a) 40%, transparent);
+  border-radius: 12px;
+  animation: hud-aura-pulse 1.4s ease-in-out infinite;
+}
+@keyframes hud-aura-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 16px 4px var(--hud-aura-color, #ff8c1a),
+      0 0 32px 8px color-mix(in srgb, var(--hud-aura-color, #ff8c1a) 40%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 22px 7px var(--hud-aura-color, #ff8c1a),
+      0 0 44px 12px color-mix(in srgb, var(--hud-aura-color, #ff8c1a) 55%, transparent);
+  }
+}
+
+/* Requisito 7 — banner de Elite/Mini-Boss (surgiu/derrotado), mesmo
+   padrão visual de hud-region-unlock-banner/hud-objective-completed-banner,
+   cor diferenciada por variante. */
+.hud-variant-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 8px;
+  min-width: 220px;
+  animation:
+    hud-pop-in 0.25s ease,
+    hud-level-up-glow 1.6s ease;
+}
+.hud-variant-banner-elite {
+  background: linear-gradient(90deg, rgba(255, 140, 26, 0.25), rgba(255, 140, 26, 0.05));
+  border: 1px solid #ff8c1a;
+}
+.hud-variant-banner-miniboss {
+  background: linear-gradient(90deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.05));
+  border: 1px solid #ffd700;
+}
+.hud-variant-banner-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9aa0a6;
+}
+.hud-variant-banner-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+.hud-variant-banner-elite .hud-variant-banner-title {
+  color: #ff8c1a;
+}
+.hud-variant-banner-miniboss .hud-variant-banner-title {
+  color: #ffd700;
+}
+
+.hud-event-feed-item-EliteEncounter,
+.hud-event-feed-item-EliteDefeated {
+  color: #ff8c1a;
+  font-weight: 700;
+}
+.hud-event-feed-item-MiniBossEncounter,
+.hud-event-feed-item-MiniBossDefeated {
+  color: #ffd700;
+  font-weight: 700;
+}
+
+/* World Events, Dynamic Encounters & Exploration Phase I — requisito 6:
+   "pequena seção" (Evento Mundial), mesmo estilo de hud-objective-card. */
+.hud-world-event-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 1rem;
+  background: rgba(129, 201, 149, 0.08);
+  border: 1px solid #81c995;
+  border-radius: 8px;
+}
+.hud-world-event-panel-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9aa0a6;
+}
+.hud-world-event-panel-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #81c995;
+}
+.hud-world-event-panel-description {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: #c4c7c5;
+  font-style: italic;
+}
+
+/* Requisito 7 — banner de World Event descoberto, mesmo padrão visual
+   de hud-variant-banner (Elite/Mini-Boss) — cor neutra por padrão,
+   com uma variação sutil por categoria via `hud-world-event-banner-*`. */
+.hud-world-event-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(90deg, rgba(129, 201, 149, 0.2), rgba(129, 201, 149, 0.05));
+  border: 1px solid #81c995;
+  border-radius: 8px;
+  min-width: 200px;
+  animation:
+    hud-pop-in 0.25s ease,
+    hud-level-up-glow 1.2s ease;
+}
+.hud-world-event-banner-icon {
+  font-size: 1.3rem;
+}
+.hud-world-event-banner-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #81c995;
+}
+.hud-world-event-banner-ambush {
+  background: linear-gradient(90deg, rgba(242, 139, 130, 0.2), rgba(242, 139, 130, 0.05));
+  border-color: #f28b82;
+}
+.hud-world-event-banner-ambush .hud-world-event-banner-title {
+  color: #f28b82;
+}
+
+.hud-event-feed-item-WorldEventStarted,
+.hud-event-feed-item-WorldEventCompleted,
+.hud-event-feed-item-TreasureOpened,
+.hud-event-feed-item-MerchantFound,
+.hud-event-feed-item-ShrineBlessing,
+.hud-event-feed-item-DiscoveryMade {
+  color: #81c995;
+  font-weight: 700;
+}
+.hud-event-feed-item-AmbushTriggered {
+  color: #f28b82;
+  font-weight: 700;
+}
+
+/* Expeditions, Checkpoints & Long Session Progression Phase I —
+   requisito 7: cartão compacto e persistente (não some sozinho, só via
+   deriveExpeditionProgress voltando null), mesmo estilo de
+   hud-objective-card/hud-world-event-panel. */
+.hud-expedition-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.6rem 1rem;
+  background: rgba(245, 193, 92, 0.08);
+  border: 1px solid #f5c15c;
+  border-radius: 8px;
+}
+.hud-expedition-card-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.hud-expedition-card-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9aa0a6;
+}
+.hud-expedition-card-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #f5c15c;
+}
+.hud-expedition-card-checkpoint {
+  font-size: 0.85rem;
+  color: #c4c7c5;
+}
+.hud-expedition-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: #9aa0a6;
+}
+
+/* Requisito 8 — banner de checkpoint/conclusão/falha, mesmo padrão
+   visual de hud-world-event-banner/hud-variant-banner. */
+.hud-expedition-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(90deg, rgba(245, 193, 92, 0.2), rgba(245, 193, 92, 0.05));
+  border: 1px solid #f5c15c;
+  border-radius: 8px;
+  min-width: 200px;
+  animation:
+    hud-pop-in 0.25s ease,
+    hud-level-up-glow 1.2s ease;
+}
+.hud-expedition-banner-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9aa0a6;
+}
+.hud-expedition-banner-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #f5c15c;
+}
+.hud-expedition-banner-detail {
+  font-size: 0.85rem;
+  color: #c4c7c5;
+}
+.hud-expedition-banner-failed {
+  background: linear-gradient(90deg, rgba(242, 139, 130, 0.2), rgba(242, 139, 130, 0.05));
+  border-color: #f28b82;
+}
+.hud-expedition-banner-failed .hud-expedition-banner-title {
+  color: #f28b82;
+}
+
+.hud-event-feed-item-ExpeditionStarted,
+.hud-event-feed-item-ExpeditionCheckpointReached,
+.hud-event-feed-item-ExpeditionCompleted {
+  color: #f5c15c;
+  font-weight: 700;
+}
+.hud-event-feed-item-ExpeditionFailed {
+  color: #f28b82;
+  font-weight: 700;
+}
+
+/* Factions, Reputation & World Consequences Phase I — requisito 5:
+   "Facção Atual / barra / rank" — cartão persistente, mesmo estilo de
+   hud-expedition-card. */
+.hud-faction-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.6rem 1rem;
+  background: rgba(179, 136, 235, 0.08);
+  border: 1px solid #b388eb;
+  border-radius: 8px;
+}
+.hud-faction-card-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.hud-faction-card-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9aa0a6;
+}
+.hud-faction-card-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #b388eb;
+}
+.hud-faction-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+.hud-faction-card-rank {
+  font-weight: 700;
+  color: #c4c7c5;
+}
+.hud-faction-card-next {
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+
+/* Requisito 6 — banner de subida de rank, mesmo padrão visual de
+   hud-expedition-banner/hud-world-event-banner. */
+.hud-faction-rankup-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(90deg, rgba(179, 136, 235, 0.2), rgba(179, 136, 235, 0.05));
+  border: 1px solid #b388eb;
+  border-radius: 8px;
+  min-width: 200px;
+  animation:
+    hud-pop-in 0.25s ease,
+    hud-level-up-glow 1.2s ease;
+}
+.hud-faction-rankup-banner-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9aa0a6;
+}
+.hud-faction-rankup-banner-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #b388eb;
+}
+.hud-faction-rankup-banner-detail {
+  font-size: 0.85rem;
+  color: #c4c7c5;
+}
+
+.hud-event-feed-item-ReputationChanged {
+  color: #b388eb;
+}
+.hud-event-feed-item-ReputationRankUp {
+  color: #b388eb;
+  font-weight: 700;
+}
+
+/* First Dungeon, Final Boss & Complete Game Loop Phase I — requisito
+   8: seção "BOSS FINAL" dentro do hud-expedition-card, "apenas quando
+   aplicável". Paleta vermelho/dourado (mesma de .progress-bar-boss),
+   sinalizando "o encontro mais sério da Expedição". */
+.hud-expedition-card-boss {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(234, 67, 53, 0.3);
+}
+.hud-expedition-card-boss-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #ea4335;
+  font-weight: 700;
+}
+.hud-expedition-card-boss-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fbbc04;
+}
+
+/* Requisito 9 — banner de surgimento/derrota do Chefe Final, mesmo
+   padrão visual de hud-variant-banner (Elite/Mini-Boss), só que na
+   paleta vermelho/dourado do Boss. */
+.hud-final-boss-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(90deg, rgba(234, 67, 53, 0.25), rgba(251, 188, 4, 0.08));
+  border: 1px solid #ea4335;
+  border-radius: 8px;
+  min-width: 200px;
+  animation:
+    hud-pop-in 0.25s ease,
+    hud-level-up-glow 1.2s ease;
+}
+.hud-final-boss-banner-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9aa0a6;
+}
+.hud-final-boss-banner-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fbbc04;
+}
+.hud-final-boss-banner-detail {
+  font-size: 0.85rem;
+  color: #c4c7c5;
+}
+.hud-final-boss-banner-defeated {
+  background: linear-gradient(90deg, rgba(251, 188, 4, 0.25), rgba(234, 67, 53, 0.08));
+}
+
+/* Requisito 9 — "resumo especial da Expedição": banner de conclusão de
+   Dungeon, o mais dramático de todos (topo da hierarquia de
+   animação/prioridade, ver animation/presets.ts). */
+.hud-dungeon-completed-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, rgba(234, 67, 53, 0.3), rgba(251, 188, 4, 0.15));
+  border: 2px solid #fbbc04;
+  border-radius: 12px;
+  min-width: 240px;
+  text-align: center;
+  animation:
+    hud-pop-in 0.3s ease,
+    hud-level-up-glow 1.5s ease;
+}
+.hud-dungeon-completed-banner-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #fbbc04;
+  font-weight: 700;
+}
+.hud-dungeon-completed-banner-title {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #ffffff;
+}
+.hud-dungeon-completed-banner-detail {
+  font-size: 0.9rem;
+  color: #e8eaed;
+}
+
+.hud-event-feed-item-FinalBossEncounter,
+.hud-event-feed-item-FinalBossDefeated,
+.hud-event-feed-item-DungeonCompleted {
+  color: #fbbc04;
+  font-weight: 700;
 }

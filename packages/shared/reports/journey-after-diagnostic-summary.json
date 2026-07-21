@@ -1,0 +1,1215 @@
+{
+  "adventures": {
+    "totalRuns": 2000,
+    "survival": {
+      "averageSeconds": 614.075,
+      "minSeconds": 242,
+      "maxSeconds": 616,
+      "deathRate": 0.0095,
+      "averageHpPercent": 69.73126820870027,
+      "minHpPercentObserved": 0,
+      "deathsByElite": 4,
+      "deathsByMiniBoss": 0,
+      "deathsByBoss": 0,
+      "deathsByNormal": 15
+    },
+    "progression": {
+      "averageFinalLevel": 4.1735,
+      "levelDistribution": {
+        "2": 4,
+        "3": 193,
+        "4": 1256,
+        "5": 546,
+        "6": 1
+      },
+      "averageXpGained": 1207.538,
+      "xpPerMinute": 117.86566149792483,
+      "goldPerMinute": 7.024405236576301,
+      "lootPerMinute": 1.5546998052120697,
+      "averageSecondsToFirstElite": 285.48465266558964,
+      "averageSecondsToFirstMiniBoss": 286.89096573208724,
+      "averageSecondsToFirstWorldEvent": 203.7396449704142,
+      "averageSecondsToFirstItem": 19.701,
+      "averageSecondsToFirstExpeditionCompletion": 242,
+      "averageSecondsToFirstDungeonStart": 132.9383886255924,
+      "averageSecondsToFirstBossEncounter": 0,
+      "averageSecondsToFirstBossDefeat": 0
+    },
+    "loot": {
+      "averageItemsFound": 15.911,
+      "averageItemsEquipped": 2.85,
+      "rarityCounts": {
+        "common": 20401,
+        "magic": 10322,
+        "rare": 3233,
+        "unique": 127
+      },
+      "averageRarityScore": 0.5037408678813484,
+      "averageItemsNeverUsed": 13.061,
+      "averageGoldAccumulated": 72.0035,
+      "slotAveragePowerScore": {
+        "boots": 22.949957591178965,
+        "weapon": 49.787795492028586,
+        "gloves": 19.11320754716981,
+        "belt": 13.722972972972974,
+        "ring1": 9.100840336134453,
+        "amulet": 3,
+        "ring2": 7.5
+      },
+      "weakestSlotId": "amulet"
+    },
+    "combat": {
+      "averageDamageDealt": 3611.0863395703946,
+      "averageDamageTaken": 152.96491064990195,
+      "averageEncountersCompleted": 27.903
+    },
+    "recovery": {
+      "averageLifeRecovered": 54.12857067763428,
+      "averageLifeLost": 152.96491064990195,
+      "efficiency": 0.35386266332362265,
+      "averageOverheal": 0
+    },
+    "objectives": {
+      "averageObjectivesCompleted": 1.819,
+      "averageSecondsPerObjective": 107.27872457394173,
+      "averageFirstObjectiveSeconds": 63.657,
+      "averageXpBonusGranted": 88.34,
+      "completionRate": 0.645264278112806
+    },
+    "perRegion": [
+      {
+        "regionId": "bosque-sussurrante",
+        "runs": 2000,
+        "deaths": 19,
+        "deathRate": 0.0095,
+        "averageSurvivalSeconds": 614.075,
+        "averageFinalLevel": 4.1735
+      }
+    ],
+    "regionProgression": [
+      {
+        "regionId": "bosque-sussurrante",
+        "runsReached": 2000,
+        "reachRate": 1,
+        "averageSecondsSpent": 597.443,
+        "deaths": 18,
+        "deathRate": 0.009,
+        "averageItemsFound": 16.519,
+        "averageObjectivesCompleted": 1.7885,
+        "averageHpPercent": 70.25348067016293,
+        "averageDamageDealt": 3494.051738479545,
+        "averageDamageTaken": 148.89318751768465,
+        "averageRecoveryReceived": 52.23874241000081,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 4,
+        "deathsByMiniBoss": 0,
+        "deathsByBoss": 0,
+        "deathsByNormal": 14
+      },
+      {
+        "regionId": "pantano-podre",
+        "runsReached": 547,
+        "reachRate": 0.2735,
+        "averageSecondsSpent": 60.81170018281536,
+        "deaths": 1,
+        "deathRate": 0.0018281535648994515,
+        "averageItemsFound": 1.910420475319927,
+        "averageObjectivesCompleted": 0.11151736745886655,
+        "averageHpPercent": 50.97271965088403,
+        "averageDamageDealt": 427.91444640165724,
+        "averageDamageTaken": 14.887470318893541,
+        "averageRecoveryReceived": 6.909792569043766,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 0,
+        "deathsByMiniBoss": 0,
+        "deathsByBoss": 0,
+        "deathsByNormal": 1
+      }
+    ],
+    "eliteMiniBoss": {
+      "elite": {
+        "totalEncountered": 1631,
+        "totalDefeated": 1627,
+        "winRate": 0.9975475168608215,
+        "runsWithEncounter": 1238,
+        "frequency": 0.619
+      },
+      "miniBoss": {
+        "totalEncountered": 406,
+        "totalDefeated": 406,
+        "winRate": 1,
+        "runsWithEncounter": 321,
+        "frequency": 0.1605
+      },
+      "averageVariantXpBonus": 76.713
+    },
+    "worldEvents": {
+      "totalEncountered": 4793,
+      "averagePerRun": 2.3965,
+      "frequency": 0.9295,
+      "perCategory": [
+        {
+          "category": "shrine",
+          "totalEncountered": 835,
+          "averagePerRun": 0.4175,
+          "frequency": 0.3445
+        },
+        {
+          "category": "merchant",
+          "totalEncountered": 1380,
+          "averagePerRun": 0.69,
+          "frequency": 0.5175
+        },
+        {
+          "category": "ambush",
+          "totalEncountered": 728,
+          "averagePerRun": 0.364,
+          "frequency": 0.3405
+        },
+        {
+          "category": "treasure",
+          "totalEncountered": 1649,
+          "averagePerRun": 0.8245,
+          "frequency": 0.572
+        },
+        {
+          "category": "discovery",
+          "totalEncountered": 201,
+          "averagePerRun": 0.1005,
+          "frequency": 0.092
+        }
+      ],
+      "averageGoldGained": 34.31,
+      "averageXpGained": 3.6225,
+      "averageLootItemsGained": 1.1305,
+      "averageRecoveryGained": 9.59305019929167,
+      "deathRateWithEvents": 0.004841312533620226,
+      "deathRateWithoutEvents": 0.07092198581560284
+    },
+    "expeditions": {
+      "totalStarted": 3471,
+      "totalCompleted": 1471,
+      "totalFailed": 19,
+      "completionRate": 0.4237971766061654,
+      "averageCheckpointsReached": 9.357046979865771,
+      "averageDurationSeconds": 243.3558648111332,
+      "averageXpGained": 147.1,
+      "averageGoldGained": 36.775
+    },
+    "factions": {
+      "perFaction": [
+        {
+          "factionId": "guardioes-da-floresta",
+          "factionName": "Guardiões da Floresta",
+          "averageFinalReputation": 14.2865,
+          "rankDistribution": {
+            "neutro": 1006,
+            "amigavel": 994
+          }
+        },
+        {
+          "factionId": "mercadores-livres",
+          "factionName": "Mercadores Livres",
+          "averageFinalReputation": 3.45,
+          "rankDistribution": {
+            "neutro": 1953,
+            "amigavel": 47
+          }
+        },
+        {
+          "factionId": "culto-das-ruinas",
+          "factionName": "Culto das Ruínas",
+          "averageFinalReputation": 0.804,
+          "rankDistribution": {
+            "neutro": 1984,
+            "amigavel": 16
+          }
+        },
+        {
+          "factionId": "legiao-sombria",
+          "factionName": "Legião Sombria",
+          "averageFinalReputation": 2.03,
+          "rankDistribution": {
+            "neutro": 1915,
+            "amigavel": 85
+          }
+        }
+      ],
+      "averageReputationEventsPerRun": 2.5425,
+      "averageRankUpsPerRun": 0.571,
+      "averageXpBonusGranted": 2.385,
+      "averageGoldBonusGranted": 0.7155,
+      "averageSecondsToAmigavel": 275.57677902621725,
+      "averageSecondsToRespeitado": 0
+    },
+    "dungeon": {
+      "totalStarted": 1688,
+      "totalCompleted": 0,
+      "totalFailed": 16,
+      "completionRate": 0,
+      "bossEncountered": 0,
+      "bossDefeated": 0,
+      "bossWinRate": 1,
+      "averageDurationSeconds": 330,
+      "averageXpGranted": 0,
+      "averageGoldGranted": 0,
+      "averageReputationGranted": 0,
+      "averageEncountersCompleted": 15,
+      "averageCheckpointsUsed": 5.460308056872038,
+      "averageRecoveryReceived": 43.190353306291875,
+      "averageRecoveryWasted": 0,
+      "averageCheckpointHpBeforePercent": 68.29880851821906,
+      "averageCheckpointHpAfterPercent": 71.0122702858189,
+      "deathsBeforeBoss": 0,
+      "deathsAtBoss": 0,
+      "boss": {
+        "averageDamageDealtPerFight": 0,
+        "averageDamageTakenPerFight": 0,
+        "averageDpsDealt": 0,
+        "averageDpsTaken": 0,
+        "averageHealthPercentAfterDefeat": 0,
+        "averageRecoveryCountBeforeFight": 0,
+        "averageSecondsUntilEncountered": 0,
+        "fightDurationSeconds": 22,
+        "completionRateWithBossEncountered": 0,
+        "completionRateWithoutBossEncountered": 0,
+        "arrivalRate": 0,
+        "averageSecondsUntilDefeated": 0
+      }
+    },
+    "equipmentProgression": {
+      "averageSecondsToFirstUpgrade": 133.5832913940614,
+      "averageUpgradeCount": 2.8385,
+      "upgradesPerMinute": 0.27778280670685557,
+      "averageLongestGapWithoutUpgradeSeconds": 350.647,
+      "lootDesertRate": 0.015
+    },
+    "rhythm": {
+      "averageCombatSeconds": 460.504,
+      "averageRecoverySeconds": 0,
+      "averageExplorationSeconds": 0,
+      "averageCheckpointSeconds": 153.362,
+      "averageBossSeconds": 0
+    },
+    "journeyTimeline": [
+      {
+        "label": "Primeiro combate",
+        "averageSeconds": 22
+      },
+      {
+        "label": "Primeiro item",
+        "averageSeconds": 19.701
+      },
+      {
+        "label": "Primeiro upgrade",
+        "averageSeconds": 133.5832913940614
+      },
+      {
+        "label": "Primeiro Elite",
+        "averageSeconds": 285.48465266558964
+      },
+      {
+        "label": "Primeira Expedição concluída",
+        "averageSeconds": 242
+      },
+      {
+        "label": "Primeiro Evento Mundial",
+        "averageSeconds": 203.7396449704142
+      },
+      {
+        "label": "Primeiro Mini-Boss",
+        "averageSeconds": 286.89096573208724
+      },
+      {
+        "label": "Primeira Dungeon",
+        "averageSeconds": 132.9383886255924
+      },
+      {
+        "label": "Primeiro Chefe Final avistado",
+        "averageSeconds": 0
+      },
+      {
+        "label": "Primeiro Chefe Final derrotado",
+        "averageSeconds": 0
+      }
+    ],
+    "recommendations": [
+      "Região \"minas-abandonadas\" (bioma #3) nunca foi alcançada em nenhuma execução — progressão pode estar travada antes dela.",
+      "Região \"ruinas-esquecidas\" (bioma #4) nunca foi alcançada em nenhuma execução — progressão pode estar travada antes dela.",
+      "Região \"fortaleza-sombria\" (bioma #5) nunca foi alcançada em nenhuma execução — progressão pode estar travada antes dela.",
+      "Região \"colinas-aridas\" (bioma #6) nunca foi alcançada em nenhuma execução — progressão pode estar travada antes dela.",
+      "Elite com taxa de vitória de 100% (1627/1631) — candidato a modificador Elite trivial (quase nunca representa risco real).",
+      "Facção \"Mercadores Livres\" permanece no rank inicial (Neutro) em 98% das execuções — reputação pode estar subindo devagar demais.",
+      "Facção \"Culto das Ruínas\" permanece no rank inicial (Neutro) em 99% das execuções — reputação pode estar subindo devagar demais.",
+      "Facção \"Legião Sombria\" permanece no rank inicial (Neutro) em 96% das execuções — reputação pode estar subindo devagar demais.",
+      "Chefe Final nunca apareceu em 1688 tentativas de Dungeon — frequência de aparição pode estar zerada por engano.",
+      "Taxa de conclusão de Dungeons de apenas 0% (0/1688) — candidata a Dungeon longa/difícil demais.",
+      "Dungeon com média de 15 encontros por execução — abaixo do alvo de 40-70, candidata a Dungeon curta demais.",
+      "Ouro acumula a 7.0/min mas não há Marketplace/loja implementados nesta Sprint — ouro atualmente sem utilidade de gasto (gargalo estrutural, fora do escopo desta Sprint).",
+      "Slot \"amulet\" com Power Score médio de 3.0 (demais slots: 20.4) — candidato a slot abandonado.",
+      "Apenas 0% das tentativas de Dungeon chegam a avistar o Chefe Final — poucos jogadores alcançam o Boss."
+    ]
+  },
+  "expeditions": {
+    "totalRuns": 1000,
+    "survival": {
+      "averageSeconds": 3511.002,
+      "minSeconds": 22,
+      "maxSeconds": 12012,
+      "deathRate": 0.725,
+      "averageHpPercent": 83.59465233971434,
+      "minHpPercentObserved": 0,
+      "deathsByElite": 109,
+      "deathsByMiniBoss": 86,
+      "deathsByBoss": 5,
+      "deathsByNormal": 525
+    },
+    "progression": {
+      "averageFinalLevel": 9.95,
+      "levelDistribution": {
+        "1": 462,
+        "2": 120,
+        "3": 25,
+        "4": 30,
+        "5": 15,
+        "6": 13,
+        "7": 14,
+        "8": 6,
+        "10": 2,
+        "11": 2,
+        "12": 24,
+        "13": 5,
+        "14": 1,
+        "15": 2,
+        "16": 3,
+        "17": 1,
+        "30": 275
+      },
+      "averageXpGained": 107031.313,
+      "xpPerMinute": 575.1549526571284,
+      "goldPerMinute": 8.928937631877192,
+      "lootPerMinute": 0.4726382178194538,
+      "averageSecondsToFirstElite": 308.4313725490196,
+      "averageSecondsToFirstMiniBoss": 273.55805243445695,
+      "averageSecondsToFirstWorldEvent": 203.08986615678776,
+      "averageSecondsToFirstItem": 45.84186046511628,
+      "averageSecondsToFirstExpeditionCompletion": 290.74937965260546,
+      "averageSecondsToFirstDungeonStart": 361.1384615384615,
+      "averageSecondsToFirstBossEncounter": 2288,
+      "averageSecondsToFirstBossDefeat": 0
+    },
+    "loot": {
+      "averageItemsFound": 9.712,
+      "averageItemsEquipped": 1.762,
+      "rarityCounts": {
+        "common": 5817,
+        "magic": 3065,
+        "rare": 1179,
+        "unique": 75
+      },
+      "averageRarityScore": 0.5572217837411207,
+      "averageItemsNeverUsed": 7.95,
+      "averageGoldAccumulated": 1335.954,
+      "slotAveragePowerScore": {
+        "boots": 23.357142857142858,
+        "weapon": 55.123505976095615,
+        "gloves": 20.958333333333332,
+        "ring1": 16.612676056338028,
+        "belt": 14.306930693069306,
+        "ring2": 10.19718309859155,
+        "amulet": 12,
+        "chest": 39.10344827586207,
+        "helmet": 24.555555555555557
+      },
+      "weakestSlotId": "ring2"
+    },
+    "combat": {
+      "averageDamageDealt": 37310.73114039571,
+      "averageDamageTaken": 1290.6727472949742,
+      "averageEncountersCompleted": 158.866
+    },
+    "recovery": {
+      "averageLifeRecovered": 697.4631614704923,
+      "averageLifeLost": 1290.6727472949742,
+      "efficiency": 0.5403873002914594,
+      "averageOverheal": 0
+    },
+    "objectives": {
+      "averageObjectivesCompleted": 1.399,
+      "averageSecondsPerObjective": 528.3145103645461,
+      "averageFirstObjectiveSeconds": 93.53928571428571,
+      "averageXpBonusGranted": 86.87,
+      "completionRate": 0.5831596498541058
+    },
+    "perRegion": [
+      {
+        "regionId": "bosque-sussurrante",
+        "runs": 200,
+        "deaths": 53,
+        "deathRate": 0.265,
+        "averageSurvivalSeconds": 9275.09,
+        "averageFinalLevel": 24.56
+      },
+      {
+        "regionId": "pantano-podre",
+        "runs": 200,
+        "deaths": 74,
+        "deathRate": 0.37,
+        "averageSurvivalSeconds": 7869.51,
+        "averageFinalLevel": 20.96
+      },
+      {
+        "regionId": "colinas-aridas",
+        "runs": 200,
+        "deaths": 200,
+        "deathRate": 1,
+        "averageSurvivalSeconds": 28.49,
+        "averageFinalLevel": 1
+      },
+      {
+        "regionId": "minas-abandonadas",
+        "runs": 200,
+        "deaths": 200,
+        "deathRate": 1,
+        "averageSurvivalSeconds": 33.44,
+        "averageFinalLevel": 1
+      },
+      {
+        "regionId": "ruinas-esquecidas",
+        "runs": 200,
+        "deaths": 198,
+        "deathRate": 0.99,
+        "averageSurvivalSeconds": 348.48,
+        "averageFinalLevel": 2.23
+      }
+    ],
+    "regionProgression": [
+      {
+        "regionId": "bosque-sussurrante",
+        "runsReached": 200,
+        "reachRate": 0.2,
+        "averageSecondsSpent": 614.68,
+        "deaths": 7,
+        "deathRate": 0.035,
+        "averageItemsFound": 16.695,
+        "averageObjectivesCompleted": 1.84,
+        "averageHpPercent": 67.8432186340058,
+        "averageDamageDealt": 3453.211683711603,
+        "averageDamageTaken": 160.8198503362884,
+        "averageRecoveryReceived": 52.71224477048906,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 3,
+        "deathsByMiniBoss": 1,
+        "deathsByBoss": 0,
+        "deathsByNormal": 3
+      },
+      {
+        "regionId": "pantano-podre",
+        "runsReached": 393,
+        "reachRate": 0.393,
+        "averageSecondsSpent": 1446.6259541984732,
+        "deaths": 84,
+        "deathRate": 0.21374045801526717,
+        "averageItemsFound": 15.254452926208652,
+        "averageObjectivesCompleted": 1.340966921119593,
+        "averageHpPercent": 60.25424872644073,
+        "averageDamageDealt": 10074.020743851936,
+        "averageDamageTaken": 320.1382139302523,
+        "averageRecoveryReceived": 176.56408329151145,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 30,
+        "deathsByMiniBoss": 0,
+        "deathsByBoss": 0,
+        "deathsByNormal": 54
+      },
+      {
+        "regionId": "minas-abandonadas",
+        "runsReached": 509,
+        "reachRate": 0.509,
+        "averageSecondsSpent": 26.4950884086444,
+        "deaths": 217,
+        "deathRate": 0.4263261296660118,
+        "averageItemsFound": 0.1237721021611002,
+        "averageObjectivesCompleted": 0.0137524557956778,
+        "averageHpPercent": 48.09761989966154,
+        "averageDamageDealt": 249.63750238589733,
+        "averageDamageTaken": 68.50669819954973,
+        "averageRecoveryReceived": 2.551059921414543,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 12,
+        "deathsByMiniBoss": 5,
+        "deathsByBoss": 0,
+        "deathsByNormal": 200
+      },
+      {
+        "regionId": "ruinas-esquecidas",
+        "runsReached": 492,
+        "reachRate": 0.492,
+        "averageSecondsSpent": 5691.784552845528,
+        "deaths": 217,
+        "deathRate": 0.4410569105691057,
+        "averageItemsFound": 1.4593495934959348,
+        "averageObjectivesCompleted": 1.0101626016260163,
+        "averageHpPercent": 89.29486625886892,
+        "averageDamageDealt": 66069.15024524712,
+        "averageDamageTaken": 2165.9251929482293,
+        "averageRecoveryReceived": 1252.3395330951905,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 50,
+        "deathsByMiniBoss": 77,
+        "deathsByBoss": 5,
+        "deathsByNormal": 85
+      },
+      {
+        "regionId": "colinas-aridas",
+        "runsReached": 200,
+        "reachRate": 0.2,
+        "averageSecondsSpent": 28.49,
+        "deaths": 200,
+        "deathRate": 1,
+        "averageItemsFound": 0.105,
+        "averageObjectivesCompleted": 0,
+        "averageHpPercent": 8.530353555761323,
+        "averageDamageDealt": 139.55620971749528,
+        "averageDamageTaken": 160.94677419512047,
+        "averageRecoveryReceived": 0.4074399999999997,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 14,
+        "deathsByMiniBoss": 3,
+        "deathsByBoss": 0,
+        "deathsByNormal": 183
+      }
+    ],
+    "eliteMiniBoss": {
+      "elite": {
+        "totalEncountered": 671,
+        "totalDefeated": 562,
+        "winRate": 0.8375558867362146,
+        "runsWithEncounter": 408,
+        "frequency": 0.408
+      },
+      "miniBoss": {
+        "totalEncountered": 398,
+        "totalDefeated": 307,
+        "winRate": 0.7713567839195979,
+        "runsWithEncounter": 267,
+        "frequency": 0.267
+      },
+      "averageVariantXpBonus": 93.407
+    },
+    "worldEvents": {
+      "totalEncountered": 14033,
+      "averagePerRun": 14.033,
+      "frequency": 0.523,
+      "perCategory": [
+        {
+          "category": "shrine",
+          "totalEncountered": 2658,
+          "averagePerRun": 2.658,
+          "frequency": 0.343
+        },
+        {
+          "category": "ambush",
+          "totalEncountered": 1335,
+          "averagePerRun": 1.335,
+          "frequency": 0.374
+        },
+        {
+          "category": "merchant",
+          "totalEncountered": 362,
+          "averagePerRun": 0.362,
+          "frequency": 0.237
+        },
+        {
+          "category": "treasure",
+          "totalEncountered": 3914,
+          "averagePerRun": 3.914,
+          "frequency": 0.385
+        },
+        {
+          "category": "discovery",
+          "totalEncountered": 5764,
+          "averagePerRun": 5.764,
+          "frequency": 0.378
+        }
+      ],
+      "averageGoldGained": 148.07,
+      "averageXpGained": 263.245,
+      "averageLootItemsGained": 0.424,
+      "averageRecoveryGained": 18.85995670742678,
+      "deathRateWithEvents": 0.47418738049713194,
+      "deathRateWithoutEvents": 1
+    },
+    "expeditions": {
+      "totalStarted": 8135,
+      "totalCompleted": 7140,
+      "totalFailed": 725,
+      "completionRate": 0.8776889981561156,
+      "averageCheckpointsReached": 4.235855054036872,
+      "averageDurationSeconds": 233.09505641413702,
+      "averageXpGained": 3866.34,
+      "averageGoldGained": 1019.08
+    },
+    "factions": {
+      "perFaction": [
+        {
+          "factionId": "guardioes-da-floresta",
+          "factionName": "Guardiões da Floresta",
+          "averageFinalReputation": 28.108,
+          "rankDistribution": {
+            "honrado": 168,
+            "amigavel": 172,
+            "respeitado": 49,
+            "neutro": 611
+          }
+        },
+        {
+          "factionId": "mercadores-livres",
+          "factionName": "Mercadores Livres",
+          "averageFinalReputation": 1.81,
+          "rankDistribution": {
+            "neutro": 977,
+            "amigavel": 23
+          }
+        },
+        {
+          "factionId": "culto-das-ruinas",
+          "factionName": "Culto das Ruínas",
+          "averageFinalReputation": 127.097,
+          "rankDistribution": {
+            "lendario": 275,
+            "neutro": 690,
+            "amigavel": 29,
+            "respeitado": 6
+          }
+        },
+        {
+          "factionId": "legiao-sombria",
+          "factionName": "Legião Sombria",
+          "averageFinalReputation": 3.325,
+          "rankDistribution": {
+            "amigavel": 61,
+            "neutro": 936,
+            "respeitado": 3
+          }
+        }
+      ],
+      "averageReputationEventsPerRun": 14.135,
+      "averageRankUpsPerRun": 2.005,
+      "averageXpBonusGranted": 573.058,
+      "averageGoldBonusGranted": 152.098,
+      "averageSecondsToAmigavel": 273.88990825688074,
+      "averageSecondsToRespeitado": 2311.5663430420714
+    },
+    "dungeon": {
+      "totalStarted": 130,
+      "totalCompleted": 0,
+      "totalFailed": 31,
+      "completionRate": 0,
+      "bossEncountered": 5,
+      "bossDefeated": 0,
+      "bossWinRate": 0,
+      "averageDurationSeconds": 1333.483870967742,
+      "averageXpGranted": 0,
+      "averageGoldGranted": 0,
+      "averageReputationGranted": 0,
+      "averageEncountersCompleted": 60.612903225806456,
+      "averageCheckpointsUsed": 44.62307692307692,
+      "averageRecoveryReceived": 628.7644279394469,
+      "averageRecoveryWasted": 0,
+      "averageCheckpointHpBeforePercent": 82.15237347208596,
+      "averageCheckpointHpAfterPercent": 85.10151929754305,
+      "deathsBeforeBoss": 0,
+      "deathsAtBoss": 0,
+      "boss": {
+        "averageDamageDealtPerFight": 0,
+        "averageDamageTakenPerFight": 0,
+        "averageDpsDealt": 0,
+        "averageDpsTaken": 0,
+        "averageHealthPercentAfterDefeat": 0,
+        "averageRecoveryCountBeforeFight": 102.6,
+        "averageSecondsUntilEncountered": 2288,
+        "fightDurationSeconds": 22,
+        "completionRateWithBossEncountered": 0,
+        "completionRateWithoutBossEncountered": 0,
+        "arrivalRate": 0.005,
+        "averageSecondsUntilDefeated": 0
+      }
+    },
+    "equipmentProgression": {
+      "averageSecondsToFirstUpgrade": 120.43589743589743,
+      "averageUpgradeCount": 1.745,
+      "upgradesPerMinute": 0.1294379601607073,
+      "averageLongestGapWithoutUpgradeSeconds": 3280.794,
+      "lootDesertRate": 0.328
+    },
+    "rhythm": {
+      "averageCombatSeconds": 2762.122,
+      "averageRecoverySeconds": 0,
+      "averageExplorationSeconds": 0,
+      "averageCheckpointSeconds": 732.93,
+      "averageBossSeconds": 0.11
+    },
+    "journeyTimeline": [
+      {
+        "label": "Primeiro combate",
+        "averageSeconds": 22
+      },
+      {
+        "label": "Primeiro item",
+        "averageSeconds": 45.84186046511628
+      },
+      {
+        "label": "Primeiro upgrade",
+        "averageSeconds": 120.43589743589743
+      },
+      {
+        "label": "Primeiro Elite",
+        "averageSeconds": 308.4313725490196
+      },
+      {
+        "label": "Primeira Expedição concluída",
+        "averageSeconds": 290.74937965260546
+      },
+      {
+        "label": "Primeiro Evento Mundial",
+        "averageSeconds": 203.08986615678776
+      },
+      {
+        "label": "Primeiro Mini-Boss",
+        "averageSeconds": 273.55805243445695
+      },
+      {
+        "label": "Primeira Dungeon",
+        "averageSeconds": 361.1384615384615
+      },
+      {
+        "label": "Primeiro Chefe Final avistado",
+        "averageSeconds": 2288
+      },
+      {
+        "label": "Primeiro Chefe Final derrotado",
+        "averageSeconds": 0
+      }
+    ],
+    "recommendations": [
+      "Região \"colinas-aridas\" com taxa de morte de 100% (média geral: 73%) — candidata a região excessivamente difícil.",
+      "Região \"minas-abandonadas\" com taxa de morte de 100% (média geral: 73%) — candidata a região excessivamente difícil.",
+      "Região \"ruinas-esquecidas\" com taxa de morte de 99% (média geral: 73%) — candidata a região excessivamente difícil.",
+      "Taxa de morte de 73% acima do alvo de 30% — recuperação entre encontros pode estar insuficiente.",
+      "Região \"colinas-aridas\" com taxa de morte de 100% entre quem a alcançou — candidata a região impossível.",
+      "Região \"fortaleza-sombria\" (bioma #5) nunca foi alcançada em nenhuma execução — progressão pode estar travada antes dela.",
+      "Facção \"Mercadores Livres\" permanece no rank inicial (Neutro) em 98% das execuções — reputação pode estar subindo devagar demais.",
+      "Facção \"Legião Sombria\" permanece no rank inicial (Neutro) em 94% das execuções — reputação pode estar subindo devagar demais.",
+      "Chefe Final com taxa de vitória de apenas 0% (0/5) — candidato a Chefe Final frustrante (limiar: <=40%).",
+      "Taxa de conclusão de Dungeons de apenas 0% (0/130) — candidata a Dungeon longa/difícil demais.",
+      "Chefe Final arriscado (0% de vitória) mas com recompensa de XP equivalente a apenas 0% da XP média total — recompensa desproporcional ao risco.",
+      "Ouro acumula a 8.9/min mas não há Marketplace/loja implementados nesta Sprint — ouro atualmente sem utilidade de gasto (gargalo estrutural, fora do escopo desta Sprint).",
+      "Região \"ruinas-esquecidas\" com permanência média de 5692s (média geral entre regiões: 1562s) — candidata a região que quebra o ritmo da jornada.",
+      "33% das execuções tiveram um período de pelo menos 600s sem nenhum upgrade — candidato a \"deserto de loot\".",
+      "Apenas 1% das tentativas de Dungeon chegam a avistar o Chefe Final — poucos jogadores alcançam o Boss."
+    ]
+  },
+  "dungeon": {
+    "totalRuns": 300,
+    "survival": {
+      "averageSeconds": 9032.613333333333,
+      "minSeconds": 352,
+      "maxSeconds": 12012,
+      "deathRate": 0.2866666666666667,
+      "averageHpPercent": 84.12465628298503,
+      "minHpPercentObserved": 0,
+      "deathsByElite": 31,
+      "deathsByMiniBoss": 3,
+      "deathsByBoss": 6,
+      "deathsByNormal": 46
+    },
+    "progression": {
+      "averageFinalLevel": 23.763333333333332,
+      "levelDistribution": {
+        "3": 2,
+        "4": 11,
+        "5": 16,
+        "6": 6,
+        "7": 7,
+        "8": 10,
+        "9": 4,
+        "10": 4,
+        "11": 2,
+        "12": 16,
+        "13": 2,
+        "14": 3,
+        "16": 1,
+        "17": 1,
+        "23": 1,
+        "30": 214
+      },
+      "averageXpGained": 268165.56666666665,
+      "xpPerMinute": 1409.333588503136,
+      "goldPerMinute": 15.628915874039228,
+      "lootPerMinute": 0.37241241070495695,
+      "averageSecondsToFirstElite": 361.77777777777777,
+      "averageSecondsToFirstMiniBoss": 513.9101123595506,
+      "averageSecondsToFirstWorldEvent": 230.85034013605443,
+      "averageSecondsToFirstItem": 40.99333333333333,
+      "averageSecondsToFirstExpeditionCompletion": 4840,
+      "averageSecondsToFirstDungeonStart": 0,
+      "averageSecondsToFirstBossEncounter": 2588.6666666666665,
+      "averageSecondsToFirstBossDefeat": 0
+    },
+    "loot": {
+      "averageItemsFound": 22.613333333333333,
+      "averageItemsEquipped": 3.7533333333333334,
+      "rarityCounts": {
+        "common": 4354,
+        "magic": 2171,
+        "rare": 701,
+        "unique": 36
+      },
+      "averageRarityScore": 0.5068851556045166,
+      "averageItemsNeverUsed": 18.86,
+      "averageGoldAccumulated": 3001.8233333333333,
+      "slotAveragePowerScore": {
+        "boots": 23.99526066350711,
+        "weapon": 53.260416666666664,
+        "gloves": 20.814814814814813,
+        "ring1": 14.033333333333333,
+        "belt": 14.051282051282051,
+        "ring2": 6.4
+      },
+      "weakestSlotId": "ring2"
+    },
+    "combat": {
+      "averageDamageDealt": 93385.46785351164,
+      "averageDamageTaken": 3150.0527961874272,
+      "averageEncountersCompleted": 410.2866666666667
+    },
+    "recovery": {
+      "averageLifeRecovered": 1798.0375289601604,
+      "averageLifeLost": 3150.0527961874272,
+      "efficiency": 0.570795997811961,
+      "averageOverheal": 0
+    },
+    "objectives": {
+      "averageObjectivesCompleted": 2.65,
+      "averageSecondsPerObjective": 936.5081761006289,
+      "averageFirstObjectiveSeconds": 85.87333333333333,
+      "averageXpBonusGranted": 165.16666666666666,
+      "completionRate": 0.726027397260274
+    },
+    "perRegion": [
+      {
+        "regionId": "bosque-sussurrante",
+        "runs": 300,
+        "deaths": 86,
+        "deathRate": 0.2866666666666667,
+        "averageSurvivalSeconds": 9032.613333333333,
+        "averageFinalLevel": 23.763333333333332
+      }
+    ],
+    "regionProgression": [
+      {
+        "regionId": "bosque-sussurrante",
+        "runsReached": 300,
+        "reachRate": 1,
+        "averageSecondsSpent": 772.86,
+        "deaths": 13,
+        "deathRate": 0.043333333333333335,
+        "averageItemsFound": 20.71,
+        "averageObjectivesCompleted": 1.61,
+        "averageHpPercent": 65.0645689577804,
+        "averageDamageDealt": 4421.279981896069,
+        "averageDamageTaken": 193.08569584175422,
+        "averageRecoveryReceived": 67.5350861503221,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 5,
+        "deathsByMiniBoss": 2,
+        "deathsByBoss": 0,
+        "deathsByNormal": 6
+      },
+      {
+        "regionId": "pantano-podre",
+        "runsReached": 287,
+        "reachRate": 0.9566666666666667,
+        "averageSecondsSpent": 1343.226480836237,
+        "deaths": 49,
+        "deathRate": 0.17073170731707318,
+        "averageItemsFound": 3.6550522648083623,
+        "averageObjectivesCompleted": 0.14285714285714285,
+        "averageHpPercent": 65.9278548278917,
+        "averageDamageDealt": 9665.782408650477,
+        "averageDamageTaken": 292.0176227117044,
+        "averageRecoveryReceived": 171.56709956088545,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 19,
+        "deathsByMiniBoss": 1,
+        "deathsByBoss": 0,
+        "deathsByNormal": 29
+      },
+      {
+        "regionId": "minas-abandonadas",
+        "runsReached": 238,
+        "reachRate": 0.7933333333333333,
+        "averageSecondsSpent": 22,
+        "deaths": 9,
+        "deathRate": 0.037815126050420166,
+        "averageItemsFound": 0,
+        "averageObjectivesCompleted": 0.004201680672268907,
+        "averageHpPercent": 74.93689845174559,
+        "averageDamageDealt": 207.0180308320227,
+        "averageDamageTaken": 8.452058488303475,
+        "averageRecoveryReceived": 3.750999999999999,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 1,
+        "deathsByMiniBoss": 0,
+        "deathsByBoss": 0,
+        "deathsByNormal": 8
+      },
+      {
+        "regionId": "ruinas-esquecidas",
+        "runsReached": 229,
+        "reachRate": 0.7633333333333333,
+        "averageSecondsSpent": 9114.340611353711,
+        "deaths": 15,
+        "deathRate": 0.06550218340611354,
+        "averageItemsFound": 0,
+        "averageObjectivesCompleted": 1.1790393013100438,
+        "averageHpPercent": 89.56547800527206,
+        "averageDamageDealt": 104217.93239678584,
+        "averageDamageTaken": 3498.9933732105937,
+        "averageRecoveryReceived": 2048.114573226977,
+        "averageRecoveryWasted": 0,
+        "deathsByElite": 6,
+        "deathsByMiniBoss": 0,
+        "deathsByBoss": 6,
+        "deathsByNormal": 3
+      }
+    ],
+    "eliteMiniBoss": {
+      "elite": {
+        "totalEncountered": 443,
+        "totalDefeated": 412,
+        "winRate": 0.9300225733634312,
+        "runsWithEncounter": 234,
+        "frequency": 0.78
+      },
+      "miniBoss": {
+        "totalEncountered": 106,
+        "totalDefeated": 97,
+        "winRate": 0.9150943396226415,
+        "runsWithEncounter": 89,
+        "frequency": 0.2966666666666667
+      },
+      "averageVariantXpBonus": 151.97666666666666
+    },
+    "worldEvents": {
+      "totalEncountered": 10822,
+      "averagePerRun": 36.07333333333333,
+      "frequency": 0.98,
+      "perCategory": [
+        {
+          "category": "shrine",
+          "totalEncountered": 2057,
+          "averagePerRun": 6.8566666666666665,
+          "frequency": 0.8366666666666667
+        },
+        {
+          "category": "ambush",
+          "totalEncountered": 977,
+          "averagePerRun": 3.256666666666667,
+          "frequency": 0.9033333333333333
+        },
+        {
+          "category": "merchant",
+          "totalEncountered": 389,
+          "averagePerRun": 1.2966666666666666,
+          "frequency": 0.7166666666666667
+        },
+        {
+          "category": "treasure",
+          "totalEncountered": 3127,
+          "averagePerRun": 10.423333333333334,
+          "frequency": 0.9133333333333333
+        },
+        {
+          "category": "discovery",
+          "totalEncountered": 4272,
+          "averagePerRun": 14.24,
+          "frequency": 0.8033333333333333
+        }
+      ],
+      "averageGoldGained": 392.98333333333335,
+      "averageXpGained": 654.5333333333333,
+      "averageLootItemsGained": 1.5933333333333333,
+      "averageRecoveryGained": 51.16684490163929,
+      "deathRateWithEvents": 0.272108843537415,
+      "deathRateWithoutEvents": 1
+    },
+    "expeditions": {
+      "totalStarted": 3941,
+      "totalCompleted": 3641,
+      "totalFailed": 86,
+      "completionRate": 0.9238771885308298,
+      "averageCheckpointsReached": 7.239871210088543,
+      "averageDurationSeconds": 933.0922549019602,
+      "averageXpGained": 8428.666666666666,
+      "averageGoldGained": 2257.2
+    },
+    "factions": {
+      "perFaction": [
+        {
+          "factionId": "guardioes-da-floresta",
+          "factionName": "Guardiões da Floresta",
+          "averageFinalReputation": 16.243333333333332,
+          "rankDistribution": {
+            "amigavel": 216,
+            "neutro": 84
+          }
+        },
+        {
+          "factionId": "mercadores-livres",
+          "factionName": "Mercadores Livres",
+          "averageFinalReputation": 6.483333333333333,
+          "rankDistribution": {
+            "neutro": 255,
+            "amigavel": 45
+          }
+        },
+        {
+          "factionId": "culto-das-ruinas",
+          "factionName": "Culto das Ruínas",
+          "averageFinalReputation": 285.22,
+          "rankDistribution": {
+            "lendario": 214,
+            "neutro": 79,
+            "amigavel": 6,
+            "respeitado": 1
+          }
+        },
+        {
+          "factionId": "legiao-sombria",
+          "factionName": "Legião Sombria",
+          "averageFinalReputation": 3.2333333333333334,
+          "rankDistribution": {
+            "amigavel": 14,
+            "neutro": 286
+          }
+        }
+      ],
+      "averageReputationEventsPerRun": 29.37,
+      "averageRankUpsPerRun": 3.796666666666667,
+      "averageXpBonusGranted": 1161.7666666666667,
+      "averageGoldBonusGranted": 309.82666666666665,
+      "averageSecondsToAmigavel": 2336.7210300429183,
+      "averageSecondsToRespeitado": 5024.288372093023
+    },
+    "dungeon": {
+      "totalStarted": 300,
+      "totalCompleted": 0,
+      "totalFailed": 85,
+      "completionRate": 0,
+      "bossEncountered": 6,
+      "bossDefeated": 0,
+      "bossWinRate": 0,
+      "averageDurationSeconds": 1568.9882352941177,
+      "averageXpGranted": 0,
+      "averageGoldGranted": 0,
+      "averageReputationGranted": 0,
+      "averageEncountersCompleted": 71.31764705882352,
+      "averageCheckpointsUsed": 43.54666666666667,
+      "averageRecoveryReceived": 566.5021959153551,
+      "averageRecoveryWasted": 0,
+      "averageCheckpointHpBeforePercent": 81.50611055112073,
+      "averageCheckpointHpAfterPercent": 84.61814096340358,
+      "deathsBeforeBoss": 0,
+      "deathsAtBoss": 0,
+      "boss": {
+        "averageDamageDealtPerFight": 0,
+        "averageDamageTakenPerFight": 0,
+        "averageDpsDealt": 0,
+        "averageDpsTaken": 0,
+        "averageHealthPercentAfterDefeat": 0,
+        "averageRecoveryCountBeforeFight": 116.5,
+        "averageSecondsUntilEncountered": 2588.6666666666665,
+        "fightDurationSeconds": 22,
+        "completionRateWithBossEncountered": 0,
+        "completionRateWithoutBossEncountered": 0,
+        "arrivalRate": 0.02,
+        "averageSecondsUntilDefeated": 0
+      }
+    },
+    "equipmentProgression": {
+      "averageSecondsToFirstUpgrade": 160.71812080536913,
+      "averageUpgradeCount": 3.736666666666667,
+      "upgradesPerMinute": 0.0585355377674631,
+      "averageLongestGapWithoutUpgradeSeconds": 8433.186666666666,
+      "lootDesertRate": 0.9
+    },
+    "rhythm": {
+      "averageCombatSeconds": 7047.553333333333,
+      "averageRecoverySeconds": 0,
+      "averageExplorationSeconds": 0,
+      "averageCheckpointSeconds": 1978.7533333333333,
+      "averageBossSeconds": 0.44
+    },
+    "journeyTimeline": [
+      {
+        "label": "Primeiro combate",
+        "averageSeconds": 22
+      },
+      {
+        "label": "Primeiro item",
+        "averageSeconds": 40.99333333333333
+      },
+      {
+        "label": "Primeiro upgrade",
+        "averageSeconds": 160.71812080536913
+      },
+      {
+        "label": "Primeiro Elite",
+        "averageSeconds": 361.77777777777777
+      },
+      {
+        "label": "Primeira Expedição concluída",
+        "averageSeconds": 4840
+      },
+      {
+        "label": "Primeiro Evento Mundial",
+        "averageSeconds": 230.85034013605443
+      },
+      {
+        "label": "Primeiro Mini-Boss",
+        "averageSeconds": 513.9101123595506
+      },
+      {
+        "label": "Primeira Dungeon",
+        "averageSeconds": 0
+      },
+      {
+        "label": "Primeiro Chefe Final avistado",
+        "averageSeconds": 2588.6666666666665
+      },
+      {
+        "label": "Primeiro Chefe Final derrotado",
+        "averageSeconds": 0
+      }
+    ],
+    "recommendations": [
+      "Região \"fortaleza-sombria\" (bioma #5) nunca foi alcançada em nenhuma execução — progressão pode estar travada antes dela.",
+      "Região \"colinas-aridas\" (bioma #6) nunca foi alcançada em nenhuma execução — progressão pode estar travada antes dela.",
+      "Categoria \"ambush\" presente em 90% das execuções — candidata a evento comum demais.",
+      "Categoria \"treasure\" presente em 91% das execuções — candidata a evento comum demais.",
+      "Facção \"Culto das Ruínas\" atinge o rank máximo (Lendário) em 71% das execuções — reputação pode estar subindo rápido demais.",
+      "Facção \"Legião Sombria\" permanece no rank inicial (Neutro) em 95% das execuções — reputação pode estar subindo devagar demais.",
+      "Chefe Final com taxa de vitória de apenas 0% (0/6) — candidato a Chefe Final frustrante (limiar: <=40%).",
+      "Taxa de conclusão de Dungeons de apenas 0% (0/300) — candidata a Dungeon longa/difícil demais.",
+      "Chefe Final arriscado (0% de vitória) mas com recompensa de XP equivalente a apenas 0% da XP média total — recompensa desproporcional ao risco.",
+      "Dungeon com média de 71 encontros por execução — acima do alvo de 40-70, candidata a Dungeon longa demais.",
+      "Ouro acumula a 15.6/min mas não há Marketplace/loja implementados nesta Sprint — ouro atualmente sem utilidade de gasto (gargalo estrutural, fora do escopo desta Sprint).",
+      "Região \"ruinas-esquecidas\" com permanência média de 9114s (média geral entre regiões: 2813s) — candidata a região que quebra o ritmo da jornada.",
+      "90% das execuções tiveram um período de pelo menos 600s sem nenhum upgrade — candidato a \"deserto de loot\".",
+      "Slot \"ring2\" com Power Score médio de 6.4 (demais slots: 25.2) — candidato a slot abandonado.",
+      "Apenas 2% das tentativas de Dungeon chegam a avistar o Chefe Final — poucos jogadores alcançam o Boss."
+    ]
+  }
+}

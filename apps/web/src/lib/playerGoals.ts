@@ -120,6 +120,16 @@ const GOAL_RULES: GoalRule[] = [
     when: (ctx) => ctx.hasActiveWorldEvent,
     text: "Talvez hoje seja um bom dia para visitar o Reino.",
   },
+  // Sprint Character Page — Adventure Goals Phase I — catch-all: sempre
+  // a ÚLTIMA regra avaliada (nenhuma das anteriores foi alterada), só
+  // garante que `getPlayerGoals` nunca devolve lista vazia (a tela
+  // sempre mostra exatamente UM objetivo, nunca "nenhum"). Mesmo
+  // mecanismo de sempre, nenhuma lógica nova além de "quando nada mais
+  // bateu, isto bate".
+  {
+    when: () => true,
+    text: "Continue jogando — o Reino sempre tem algo novo para quem presta atenção.",
+  },
 ];
 
 // Pura, sem estado, sem persistência — cada chamada reavalia do zero.

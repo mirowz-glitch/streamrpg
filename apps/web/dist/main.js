@@ -20200,16 +20200,17 @@ var import_client = __toESM(require_client(), 1);
 // apps/web/src/lib/router.tsx
 var import_react = __toESM(require_react(), 1);
 var import_jsx_runtime = __toESM(require_jsx_runtime(), 1);
-var AuthCallbackPage = (0, import_react.lazy)(() => import("./AuthCallbackPage-IU4QYQ5B.js").then((m) => ({ default: m.AuthCallbackPage })));
-var CharacterPage = (0, import_react.lazy)(() => import("./CharacterPage-NWA24XLM.js").then((m) => ({ default: m.CharacterPage })));
-var CityPage = (0, import_react.lazy)(() => import("./CityPage-AKFLWT2Z.js").then((m) => ({ default: m.CityPage })));
-var ChroniclePage = (0, import_react.lazy)(() => import("./ChroniclePage-RQOXMINC.js").then((m) => ({ default: m.ChroniclePage })));
-var InventoryPage = (0, import_react.lazy)(() => import("./InventoryPage-C5IDRZCC.js").then((m) => ({ default: m.InventoryPage })));
-var LoginPage = (0, import_react.lazy)(() => import("./LoginPage-RKWLBMRE.js").then((m) => ({ default: m.LoginPage })));
-var OverlayPage = (0, import_react.lazy)(() => import("./OverlayPage-EDVRNIKP.js").then((m) => ({ default: m.OverlayPage })));
-var RankingPage = (0, import_react.lazy)(() => import("./RankingPage-VME6SFXB.js").then((m) => ({ default: m.RankingPage })));
-var StreamerPage = (0, import_react.lazy)(() => import("./StreamerPage-3TJCQPU2.js").then((m) => ({ default: m.StreamerPage })));
-var WorldPage = (0, import_react.lazy)(() => import("./WorldPage-YPIZBXLK.js").then((m) => ({ default: m.WorldPage })));
+var AdventurePage = (0, import_react.lazy)(() => import("./AdventurePage-4FMG3EEZ.js").then((m) => ({ default: m.AdventurePage })));
+var AuthCallbackPage = (0, import_react.lazy)(() => import("./AuthCallbackPage-KKJ7MFPD.js").then((m) => ({ default: m.AuthCallbackPage })));
+var CharacterPage = (0, import_react.lazy)(() => import("./CharacterPage-I2USVHJ2.js").then((m) => ({ default: m.CharacterPage })));
+var CityPage = (0, import_react.lazy)(() => import("./CityPage-NQVGMIVR.js").then((m) => ({ default: m.CityPage })));
+var ChroniclePage = (0, import_react.lazy)(() => import("./ChroniclePage-BR3XUF42.js").then((m) => ({ default: m.ChroniclePage })));
+var InventoryPage = (0, import_react.lazy)(() => import("./InventoryPage-7RBI7XEH.js").then((m) => ({ default: m.InventoryPage })));
+var LoginPage = (0, import_react.lazy)(() => import("./LoginPage-2L7S4ESK.js").then((m) => ({ default: m.LoginPage })));
+var OverlayPage = (0, import_react.lazy)(() => import("./OverlayPage-KJN5LT5W.js").then((m) => ({ default: m.OverlayPage })));
+var RankingPage = (0, import_react.lazy)(() => import("./RankingPage-URRUSEIU.js").then((m) => ({ default: m.RankingPage })));
+var StreamerPage = (0, import_react.lazy)(() => import("./StreamerPage-BTQV7D6Q.js").then((m) => ({ default: m.StreamerPage })));
+var WorldPage = (0, import_react.lazy)(() => import("./WorldPage-JAPGK2UL.js").then((m) => ({ default: m.WorldPage })));
 function PageFallback() {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("main", { className: "page", children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("p", { className: "loading-state", children: "Carregando..." }) });
 }
@@ -20221,6 +20222,7 @@ var router = createBrowserRouter([
   { path: "/login", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(LoginPage, {})) },
   { path: "/auth/callback", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AuthCallbackPage, {})) },
   { path: "/app/character", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CharacterPage, {})) },
+  { path: "/app/adventure", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(AdventurePage, {})) },
   { path: "/app/city", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(CityPage, {})) },
   { path: "/app/chronicle", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(ChroniclePage, {})) },
   { path: "/app/inventory", element: withSuspense(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(InventoryPage, {})) },

@@ -7,6 +7,7 @@ import { createBrowserRouter } from "react-router-dom";
 // Landing não baixa o código de Cidade/Mundo/Ranking, e vice-versa.
 // Nenhuma rota, comportamento ou aparência muda — só o momento em que o
 // código de cada página é buscado.
+const AdventurePage = lazy(() => import("../pages/AdventurePage").then((m) => ({ default: m.AdventurePage })));
 const AuthCallbackPage = lazy(() => import("../pages/AuthCallbackPage").then((m) => ({ default: m.AuthCallbackPage })));
 const CharacterPage = lazy(() => import("../pages/CharacterPage").then((m) => ({ default: m.CharacterPage })));
 const CityPage = lazy(() => import("../pages/CityPage").then((m) => ({ default: m.CityPage })));
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
   { path: "/login", element: withSuspense(<LoginPage />) },
   { path: "/auth/callback", element: withSuspense(<AuthCallbackPage />) },
   { path: "/app/character", element: withSuspense(<CharacterPage />) },
+  { path: "/app/adventure", element: withSuspense(<AdventurePage />) },
   { path: "/app/city", element: withSuspense(<CityPage />) },
   { path: "/app/chronicle", element: withSuspense(<ChroniclePage />) },
   { path: "/app/inventory", element: withSuspense(<InventoryPage />) },

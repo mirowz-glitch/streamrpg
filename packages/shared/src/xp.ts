@@ -9,6 +9,37 @@ export function xpForLevel(level: number): number {
   return Math.floor(100 * Math.pow(level, 1.5));
 }
 
+// Gameplay Balance & First Playable Experience Phase I — requisito 4:
+// "reutilizar apenas a curva existente [xpForLevel/getLevel], ajustar
+// somente as recompensas de XP." XP_KILLS_PER_LEVEL é o único número
+// novo desta Sprint pra progressão: quantos abates, em média, um
+// personagem precisa pra subir UM nível, em QUALQUER nível — a
+// recompensa por abate é sempre xpForLevel(nívelAtual)/K, então K
+// abates sempre fecham exatamente o XP que falta pro próximo nível,
+// não importa quão grande xpForLevel(nível) já tenha crescido.
+//
+// Calibrado empiricamente via o Simulador (packages/shared/src/
+// simulation/) contra o ritmo de abates real do Adventure Loop já
+// balanceado (enemy/templates.ts, worldencounter/encounterTables.ts,
+// simulation/simulator.ts): ~4 abates/minuto observados em 400
+// aventuras simuladas (22s assumidos por tick — ver
+// DEFAULT_SECONDS_PER_TICK). K=14 produz nível 2 em ~3.5min, nível 3
+// em ~7min, nível 4 em ~10.5min — dentro das janelas pedidas (2-4min /
+// 6-8min / ~10min).
+export const XP_KILLS_PER_LEVEL = 14;
+
+// Reaproveita xpForLevel() como ÚNICA fonte da curva — esta função só
+// decide QUANTO de recompensa um abate concede, nunca como XP vira
+// nível (isso continua 100% em getLevel()/getProgress(), intocados).
+// Usada pela Presentation Layer (presentationLayer.ts) no lugar do
+// antigo XP_PER_PING (constante de um sistema totalmente diferente —
+// o "ping" de viewer do Twitch, ritmo de ~1/minuto — reaproveitá-la
+// pra combate era um placeholder da Sprint anterior, substituído aqui
+// por um valor calibrado especificamente pro Adventure Loop).
+export function xpRewardForKill(characterLevel: number): number {
+  return Math.max(1, Math.round(xpForLevel(characterLevel) / XP_KILLS_PER_LEVEL));
+}
+
 function buildXpTable(): number[] {
   const table: number[] = [0];
   for (let lvl = 1; lvl < MAX_LEVEL; lvl++) {

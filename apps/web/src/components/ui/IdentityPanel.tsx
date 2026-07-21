@@ -85,7 +85,7 @@ export const IdentityPanel = memo(function IdentityPanel({
 
       <h3 className="identity-subtitle">Molduras desbloqueadas ({unlockedFrames.length}/{identity.frames.length})</h3>
       {unlockedFrames.length === 0 ? (
-        <p className="hint">Nenhuma moldura desbloqueada ainda.</p>
+        <p className="hint">Nenhuma moldura desbloqueada ainda — continue jogando para conquistar a primeira.</p>
       ) : (
         <ul className="identity-unlock-list">
           {unlockedFrames.map((frame) => {
