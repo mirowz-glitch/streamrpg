@@ -37,6 +37,27 @@ export interface SimulatedAdventureOptions {
   // normalmente, exatamente como faria se a tivesse sorteado sozinho.
   // Nunca usado pela demo real (apps/web/), só pelo Simulador.
   forceExpeditionId?: string;
+  // Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 5:
+  // "o simulador deve aceitar opcionalmente: worldTier: WT1... sem
+  // criar outro simulador." Só define `session.worldTier` antes da 1ª
+  // tick (ver simulator.ts) — dungeon/dungeonController.ts (intocado
+  // nesta Sprint) resolve e aplica o RuntimeConfig combinado
+  // automaticamente, exatamente como já faz pra qualquer sessão real.
+  worldTier?: string;
+  // Vertical Slice — Progression Economy & Reward Curve Phase I — Fase
+  // 1 (Auditoria): "reutilizar integralmente o simulador... não criar
+  // novos modos de simulação." Toda sessão simulada sempre começava no
+  // nível 1 (0 XP) — correto pra medir a jornada desde o início, mas
+  // inviável pra auditar conteúdo de nível alto (Dungeons endgame,
+  // World Tiers): um personagem nível 1 largado direto numa região
+  // calibrada pra nível 20-42 morre em 1-2 ticks, produzindo 0% em
+  // TUDO — sinal de metodologia de teste, não de balanceamento real.
+  // Opcional (ausente = 0 XP, comportamento idêntico a antes) — só
+  // soma `characterBuild.addExperience(startingXp)` antes da 1ª tick
+  // (ver simulator.ts), mesmo canal que qualquer XP concedido durante o
+  // jogo real já usa. Nunca usado pela demo real (apps/web/), só pelo
+  // Simulador — mesmo tratamento de `forceExpeditionId`.
+  startingXp?: number;
 }
 
 export interface SimulatedAdventureResult {

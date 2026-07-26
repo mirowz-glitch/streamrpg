@@ -70,6 +70,27 @@ export function WorldPage() {
     echoes.forEach((echo) => remember(echo.id));
   }, [echoes]);
 
+  // Front Door Experience — Vertical Slice Phase I — Fase 6 (World
+  // Access): `/api/world/state` exige login (`requireAuth`, intocado —
+  // decisão de arquitetura fora do escopo desta Sprint). Antes desta
+  // Sprint, sem login a chamada falhava, `data` nunca saía de `null`, e
+  // a tela ficava presa em "Carregando o Reino..." pra sempre, sem
+  // explicação (achado da Sprint anterior). Mesmo padrão já usado em
+  // CharacterPage/StreamerPage/ChroniclePage: `identity` (useIdentity)
+  // é `null` sem login válido — checado ANTES do estado de loading, pra
+  // nunca mais carregar infinitamente por um motivo que já é conhecido.
+  if (!identity) {
+    return (
+      <main className="page">
+        <AppNav />
+        <div className="card empty-state">
+          <p>Faça login para ver o Mundo.</p>
+          <p className="hint">O Mundo mostra o Reino da sua live — Prestígio, Hall da Fama e o Jornal do Reino em tempo real. Enquanto isso, explore a Cidade e a Aventura sem precisar de login.</p>
+        </div>
+      </main>
+    );
+  }
+
   if (!data) {
     return (
       <main className="page">

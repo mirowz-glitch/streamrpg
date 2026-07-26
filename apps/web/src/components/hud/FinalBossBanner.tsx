@@ -12,6 +12,12 @@ interface DefeatedPayload {
   enemyName: string;
   xpAmount: number;
   goldAmount: number;
+  // Vertical Slice — Unique Dungeon Relics & Boss Loot Phase I — Fase 4:
+  // "Relíquia encontrada / Nome / Raridade." Ausentes (undefined) pra
+  // qualquer Boss sem relíquia declarada (dungeon/uniqueRelicDefinitions.ts)
+  // — mesmo tratamento condicional de sempre.
+  relicName?: string;
+  relicRarity?: string;
 }
 
 // First Dungeon, Final Boss & Complete Game Loop Phase I — requisito
@@ -43,6 +49,11 @@ export function FinalBossBanner({ active }: FinalBossBannerProps) {
         <span className="hud-final-boss-banner-detail">
           +{payload.xpAmount} XP, +{payload.goldAmount} ouro
         </span>
+        {payload.relicName ? (
+          <span className="hud-final-boss-banner-relic">
+            Relíquia encontrada: {payload.relicName} ({payload.relicRarity})
+          </span>
+        ) : null}
       </div>
     );
   }

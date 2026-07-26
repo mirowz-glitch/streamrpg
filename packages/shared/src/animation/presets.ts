@@ -48,7 +48,14 @@ export const ANIMATION_PRESETS: Record<AnimationType, AnimationPreset> = {
   // longa de propósito (celebração, não reação de combate) — prioridade
   // alta o bastante pra não ser descartada por um hit simultâneo, mas
   // abaixo de Character Death (o único evento que deve sempre vencer).
-  "level-up": { type: "level-up", duration: 1600, priority: 22, scale: 1.15, opacity: 1 },
+  //
+  // Player Feedback & Retention — Vertical Slice Phase I — Fase 4
+  // (Level Up Celebration): duração estendida de 1600ms para 2300ms —
+  // achado do playtest anterior: "o jogador nunca deve perder um Level
+  // Up no meio do log", e 1600ms mal dava tempo de ler antes do
+  // próximo clique. Só o TEMPO mudou (mesma prioridade/escala/opacidade
+  // já calibradas) — nenhuma regra de XP/nível é afetada.
+  "level-up": { type: "level-up", duration: 2300, priority: 22, scale: 1.15, opacity: 1 },
 
   // Objectives, Missions & Player Goals Phase I — requisito 8: mesma
   // duração/prioridade de "level-up" (celebração equivalente), um
@@ -65,10 +72,16 @@ export const ANIMATION_PRESETS: Record<AnimationType, AnimationPreset> = {
   // de "objective-completed" < "region-unlocked" — Mini-Boss é o evento
   // mais raro/mais grave dos dois) e de derrota (levemente abaixo do
   // banner de surgimento correspondente).
-  "elite-encounter": { type: "elite-encounter", duration: 1400, priority: 19, scale: 1.1, opacity: 1 },
-  "miniboss-encounter": { type: "miniboss-encounter", duration: 1700, priority: 22, scale: 1.18, opacity: 1 },
-  "elite-defeated": { type: "elite-defeated", duration: 1300, priority: 17, scale: 1.1, opacity: 1 },
-  "miniboss-defeated": { type: "miniboss-defeated", duration: 1600, priority: 21, scale: 1.15, opacity: 1 },
+  // Player Feedback & Retention — Vertical Slice Phase I — Fase 5
+  // (Elite & Boss Presentation): as 4 durações abaixo estendidas em
+  // +500ms cada (mesmo gap relativo de 100ms entre surgimento/derrota
+  // já documentado acima preservado) — achado do playtest anterior:
+  // Elite era um dos poucos momentos "especiais" da sessão e passava
+  // rápido demais pra ser reconhecido com segurança.
+  "elite-encounter": { type: "elite-encounter", duration: 1900, priority: 19, scale: 1.1, opacity: 1 },
+  "miniboss-encounter": { type: "miniboss-encounter", duration: 2200, priority: 22, scale: 1.18, opacity: 1 },
+  "elite-defeated": { type: "elite-defeated", duration: 1800, priority: 17, scale: 1.1, opacity: 1 },
+  "miniboss-defeated": { type: "miniboss-defeated", duration: 2100, priority: 21, scale: 1.15, opacity: 1 },
 
   // World Events, Dynamic Encounters & Exploration Phase I — requisito
   // 7: duração/prioridade mais discretas que Elite/Mini-Boss (evento
@@ -98,9 +111,12 @@ export const ANIMATION_PRESETS: Record<AnimationType, AnimationPreset> = {
   // (acima de miniboss-encounter) < "derrotado" (acima de
   // expedition-completed) < "Dungeon concluída" (o evento mais raro/
   // dramático possível, sempre vence qualquer banner simultâneo).
-  "final-boss-encounter": { type: "final-boss-encounter", duration: 1900, priority: 23, scale: 1.2, opacity: 1 },
-  "final-boss-defeated": { type: "final-boss-defeated", duration: 2200, priority: 26, scale: 1.3, opacity: 1 },
-  "dungeon-completed": { type: "dungeon-completed", duration: 2600, priority: 27, scale: 1.4, opacity: 1 },
+  // Fase 5 (Elite & Boss Presentation) — mesma extensão de +500ms
+  // aplicada ao Boss Final/Dungeon, mantendo a hierarquia "sempre vence
+  // qualquer banner simultâneo" já documentada acima.
+  "final-boss-encounter": { type: "final-boss-encounter", duration: 2400, priority: 23, scale: 1.2, opacity: 1 },
+  "final-boss-defeated": { type: "final-boss-defeated", duration: 2700, priority: 26, scale: 1.3, opacity: 1 },
+  "dungeon-completed": { type: "dungeon-completed", duration: 3100, priority: 27, scale: 1.4, opacity: 1 },
 };
 
 export function getAnimationPreset(type: AnimationType): AnimationPreset {

@@ -13,6 +13,8 @@ const SLOT_DEFENSE_WEIGHT: Partial<Record<ItemSlot, number>> = {
   helmet: 0.7,
   boots: 0.5,
   amulet: 0.5,
+  gloves: 0.4,
+  belt: 0.4,
   ring: 0.3,
 };
 

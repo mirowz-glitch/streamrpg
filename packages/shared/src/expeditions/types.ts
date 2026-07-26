@@ -43,6 +43,33 @@ export interface ExpeditionReward {
 // (relatório/flavor), reaproveitando a MESMA suposição de UX
 // (segundos por tick) já documentada no Simulador — nunca usado pra
 // decidir progresso de verdade.
+// Vertical Slice — Dungeon Modifiers, Variants & Replayability Phase I —
+// Fase 1: dado puro (id/nome/descrição/categoria/dificuldade/
+// multiplicador de recompensa), nenhum campo de comportamento (ver
+// nota completa em expeditionModifiers.ts sobre por que só o
+// multiplicador é mecanicamente aplicado nesta Sprint).
+export interface DungeonModifierDefinition {
+  id: string;
+  name: string;
+  description: string;
+  category: "Inimigos" | "Jogador" | "Ambiente";
+  difficulty: string;
+  rewardMultiplier: number;
+  // Vertical Slice — Dungeon Modifier Runtime Integration Phase I —
+  // Fase 1/6: "um novo modificador poderá ser adicionado apenas
+  // definindo seus efeitos em DungeonModifierDefinition, sem
+  // necessidade de alterar Combat/Recovery/Encounter/HUD." Todos
+  // opcionais (ausente = sem efeito nesse eixo, `?? 1` em
+  // resolveDungeonRuntimeConfig()) — um modificador só precisa
+  // preencher os campos relevantes pro seu efeito (ex.: "Ouro
+  // Reduzido" só usa `rewardMultiplier`, nunca precisa destes).
+  enemyLifeMultiplier?: number;
+  enemyDamageMultiplier?: number;
+  eliteChanceMultiplier?: number;
+  miniBossChanceMultiplier?: number;
+  healingMultiplier?: number;
+}
+
 export interface ExpeditionDefinition {
   id: string;
   name: string;
@@ -54,6 +81,18 @@ export interface ExpeditionDefinition {
   checkpointCount: number;
   reward: ExpeditionReward;
   difficulty: string;
+  // Fase 2 — "Cada ExpeditionDefinition pode possuir... ou lista vazia."
+  // Opcional (ausente == lista vazia, mesmo default de EnemyFutureFlags/
+  // AdventureFutureHooks) — ids de DungeonModifierDefinition
+  // (expeditionModifiers.ts). Vertical Slice — World Tiers & Endgame
+  // Scaling Phase I: `getExpeditionDefinition()` voltou a devolver o
+  // valor cru (não pode saber `session.worldTier`, que é por sessão,
+  // não por Dungeon) — quem resolve o multiplicador combinado
+  // (World Tier x este campo) é dungeon/dungeonController.ts, lido daí
+  // por diante via `AdvanceAdventureOptions.runtimeConfig`; este campo
+  // só é lido diretamente por expeditionModifiers.ts (resolver) e
+  // expeditionProgress.ts (snapshot pro HUD).
+  modifiers?: string[];
 }
 
 // Requisito 4 — Progressão: "encontros concluídos, elites derrotados,
@@ -83,4 +122,18 @@ export interface ExpeditionProgressSnapshot {
   diedDuringExpedition: boolean;
   complete: boolean;
   startTickIndex: number;
+  // Vertical Slice — Dungeon Modifiers, Variants & Replayability Phase I
+  // — Fase 4 (HUD): "nome dos modificadores ativos... bônus total de
+  // recompensa." Sempre `[]` pra uma Expedição sem `modifiers` (mesmo
+  // comportamento de sempre) — nunca lido por Expedition/Dungeon
+  // Controller, só por quem monta o HudExpeditionInfo.
+  activeModifiers: DungeonModifierDefinition[];
+  // Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 3/4:
+  // `rewardMultiplier` agora é o valor JÁ COMBINADO (World Tier x
+  // Dungeon Modifiers, resolveCombinedRuntimeConfig()) — o mesmo número
+  // que de fato é aplicado à recompensa (ver expeditionController.ts),
+  // nunca só a fatia da Dungeon. `worldTier` é só o id (`"WT3"`/`null`)
+  // pro HUD mostrar o rótulo — nenhuma lógica de jogo lê isto.
+  rewardMultiplier: number;
+  worldTier: string | null;
 }

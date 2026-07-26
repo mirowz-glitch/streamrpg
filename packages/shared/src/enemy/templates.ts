@@ -169,6 +169,20 @@ export const ENEMY_TEMPLATES: EnemyTemplate[] = [
     growth: { strength: 1.2, dexterity: 0.4, intelligence: 0.1, vitality: 1.4 },
     futureFlags: {},
   },
+  // Combat Difficulty Calibration — Midgame & Lategame Phase I — Fase
+  // 3: fortaleza-sombria nunca tinha sido alcançada por nenhuma
+  // execução do Simulador até a Sprint anterior baixar seu gate de
+  // nível impossível (60 -> 30). Uma vez inspecionado, o template
+  // "boss" mostrou `growth` 4-8x mais íngreme que qualquer outro Boss
+  // do jogo (vitality.growth 6, contra 0.75 de forgotten-guardian) —
+  // calibrado pra um personagem MUITO acima do teto atual (MAX_LEVEL
+  // 30, ver xp.ts): no nível 30, o total efetivo de stats já passava de
+  // 500 (soma base + growth * 29), quando a referência validada
+  // (forgotten-guardian no seu próprio nível de encontro típico) fica
+  // perto de 80. `baseStats` reduzido ~20% e `growth` ~55% — continua
+  // sendo o inimigo mais forte do jogo (acima de ancient-dragon, o mais
+  // forte dos 3 Chefes novos), mas deixa de ser matematicamente
+  // intransponível no teto de nível atual.
   {
     id: "boss",
     name: "Boss",
@@ -176,8 +190,8 @@ export const ENEMY_TEMPLATES: EnemyTemplate[] = [
     levelRange: { min: 20, max: 80 },
     archetype: "boss",
     lootIdentityId: "boss",
-    baseStats: { strength: 40, dexterity: 20, intelligence: 20, vitality: 60 },
-    growth: { strength: 4, dexterity: 2, intelligence: 2, vitality: 6 },
+    baseStats: { strength: 32, dexterity: 16, intelligence: 16, vitality: 48 },
+    growth: { strength: 1.8, dexterity: 0.9, intelligence: 0.9, vitality: 2.6 },
     criticalMultiplier: 2.0,
     futureFlags: { isBoss: true, seasonModifierEligible: true, mapModifierEligible: true },
   },
@@ -279,6 +293,11 @@ export const ENEMY_TEMPLATES: EnemyTemplate[] = [
     criticalMultiplier: 1.6,
     futureFlags: {},
   },
+  // Combat Difficulty Calibration — Midgame & Lategame Phase I — Fase
+  // 3: mesmo achado do "boss" acima — reduzido ~21%/~25%, mantido
+  // acima de ancient-dragon (o mais forte dos 3 Chefes novos) e abaixo
+  // do "boss", preservando "mais forte que qualquer inimigo comum mas
+  // bem abaixo do Chefe Final" (identidade já documentada).
   {
     id: "dark-knight",
     name: "Cavaleiro Negro",
@@ -286,10 +305,151 @@ export const ENEMY_TEMPLATES: EnemyTemplate[] = [
     levelRange: { min: 20, max: 80 },
     archetype: "humanoid",
     lootIdentityId: "dark-knight",
-    baseStats: { strength: 24, dexterity: 16, intelligence: 8, vitality: 30 },
-    growth: { strength: 2.0, dexterity: 1.0, intelligence: 0.3, vitality: 2.4 },
+    baseStats: { strength: 19, dexterity: 13, intelligence: 6, vitality: 24 },
+    growth: { strength: 1.5, dexterity: 0.75, intelligence: 0.23, vitality: 1.8 },
     criticalMultiplier: 1.8,
     futureFlags: {},
+  },
+  // Vertical Slice — Multi-Dungeon Content & Data Expansion Phase I —
+  // Fase 1/2: 3 novas Dungeons, cada uma reaproveitando integralmente a
+  // arquitetura existente (Enemy Template/Encounter Table/Loot Table/
+  // ExpeditionDefinition, nenhum sistema novo). `region` reaproveita 3
+  // ids REAIS que já existiam em regions.ts (REGION_GRAPH) desde a
+  // Sprint de Expedições mas nunca tinham ganho Encounter Table/Enemy
+  // Template próprios ("picos-congelados"/"litoral-quebrado"/
+  // "deserto-de-vidro" — ver worldencounter/biomes.ts) — nenhuma região
+  // nova inventada, mesmo princípio "nunca inventar dado" de todas as
+  // Sprints anteriores. `levelRange` mantido <= MAX_LEVEL (xp.ts: 30)
+  // no mínimo (diferente de fortaleza-sombria/boss, calibrados pra
+  // níveis 60-80 e por isso praticamente inalcançáveis) — estas 3
+  // Dungeons devem ser conteúdo tardio mas genuinamente alcançável por
+  // um personagem nível 30, não uma réplica do limite "inalcançável"
+  // já documentado (Boss Accessibility & Endgame Balance Phase I).
+  // Valores ilustrativos, não calibrados (mesma convenção de sempre) —
+  // esta Sprint evita simulação pesada de propósito (ver briefing).
+  //
+  // Fortaleza Congelada (gelo/lentidão/resistência): mobs regulares +
+  // Chefe seguem o MESMO padrão "exatamente 1 Mini-Boss por bioma, um
+  // Enemy Template especial" já usado em todos os outros 5 biomas —
+  // nenhum sistema de Boss novo.
+  // Player Journey Recovery & World Progression Phase I — Fase 4:
+  // achado adicional durante a calibração — não era só o Chefe. Uma
+  // vez alcançável (Fase 1/2), Picos Congelados mediu 100% de taxa de
+  // morte mesmo pra personagens naturalmente progredidos (não só o
+  // Chefe: Normal 43-47, Elite 7-9, Mini-Boss 17-23 mortes por 100
+  // execuções) — os inimigos comuns (frost-wolf/ice-golem) também
+  // estavam desproporcionais pro nível de entrada da região (20),
+  // mesma causa raiz já identificada pro Chefe. Reduzidos (~35%, mesma
+  // técnica/proporção).
+  {
+    id: "frost-wolf",
+    name: "Lobo Glacial",
+    region: "picos-congelados",
+    levelRange: { min: 20, max: 35 },
+    archetype: "beast",
+    lootIdentityId: "frost-wolf",
+    baseStats: { strength: 6, dexterity: 9, intelligence: 2, vitality: 7 },
+    growth: { strength: 0.52, dexterity: 0.65, intelligence: 0.1, vitality: 0.58 },
+    criticalMultiplier: 1.5,
+    futureFlags: {},
+  },
+  {
+    id: "ice-golem",
+    name: "Golem de Gelo",
+    region: "picos-congelados",
+    levelRange: { min: 20, max: 35 },
+    archetype: "construct",
+    lootIdentityId: "ice-golem",
+    baseStats: { strength: 12, dexterity: 5, intelligence: 2, vitality: 17 },
+    growth: { strength: 0.98, dexterity: 0.33, intelligence: 0.1, vitality: 1.3 },
+    futureFlags: {},
+  },
+  {
+    id: "frost-king",
+    name: "Rei Gélido",
+    region: "picos-congelados",
+    levelRange: { min: 20, max: 35 },
+    archetype: "construct",
+    lootIdentityId: "frost-king",
+    // Combat Difficulty Calibration — Midgame & Lategame Phase I —
+    // Fase 3: "densidade de poder" (soma de stats / nível médio da
+    // faixa) comparada contra "forgotten-guardian" — o único Mini-Boss
+    // de região tardia já validado por 3 Sprints sucessivas de ajuste
+    // fino (densidade ~1.5/nível). frost-king ainda estava em ~1.96/
+    // nível mesmo após o corte da Sprint anterior — reduzido mais uma
+    // vez (~21%) pra ~1.55/nível, alinhado à referência.
+    baseStats: { strength: 12, dexterity: 7, intelligence: 5, vitality: 19 },
+    growth: { strength: 0.95, dexterity: 0.47, intelligence: 0.24, vitality: 1.5 },
+    criticalMultiplier: 1.7,
+    futureFlags: { isBoss: true },
+  },
+  // Catedral Esquecida (corrupção/mortos-vivos/magia).
+  // Player Journey Recovery & World Progression Phase I — Fase 4:
+  // mesmo achado de frost-wolf/ice-golem acima — reduzido ~35%.
+  {
+    id: "corrupted-acolyte",
+    name: "Acólito Corrompido",
+    region: "litoral-quebrado",
+    levelRange: { min: 24, max: 38 },
+    archetype: "mage",
+    lootIdentityId: "corrupted-acolyte",
+    baseStats: { strength: 4, dexterity: 6, intelligence: 8, vitality: 7 },
+    growth: { strength: 0.33, dexterity: 0.46, intelligence: 0.65, vitality: 0.58 },
+    criticalMultiplier: 1.5,
+    futureFlags: {},
+  },
+  {
+    id: "corrupted-bishop",
+    name: "Bispo Corrompido",
+    region: "litoral-quebrado",
+    levelRange: { min: 24, max: 38 },
+    archetype: "undead",
+    lootIdentityId: "corrupted-bishop",
+    // Combat Difficulty Calibration — Midgame & Lategame Phase I —
+    // Fase 3: era o Chefe com maior densidade de poder dos 3 (~2.16/
+    // nível) mesmo já tendo alguma vitória real — reduzido ~30% pra
+    // ~1.5/nível, mesma referência de forgotten-guardian.
+    baseStats: { strength: 10, dexterity: 8, intelligence: 14, vitality: 15 },
+    growth: { strength: 0.67, dexterity: 0.53, intelligence: 1.12, vitality: 1.19 },
+    criticalMultiplier: 1.7,
+    futureFlags: { isBoss: true },
+  },
+  // Covil do Dragão (fogo/elite pesada/Boss lendário) — o mais forte
+  // dos 3 novos Chefes, ainda assim abaixo do único `isBoss:true` que
+  // já era "boss"/fortaleza-sombria (str40/dex20/int20/vit60), pra
+  // preservar a hierarquia de poder já existente no jogo.
+  // Player Journey Recovery & World Progression Phase I — Fase 4:
+  // mesmo achado de frost-wolf/ice-golem/corrupted-acolyte — reduzido
+  // ~35%.
+  {
+    id: "fire-cultist",
+    name: "Cultista Flamejante",
+    region: "deserto-de-vidro",
+    levelRange: { min: 28, max: 42 },
+    archetype: "demon",
+    lootIdentityId: "fire-cultist",
+    baseStats: { strength: 8, dexterity: 7, intelligence: 6, vitality: 8 },
+    growth: { strength: 0.65, dexterity: 0.58, intelligence: 0.46, vitality: 0.65 },
+    criticalMultiplier: 1.6,
+    futureFlags: {},
+  },
+  {
+    id: "ancient-dragon",
+    name: "Dragão Ancião",
+    region: "deserto-de-vidro",
+    levelRange: { min: 28, max: 42 },
+    archetype: "demon",
+    lootIdentityId: "ancient-dragon",
+    // Combat Difficulty Calibration — Midgame & Lategame Phase I —
+    // Fase 3: densidade ~1.91/nível mesmo após o corte da Sprint
+    // anterior — reduzido ~14% pra ~1.65/nível. Mantido deliberadamente
+    // ACIMA da referência de forgotten-guardian (1.5) e dos outros 2
+    // Chefes novos (agora ~1.55/~1.5) — continua o mais forte dos 3
+    // Chefes novos, preservando a hierarquia já documentada.
+    baseStats: { strength: 16, dexterity: 10, intelligence: 9, vitality: 22 },
+    growth: { strength: 1.38, dexterity: 0.69, intelligence: 0.52, vitality: 1.72 },
+    criticalMultiplier: 2.0,
+    futureFlags: { isBoss: true },
   },
 ];
 

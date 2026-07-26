@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getLoginUrl } from "../lib/api";
 import { LandingBackground } from "../components/landing/LandingBackground";
 import { HeroSection } from "../components/landing/HeroSection";
@@ -12,13 +13,23 @@ import { WorldSimulationPreview } from "../components/landing/WorldSimulationPre
 import { FinalCTA } from "../components/landing/FinalCTA";
 import { GLOBAL_HIGHLIGHT_PRIORITY, getLiveHighlights } from "../lib/liveReadiness";
 
+// Front Door Experience — Vertical Slice Phase I — Fase 1/2 (Audit +
+// Positioning): antes desta Sprint, os 6 destaques eram todos escritos
+// como se o jogo só existisse passivamente, assistindo uma live
+// (achado "enganoso" da auditoria — nenhum menciona explorar, lutar ou
+// equipar, que é o que a Cidade/Aventura já entregam hoje sem login).
+// Reescrito em duas camadas honestas: 4 que já funcionam em "Jogar
+// Agora" (sem badge) e 2 que dependem de vincular a Twitch (com
+// badge visível, nunca escondido) — nenhuma promessa de recurso que
+// não existe (ex.: Bosses aqui nunca foi multiplayer real com outros
+// espectadores, por isso essa reformulação não repete essa alegação).
 const FEATURES = [
-  { icon: "⚔", title: "Evolua", description: "Ganhe experiência automaticamente enquanto assiste." },
-  { icon: "🌎", title: "Explore", description: "Viaje por um mundo vivo, região por região." },
-  { icon: "👑", title: "Reino", description: "Ajude sua comunidade a crescer e conquistar cargos." },
-  { icon: "🐉", title: "Bosses", description: "Enfrente chefes gigantes ao lado de outros espectadores." },
-  { icon: "🎒", title: "Equipamentos", description: "Descubra itens raros em suas aventuras." },
-  { icon: "🏆", title: "Prestígio", description: "Construa sua história — e a do seu Reino." },
+  { icon: "⚔", title: "Combate", description: "Enfrente inimigos em expedições ativas, sem precisar de conta." },
+  { icon: "🎒", title: "Equipamentos", description: "Encontre itens e evolua seu personagem a cada aventura." },
+  { icon: "🌎", title: "Explore", description: "Viaje por um mundo com várias regiões, cada uma com sua própria identidade." },
+  { icon: "🐉", title: "Chefes", description: "Enfrente elites, mini-chefes e chefes finais nas profundezas do mundo." },
+  { icon: "📺", title: "Twitch", description: "Vincule sua live: seu personagem ganha XP automaticamente enquanto você transmite.", badge: "Requer login Twitch" },
+  { icon: "👑", title: "Reino", description: "Sua comunidade constrói um Reino, cargos e Prestígio ao vivo.", badge: "Requer login Twitch" },
 ];
 
 // Sprint Landing Page 2.0 — primeira impressão do StreamRPG. Login
@@ -26,8 +37,17 @@ const FEATURES = [
 // resto da página é composição de componentes de `components/landing/`
 // e de componentes já existentes do jogo, reaproveitados como vitrine.
 export function LoginPage() {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Front Door Experience — Vertical Slice Phase I — Fase 3 (Primary
+  // CTA): leva direto pra Cidade — o hub real do Vertical Slice, de
+  // onde o Portão Norte (corrigido nesta mesma Sprint) leva à
+  // Aventura. Nunca passa por login.
+  function handlePlay() {
+    navigate("/app/city");
+  }
 
   // Sprint Live Readiness Phase I (First 5 Minutes) — a Landing Page é
   // a vitrine da live: sem jogador real, nenhuma camada reativa (Legacy/
@@ -60,12 +80,18 @@ export function LoginPage() {
     <main className="landing-page">
       <LandingBackground />
 
-      <HeroSection onLogin={() => void handleLogin()} loading={loading} error={error} />
+      <HeroSection onPlay={handlePlay} onLogin={() => void handleLogin()} loading={loading} error={error} />
 
       <section className="landing-section">
         <div className="feature-grid">
           {FEATURES.map((feature) => (
-            <FeatureCard key={feature.title} icon={feature.icon} title={feature.title} description={feature.description} />
+            <FeatureCard
+              key={feature.title}
+              icon={feature.icon}
+              title={feature.title}
+              description={feature.description}
+              badge={"badge" in feature ? feature.badge : undefined}
+            />
           ))}
         </div>
       </section>
@@ -73,6 +99,25 @@ export function LoginPage() {
       <section className="landing-section">
         <h2 className="landing-section-title">Como funciona</h2>
         <HowItWorks />
+      </section>
+
+      {/* Front Door Experience — Vertical Slice Phase I — Fase 5 (Login
+          Strategy): resposta explícita e permanente às 5 perguntas do
+          brief — nunca descoberta por tentativa e erro. Sem isso, um
+          visitante só saberia o que precisa de login clicando em cada
+          botão da navegação (achado da Sprint anterior). */}
+      <section className="landing-section">
+        <h2 className="landing-section-title">O que precisa de login?</h2>
+        <div className="login-clarity-grid">
+          <div className="login-clarity-card">
+            <strong>Sem login</strong>
+            <p>Cidade, Aventura, exploração, combate, loot e progressão do personagem — tudo funciona no seu navegador, sem criar conta.</p>
+          </div>
+          <div className="login-clarity-card">
+            <strong>Com login Twitch</strong>
+            <p>Vincula seu personagem à sua live: XP automático enquanto você transmite, além do Mundo/Reino, Prestígio e Crônica da sua comunidade.</p>
+          </div>
+        </div>
       </section>
 
       <section className="landing-section">
@@ -100,7 +145,7 @@ export function LoginPage() {
         <WorldSimulationPreview />
       </section>
 
-      <FinalCTA onLogin={() => void handleLogin()} loading={loading} />
+      <FinalCTA onPlay={handlePlay} onLogin={() => void handleLogin()} loading={loading} />
     </main>
   );
 }

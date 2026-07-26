@@ -222,7 +222,7 @@ describe("Enemy System Phase I", () => {
       const template = getEnemyTemplate("boss")!;
       const instance = spawnEnemy(template, 1, 50);
       const killResult = killEnemy(instance, template);
-      const loot = generateLootForKilledEnemy(killResult, instance, 1);
+      const loot = generateLootForKilledEnemy(killResult, instance, 1, "fortaleza-sombria");
       assert.ok(Array.isArray(loot.generatedItems));
       assert.equal(typeof loot.totalPower, "number");
     });

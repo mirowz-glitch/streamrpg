@@ -1,18 +1,8 @@
 import { memo } from "react";
-import type { EquippedItem, ItemSlot } from "@streamrpg/shared";
+import type { EquippedItem } from "@streamrpg/shared";
 import { getCombatAttributes } from "@streamrpg/shared";
 import { RARITY_COLOR, RARITY_LABEL } from "../../lib/rarity";
-
-const SLOT_ORDER: ItemSlot[] = ["weapon", "armor", "helmet", "boots", "amulet", "ring"];
-
-const SLOT_LABEL: Record<ItemSlot, string> = {
-  weapon: "Arma",
-  armor: "Armadura",
-  helmet: "Elmo",
-  boots: "Botas",
-  amulet: "Amuleto",
-  ring: "Anel",
-};
+import { SLOT_LABEL, SLOT_ORDER } from "../../lib/itemSlots";
 
 interface AttributeChip {
   icon: string;

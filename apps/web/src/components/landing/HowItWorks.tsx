@@ -1,15 +1,19 @@
 const STEPS = [
-  { icon: "🟣", text: "Entrar com Twitch" },
-  { icon: "📺", text: "Escolha uma live" },
-  { icon: "✨", text: "Seu personagem nasce" },
-  { icon: "🗺️", text: "Explora o mundo" },
-  { icon: "🐉", text: "Enfrenta Bosses" },
-  { icon: "🏆", text: "Constrói seu legado" },
+  { icon: "🏰", text: "Jogue Agora e entre na Cidade — sem login" },
+  { icon: "🚪", text: "No Portão Norte, siga para a Aventura" },
+  { icon: "⚔", text: "Explore regiões e enfrente inimigos" },
+  { icon: "🎒", text: "Encontre equipamentos e suba de nível" },
+  { icon: "🟣", text: "Opcional: entre com Twitch" },
+  { icon: "👑", text: "Seu Reino cresce enquanto você transmite" },
 ];
 
-// Sprint Landing Page 2.0 — "Como funciona", 6 passos reais (login,
-// ping por canal, criação de personagem, expedições, Boss, Prestígio) —
-// tudo sistemas que já existem, nenhum passo inventado.
+// Front Door Experience — Vertical Slice Phase I — Fase 4 (Navigation
+// Flow): achado da Sprint anterior — os 6 passos aqui eram todos
+// Twitch-primeiro, mesmo o jogo real começando pela Cidade sem
+// precisar de login nenhum. Reescrito pra seguir a ordem real —
+// Cidade → Portão Norte → Aventura → Combate → Loot/Nível — com a
+// Twitch marcada como o que sempre foi: um passo opcional, no final,
+// nunca um pré-requisito pra jogar.
 export function HowItWorks() {
   return (
     <ol className="how-it-works">

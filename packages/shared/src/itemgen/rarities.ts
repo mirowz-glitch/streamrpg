@@ -12,9 +12,14 @@ import type { ItemGenRarityDefinition, ItemGenRarityId } from "./types.js";
 // próprios (como no Path of Exile) ficam para uma fase futura de
 // craft/conteúdo especial (requisito 10), não fazem parte desta Sprint.
 export const ITEM_GEN_RARITIES: ItemGenRarityDefinition[] = [
+  // Vertical Slice — Commercial Readiness & First Playable Experience
+  // Phase I — Fase 2/6: `label` é puramente presentacional (nenhuma
+  // lógica de drop/geração lê o texto, só `id`/`color`/pesos) —
+  // traduzido pra português, consistente com o resto da interface (que
+  // já é 100% português) sem tocar em nenhum valor funcional.
   {
     id: "common",
-    label: "Common",
+    label: "Comum",
     color: "#9aa0a6",
     minPrefixes: 0,
     maxPrefixes: 0,
@@ -24,7 +29,7 @@ export const ITEM_GEN_RARITIES: ItemGenRarityDefinition[] = [
   },
   {
     id: "magic",
-    label: "Magic",
+    label: "Mágico",
     color: "#4285f4",
     minPrefixes: 1,
     maxPrefixes: 1,
@@ -34,7 +39,7 @@ export const ITEM_GEN_RARITIES: ItemGenRarityDefinition[] = [
   },
   {
     id: "rare",
-    label: "Rare",
+    label: "Raro",
     color: "#fbbc04",
     minPrefixes: 1,
     maxPrefixes: 3,
@@ -44,7 +49,7 @@ export const ITEM_GEN_RARITIES: ItemGenRarityDefinition[] = [
   },
   {
     id: "unique",
-    label: "Unique",
+    label: "Único",
     color: "#ff8c1a",
     minPrefixes: 2,
     maxPrefixes: 3,

@@ -1,0 +1,740 @@
+{
+  "regionCases": [
+    {
+      "region": "bosque-sussurrante",
+      "order": 1,
+      "playerLevelAnchor": 1
+    },
+    {
+      "region": "pantano-podre",
+      "order": 2,
+      "playerLevelAnchor": 5
+    },
+    {
+      "region": "colinas-aridas",
+      "order": 3,
+      "playerLevelAnchor": 15
+    },
+    {
+      "region": "minas-abandonadas",
+      "order": 4,
+      "playerLevelAnchor": 17
+    },
+    {
+      "region": "picos-congelados",
+      "order": 5,
+      "playerLevelAnchor": 20
+    },
+    {
+      "region": "litoral-quebrado",
+      "order": 6,
+      "playerLevelAnchor": 24
+    },
+    {
+      "region": "deserto-de-vidro",
+      "order": 7,
+      "playerLevelAnchor": 28
+    },
+    {
+      "region": "ruinas-esquecidas",
+      "order": 8,
+      "playerLevelAnchor": 29
+    },
+    {
+      "region": "fortaleza-sombria",
+      "order": 9,
+      "playerLevelAnchor": 30
+    }
+  ],
+  "allDistinctTierThresholds": [
+    1,
+    10,
+    15,
+    20,
+    30,
+    35,
+    40,
+    50,
+    55,
+    60,
+    65
+  ],
+  "models": [
+    "playerLevel",
+    "region",
+    "regionFloor",
+    "playerLevelRegionClamp"
+  ],
+  "byModel": {
+    "playerLevel": {
+      "byRegion": [
+        {
+          "region": "bosque-sussurrante",
+          "order": 1,
+          "averageItemLevel": 1.62,
+          "distinctThresholdsUnlocked": 1,
+          "bestThresholdUnlocked": 1,
+          "averagePowerScoreWeapon": 20.405333333333335,
+          "p90PowerScoreWeapon": 47,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 15.203833333333334,
+          "p90PowerScoreArmor": 27
+        },
+        {
+          "region": "pantano-podre",
+          "order": 2,
+          "averageItemLevel": 5.615,
+          "distinctThresholdsUnlocked": 1,
+          "bestThresholdUnlocked": 1,
+          "averagePowerScoreWeapon": 19.992166666666666,
+          "p90PowerScoreWeapon": 45,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 15.297333333333333,
+          "p90PowerScoreArmor": 27
+        },
+        {
+          "region": "colinas-aridas",
+          "order": 3,
+          "averageItemLevel": 15.555,
+          "distinctThresholdsUnlocked": 3,
+          "bestThresholdUnlocked": 15,
+          "averagePowerScoreWeapon": 23.356333333333332,
+          "p90PowerScoreWeapon": 55,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 15.959,
+          "p90PowerScoreArmor": 29
+        },
+        {
+          "region": "minas-abandonadas",
+          "order": 4,
+          "averageItemLevel": 16.915,
+          "distinctThresholdsUnlocked": 3,
+          "bestThresholdUnlocked": 15,
+          "averagePowerScoreWeapon": 22.670166666666667,
+          "p90PowerScoreWeapon": 54,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 16.069166666666668,
+          "p90PowerScoreArmor": 29
+        },
+        {
+          "region": "picos-congelados",
+          "order": 5,
+          "averageItemLevel": 20.58,
+          "distinctThresholdsUnlocked": 4,
+          "bestThresholdUnlocked": 20,
+          "averagePowerScoreWeapon": 26.972166666666666,
+          "p90PowerScoreWeapon": 68,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.570833333333333,
+          "p90PowerScoreArmor": 48
+        },
+        {
+          "region": "litoral-quebrado",
+          "order": 6,
+          "averageItemLevel": 24.48,
+          "distinctThresholdsUnlocked": 4,
+          "bestThresholdUnlocked": 20,
+          "averagePowerScoreWeapon": 26.846833333333333,
+          "p90PowerScoreWeapon": 68,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.238666666666667,
+          "p90PowerScoreArmor": 47
+        },
+        {
+          "region": "deserto-de-vidro",
+          "order": 7,
+          "averageItemLevel": 28.55,
+          "distinctThresholdsUnlocked": 5,
+          "bestThresholdUnlocked": 30,
+          "averagePowerScoreWeapon": 27.627,
+          "p90PowerScoreWeapon": 69,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.759,
+          "p90PowerScoreArmor": 49
+        },
+        {
+          "region": "ruinas-esquecidas",
+          "order": 8,
+          "averageItemLevel": 28.765,
+          "distinctThresholdsUnlocked": 5,
+          "bestThresholdUnlocked": 30,
+          "averagePowerScoreWeapon": 26.917166666666667,
+          "p90PowerScoreWeapon": 68,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.725,
+          "p90PowerScoreArmor": 49
+        },
+        {
+          "region": "fortaleza-sombria",
+          "order": 9,
+          "averageItemLevel": 30,
+          "distinctThresholdsUnlocked": 5,
+          "bestThresholdUnlocked": 30,
+          "averagePowerScoreWeapon": 28.716,
+          "p90PowerScoreWeapon": 73,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.8585,
+          "p90PowerScoreArmor": 49
+        }
+      ],
+      "runningMaxUpgradeProbability": [
+        {
+          "region": "bosque-sussurrante",
+          "weapon": 1,
+          "armor": 1
+        },
+        {
+          "region": "pantano-podre",
+          "weapon": 0,
+          "armor": 0.0003333333333333333
+        },
+        {
+          "region": "colinas-aridas",
+          "weapon": 0.005,
+          "armor": 0.015166666666666667
+        },
+        {
+          "region": "minas-abandonadas",
+          "weapon": 0,
+          "armor": 0
+        },
+        {
+          "region": "picos-congelados",
+          "weapon": 0.001,
+          "armor": 0
+        },
+        {
+          "region": "litoral-quebrado",
+          "weapon": 0.00016666666666666666,
+          "armor": 0
+        },
+        {
+          "region": "deserto-de-vidro",
+          "weapon": 0.0011666666666666668,
+          "armor": 0
+        },
+        {
+          "region": "ruinas-esquecidas",
+          "weapon": 0,
+          "armor": 0.0006666666666666666
+        },
+        {
+          "region": "fortaleza-sombria",
+          "weapon": 0.00016666666666666666,
+          "armor": 0
+        }
+      ]
+    },
+    "region": {
+      "byRegion": [
+        {
+          "region": "bosque-sussurrante",
+          "order": 1,
+          "averageItemLevel": 7.09,
+          "distinctThresholdsUnlocked": 2,
+          "bestThresholdUnlocked": 10,
+          "averagePowerScoreWeapon": 20.561166666666665,
+          "p90PowerScoreWeapon": 47,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 15.414666666666667,
+          "p90PowerScoreArmor": 28
+        },
+        {
+          "region": "pantano-podre",
+          "order": 2,
+          "averageItemLevel": 11.7,
+          "distinctThresholdsUnlocked": 3,
+          "bestThresholdUnlocked": 15,
+          "averagePowerScoreWeapon": 21.507166666666667,
+          "p90PowerScoreWeapon": 49,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 15.5255,
+          "p90PowerScoreArmor": 27
+        },
+        {
+          "region": "colinas-aridas",
+          "order": 3,
+          "averageItemLevel": 29.985,
+          "distinctThresholdsUnlocked": 7,
+          "bestThresholdUnlocked": 40,
+          "averagePowerScoreWeapon": 26.827833333333334,
+          "p90PowerScoreWeapon": 67,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.06,
+          "p90PowerScoreArmor": 47
+        },
+        {
+          "region": "minas-abandonadas",
+          "order": 4,
+          "averageItemLevel": 18.775,
+          "distinctThresholdsUnlocked": 4,
+          "bestThresholdUnlocked": 20,
+          "averagePowerScoreWeapon": 23.664,
+          "p90PowerScoreWeapon": 58,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 17.959333333333333,
+          "p90PowerScoreArmor": 35
+        },
+        {
+          "region": "picos-congelados",
+          "order": 5,
+          "averageItemLevel": 27.74,
+          "distinctThresholdsUnlocked": 6,
+          "bestThresholdUnlocked": 35,
+          "averagePowerScoreWeapon": 27.491,
+          "p90PowerScoreWeapon": 70,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.932,
+          "p90PowerScoreArmor": 49
+        },
+        {
+          "region": "litoral-quebrado",
+          "order": 6,
+          "averageItemLevel": 31.375,
+          "distinctThresholdsUnlocked": 6,
+          "bestThresholdUnlocked": 35,
+          "averagePowerScoreWeapon": 28.0585,
+          "p90PowerScoreWeapon": 71,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.566,
+          "p90PowerScoreArmor": 48
+        },
+        {
+          "region": "deserto-de-vidro",
+          "order": 7,
+          "averageItemLevel": 34.855,
+          "distinctThresholdsUnlocked": 7,
+          "bestThresholdUnlocked": 40,
+          "averagePowerScoreWeapon": 28.246833333333335,
+          "p90PowerScoreWeapon": 73,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 21.017833333333332,
+          "p90PowerScoreArmor": 49
+        },
+        {
+          "region": "ruinas-esquecidas",
+          "order": 8,
+          "averageItemLevel": 19.355,
+          "distinctThresholdsUnlocked": 5,
+          "bestThresholdUnlocked": 30,
+          "averagePowerScoreWeapon": 24.927833333333332,
+          "p90PowerScoreWeapon": 61,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 18.245333333333335,
+          "p90PowerScoreArmor": 37
+        },
+        {
+          "region": "fortaleza-sombria",
+          "order": 9,
+          "averageItemLevel": 54.385,
+          "distinctThresholdsUnlocked": 11,
+          "bestThresholdUnlocked": 65,
+          "averagePowerScoreWeapon": 34.8265,
+          "p90PowerScoreWeapon": 96,
+          "t1ReachRateWeapon": 0.036166666666666666,
+          "averagePowerScoreArmor": 26.723,
+          "p90PowerScoreArmor": 64
+        }
+      ],
+      "runningMaxUpgradeProbability": [
+        {
+          "region": "bosque-sussurrante",
+          "weapon": 1,
+          "armor": 1
+        },
+        {
+          "region": "pantano-podre",
+          "weapon": 0.0005,
+          "armor": 0.0035
+        },
+        {
+          "region": "colinas-aridas",
+          "weapon": 0.003,
+          "armor": 0.0026666666666666666
+        },
+        {
+          "region": "minas-abandonadas",
+          "weapon": 0,
+          "armor": 0
+        },
+        {
+          "region": "picos-congelados",
+          "weapon": 0,
+          "armor": 0
+        },
+        {
+          "region": "litoral-quebrado",
+          "weapon": 0,
+          "armor": 0.0003333333333333333
+        },
+        {
+          "region": "deserto-de-vidro",
+          "weapon": 0,
+          "armor": 0
+        },
+        {
+          "region": "ruinas-esquecidas",
+          "weapon": 0,
+          "armor": 0
+        },
+        {
+          "region": "fortaleza-sombria",
+          "weapon": 0.0015,
+          "armor": 0.0018333333333333333
+        }
+      ]
+    },
+    "regionFloor": {
+      "byRegion": [
+        {
+          "region": "bosque-sussurrante",
+          "order": 1,
+          "averageItemLevel": 2.255,
+          "distinctThresholdsUnlocked": 1,
+          "bestThresholdUnlocked": 1,
+          "averagePowerScoreWeapon": 19.942,
+          "p90PowerScoreWeapon": 46,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 15.22,
+          "p90PowerScoreArmor": 27
+        },
+        {
+          "region": "pantano-podre",
+          "order": 2,
+          "averageItemLevel": 9.255,
+          "distinctThresholdsUnlocked": 2,
+          "bestThresholdUnlocked": 10,
+          "averagePowerScoreWeapon": 20.69633333333333,
+          "p90PowerScoreWeapon": 47,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 15.4495,
+          "p90PowerScoreArmor": 28
+        },
+        {
+          "region": "colinas-aridas",
+          "order": 3,
+          "averageItemLevel": 16.955,
+          "distinctThresholdsUnlocked": 4,
+          "bestThresholdUnlocked": 20,
+          "averagePowerScoreWeapon": 23.7545,
+          "p90PowerScoreWeapon": 59,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 17.222333333333335,
+          "p90PowerScoreArmor": 33
+        },
+        {
+          "region": "minas-abandonadas",
+          "order": 4,
+          "averageItemLevel": 24.885,
+          "distinctThresholdsUnlocked": 4,
+          "bestThresholdUnlocked": 20,
+          "averagePowerScoreWeapon": 27.028333333333332,
+          "p90PowerScoreWeapon": 67,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.436,
+          "p90PowerScoreArmor": 48
+        },
+        {
+          "region": "picos-congelados",
+          "order": 5,
+          "averageItemLevel": 33.09,
+          "distinctThresholdsUnlocked": 6,
+          "bestThresholdUnlocked": 35,
+          "averagePowerScoreWeapon": 28.468666666666667,
+          "p90PowerScoreWeapon": 71,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.679333333333332,
+          "p90PowerScoreArmor": 49
+        },
+        {
+          "region": "litoral-quebrado",
+          "order": 6,
+          "averageItemLevel": 40.795,
+          "distinctThresholdsUnlocked": 7,
+          "bestThresholdUnlocked": 40,
+          "averagePowerScoreWeapon": 29.457833333333333,
+          "p90PowerScoreWeapon": 76,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 21.1055,
+          "p90PowerScoreArmor": 49
+        },
+        {
+          "region": "deserto-de-vidro",
+          "order": 7,
+          "averageItemLevel": 48.855,
+          "distinctThresholdsUnlocked": 8,
+          "bestThresholdUnlocked": 50,
+          "averagePowerScoreWeapon": 32.039833333333334,
+          "p90PowerScoreWeapon": 89,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 25.131,
+          "p90PowerScoreArmor": 61
+        },
+        {
+          "region": "ruinas-esquecidas",
+          "order": 8,
+          "averageItemLevel": 57.05,
+          "distinctThresholdsUnlocked": 10,
+          "bestThresholdUnlocked": 60,
+          "averagePowerScoreWeapon": 37.450833333333335,
+          "p90PowerScoreWeapon": 100,
+          "t1ReachRateWeapon": 0.017833333333333333,
+          "averagePowerScoreArmor": 30.4575,
+          "p90PowerScoreArmor": 85
+        },
+        {
+          "region": "fortaleza-sombria",
+          "order": 9,
+          "averageItemLevel": 64.59,
+          "distinctThresholdsUnlocked": 11,
+          "bestThresholdUnlocked": 65,
+          "averagePowerScoreWeapon": 37.906666666666666,
+          "p90PowerScoreWeapon": 104,
+          "t1ReachRateWeapon": 0.07416666666666667,
+          "averagePowerScoreArmor": 30.789666666666665,
+          "p90PowerScoreArmor": 86
+        }
+      ],
+      "runningMaxUpgradeProbability": [
+        {
+          "region": "bosque-sussurrante",
+          "weapon": 1,
+          "armor": 1
+        },
+        {
+          "region": "pantano-podre",
+          "weapon": 0.002,
+          "armor": 0.0018333333333333333
+        },
+        {
+          "region": "colinas-aridas",
+          "weapon": 0.0011666666666666668,
+          "armor": 0.022833333333333334
+        },
+        {
+          "region": "minas-abandonadas",
+          "weapon": 0.0016666666666666668,
+          "armor": 0
+        },
+        {
+          "region": "picos-congelados",
+          "weapon": 0.0025,
+          "armor": 0.0033333333333333335
+        },
+        {
+          "region": "litoral-quebrado",
+          "weapon": 0,
+          "armor": 0.0006666666666666666
+        },
+        {
+          "region": "deserto-de-vidro",
+          "weapon": 0,
+          "armor": 0.0011666666666666668
+        },
+        {
+          "region": "ruinas-esquecidas",
+          "weapon": 0.0005,
+          "armor": 0.0003333333333333333
+        },
+        {
+          "region": "fortaleza-sombria",
+          "weapon": 0,
+          "armor": 0.0003333333333333333
+        }
+      ]
+    },
+    "playerLevelRegionClamp": {
+      "byRegion": [
+        {
+          "region": "bosque-sussurrante",
+          "order": 1,
+          "averageItemLevel": 1.51,
+          "distinctThresholdsUnlocked": 1,
+          "bestThresholdUnlocked": 1,
+          "averagePowerScoreWeapon": 20.31,
+          "p90PowerScoreWeapon": 47,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 15.1725,
+          "p90PowerScoreArmor": 27
+        },
+        {
+          "region": "pantano-podre",
+          "order": 2,
+          "averageItemLevel": 5.62,
+          "distinctThresholdsUnlocked": 1,
+          "bestThresholdUnlocked": 1,
+          "averagePowerScoreWeapon": 20.680833333333332,
+          "p90PowerScoreWeapon": 48,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 15.27,
+          "p90PowerScoreArmor": 28
+        },
+        {
+          "region": "colinas-aridas",
+          "order": 3,
+          "averageItemLevel": 15.58,
+          "distinctThresholdsUnlocked": 3,
+          "bestThresholdUnlocked": 15,
+          "averagePowerScoreWeapon": 23.3775,
+          "p90PowerScoreWeapon": 56,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 16.2285,
+          "p90PowerScoreArmor": 30
+        },
+        {
+          "region": "minas-abandonadas",
+          "order": 4,
+          "averageItemLevel": 16.925,
+          "distinctThresholdsUnlocked": 3,
+          "bestThresholdUnlocked": 15,
+          "averagePowerScoreWeapon": 22.465166666666665,
+          "p90PowerScoreWeapon": 53,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 16.064,
+          "p90PowerScoreArmor": 29
+        },
+        {
+          "region": "picos-congelados",
+          "order": 5,
+          "averageItemLevel": 20.505,
+          "distinctThresholdsUnlocked": 4,
+          "bestThresholdUnlocked": 20,
+          "averagePowerScoreWeapon": 26.939666666666668,
+          "p90PowerScoreWeapon": 68,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.404333333333334,
+          "p90PowerScoreArmor": 48
+        },
+        {
+          "region": "litoral-quebrado",
+          "order": 6,
+          "averageItemLevel": 24.6,
+          "distinctThresholdsUnlocked": 4,
+          "bestThresholdUnlocked": 20,
+          "averagePowerScoreWeapon": 27.107,
+          "p90PowerScoreWeapon": 67,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.397833333333335,
+          "p90PowerScoreArmor": 47
+        },
+        {
+          "region": "deserto-de-vidro",
+          "order": 7,
+          "averageItemLevel": 28.69,
+          "distinctThresholdsUnlocked": 5,
+          "bestThresholdUnlocked": 30,
+          "averagePowerScoreWeapon": 27.045166666666667,
+          "p90PowerScoreWeapon": 69,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.5875,
+          "p90PowerScoreArmor": 48
+        },
+        {
+          "region": "ruinas-esquecidas",
+          "order": 8,
+          "averageItemLevel": 28.855,
+          "distinctThresholdsUnlocked": 5,
+          "bestThresholdUnlocked": 30,
+          "averagePowerScoreWeapon": 27.982333333333333,
+          "p90PowerScoreWeapon": 70,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.523,
+          "p90PowerScoreArmor": 48
+        },
+        {
+          "region": "fortaleza-sombria",
+          "order": 9,
+          "averageItemLevel": 30.505,
+          "distinctThresholdsUnlocked": 5,
+          "bestThresholdUnlocked": 30,
+          "averagePowerScoreWeapon": 27.729833333333332,
+          "p90PowerScoreWeapon": 69,
+          "t1ReachRateWeapon": 0,
+          "averagePowerScoreArmor": 20.6945,
+          "p90PowerScoreArmor": 49
+        }
+      ],
+      "runningMaxUpgradeProbability": [
+        {
+          "region": "bosque-sussurrante",
+          "weapon": 1,
+          "armor": 1
+        },
+        {
+          "region": "pantano-podre",
+          "weapon": 0.0003333333333333333,
+          "armor": 0
+        },
+        {
+          "region": "colinas-aridas",
+          "weapon": 0.009666666666666667,
+          "armor": 0.019
+        },
+        {
+          "region": "minas-abandonadas",
+          "weapon": 0.0003333333333333333,
+          "armor": 0
+        },
+        {
+          "region": "picos-congelados",
+          "weapon": 0.001,
+          "armor": 0
+        },
+        {
+          "region": "litoral-quebrado",
+          "weapon": 0.0005,
+          "armor": 0
+        },
+        {
+          "region": "deserto-de-vidro",
+          "weapon": 0.0003333333333333333,
+          "armor": 0.0006666666666666666
+        },
+        {
+          "region": "ruinas-esquecidas",
+          "weapon": 0,
+          "armor": 0
+        },
+        {
+          "region": "fortaleza-sombria",
+          "weapon": 0,
+          "armor": 0.00016666666666666666
+        }
+      ]
+    }
+  },
+  "finalRegionCoverage": [
+    {
+      "model": "playerLevel",
+      "region": "fortaleza-sombria",
+      "distinctThresholdsUnlocked": 5,
+      "totalThresholds": 11,
+      "coveragePercent": 45.45454545454545,
+      "bestThresholdUnlocked": 30
+    },
+    {
+      "model": "region",
+      "region": "fortaleza-sombria",
+      "distinctThresholdsUnlocked": 11,
+      "totalThresholds": 11,
+      "coveragePercent": 100,
+      "bestThresholdUnlocked": 65
+    },
+    {
+      "model": "regionFloor",
+      "region": "fortaleza-sombria",
+      "distinctThresholdsUnlocked": 11,
+      "totalThresholds": 11,
+      "coveragePercent": 100,
+      "bestThresholdUnlocked": 65
+    },
+    {
+      "model": "playerLevelRegionClamp",
+      "region": "fortaleza-sombria",
+      "distinctThresholdsUnlocked": 5,
+      "totalThresholds": 11,
+      "coveragePercent": 45.45454545454545,
+      "bestThresholdUnlocked": 30
+    }
+  ]
+}

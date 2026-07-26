@@ -46,4 +46,5 @@ export * from "./weights.js";
 export * from "./prefixes.js";
 export * from "./suffixes.js";
 export * from "./powerScore.js";
+export * from "./selectionStrategy.js";
 export * from "./generator.js";

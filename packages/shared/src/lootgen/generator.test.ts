@@ -32,7 +32,6 @@ describe("Loot Generator Phase I", () => {
         assert.ok(quantityOption.quantity >= 0, `Loot Table "${table.id}" tem quantidade negativa`);
         assert.ok(quantityOption.weight > 0, `Loot Table "${table.id}" tem peso de quantidade <= 0`);
       }
-      assert.ok(table.minLevel <= table.maxLevel, `Loot Table "${table.id}" tem minLevel > maxLevel`);
       assert.ok(table.dropChance >= 0 && table.dropChance <= 1, `Loot Table "${table.id}" tem dropChance fora de [0,1]`);
     }
   });
@@ -67,16 +66,15 @@ describe("Loot Generator Phase I", () => {
     assert.ok(bossRate > wolfRate, `taxa não-common do Boss (${bossRate}) deveria ser maior que a do Wolf (${wolfRate})`);
   });
 
-  it("Item Level: sempre dentro de [monsterLevel - variance, monsterLevel + variance] e dentro de [minLevel, maxLevel] da tabela", () => {
+  it("Item Level: sempre dentro de [itemLevelAnchor + offset - variance, itemLevelAnchor + offset + variance] da tabela, nunca abaixo de 1", () => {
     const table = LOOT_TABLES.find((t) => t.id === "skeleton")!;
-    const monsterLevel = 20;
+    const itemLevelAnchor = 20;
+    const offset = table.itemLevelOffset ?? 0;
     for (let seed = 0; seed < 300; seed++) {
-      const loot = generateLoot("skeleton", monsterLevel, seed);
+      const loot = generateLoot("skeleton", itemLevelAnchor, seed);
       for (const item of loot.generatedItems) {
-        assert.ok(item.itemLevel >= monsterLevel - table.itemLevelVariance);
-        assert.ok(item.itemLevel <= monsterLevel + table.itemLevelVariance);
-        assert.ok(item.itemLevel >= table.minLevel);
-        assert.ok(item.itemLevel <= table.maxLevel);
+        assert.ok(item.itemLevel >= Math.max(1, itemLevelAnchor + offset - table.itemLevelVariance));
+        assert.ok(item.itemLevel <= itemLevelAnchor + offset + table.itemLevelVariance);
       }
     }
   });
@@ -137,7 +135,7 @@ describe("Loot Generator Phase I", () => {
 
   it("gera loot para toda Loot Table cadastrada, sem lançar erro", () => {
     for (const table of LOOT_TABLES) {
-      assert.doesNotThrow(() => generateLoot(table.id, (table.minLevel + table.maxLevel) / 2, 42));
+      assert.doesNotThrow(() => generateLoot(table.id, 30, 42));
     }
   });
 

@@ -1,4 +1,4 @@
-import { ITEM_GEN_RARITIES, type CombatAnimation } from "@streamrpg/shared";
+import { ITEM_GEN_RARITIES, getBaseItem, getRegionName, type CombatAnimation } from "@streamrpg/shared";
 
 interface LootPopupProps {
   active: CombatAnimation[];
@@ -37,15 +37,23 @@ export function LootPopup({ active }: LootPopupProps) {
 
   const loot = animation.payload as unknown as LootDropPayload;
   const rarity = rarityDisplay(loot.rarity);
+  // Vertical Slice — Commercial Readiness & First Playable Experience
+  // Phase I — Fase 2/6: nome/região vinham como ids brutos em inglês
+  // ("boots", "bosque-sussurrante") numa interface 100% português —
+  // mesmo padrão de nomes/rótulos já resolvidos pra raridade acima,
+  // aplicado aqui. `getBaseItem`/`getRegionName` já existiam (Item
+  // Generator/Regions), só nunca tinham sido usados neste popup.
+  const itemName = getBaseItem(loot.baseItemId)?.name ?? loot.baseItemId;
+  const regionName = getRegionName(loot.regionId);
 
   return (
     <div className="hud-loot-popup" style={{ borderColor: rarity.color }}>
       <span className="hud-loot-popup-title" style={{ color: rarity.color }}>
-        {loot.baseItemId}
+        {itemName}
       </span>
       <span className="hud-loot-popup-line">{rarity.label}</span>
       <span className="hud-loot-popup-line">Power Score: {loot.powerScore}</span>
-      <span className="hud-loot-popup-line">Origem: {loot.regionId}</span>
+      <span className="hud-loot-popup-line">Origem: {regionName}</span>
     </div>
   );
 }

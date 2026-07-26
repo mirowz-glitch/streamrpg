@@ -52,7 +52,13 @@ export const FACTION_DEFINITIONS: FactionDefinition[] = [
     id: "culto-das-ruinas",
     name: "Culto das Ruínas",
     description: "Estudiosos obcecados pelos segredos enterrados nas Ruínas Esquecidas.",
-    regions: ["ruinas-esquecidas"],
+    // Vertical Slice — Multi-Dungeon Content & Data Expansion Phase I —
+    // Fase 4: "relacionar cada Dungeon a uma facção existente... apenas
+    // configuração." Litoral Quebrado (Catedral Esquecida — corrupção/
+    // mortos-vivos/magia) encaixa na obsessão do Culto por segredos
+    // ocultos/esquecidos tão bem quanto Ruínas Esquecidas — nenhuma
+    // facção nova criada.
+    regions: ["ruinas-esquecidas", "litoral-quebrado"],
     alignment: "Oculto",
     ranks: standardRanks(),
   },
@@ -60,7 +66,12 @@ export const FACTION_DEFINITIONS: FactionDefinition[] = [
     id: "legiao-sombria",
     name: "Legião Sombria",
     description: "Uma força de conquista que domina as Minas Abandonadas e a Fortaleza Sombria, e respeita apenas o poder.",
-    regions: ["minas-abandonadas", "fortaleza-sombria"],
+    // Fase 4: Picos Congelados (Fortaleza Congelada — outra fortaleza
+    // conquistada, mesmo tema de domínio pela força já usado em
+    // Fortaleza Sombria) e Deserto de Vidro (Covil do Dragão — o
+    // Dragão Ancião como o poder supremo que uma força que "respeita
+    // apenas o poder" naturalmente busca subjugar ou servir).
+    regions: ["minas-abandonadas", "fortaleza-sombria", "picos-congelados", "deserto-de-vidro"],
     alignment: "Tirania",
     ranks: standardRanks(),
   },

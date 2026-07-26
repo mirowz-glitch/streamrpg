@@ -3,7 +3,10 @@ import { getFactionDefinition, getFactionForRegion, getRankForReputation } from 
 import { deriveFactionReputation } from "../factions/factionProgress.js";
 import { getEnemyTemplate } from "../enemy/templates.js";
 import { getExpeditionDefinition } from "../expeditions/expeditionDefinitions.js";
+import { resolveDungeonRuntimeConfig } from "../expeditions/expeditionModifiers.js";
+import { resolveCombinedRuntimeConfig } from "../worldtiers/worldTierDefinitions.js";
 import { generateLoot } from "../lootgen/generator.js";
+import { getRegionItemLevelAnchor } from "../regions.js";
 import type { AdvanceAdventureOptions } from "../adventure/adventureLoop.js";
 import type { AdventureSession, AdventureTickResult } from "../adventure/types.js";
 import type { AdventureTimeline, FloatingNumberEvent, PresentationEvent } from "../presentation/types.js";
@@ -134,7 +137,38 @@ export function advanceDungeonTick(
   options: AdvanceAdventureOptions = {},
 ): AdvanceDungeonTickResult {
   const timestamp = options.currentTime ?? Date.now();
-  const { tickResult, events, floatingNumbers, recovery, objective } = advanceFactionTick(session, timeline, options);
+
+  // Vertical Slice — Dungeon Modifier Runtime Integration Phase I —
+  // Fase 1/2: o ÚNICO ponto de resolução ("Dungeon -> ModifierResolver
+  // -> RuntimeConfig -> Combat/Recovery/Encounter/Rewards/HUD") de todo
+  // o projeto. Lido pela MESMA técnica que "Qual Expedição estava ativa
+  // durante esta tick" logo abaixo (findMostRecentExpeditionId) — mas
+  // ANTES de chamar a cadeia de baixo, então nunca inclui uma Expedição
+  // que esta MESMA tick esteja prestes a auto-iniciar (só passa a valer
+  // a partir da tick seguinte — mesmo tipo de defasagem de uma tick já
+  // aceito em toda leitura "antes" desta cadeia, ex.: beforeExpedition
+  // em expeditionController.ts). `options.runtimeConfig` explícito
+  // (ex.: um teste/Simulador que queira forçar um cenário) sempre
+  // vence a resolução automática.
+  //
+  // Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 2:
+  // "Runtime Final = World Tier + Dungeon Modifiers." Este continua o
+  // ÚNICO lugar que resolve os dois — `resolveCombinedRuntimeConfig()`
+  // (worldtiers/worldTierDefinitions.ts) lê `session.worldTier` (a
+  // escolha do jogador, persistente na sessão) + o
+  // DungeonRuntimeConfig já resolvido abaixo, e devolve o
+  // CombinedRuntimeConfig único que toda a cadeia de baixo (e
+  // Combat/Encounter/Recovery/Rewards/HUD, todos já ligados na Sprint
+  // anterior) consome sem saber que World Tiers existem.
+  const activeExpeditionIdBeforeTick = findMostRecentExpeditionId(timeline.events);
+  const activeDefinitionBeforeTick = activeExpeditionIdBeforeTick ? getExpeditionDefinition(activeExpeditionIdBeforeTick) : undefined;
+  const dungeonRuntimeConfig = resolveDungeonRuntimeConfig(activeDefinitionBeforeTick?.modifiers);
+  const optionsWithRuntimeConfig: AdvanceAdventureOptions = {
+    ...options,
+    runtimeConfig: options.runtimeConfig ?? resolveCombinedRuntimeConfig(session.worldTier, dungeonRuntimeConfig),
+  };
+
+  const { tickResult, events, floatingNumbers, recovery, objective } = advanceFactionTick(session, timeline, optionsWithRuntimeConfig);
   const tickIndex = timeline.nextTickIndex - 1;
 
   // "Qual Expedição estava ativa durante esta tick" — deliberadamente
@@ -189,7 +223,13 @@ export function advanceDungeonTick(
         const expeditionDefinition = activeExpeditionId ? getExpeditionDefinition(activeExpeditionId) : undefined;
         const lootTableId = expeditionDefinition?.reward.guaranteedLootTableId ?? FINAL_BOSS_LOOT_TABLE_FALLBACK;
         const lootSeed = session.seed + tickIndex + FINAL_BOSS_LOOT_SEED_OFFSET;
-        const loot = generateLoot(lootTableId, session.character.characterBuild.level, lootSeed, {
+        // Region-Anchored Item Level — Implementation Validation Phase I:
+        // getRegionItemLevelAnchor(session.currentRegion) substitui
+        // session.character.characterBuild.level como base do Item
+        // Level do loot garantido — XP/recompensa do Chefe Final
+        // (FINAL_BOSS_XP_REWARD/FINAL_BOSS_GOLD_REWARD, acima) e o
+        // próprio nível do personagem continuam intocados.
+        const loot = generateLoot(lootTableId, getRegionItemLevelAnchor(session.currentRegion), lootSeed, {
           dropChanceOverride: 1,
           minimumQuantity: 1,
           rarityWeightMultipliers: { unique: FINAL_BOSS_UNIQUE_BIAS },

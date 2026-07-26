@@ -4,7 +4,7 @@ import { getEncounterTable } from "./encounterTables.js";
 import { getExplorationEventTable } from "../worldevents/worldEventTables.js";
 import { selectExplorationEvent } from "../worldevents/generator.js";
 import { WORLD_ENCOUNTER_CONFIG } from "./config.js";
-import type { EncounterGroupResult, EncounterResult, EncounterTable, EncounterVariant } from "./types.js";
+import type { DungeonRuntimeConfig, EncounterGroupResult, EncounterResult, EncounterTable, EncounterVariant } from "./types.js";
 
 // Requisito 3 — Level Scaling: o nível de um grupo respeita a
 // interseção de 3 faixas — "Faixa da região" (table.levelRange),
@@ -37,11 +37,21 @@ function resolveGroupLevel(
 // os grupos. Mesmo `pickWeighted()` já usado pra packSizeOptions/
 // entries — nenhum sorteio novo inventado, só mais uma rolagem na
 // MESMA técnica.
-function rollVariant(rng: ReturnType<typeof createSeededRandom>, table: EncounterTable): EncounterVariant {
+// Vertical Slice — Dungeon Modifier Runtime Integration Phase I — Fase
+// 2 (Encounter): "elite-density; elite-chance-up; miniboss-surge."
+// `runtimeConfig` só escala os DOIS números que já existiam
+// (table.variantChances.elite/miniBoss) — nenhuma segunda regra de
+// seleção, nenhum novo sorteio (mesmo pickWeighted() de sempre, mesmo
+// único draw de rng). Ausente (fora de uma Dungeon, ou Dungeon sem
+// nenhum desses 3 modificadores) = multiplicador 1, comportamento
+// idêntico a antes.
+function rollVariant(rng: ReturnType<typeof createSeededRandom>, table: EncounterTable, runtimeConfig: DungeonRuntimeConfig | undefined): EncounterVariant {
+  const eliteChance = table.variantChances.elite * (runtimeConfig?.eliteChanceMultiplier ?? 1);
+  const miniBossChance = table.variantChances.miniBoss * (runtimeConfig?.miniBossChanceMultiplier ?? 1);
   const options = [
-    { variant: "normal" as const, weight: Math.max(0, 1 - table.variantChances.elite - table.variantChances.miniBoss) },
-    { variant: "elite" as const, weight: table.variantChances.elite },
-    { variant: "miniboss" as const, weight: table.variantChances.miniBoss },
+    { variant: "normal" as const, weight: Math.max(0, 1 - eliteChance - miniBossChance) },
+    { variant: "elite" as const, weight: eliteChance },
+    { variant: "miniboss" as const, weight: miniBossChance },
   ];
   return pickWeighted(rng, options).variant;
 }
@@ -127,7 +137,7 @@ function buildNormalGroups(rng: ReturnType<typeof createSeededRandom>, table: En
 // requisito 2: "reutilizar Encounter normal"), só carregando
 // `explorationEventId` por cima pra Presentation saber que esta luta é uma
 // Emboscada.
-export function generateEncounter(regionId: string, playerLevel: number, seed: number): EncounterResult {
+export function generateEncounter(regionId: string, playerLevel: number, seed: number, runtimeConfig?: DungeonRuntimeConfig): EncounterResult {
   const table = getEncounterTable(regionId);
   if (!table) {
     throw new Error(`World Encounter: região sem Encounter Table "${regionId}"`);
@@ -146,7 +156,7 @@ export function generateEncounter(regionId: string, playerLevel: number, seed: n
     return { regionId, seed, groups: [], variant: "normal", explorationEventId: explorationEvent.id };
   }
 
-  const variant = rollVariant(rng, table);
+  const variant = rollVariant(rng, table, runtimeConfig);
 
   // Requisito 2 — Mini-Boss: "não é um Template novo de sistema, é
   // apenas um Enemy Template especial" — um único grupo de 1, o mesmo

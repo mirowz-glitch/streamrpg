@@ -17,8 +17,8 @@ export interface GenerateMonsterLootOverrides {
 
 // Pipeline completo do Monster Loot Identity Phase I:
 //
-//   Monster (monsterId + monsterLevel) -> Loot Identity -> Loot Table
-//   -> Loot Generator -> Item Generator -> Generated Item
+//   Monster (monsterId) + Item Level Anchor -> Loot Identity -> Loot
+//   Table -> Loot Generator -> Item Generator -> Generated Item
 //
 // O Loot Generator (generateLoot(), lootgen/generator.ts) continua
 // sendo o único responsável por gerar os itens — esta função nunca
@@ -27,12 +27,17 @@ export interface GenerateMonsterLootOverrides {
 // existente, sem nenhuma alteração no Item Generator além do parâmetro
 // aditivo `modTagWeightMultipliers`, aprovado nesta Sprint).
 //
-// Determinístico: mesmo monsterId + mesmo monsterLevel + mesma seed =
+// Region-Anchored Item Level — `itemLevelAnchor` já foi `monsterLevel`;
+// desde a Sprint "Region-Anchored Item Level" quem chama esta função
+// (enemy/lootIntegration.ts) já resolve getRegionItemLevelAnchor(regionId)
+// antes de chegar aqui — esta função não sabe nem precisa saber disso.
+//
+// Determinístico: mesmo monsterId + mesmo itemLevelAnchor + mesma seed =
 // mesmo LootResult (resolveLootBias() é pura, sem RNG — todo o
 // determinismo já vem de generateLoot()).
 export function generateMonsterLoot(
   monsterId: string,
-  monsterLevel: number,
+  itemLevelAnchor: number,
   seed: number,
   overrides: GenerateMonsterLootOverrides = {},
 ): LootResult {
@@ -50,7 +55,7 @@ export function generateMonsterLoot(
       }
     : bias.rarityBias;
 
-  return generateLoot(monsterId, monsterLevel, seed, {
+  return generateLoot(monsterId, itemLevelAnchor, seed, {
     baseItemWeightOverrides: bias.baseItemAffinity,
     rarityWeightMultipliers,
     modTagWeightMultipliers: bias.affixAffinity,

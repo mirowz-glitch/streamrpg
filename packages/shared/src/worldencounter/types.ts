@@ -80,6 +80,69 @@ export interface EncounterTable {
   miniBossTemplateId: string;
 }
 
+// Vertical Slice — Dungeon Modifier Runtime Integration Phase I —
+// Fase 1: "um único ponto de resolução... Dungeon -> ModifierResolver
+// -> RuntimeConfig -> Combat/Recovery/Encounter/Rewards/HUD." Este é o
+// FORMATO do objeto resolvido — imutável, só números neutros por
+// padrão (1 = "sem efeito") — nunca a lista de ids de modificadores em
+// si; nenhum consumidor (generator.ts/spawn.ts/adventureLoop.ts/
+// recoveryLayer.ts) precisa saber que "elite-density"/"reduced-healing"
+// existem, só ler o campo numérico que já importa pra ele.
+//
+// Vive aqui (worldencounter/, não em expeditions/ ou dungeon/, onde a
+// RESOLUÇÃO de verdade acontece) só pra evitar dependência circular:
+// tanto adventure/adventureLoop.ts quanto recovery/recoveryLayer.ts já
+// dependem (direta ou transitivamente) deste módulo, nunca o
+// contrário — expeditions/expeditionModifiers.ts (que CONSTRÓI este
+// objeto a partir dos ids de modificador) importa este tipo daqui,
+// nunca o inverso.
+export interface DungeonRuntimeConfig {
+  enemyLifeMultiplier: number;
+  enemyDamageMultiplier: number;
+  eliteChanceMultiplier: number;
+  miniBossChanceMultiplier: number;
+  healingMultiplier: number;
+  rewardMultiplier: number;
+}
+
+// O "sem Dungeon ativa/sem modificadores" — todo consumidor usa isto
+// (via `?? NEUTRAL_DUNGEON_RUNTIME_CONFIG` ou multiplicando por `?? 1`
+// campo a campo) como comportamento padrão idêntico a antes desta
+// Sprint.
+export const NEUTRAL_DUNGEON_RUNTIME_CONFIG: DungeonRuntimeConfig = {
+  enemyLifeMultiplier: 1,
+  enemyDamageMultiplier: 1,
+  eliteChanceMultiplier: 1,
+  miniBossChanceMultiplier: 1,
+  healingMultiplier: 1,
+  rewardMultiplier: 1,
+};
+
+// Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 2:
+// "Runtime Final = World Tier + Dungeon Modifiers... nenhum sistema
+// conhecerá os dois separadamente." `CombinedRuntimeConfig` é o ÚNICO
+// formato que de fato atravessa `AdvanceAdventureOptions.runtimeConfig`
+// a partir desta Sprint — estende `DungeonRuntimeConfig` (os 6 campos
+// que Combat/Encounter/Recovery já liam) com os 2 campos que só o
+// World Tier introduz (`xpMultiplier`/`lootMultiplier`, granularidade
+// que os Dungeon Modifiers nunca tiveram — eles só tinham um
+// `rewardMultiplier` único pra XP+ouro+reputação juntos). Continua
+// vivendo aqui (não em worldtiers/ ou expeditions/, onde a resolução de
+// verdade acontece) pelo mesmo motivo de sempre: evitar dependência
+// circular — quem CONSTRÓI este objeto (worldtiers/
+// worldTierDefinitions.ts: combineRuntimeConfigs()) importa o tipo
+// daqui, nunca o inverso.
+export interface CombinedRuntimeConfig extends DungeonRuntimeConfig {
+  xpMultiplier: number;
+  lootMultiplier: number;
+}
+
+export const NEUTRAL_COMBINED_RUNTIME_CONFIG: CombinedRuntimeConfig = {
+  ...NEUTRAL_DUNGEON_RUNTIME_CONFIG,
+  xpMultiplier: 1,
+  lootMultiplier: 1,
+};
+
 // Requisito 2/5 — resultado de UM grupo dentro de um encontro (ex.: "2
 // Goblins nível 8"). `instanceSeeds` já vem pré-rolado
 // deterministicamente por generateEncounter() — um por membro do

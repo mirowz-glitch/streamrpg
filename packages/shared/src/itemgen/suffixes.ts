@@ -17,6 +17,10 @@ import type { ItemGenModDefinition } from "./types.js";
 //
 // Adicionar um novo Sufixo = inserir um novo registro nesta lista.
 // Nenhuma outra parte do gerador (generator.ts) precisa mudar.
+//
+// Equipment Progression Repair Phase II — Fase 3: mesmo rebalanceamento
+// de peso de tier aplicado em prefixes.ts (ver cabeçalho lá) — 2/8/18/72
+// -> 4/16/30/50, e 15/85 -> 28/72 pros mods de 2 tiers.
 export const ITEM_GEN_SUFFIXES: ItemGenModDefinition[] = [
   {
     id: "suffix_of_the_bear",
@@ -29,10 +33,10 @@ export const ITEM_GEN_SUFFIXES: ItemGenModDefinition[] = [
     requiredTags: [],
     excludesGroups: [],
     tiers: [
-      { tier: 1, minItemLevel: 55, min: 90, max: 110, weight: 2 },
-      { tier: 2, minItemLevel: 35, min: 55, max: 89, weight: 8 },
-      { tier: 3, minItemLevel: 15, min: 30, max: 54, weight: 18 },
-      { tier: 4, minItemLevel: 1, min: 12, max: 29, weight: 72 },
+      { tier: 1, minItemLevel: 55, min: 90, max: 110, weight: 4 },
+      { tier: 2, minItemLevel: 35, min: 55, max: 89, weight: 16 },
+      { tier: 3, minItemLevel: 15, min: 30, max: 54, weight: 30 },
+      { tier: 4, minItemLevel: 1, min: 12, max: 29, weight: 50 },
     ],
   },
   {
@@ -46,10 +50,10 @@ export const ITEM_GEN_SUFFIXES: ItemGenModDefinition[] = [
     requiredTags: ["weapon"],
     excludesGroups: [],
     tiers: [
-      { tier: 1, minItemLevel: 50, min: 140, max: 170, weight: 2 },
-      { tier: 2, minItemLevel: 30, min: 90, max: 139, weight: 8 },
-      { tier: 3, minItemLevel: 10, min: 40, max: 89, weight: 18 },
-      { tier: 4, minItemLevel: 1, min: 10, max: 39, weight: 72 },
+      { tier: 1, minItemLevel: 50, min: 140, max: 170, weight: 4 },
+      { tier: 2, minItemLevel: 30, min: 90, max: 139, weight: 16 },
+      { tier: 3, minItemLevel: 10, min: 40, max: 89, weight: 30 },
+      { tier: 4, minItemLevel: 1, min: 10, max: 39, weight: 50 },
     ],
   },
   {
@@ -64,10 +68,10 @@ export const ITEM_GEN_SUFFIXES: ItemGenModDefinition[] = [
     excludesGroups: [],
     rarityWeights: { rare: 1.3, unique: 1.6 },
     tiers: [
-      { tier: 1, minItemLevel: 55, min: 8, max: 10, weight: 2 },
-      { tier: 2, minItemLevel: 35, min: 5, max: 7, weight: 8 },
-      { tier: 3, minItemLevel: 15, min: 3, max: 4, weight: 18 },
-      { tier: 4, minItemLevel: 1, min: 1, max: 2, weight: 72 },
+      { tier: 1, minItemLevel: 55, min: 8, max: 10, weight: 4 },
+      { tier: 2, minItemLevel: 35, min: 5, max: 7, weight: 16 },
+      { tier: 3, minItemLevel: 15, min: 3, max: 4, weight: 30 },
+      { tier: 4, minItemLevel: 1, min: 1, max: 2, weight: 50 },
     ],
   },
   {
@@ -81,10 +85,10 @@ export const ITEM_GEN_SUFFIXES: ItemGenModDefinition[] = [
     requiredTags: ["weapon"],
     excludesGroups: [],
     tiers: [
-      { tier: 1, minItemLevel: 55, min: 60, max: 80, weight: 2 },
-      { tier: 2, minItemLevel: 35, min: 35, max: 59, weight: 8 },
-      { tier: 3, minItemLevel: 15, min: 18, max: 34, weight: 18 },
-      { tier: 4, minItemLevel: 1, min: 5, max: 17, weight: 72 },
+      { tier: 1, minItemLevel: 55, min: 60, max: 80, weight: 4 },
+      { tier: 2, minItemLevel: 35, min: 35, max: 59, weight: 16 },
+      { tier: 3, minItemLevel: 15, min: 18, max: 34, weight: 30 },
+      { tier: 4, minItemLevel: 1, min: 5, max: 17, weight: 50 },
     ],
   },
   {
@@ -98,10 +102,10 @@ export const ITEM_GEN_SUFFIXES: ItemGenModDefinition[] = [
     requiredTags: ["weapon"],
     excludesGroups: [],
     tiers: [
-      { tier: 1, minItemLevel: 55, min: 60, max: 80, weight: 2 },
-      { tier: 2, minItemLevel: 35, min: 35, max: 59, weight: 8 },
-      { tier: 3, minItemLevel: 15, min: 18, max: 34, weight: 18 },
-      { tier: 4, minItemLevel: 1, min: 5, max: 17, weight: 72 },
+      { tier: 1, minItemLevel: 55, min: 60, max: 80, weight: 4 },
+      { tier: 2, minItemLevel: 35, min: 35, max: 59, weight: 16 },
+      { tier: 3, minItemLevel: 15, min: 18, max: 34, weight: 30 },
+      { tier: 4, minItemLevel: 1, min: 5, max: 17, weight: 50 },
     ],
   },
   {
@@ -115,10 +119,10 @@ export const ITEM_GEN_SUFFIXES: ItemGenModDefinition[] = [
     requiredTags: ["weapon"],
     excludesGroups: [],
     tiers: [
-      { tier: 1, minItemLevel: 55, min: 5, max: 120, weight: 2 },
-      { tier: 2, minItemLevel: 35, min: 3, max: 80, weight: 8 },
-      { tier: 3, minItemLevel: 15, min: 2, max: 45, weight: 18 },
-      { tier: 4, minItemLevel: 1, min: 1, max: 20, weight: 72 },
+      { tier: 1, minItemLevel: 55, min: 5, max: 120, weight: 4 },
+      { tier: 2, minItemLevel: 35, min: 3, max: 80, weight: 16 },
+      { tier: 3, minItemLevel: 15, min: 2, max: 45, weight: 30 },
+      { tier: 4, minItemLevel: 1, min: 1, max: 20, weight: 50 },
     ],
   },
   {
@@ -137,10 +141,10 @@ export const ITEM_GEN_SUFFIXES: ItemGenModDefinition[] = [
     // prefix_mystic.
     excludesGroups: ["spell_damage"],
     tiers: [
-      { tier: 1, minItemLevel: 60, min: 5, max: 6, weight: 2 },
-      { tier: 2, minItemLevel: 40, min: 3, max: 4, weight: 8 },
-      { tier: 3, minItemLevel: 20, min: 2, max: 2, weight: 18 },
-      { tier: 4, minItemLevel: 1, min: 1, max: 1, weight: 72 },
+      { tier: 1, minItemLevel: 60, min: 5, max: 6, weight: 4 },
+      { tier: 2, minItemLevel: 40, min: 3, max: 4, weight: 16 },
+      { tier: 3, minItemLevel: 20, min: 2, max: 2, weight: 30 },
+      { tier: 4, minItemLevel: 1, min: 1, max: 1, weight: 50 },
     ],
   },
 ];

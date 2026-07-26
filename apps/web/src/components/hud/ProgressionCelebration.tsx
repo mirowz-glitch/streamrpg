@@ -1,7 +1,15 @@
-import type { HudState } from "@streamrpg/shared";
+import { getBaseItem, ITEM_GEN_RARITIES, type HudState } from "@streamrpg/shared";
 
 interface ProgressionCelebrationProps {
   hudState: HudState;
+}
+
+// Player Feedback & Retention — Vertical Slice Phase I — Fase 2/7:
+// nome/raridade apareciam crus ("dagger"/"rare") — mesmo achado já
+// corrigido em LootPopup/EventFeed/EquipmentPopup, só nunca tinha sido
+// aplicado aqui.
+function rarityLabel(rarity: string): string {
+  return ITEM_GEN_RARITIES.find((entry) => entry.id === rarity)?.label ?? rarity;
 }
 
 // Progression & Player Retention Phase I — requisito 6: melhor item e
@@ -19,7 +27,8 @@ export function ProgressionCelebration({ hudState }: ProgressionCelebrationProps
     <div className="hud-progression-celebration">
       {newBestItemEvent ? (
         <span className="hud-progression-celebration-item">
-          🏆 Novo melhor item: {newBestItemEvent.baseItemId} ({newBestItemEvent.rarity}, Power Score {newBestItemEvent.powerScore})
+          🏆 Novo melhor item: {getBaseItem(newBestItemEvent.baseItemId)?.name ?? newBestItemEvent.baseItemId} (
+          {rarityLabel(newBestItemEvent.rarity)}, Power Score {newBestItemEvent.powerScore})
         </span>
       ) : null}
       {newDamageRecordEvent ? (

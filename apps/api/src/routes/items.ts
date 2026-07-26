@@ -1,6 +1,6 @@
 import { requireAuth } from "../middleware/auth.js";
 import { json, readBody, route } from "../middleware/router.js";
-import { equipItem, listInventory, unequipItem } from "../services/drop.service.js";
+import { equipItem, grantAdventureLoot, listInventory, unequipItem } from "../services/drop.service.js";
 import type { ItemSlot } from "@streamrpg/shared";
 import { getCharacterIdByProfileId } from "./character.js";
 
@@ -16,6 +16,48 @@ export const itemsRoutes = [
       json(res, 200, { items: listInventory(characterId) });
     } catch {
       json(res, 401, { error: "Unauthorized" });
+    }
+  }),
+
+  // Vertical Slice — Persistent Player Experience Phase I — Fase 2/3/4:
+  // reaproveita grantAdventureLoot() (mesmas tabelas items/
+  // character_items de sempre) + equipItem() já existente logo abaixo —
+  // nenhuma lógica de equipar nova, só o caminho de criação do item que
+  // faltava pra itens gerados pela Aventura (packages/shared, protegida).
+  route("POST", "/api/items/loot", async (req, res, ctx) => {
+    try {
+      const profileId = requireAuth(ctx);
+      const characterId = getCharacterIdByProfileId(profileId);
+      if (!characterId) {
+        json(res, 404, { error: "Character not found" });
+        return;
+      }
+      const body = JSON.parse(await readBody(req)) as {
+        baseItemId?: string;
+        name?: string;
+        rarity?: string;
+        slot?: string;
+        powerScore?: number;
+        autoEquip?: boolean;
+      };
+      if (!body.baseItemId || !body.name || !body.rarity || !body.slot) {
+        json(res, 400, { error: "baseItemId, name, rarity and slot are required" });
+        return;
+      }
+      let item = grantAdventureLoot(characterId, null, {
+        baseItemId: body.baseItemId,
+        name: body.name,
+        rarity: body.rarity,
+        slot: body.slot,
+        powerScore: body.powerScore ?? 0,
+      });
+      if (body.autoEquip) {
+        item = equipItem(characterId, item.id);
+      }
+      json(res, 200, { item });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Loot failed";
+      json(res, 400, { error: message });
     }
   }),
 

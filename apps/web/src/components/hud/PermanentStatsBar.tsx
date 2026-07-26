@@ -1,4 +1,4 @@
-import type { HudState } from "@streamrpg/shared";
+import { getBaseItem, type HudState } from "@streamrpg/shared";
 
 interface PermanentStatsBarProps {
   hudState: HudState;
@@ -21,8 +21,10 @@ export function PermanentStatsBar({ hudState }: PermanentStatsBarProps) {
       <span className="hud-permanent-stats-item">Nível {xpProgress.level}</span>
       <span className="hud-permanent-stats-item">{xpProgress.xp} XP</span>
       <span className="hud-permanent-stats-item">🪙 {statistics.goldFound}</span>
+      {/* Fase 2/6: mesmo achado do LootPopup/EventFeed — "🏆 dagger (7)"
+          era um id bruto em inglês na barra de status permanente. */}
       <span className="hud-permanent-stats-item">
-        🏆 {bestItemFound ? `${bestItemFound.baseItemId} (${bestItemFound.powerScore})` : "Nenhum item ainda"}
+        🏆 {bestItemFound ? `${getBaseItem(bestItemFound.baseItemId)?.name ?? bestItemFound.baseItemId} (${bestItemFound.powerScore})` : "Nenhum item ainda"}
       </span>
       <span className="hud-permanent-stats-item">🔥 {statistics.enemiesKilled} abates</span>
     </section>

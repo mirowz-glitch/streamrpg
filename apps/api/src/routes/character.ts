@@ -121,6 +121,56 @@ export const characterRoutes = [
     }
   }),
 
+  // Vertical Slice — Persistent Player Experience Phase I — Fase 2/3/4:
+  // a Aventura (packages/shared, client-state, protegida/intocada nesta
+  // Sprint) passa a persistir seus próprios resultados aqui, em vez de
+  // manter um personagem paralelo só no navegador. Reaproveita
+  // characterRepository.applyXP() (já existente, mesmo método que
+  // XPSystemV2/BossRewardSystem usam) — nenhuma fórmula de XP/nível
+  // nova, só mais um chamador.
+  route("POST", "/api/character/adventure/xp", async (req, res, ctx) => {
+    try {
+      const profileId = requireAuth(ctx);
+      const characterId = getCharacterIdByProfileId(profileId);
+      if (!characterId) {
+        json(res, 404, { error: "Character not found" });
+        return;
+      }
+      const body = JSON.parse(await readBody(req)) as { amount?: number };
+      const amount = Math.max(0, Math.round(body.amount ?? 0));
+      if (amount > 0) {
+        await characterRepository.applyXP(characterId, amount, Date.now());
+      }
+      const character = await getCharacterByProfileId(profileId);
+      json(res, 200, character);
+    } catch {
+      json(res, 401, { error: "Unauthorized" });
+    }
+  }),
+
+  // Fase 2/3/4: mesmo papel de /adventure/xp, pra ouro — reaproveita
+  // characterRepository.grantGold() (novo método, mesmo padrão de
+  // applyXP, só soma — nenhum sistema de gasto/economia criado).
+  route("POST", "/api/character/adventure/gold", async (req, res, ctx) => {
+    try {
+      const profileId = requireAuth(ctx);
+      const characterId = getCharacterIdByProfileId(profileId);
+      if (!characterId) {
+        json(res, 404, { error: "Character not found" });
+        return;
+      }
+      const body = JSON.parse(await readBody(req)) as { amount?: number };
+      const amount = Math.max(0, body.amount ?? 0);
+      if (amount > 0) {
+        await characterRepository.grantGold(characterId, amount);
+      }
+      const character = await getCharacterByProfileId(profileId);
+      json(res, 200, character);
+    } catch {
+      json(res, 401, { error: "Unauthorized" });
+    }
+  }),
+
   route("PATCH", "/api/character", async (req, res, ctx) => {
     try {
       const profileId = requireAuth(ctx);

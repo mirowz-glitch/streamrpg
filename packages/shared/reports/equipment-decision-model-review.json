@@ -1,0 +1,485 @@
+{
+  "methodology": {
+    "pairsPerSlot": 4000,
+    "slotsTested": [
+      "weapon",
+      "helmet",
+      "chest",
+      "gloves",
+      "boots",
+      "ring1",
+      "amulet",
+      "belt"
+    ],
+    "samplesPerRegionForRunningMax": 3000
+  },
+  "fase6_slotAnalysis": [
+    {
+      "slotId": "weapon",
+      "totalPairs": 4000,
+      "acceptanceRateByComparator": {
+        "current_powerScore": 0.29325,
+        "dps_aware": 0.20425,
+        "survival": 0.152,
+        "dominant_attribute": 0.278,
+        "weighted_composite": 0.279
+      }
+    },
+    {
+      "slotId": "helmet",
+      "totalPairs": 4000,
+      "acceptanceRateByComparator": {
+        "current_powerScore": 0.26,
+        "dps_aware": 0,
+        "survival": 0.21375,
+        "dominant_attribute": 0.21375,
+        "weighted_composite": 0.21375
+      }
+    },
+    {
+      "slotId": "chest",
+      "totalPairs": 4000,
+      "acceptanceRateByComparator": {
+        "current_powerScore": 0.257,
+        "dps_aware": 0,
+        "survival": 0.21075,
+        "dominant_attribute": 0.21075,
+        "weighted_composite": 0.21075
+      }
+    },
+    {
+      "slotId": "gloves",
+      "totalPairs": 4000,
+      "acceptanceRateByComparator": {
+        "current_powerScore": 0.26,
+        "dps_aware": 0,
+        "survival": 0.21375,
+        "dominant_attribute": 0.21375,
+        "weighted_composite": 0.21375
+      }
+    },
+    {
+      "slotId": "boots",
+      "totalPairs": 4000,
+      "acceptanceRateByComparator": {
+        "current_powerScore": 0.257,
+        "dps_aware": 0,
+        "survival": 0.21075,
+        "dominant_attribute": 0.21075,
+        "weighted_composite": 0.21075
+      }
+    },
+    {
+      "slotId": "ring1",
+      "totalPairs": 4000,
+      "acceptanceRateByComparator": {
+        "current_powerScore": 0.257,
+        "dps_aware": 0,
+        "survival": 0.21075,
+        "dominant_attribute": 0.21075,
+        "weighted_composite": 0.21075
+      }
+    },
+    {
+      "slotId": "amulet",
+      "totalPairs": 4000,
+      "acceptanceRateByComparator": {
+        "current_powerScore": 0.26,
+        "dps_aware": 0,
+        "survival": 0.21375,
+        "dominant_attribute": 0.21375,
+        "weighted_composite": 0.21375
+      }
+    },
+    {
+      "slotId": "belt",
+      "totalPairs": 4000,
+      "acceptanceRateByComparator": {
+        "current_powerScore": 0.257,
+        "dps_aware": 0,
+        "survival": 0.212,
+        "dominant_attribute": 0.212,
+        "weighted_composite": 0.212
+      }
+    }
+  ],
+  "fase3_falseNegatives": {
+    "totalFalseNegatives": 273,
+    "totalPairsTested": 32000,
+    "falseNegativeRate": 0.00853125,
+    "byDominantStat": {
+      "life": 172,
+      "accuracy": 30,
+      "attack": 67,
+      "attackSpeed": 2,
+      "critical": 2
+    },
+    "bySlot": {
+      "weapon": 144,
+      "helmet": 16,
+      "chest": 20,
+      "gloves": 16,
+      "boots": 20,
+      "ring1": 20,
+      "amulet": 16,
+      "belt": 21
+    },
+    "sampleCases": [
+      {
+        "slotId": "weapon",
+        "itemLevel": 22,
+        "currentPowerScore": 42,
+        "candidatePowerScore": 21,
+        "powerScoreDelta": -21,
+        "acceptedBy": [
+          "dps_aware"
+        ],
+        "dominantStatDiffering": "life"
+      },
+      {
+        "slotId": "weapon",
+        "itemLevel": 48,
+        "currentPowerScore": 101,
+        "candidatePowerScore": 73,
+        "powerScoreDelta": -28,
+        "acceptedBy": [
+          "dps_aware"
+        ],
+        "dominantStatDiffering": "life"
+      },
+      {
+        "slotId": "weapon",
+        "itemLevel": 48,
+        "currentPowerScore": 126,
+        "candidatePowerScore": 28,
+        "powerScoreDelta": -98,
+        "acceptedBy": [
+          "survival"
+        ],
+        "dominantStatDiffering": "accuracy"
+      },
+      {
+        "slotId": "weapon",
+        "itemLevel": 21,
+        "currentPowerScore": 95,
+        "candidatePowerScore": 63,
+        "powerScoreDelta": -32,
+        "acceptedBy": [
+          "dps_aware",
+          "survival",
+          "weighted_composite"
+        ],
+        "dominantStatDiffering": "accuracy"
+      },
+      {
+        "slotId": "weapon",
+        "itemLevel": 62,
+        "currentPowerScore": 27,
+        "candidatePowerScore": 14,
+        "powerScoreDelta": -13,
+        "acceptedBy": [
+          "dps_aware",
+          "weighted_composite"
+        ],
+        "dominantStatDiffering": "life"
+      },
+      {
+        "slotId": "weapon",
+        "itemLevel": 12,
+        "currentPowerScore": 59,
+        "candidatePowerScore": 49,
+        "powerScoreDelta": -10,
+        "acceptedBy": [
+          "dps_aware"
+        ],
+        "dominantStatDiffering": "life"
+      },
+      {
+        "slotId": "weapon",
+        "itemLevel": 30,
+        "currentPowerScore": 49,
+        "candidatePowerScore": 21,
+        "powerScoreDelta": -28,
+        "acceptedBy": [
+          "dps_aware"
+        ],
+        "dominantStatDiffering": "life"
+      },
+      {
+        "slotId": "weapon",
+        "itemLevel": 13,
+        "currentPowerScore": 39,
+        "candidatePowerScore": 15,
+        "powerScoreDelta": -24,
+        "acceptedBy": [
+          "weighted_composite"
+        ],
+        "dominantStatDiffering": "attack"
+      },
+      {
+        "slotId": "weapon",
+        "itemLevel": 29,
+        "currentPowerScore": 39,
+        "candidatePowerScore": 13,
+        "powerScoreDelta": -26,
+        "acceptedBy": [
+          "weighted_composite"
+        ],
+        "dominantStatDiffering": "attack"
+      },
+      {
+        "slotId": "weapon",
+        "itemLevel": 49,
+        "currentPowerScore": 91,
+        "candidatePowerScore": 79,
+        "powerScoreDelta": -12,
+        "acceptedBy": [
+          "dps_aware",
+          "weighted_composite"
+        ],
+        "dominantStatDiffering": "accuracy"
+      }
+    ]
+  },
+  "fase5_runningMaximum": {
+    "current_powerScore": [
+      {
+        "region": "bosque-sussurrante",
+        "accepted": 3000,
+        "total": 3000
+      },
+      {
+        "region": "pantano-podre",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "colinas-aridas",
+        "accepted": 15,
+        "total": 3000
+      },
+      {
+        "region": "minas-abandonadas",
+        "accepted": 1,
+        "total": 3000
+      },
+      {
+        "region": "picos-congelados",
+        "accepted": 2,
+        "total": 3000
+      },
+      {
+        "region": "litoral-quebrado",
+        "accepted": 2,
+        "total": 3000
+      },
+      {
+        "region": "deserto-de-vidro",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "ruinas-esquecidas",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "fortaleza-sombria",
+        "accepted": 0,
+        "total": 3000
+      }
+    ],
+    "dps_aware": [
+      {
+        "region": "bosque-sussurrante",
+        "accepted": 3000,
+        "total": 3000
+      },
+      {
+        "region": "pantano-podre",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "colinas-aridas",
+        "accepted": 12,
+        "total": 3000
+      },
+      {
+        "region": "minas-abandonadas",
+        "accepted": 9,
+        "total": 3000
+      },
+      {
+        "region": "picos-congelados",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "litoral-quebrado",
+        "accepted": 5,
+        "total": 3000
+      },
+      {
+        "region": "deserto-de-vidro",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "ruinas-esquecidas",
+        "accepted": 1,
+        "total": 3000
+      },
+      {
+        "region": "fortaleza-sombria",
+        "accepted": 0,
+        "total": 3000
+      }
+    ],
+    "survival": [
+      {
+        "region": "bosque-sussurrante",
+        "accepted": 316,
+        "total": 3000
+      },
+      {
+        "region": "pantano-podre",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "colinas-aridas",
+        "accepted": 33,
+        "total": 3000
+      },
+      {
+        "region": "minas-abandonadas",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "picos-congelados",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "litoral-quebrado",
+        "accepted": 52,
+        "total": 3000
+      },
+      {
+        "region": "deserto-de-vidro",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "ruinas-esquecidas",
+        "accepted": 2,
+        "total": 3000
+      },
+      {
+        "region": "fortaleza-sombria",
+        "accepted": 14,
+        "total": 3000
+      }
+    ],
+    "dominant_attribute": [
+      {
+        "region": "bosque-sussurrante",
+        "accepted": 3000,
+        "total": 3000
+      },
+      {
+        "region": "pantano-podre",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "colinas-aridas",
+        "accepted": 28,
+        "total": 3000
+      },
+      {
+        "region": "minas-abandonadas",
+        "accepted": 1,
+        "total": 3000
+      },
+      {
+        "region": "picos-congelados",
+        "accepted": 6,
+        "total": 3000
+      },
+      {
+        "region": "litoral-quebrado",
+        "accepted": 4,
+        "total": 3000
+      },
+      {
+        "region": "deserto-de-vidro",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "ruinas-esquecidas",
+        "accepted": 2,
+        "total": 3000
+      },
+      {
+        "region": "fortaleza-sombria",
+        "accepted": 0,
+        "total": 3000
+      }
+    ],
+    "weighted_composite": [
+      {
+        "region": "bosque-sussurrante",
+        "accepted": 3000,
+        "total": 3000
+      },
+      {
+        "region": "pantano-podre",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "colinas-aridas",
+        "accepted": 31,
+        "total": 3000
+      },
+      {
+        "region": "minas-abandonadas",
+        "accepted": 2,
+        "total": 3000
+      },
+      {
+        "region": "picos-congelados",
+        "accepted": 4,
+        "total": 3000
+      },
+      {
+        "region": "litoral-quebrado",
+        "accepted": 5,
+        "total": 3000
+      },
+      {
+        "region": "deserto-de-vidro",
+        "accepted": 0,
+        "total": 3000
+      },
+      {
+        "region": "ruinas-esquecidas",
+        "accepted": 7,
+        "total": 3000
+      },
+      {
+        "region": "fortaleza-sombria",
+        "accepted": 1,
+        "total": 3000
+      }
+    ]
+  },
+  "fase7_opportunityCost": {
+    "falseNegativesWithRealValue": 227,
+    "totalPowerScoreMagnitudeInvolved": 3859
+  }
+}

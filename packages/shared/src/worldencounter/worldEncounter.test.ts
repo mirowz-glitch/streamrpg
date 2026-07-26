@@ -128,11 +128,16 @@ describe("World Encounter System Phase I", () => {
       }
     });
 
-    it("fortaleza-sombria clampa o Boss numa faixa mais estreita que a do próprio Enemy Template (60-80 vs 20-80)", () => {
+    // Player Journey Recovery & World Progression Phase I — Fase 1:
+    // levelRange.min de fortaleza-sombria baixado de 60 pra 30
+    // (=MAX_LEVEL, ver encounterTables.ts) — 60 era matematicamente
+    // impossível de alcançar e bloqueava em cascata as regiões
+    // seguintes na sequência (Game Design Audit Phase I, achado #1).
+    it("fortaleza-sombria clampa o Boss numa faixa mais estreita que a do próprio Enemy Template (30-80 vs 20-80)", () => {
       for (let seed = 0; seed < 100; seed++) {
         const result = generateEncounter("fortaleza-sombria", 40, seed);
         for (const group of result.groups) {
-          assert.ok(group.level >= 60, `Boss nível ${group.level} deveria respeitar o mínimo regional de 60`);
+          assert.ok(group.level >= 30, `Boss nível ${group.level} deveria respeitar o mínimo regional de 30`);
         }
       }
     });

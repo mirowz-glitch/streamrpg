@@ -53,6 +53,29 @@ export function ExpeditionCard({ expedition }: ExpeditionCardProps) {
           />
         </div>
       ) : null}
+      {/* Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 4:
+          "WT3 / +32%." Mesma seção que já existia pros Dungeon
+          Modifiers (Sprint anterior) — só passa a aparecer também
+          quando SÓ o World Tier está ativo (sem nenhum Dungeon
+          Modifier), e o rótulo do Tier entra ao lado do bônus já
+          existente. Nenhuma tela nova. */}
+      {expedition.activeModifiers.length > 0 || expedition.worldTier ? (
+        <div className="hud-expedition-card-modifiers">
+          <span className="hud-expedition-card-modifiers-label">
+            🔺{expedition.worldTier ? ` ${expedition.worldTier}` : ""} Modificadores
+            {expedition.rewardBonusPercent !== 0 ? ` (+${expedition.rewardBonusPercent}% recompensa)` : ""}
+          </span>
+          {expedition.activeModifiers.length > 0 ? (
+            <div className="hud-expedition-card-modifiers-list">
+              {expedition.activeModifiers.map((modifier) => (
+                <span key={modifier.id} className="hud-expedition-card-modifier-chip">
+                  {modifier.name}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </section>
   );
 }

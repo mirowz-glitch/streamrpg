@@ -5,6 +5,7 @@ import type { AdventureTimeline, FloatingNumberEvent, PresentationEvent } from "
 import type { RecoveryResult } from "../recovery/types.js";
 import { RECOVERY_CONFIG } from "../recovery/config.js";
 import { calculateFinalStats } from "../characterbuild/finalStats.js";
+import { NEUTRAL_COMBINED_RUNTIME_CONFIG } from "../worldencounter/types.js";
 import type { ObjectiveProgressSnapshot } from "../objectives/types.js";
 import { getExpeditionDefinition, selectExpeditionDefinitionId } from "./expeditionDefinitions.js";
 import { deriveExpeditionProgress } from "./expeditionProgress.js";
@@ -120,8 +121,19 @@ export function advanceExpeditionTick(
     // World Events).
     if (afterExpedition.complete) {
       const definition = getExpeditionDefinition(afterExpedition.expeditionId)!;
-      const xpAmount = definition.reward.xpAmount ?? 0;
-      const goldAmount = definition.reward.goldAmount ?? 0;
+      // Vertical Slice — World Tiers & Endgame Scaling Phase I —
+      // requisito arquitetural: aplica o CombinedRuntimeConfig (World
+      // Tier x Dungeon Modifiers, já resolvido por
+      // dungeon/dungeonController.ts) diretamente na recompensa base da
+      // Expedição — o único ponto do projeto que tem acesso à sessão
+      // (pra saber o World Tier) E ao RuntimeConfig resolvido ao mesmo
+      // tempo. `xpMultiplier`/`rewardMultiplier` já vêm combinados (ver
+      // worldtiers/worldTierDefinitions.ts: combineRuntimeConfigs) —
+      // nenhuma segunda multiplicação em nenhum outro lugar
+      // (getExpeditionDefinition() volta a devolver o valor cru).
+      const runtimeConfig = options.runtimeConfig ?? NEUTRAL_COMBINED_RUNTIME_CONFIG;
+      const xpAmount = Math.round((definition.reward.xpAmount ?? 0) * runtimeConfig.xpMultiplier);
+      const goldAmount = Math.round((definition.reward.goldAmount ?? 0) * runtimeConfig.rewardMultiplier);
       if (xpAmount > 0) session.character.characterBuild.addExperience(xpAmount);
       if (goldAmount > 0) session.statistics.goldFound += goldAmount;
 

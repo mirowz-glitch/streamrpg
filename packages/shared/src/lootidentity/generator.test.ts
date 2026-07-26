@@ -177,8 +177,6 @@ describe("Monster Loot Identity Phase I", () => {
     const testTable: LootTable = {
       id: "test_monster_ooze",
       weight: 100,
-      minLevel: 1,
-      maxLevel: 20,
       itemLevelVariance: 1,
       dropChance: 1.0,
       allowedBaseItems: ["belt", "boots"],

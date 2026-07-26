@@ -7,6 +7,7 @@ import type { RecoveryResult } from "../recovery/types.js";
 import type { ObjectiveProgressSnapshot } from "../objectives/types.js";
 import { getFactionDefinition, getFactionForRegion, getRankForReputation } from "./factionDefinitions.js";
 import { deriveFactionReputation } from "./factionProgress.js";
+import { NEUTRAL_COMBINED_RUNTIME_CONFIG } from "../worldencounter/types.js";
 
 export interface AdvanceFactionTickResult {
   tickResult: AdventureTickResult;
@@ -25,7 +26,25 @@ export interface AdvanceFactionTickResult {
 const ELITE_DEFEATED_FACTION_ID = "guardioes-da-floresta";
 const ELITE_DEFEATED_REPUTATION = 4;
 const MINIBOSS_DEFEATED_FACTION_ID = "legiao-sombria";
-const MINIBOSS_DEFEATED_REPUTATION = 10;
+// Vertical Slice — Progression Economy & Reward Curve Phase I — Fase
+// 2/3 (Auditoria): reduzido de 10 pra 4. Achado: dentro de uma Dungeon
+// longa (ex.: "queda-da-fortaleza-sombria", ~220 encontros), o MESMO
+// Mini-Boss/Chefe pode ser reencontrado e rederrotado DEZENAS de vezes
+// numa única sessão (Ruínas Esquecidas tem ~35% de chance de Mini-Boss
+// por encontro, ao longo de centenas de ticks) — cada derrota concede
+// este valor genérico E, separadamente, +30 de dungeon/dungeonController.ts
+// (FINAL_BOSS_REPUTATION, protegido nesta Sprint) pra Expedições-
+// Dungeon, então os dois somam por cima um do outro repetidamente.
+// Auditoria (scripts/runProgressionEconomyAudit.ts) mediu reputação
+// média de ~896 por execução de Dungeon — muito acima do limiar do
+// rank mais alto (`lendario`, 180 reputação, ver factionDefinitions.ts),
+// tornando toda a escada de ranks trivial após uma única Dungeon.
+// Reduzir este valor (o único lado do problema ajustável sem tocar
+// Dungeon Controller, protegido) amortece parte do acúmulo; a
+// contribuição dominante (o +30 por derrota específica de Dungeon)
+// continua fora do escopo desta Sprint — ver "Próximos Passos" na
+// entrega.
+const MINIBOSS_DEFEATED_REPUTATION = 4;
 const DISCOVERY_MADE_FACTION_ID = "culto-das-ruinas";
 const DISCOVERY_MADE_REPUTATION = 8;
 const MERCHANT_FOUND_FACTION_ID = "mercadores-livres";
@@ -141,7 +160,17 @@ export function advanceFactionTick(
         if (xpBonus > 0) session.character.characterBuild.addExperience(xpBonus);
         if (goldBonus > 0) session.statistics.goldFound += goldBonus;
 
-        applyReputationChange(timeline, events, faction.id, EXPEDITION_COMPLETED_REPUTATION, event.kind, tickIndex, timestamp, xpBonus, goldBonus);
+        // Vertical Slice — World Tiers & Endgame Scaling Phase I —
+        // requisito arquitetural: `options.runtimeConfig.rewardMultiplier`
+        // já é o CombinedRuntimeConfig (World Tier x Dungeon Modifiers,
+        // resolvido uma única vez por dungeon/dungeonController.ts) —
+        // Faction Controller nunca recalcula nem conhece os dois
+        // separadamente, só lê o campo já combinado (mesmo princípio
+        // que XP/ouro em expeditionController.ts).
+        const reputationMultiplier = options.runtimeConfig?.rewardMultiplier ?? NEUTRAL_COMBINED_RUNTIME_CONFIG.rewardMultiplier;
+        const reputationAmount = Math.round(EXPEDITION_COMPLETED_REPUTATION * reputationMultiplier);
+
+        applyReputationChange(timeline, events, faction.id, reputationAmount, event.kind, tickIndex, timestamp, xpBonus, goldBonus);
       }
     }
   }

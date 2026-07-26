@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { RegionGallery } from "../ui/RegionGallery";
 import { ExpeditionPanel } from "../ui/ExpeditionPanel";
 import { NpcIntro } from "./NpcIntro";
@@ -112,6 +113,14 @@ export function NorthGateBuilding({
       {buildingStage ? <p className="building-decor">{NORTH_GATE_DECOR[buildingStage]}</p> : null}
       <NpcIntro npc={NPCS.guarda} echoContext={echoContext} />
       <p className="hint">A saída da Capital para o mundo — regiões desbloqueadas e sua expedição atual.</p>
+      {/* Front Door Experience — Vertical Slice Phase I — Fase 7 (City
+          Navigation): achado da Sprint anterior — este texto descreve o
+          Portão Norte como "a saída para o mundo", mas nenhum elemento
+          aqui levava de fato pra `/app/adventure` (a Aventura jogável,
+          que não exige login). Link real, coerente com a narrativa. */}
+      <Link to="/app/adventure" className="north-gate-cta">
+        Ir para a Aventura →
+      </Link>
       <ExpeditionPanel enabled={enabled} specializationLine={specializationLine} />
       <h3 className="identity-subtitle">Regiões desbloqueadas</h3>
       <RegionGallery echoContext={echoContext} />

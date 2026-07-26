@@ -1,6 +1,7 @@
 import type { FloatingNumberEvent, PresentationEvent } from "../presentation/types.js";
 import { getAnimationPreset } from "./presets.js";
 import type { AnimationType, CombatAnimation } from "./types.js";
+import { getUniqueRelicDefinition, getUniqueRelicIdsForBoss } from "../dungeon/uniqueRelicDefinitions.js";
 
 let sequenceCounter = 0;
 
@@ -41,7 +42,29 @@ const LOOT_ANIMATION_BY_RARITY: Record<string, AnimationType> = {
 // EncounterFinished) geram 0 animações nesta fase — não é omissão,
 // é o "0" do próprio requisito (Attack Hit já vira animação via
 // FloatingNumberEvent "damage", não precisa de uma segunda aqui).
-function animationsForPresentationEvent(event: PresentationEvent, timestamp: number): CombatAnimation[] {
+// Vertical Slice — Unique Dungeon Relics & Boss Loot Phase I — Fase 4:
+// "No FinalBossBanner... exibir Relíquia encontrada/Nome/Raridade."
+// Limitação documentada em vez de mascarada: um `LootDropped` não
+// carrega qual relíquia especificamente o gerou (isso exigiria uma tag
+// nova propagada por AdventureTickResult/PresentationEvent, ambos
+// escritos por Adventure Loop/Presentation Layer, protegidos nesta
+// Sprint) — assume-se, como melhor esforço, que o primeiro item de
+// raridade "unique" NESTA MESMA tick (Bosses sempre resolvem numa tick
+// só, ver adventureLoop.ts) É a relíquia declarada pra este Boss.
+// Funciona de forma confiável nesta Sprint porque cada Boss só tem
+// exatamente 1 relíquia própria (dungeon/uniqueRelicDefinitions.ts) e a
+// Loot Table dela (dropChance 1.0 + bias total de raridade) é, de
+// longe, a fonte mais provável de um "unique" no exato tick da derrota.
+function findRelicFoundInTick(events: readonly PresentationEvent[], bossTemplateId: string): { name: string; rarity: string } | null {
+  const relicIds = getUniqueRelicIdsForBoss(bossTemplateId);
+  if (relicIds.length === 0) return null;
+  const relic = getUniqueRelicDefinition(relicIds[0]);
+  if (!relic) return null;
+  const foundUnique = events.some((e) => e.kind === "LootDropped" && e.rarity === "unique");
+  return foundUnique ? { name: relic.name, rarity: relic.rarity } : null;
+}
+
+function animationsForPresentationEvent(event: PresentationEvent, timestamp: number, allEventsThisTick: readonly PresentationEvent[]): CombatAnimation[] {
   switch (event.kind) {
     case "EnemyKilled":
       return [makeAnimation("enemy-death", timestamp, { count: event.count })];
@@ -168,15 +191,19 @@ function animationsForPresentationEvent(event: PresentationEvent, timestamp: num
           regionId: event.regionId,
         }),
       ];
-    case "FinalBossDefeated":
+    case "FinalBossDefeated": {
+      const relicFound = findRelicFoundInTick(allEventsThisTick, event.enemyTemplateId);
       return [
         makeAnimation("final-boss-defeated", timestamp, {
           enemyTemplateId: event.enemyTemplateId,
           enemyName: event.enemyName,
           xpAmount: event.xpAmount,
           goldAmount: event.goldAmount,
+          relicName: relicFound?.name,
+          relicRarity: relicFound?.rarity,
         }),
       ];
+    }
     case "DungeonCompleted":
       return [
         makeAnimation("dungeon-completed", timestamp, {
@@ -253,7 +280,7 @@ export function buildAnimationsForTick(
   }
 
   for (const event of events) {
-    const animations = animationsForPresentationEvent(event, cursor);
+    const animations = animationsForPresentationEvent(event, cursor, events);
     if (animations.length === 0) continue;
     result.push(...animations);
     cursor += Math.max(...animations.map((animation) => animation.duration));

@@ -76,7 +76,13 @@ export interface DropResult {
 }
 
 export type ItemRarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
-export type ItemSlot = "weapon" | "armor" | "helmet" | "boots" | "amulet" | "ring";
+// Persistence & Sync Layer Repair — "gloves"/"belt" adicionados: o Item
+// Generator (itemgen/types.ts: ItemGenSlot) sempre teve 8 slots, mas
+// este vocabulário persistido só cobria 6 — itens de luva/cinto
+// encontrados na Aventura não tinham pra onde ir e caíam num slot
+// errado ao sincronizar (ver useAdventureSession.ts). Puramente
+// aditivo: nenhum slot existente muda de nome/comportamento.
+export type ItemSlot = "weapon" | "armor" | "helmet" | "boots" | "amulet" | "ring" | "gloves" | "belt";
 
 // Sprint Character Attributes Schema — infraestrutura para o Combat Model
 // (docs/combat-model/canonical-formula.md). Em armas, decide se o ATQ é

@@ -15,11 +15,18 @@ import type { ItemGenBaseItem } from "./types.js";
 //
 // Adicionar um novo Base Item = inserir um novo registro nesta lista.
 // Nenhuma outra parte do gerador (generator.ts) precisa mudar.
+//
+// Vertical Slice — Commercial Readiness & First Playable Experience
+// Phase I — Fase 2/6: `name` é puramente presentacional (a lógica do
+// gerador só lê `id`/`slot`/`tags`/os campos numéricos) — traduzido
+// pra português. Achado da auditoria hands-on desta Sprint: um item
+// encontrado aparecia como "Item encontrado: boots (magic)" numa
+// interface 100% português, quebrando a sensação de produto comercial.
 export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   // Weapon
   {
     id: "sword",
-    name: "Sword",
+    name: "Espada",
     category: "weapon",
     slot: "weapon",
     tags: ["weapon", "melee", "physical"],
@@ -29,7 +36,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "axe",
-    name: "Axe",
+    name: "Machado",
     category: "weapon",
     slot: "weapon",
     tags: ["weapon", "melee", "physical"],
@@ -39,7 +46,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "bow",
-    name: "Bow",
+    name: "Arco",
     category: "weapon",
     slot: "weapon",
     tags: ["weapon", "ranged", "physical"],
@@ -49,7 +56,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "dagger",
-    name: "Dagger",
+    name: "Adaga",
     category: "weapon",
     slot: "weapon",
     tags: ["weapon", "melee", "physical"],
@@ -59,7 +66,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "staff",
-    name: "Staff",
+    name: "Cajado",
     category: "weapon",
     slot: "weapon",
     tags: ["weapon", "melee", "spell", "caster"],
@@ -69,7 +76,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "wand",
-    name: "Wand",
+    name: "Varinha",
     category: "weapon",
     slot: "weapon",
     tags: ["weapon", "ranged", "spell", "caster"],
@@ -79,7 +86,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "mace",
-    name: "Mace",
+    name: "Maça",
     category: "weapon",
     slot: "weapon",
     tags: ["weapon", "melee", "physical"],
@@ -91,7 +98,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   // Armor
   {
     id: "helmet",
-    name: "Helmet",
+    name: "Elmo",
     category: "armor",
     slot: "helmet",
     tags: ["armor", "defense"],
@@ -100,7 +107,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "chest",
-    name: "Chest",
+    name: "Peitoral",
     category: "armor",
     slot: "chest",
     tags: ["armor", "defense"],
@@ -109,7 +116,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "gloves",
-    name: "Gloves",
+    name: "Luvas",
     category: "armor",
     slot: "gloves",
     tags: ["armor", "defense"],
@@ -118,7 +125,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "boots",
-    name: "Boots",
+    name: "Botas",
     category: "armor",
     slot: "boots",
     tags: ["armor", "defense"],
@@ -129,7 +136,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   // Accessories
   {
     id: "ring",
-    name: "Ring",
+    name: "Anel",
     category: "accessory",
     slot: "ring",
     tags: ["accessory"],
@@ -137,7 +144,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "amulet",
-    name: "Amulet",
+    name: "Amuleto",
     category: "accessory",
     slot: "amulet",
     tags: ["accessory"],
@@ -145,7 +152,7 @@ export const ITEM_GEN_BASE_ITEMS: ItemGenBaseItem[] = [
   },
   {
     id: "belt",
-    name: "Belt",
+    name: "Cinto",
     category: "accessory",
     slot: "belt",
     tags: ["accessory"],

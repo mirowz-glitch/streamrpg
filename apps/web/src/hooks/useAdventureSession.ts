@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import {
   CharacterBuild,
   Inventory,
@@ -9,34 +9,75 @@ import {
   advanceDungeonTick,
   deriveHudState,
   equipStarterKit,
+  getBaseItem,
+  xpForLevel,
+  EQUIPMENT_SLOT_DEFINITIONS,
+  getEquipmentSlotDefinition,
   type AdventureSession,
   type AdventureTimeline,
   type PresentationEvent,
   type FloatingNumberEvent,
+  type HudState,
+  type ItemGenRarityId,
+  type ItemGenSlot,
+  type ItemRarity,
+  type ItemSlot,
 } from "@streamrpg/shared";
+import { api } from "../lib/api";
 
 const DEMO_CHARACTER_ID = "vertical-slice-hero";
 const DEMO_CLASS_ID = "warrior";
-// Progression & Player Retention Phase I — requisito 1/2: a região e o
-// nível inicial da demo precisam deixar a Barra de XP/Level Up
-// observáveis de verdade. A curva real (xp.ts) cresce como
-// 100*nível^1.5 — em "colinas-aridas" (nível 15-45) o personagem
-// começava direto no MAX_LEVEL (30), deixando xpProgress travado em
-// 100% pra sempre. Trocado pra "bosque-sussurrante" (nível 1-14) com o
-// personagem começando do zero.
-//
-// Gameplay Balance & First Playable Experience Phase I — requisito 8:
-// a demo agora equipa o mesmo kit inicial que o Simulador (ver
-// adventure/starterKit.ts) — sem ele, um personagem nível 1
-// completamente nu morria quase sempre no primeiro encontro (achado
-// confirmado empiricamente via 100 aventuras simuladas, ver
-// simulation/). Enemy Templates (enemy/templates.ts) e Encounter
-// Tables (worldencounter/encounterTables.ts) também foram recalibrados
-// na mesma Sprint — nenhuma fórmula de combate/XP mudou, só dados.
 const DEMO_REGION_ID = "bosque-sussurrante";
-const DEMO_LEVEL_UPS = 0;
-const DEMO_XP_PER_LEVEL = 20000;
 const DEMO_INVENTORY_CAPACITY = 24;
+
+// Vertical Slice — Persistent Player Experience Phase I — Fase 2/3: o
+// motor (packages/shared, Item Generator, intocado) usa 4 raridades
+// procedurais (common/magic/rare/unique); o personagem persistido
+// (apps/api, tabela `items`, já existente antes desta Sprint) usa as 5
+// do modelo simples (types.ts: ItemRarity) — RARITY_COLOR/getItemPower
+// (ambos também intocados, "Balance" protegido) indexam por essa
+// segunda lista e QUEBRARIAM (acesso a propriedade de `undefined`) se
+// recebessem "magic"/"unique" direto. Este mapeamento só traduz o
+// vocabulário na fronteira de persistência — nenhuma fórmula de
+// Balance muda, nenhuma raridade nova é inventada.
+const RARITY_TO_PERSISTED: Record<ItemGenRarityId, ItemRarity> = {
+  common: "common",
+  magic: "uncommon",
+  rare: "rare",
+  unique: "legendary",
+};
+
+// `LootDropped.rarity` (presentation/types.ts) é tipado como `string`
+// solto (fronteira deliberadamente genérica da Presentation Layer) —
+// este guard é só o que garante, no limite da persistência, que nunca
+// indexamos RARITY_TO_PERSISTED com uma chave fora de ItemGenRarityId.
+function isItemGenRarityId(value: string): value is ItemGenRarityId {
+  return value in RARITY_TO_PERSISTED;
+}
+
+// Equipment Progression Repair Phase II — achado incidental corrigido:
+// o Item Generator (itemgen/types.ts: ItemGenSlot) tem 8 slots
+// (weapon/helmet/chest/gloves/boots/ring/amulet/belt) — nunca teve
+// `ring1`/`ring2` (essa dupla é só um detalhe do outro sistema de
+// Equipment de 9 slots, equipment/slots.ts, não deste). A tabela
+// anterior usava essas duas chaves erradas (nunca batiam com
+// `baseItem.slot`, portanto mortas) e não tinha entrada nenhuma pra
+// `gloves`/`belt`, que caíam no fallback e sincronizavam com um valor
+// de slot inválido pro modelo persistido — por isso Elmo/Peitoral
+// pareciam nunca aparecer corretamente e tudo se misturava sob "Arma"
+// no Inventário. `ItemSlot` (types.ts) agora tem os 8 slots
+// correspondentes 1:1, então este mapeamento é só uma tradução de nome
+// (`chest` -> `armor`), sem colisão nenhuma.
+const SLOT_TO_PERSISTED: Record<ItemGenSlot, ItemSlot> = {
+  weapon: "weapon",
+  helmet: "helmet",
+  chest: "armor",
+  gloves: "gloves",
+  boots: "boots",
+  ring: "ring",
+  amulet: "amulet",
+  belt: "belt",
+};
 
 interface AdventureDemoState {
   session: AdventureSession;
@@ -48,64 +89,191 @@ export interface AdventureTickOutcome {
   floatingNumbers: FloatingNumberEvent[];
 }
 
-function createDemoState(seed: number): AdventureDemoState {
+// Player Feedback & Retention — Vertical Slice Phase I — Fase 3 (Loot
+// Feedback): explica, em linguagem simples, por que um item encontrado
+// NÃO foi equipado — achado #3 do playtest anterior ("itens aparecem,
+// nenhum é equipado, sem explicação"). Puramente leitura: consulta o
+// MESMO Equipment já equipado nesta sessão (getEquippedItem, API já
+// existente) só pra exibir a comparação que tryAutoEquip() (Adventure
+// Loop, intocado) já fez internamente — nenhuma regra de equipar/
+// comparar/gerar item muda aqui, isto só NARRA uma decisão que já
+// aconteceu.
+export interface LootRejectedFeedback {
+  instanceId: string;
+  itemName: string;
+  slotLabel: string;
+  powerScore: number;
+  currentPowerScore: number | null;
+}
+
+// `getBaseItem(baseItemId).slot` é o vocabulário do Item Generator
+// (ItemGenSlot); os slots de EQUIPAMENTO (onde o item pode ir de
+// verdade — ex.: Anéis têm 2 sockets) são outra tabela
+// (EQUIPMENT_SLOT_DEFINITIONS, equipment/slots.ts, já existente) — o
+// MESMO cruzamento que tryAutoEquip() já faz, só pra decidir quais
+// slots checar, nunca pra decidir se equipa.
+function findLowestEquippedPowerScoreForItemSlot(equipment: Equipment, itemSlot: string): number | null {
+  const candidateSlots = EQUIPMENT_SLOT_DEFINITIONS.filter((definition) => definition.acceptsItemSlot === itemSlot);
+  let lowest: number | null = null;
+  for (const definition of candidateSlots) {
+    const equipped = equipment.getEquippedItem(definition.id);
+    const power = equipped?.powerScore ?? 0;
+    if (lowest === null || power < lowest) lowest = power;
+  }
+  return lowest;
+}
+
+function buildLootRejectedFeedback(session: AdventureSession, events: readonly PresentationEvent[]): LootRejectedFeedback[] {
+  const feedback: LootRejectedFeedback[] = [];
+  for (const event of events) {
+    if (event.kind !== "LootDropped") continue;
+    const wasEquippedThisTick = events.some((e) => e.kind === "ItemEquipped" && e.baseItemId === event.baseItemId);
+    if (wasEquippedThisTick) continue;
+
+    const base = getBaseItem(event.baseItemId);
+    if (!base) continue;
+    const candidateSlots = EQUIPMENT_SLOT_DEFINITIONS.filter((definition) => definition.acceptsItemSlot === base.slot);
+    const slotLabel = candidateSlots[0] ? (getEquipmentSlotDefinition(candidateSlots[0].id)?.label ?? base.slot) : base.slot;
+
+    feedback.push({
+      instanceId: event.instanceId,
+      itemName: base.name,
+      slotLabel,
+      powerScore: event.powerScore,
+      currentPowerScore: findLowestEquippedPowerScoreForItemSlot(session.character.equipment, base.slot),
+    });
+  }
+  return feedback;
+}
+
+function cumulativeXpForLevel(level: number): number {
+  let total = 0;
+  for (let lvl = 1; lvl < level; lvl++) total += xpForLevel(lvl);
+  return total;
+}
+
+interface RealCharacterSnapshot {
+  level: number;
+  xp: number;
+  gold: number;
+}
+
+function createSessionState(seed: number, real: RealCharacterSnapshot | null): AdventureDemoState {
   const build = new CharacterBuild(DEMO_CHARACTER_ID, DEMO_CLASS_ID, 0);
-  for (let i = 0; i < DEMO_LEVEL_UPS; i++) build.addExperience(DEMO_XP_PER_LEVEL);
+  // Fase 2/3 — Fonte Única da Verdade: o personagem da Aventura nasce
+  // no XP/nível REAL do personagem persistido (GET /api/character),
+  // nunca mais sempre no nível 1. `cumulativeXpForLevel` reconstrói o
+  // total exato a partir de level+xp-no-nível (mesma fórmula de
+  // getProgress()/xp.ts, só invertida) — nenhuma tabela de XP nova.
+  if (real) build.addExperience(cumulativeXpForLevel(real.level) + real.xp);
 
   const inventory = new Inventory(DEMO_CHARACTER_ID, DEMO_INVENTORY_CAPACITY);
   const equipment = new Equipment(DEMO_CHARACTER_ID);
   const character = createAdventureCharacter(build, inventory, equipment);
+  // Kit inicial sempre equipado client-side (mesmo já existente) — os
+  // itens REAIS já equipados no modelo antigo (antes desta Sprint) não
+  // têm baseItemId/afixos procedurais pra reconstruir aqui; qualquer
+  // item NOVO encontrado a partir de agora passa a existir nos dois
+  // lados (ver persistLoot abaixo), documentado na entrega como a
+  // única lacuna restante.
   equipStarterKit(character, DEMO_CLASS_ID, seed);
 
   const session = createAdventureSession(`${DEMO_CHARACTER_ID}-session`, character, DEMO_REGION_ID, seed, Date.now());
+  // Fase 3 — Ouro real como ponto de partida (campo mutável simples,
+  // mesmo padrão que equipStarterKit já usa pra customizar o estado
+  // inicial logo após a criação — nenhuma fórmula do motor muda).
+  if (real) session.statistics.goldFound = real.gold;
   const timeline = createAdventureTimeline(session.sessionId);
 
   return { session, timeline };
 }
 
-// HUD & Gameplay UI Phase I — Vertical Slice: única ponte entre o
-// motor (packages/shared) e React nesta página. Nenhuma regra de
-// gameplay aqui — só cria a demo (Character Build + Inventory +
-// Equipment + Adventure Session, tudo client-side, sem tocar
-// backend/API).
-//
-// Recovery & Adventure Flow Phase I — troca advanceAdventureWithPresentation()
-// por advanceAdventureWithRecovery() (Recovery Layer, packages/shared/
-// src/recovery/): a Presentation Layer em si continua 100% intocada
-// (a Recovery Layer só chama por cima, nunca modifica seu código).
-//
-// Objectives, Missions & Player Goals Phase I — troca de novo por
-// advanceAdventureWithObjectives() (Objective System, packages/shared/
-// src/objectives/), que já envolve a Recovery Layer por baixo.
-//
-// Expeditions, Checkpoints & Long Session Progression Phase I — troca
-// de novo por advanceExpeditionTick() (expeditions/expeditionController.ts),
-// que já envolve o Objective System por baixo.
-//
-// Factions, Reputation & World Consequences Phase I — troca de novo
-// por advanceFactionTick() (factions/factionController.ts), que já
-// envolve o Expedition Controller por baixo.
-//
-// First Dungeon, Final Boss & Complete Game Loop Phase I — troca de
-// novo por advanceDungeonTick() (dungeon/dungeonController.ts), que já
-// envolve o Faction Controller por baixo — esta continua sendo a
-// única linha que muda a cada Sprint. `hudState` é recomputado via
-// useMemo, dependente só de `renderVersion` (requisito 13: "HUD State
-// deve ser memoizável") — nenhum estado duplicado, `session`/`timeline`
-// continuam sendo a única fonte de verdade (objetos mutáveis do motor,
-// guardados numa ref).
-//
-// Combat Feel & Animation System Phase I — `advance()` agora devolve
-// os `events`/`floatingNumbers` do próprio tick (em vez de guardá-los
-// como estado local, como na Sprint anterior) — quem chama (AdventurePage)
-// repassa isso pro Animation Controller (useAnimationController),
-// mantendo este hook sem saber nada sobre animação/apresentação visual.
+async function fetchRealCharacter(): Promise<RealCharacterSnapshot | null> {
+  try {
+    const character = await api.get<{ level: number; xp: number; gold: number }>("/api/character");
+    return { level: character.level, xp: character.xp, gold: character.gold };
+  } catch {
+    return null;
+  }
+}
+
+// Fase 4 — Persistência dos Eventos: cada item encontrado vira uma
+// chamada a POST /api/items/loot (grantAdventureLoot, reaproveita
+// items/character_items já existentes); XP/ouro são sincronizados por
+// DELTA (characterBuild.experience/statistics.goldFound já são o total
+// corrente do motor — comparado contra o último valor sincronizado,
+// nunca reconstruído a partir de eventos individuais, mais simples e
+// robusto com múltiplas fontes de XP/ouro por tick).
+async function persistTick(session: AdventureSession, events: PresentationEvent[], lastSynced: { xp: number; gold: number }): Promise<void> {
+  const currentXp = session.character.characterBuild.experience;
+  const currentGold = session.statistics.goldFound;
+
+  const xpDelta = currentXp - lastSynced.xp;
+  const goldDelta = currentGold - lastSynced.gold;
+  lastSynced.xp = currentXp;
+  lastSynced.gold = currentGold;
+
+  const requests: Promise<unknown>[] = [];
+  if (xpDelta > 0) requests.push(api.post("/api/character/adventure/xp", { amount: xpDelta }));
+  if (goldDelta > 0) requests.push(api.post("/api/character/adventure/gold", { amount: goldDelta }));
+
+  for (const event of events) {
+    if (event.kind !== "LootDropped") continue;
+    const baseItem = getBaseItem(event.baseItemId);
+    const autoEquip = events.some((e) => e.kind === "ItemEquipped" && e.baseItemId === event.baseItemId);
+    requests.push(
+      api.post("/api/items/loot", {
+        baseItemId: event.baseItemId,
+        name: baseItem?.name ?? event.baseItemId,
+        rarity: isItemGenRarityId(event.rarity) ? RARITY_TO_PERSISTED[event.rarity] : "common",
+        slot: baseItem ? SLOT_TO_PERSISTED[baseItem.slot] : "weapon",
+        powerScore: event.powerScore,
+        autoEquip,
+      }),
+    );
+  }
+
+  // Fire-and-forget deliberado: a Aventura nunca deve travar esperando
+  // a rede (mesmo princípio de "o motor nunca sabe que existe API") —
+  // falhas de sincronização não impedem o próximo tick, só ficam sem
+  // persistir (ver "Próximos Passos" na entrega sobre retry).
+  await Promise.allSettled(requests);
+}
+
 export function useAdventureSession() {
-  const stateRef = useRef<AdventureDemoState>(createDemoState(Date.now()));
+  const stateRef = useRef<AdventureDemoState>(createSessionState(Date.now(), null));
+  const lastSyncedRef = useRef({ xp: 0, gold: 0 });
   const [renderVersion, forceRender] = useReducer((version: number) => version + 1, 0);
   const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
+  // Player Feedback & Retention — Vertical Slice Phase I — Fase 1
+  // (Session Safety): `real === null` (fetchRealCharacter() falhou —
+  // sem login válido, ver comentário da função) significa que NENHUM
+  // dos POSTs de persistTick() abaixo tem efeito real (o backend
+  // rejeita sem sessão autenticada) — a sessão inteira vive só na
+  // memória deste componente e desaparece ao desmontar. Exposto aqui
+  // pra a UI poder avisar isso explicitamente, em vez de deixar o
+  // jogador descobrir sozinho perdendo o progresso (achado #1 do
+  // playtest da Sprint anterior).
+  const [isDemoSession, setIsDemoSession] = useState(false);
+  const [lootRejectedFeedback, setLootRejectedFeedback] = useState<LootRejectedFeedback[]>([]);
 
-  const hudState = useMemo(
+  useEffect(() => {
+    let cancelled = false;
+    void fetchRealCharacter().then((real) => {
+      if (cancelled) return;
+      stateRef.current = createSessionState(Date.now(), real);
+      lastSyncedRef.current = { xp: real ? cumulativeXpForLevel(real.level) + real.xp : 0, gold: real?.gold ?? 0 };
+      setIsDemoSession(real === null);
+      setReady(true);
+      forceRender();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const hudState: HudState = useMemo(
     () => deriveHudState(stateRef.current.session, stateRef.current.timeline),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- renderVersion é a única dependência real (session/timeline são mutáveis, não re-criados)
     [renderVersion],
@@ -120,6 +288,16 @@ export function useAdventureSession() {
       });
       outcome = { events, floatingNumbers };
       setError(null);
+      // Fase 3 (Loot Feedback) / Fase 7 (Timeline Readability): só
+      // atualiza quando ESTA tick teve loot de verdade — igual ao
+      // achado dos banners transitórios (duração curta, clique rápido
+      // perde a mensagem), uma explicação que desaparece na tick
+      // seguinte mesmo sem novo drop teria o MESMO problema. Fica
+      // visível até o PRÓXIMO drop, nunca some sozinha.
+      if (events.some((event) => event.kind === "LootDropped")) {
+        setLootRejectedFeedback(buildLootRejectedFeedback(stateRef.current.session, events));
+      }
+      void persistTick(stateRef.current.session, events, lastSyncedRef.current);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : String(caught));
     }
@@ -128,10 +306,17 @@ export function useAdventureSession() {
   }, []);
 
   const restart = useCallback(() => {
-    stateRef.current = createDemoState(Date.now());
+    stateRef.current = createSessionState(Date.now(), null);
+    setLootRejectedFeedback([]);
+    void fetchRealCharacter().then((real) => {
+      stateRef.current = createSessionState(Date.now(), real);
+      lastSyncedRef.current = { xp: real ? cumulativeXpForLevel(real.level) + real.xp : 0, gold: real?.gold ?? 0 };
+      setIsDemoSession(real === null);
+      forceRender();
+    });
     setError(null);
     forceRender();
   }, []);
 
-  return { hudState, error, advance, restart };
+  return { hudState, error, advance, restart, ready, isDemoSession, lootRejectedFeedback };
 }

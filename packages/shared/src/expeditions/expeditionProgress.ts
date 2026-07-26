@@ -1,6 +1,8 @@
 import type { AdventureSession } from "../adventure/types.js";
 import type { AdventureTimeline, PresentationEvent } from "../presentation/types.js";
 import { getExpeditionDefinition } from "./expeditionDefinitions.js";
+import { resolveDungeonRuntimeConfig, resolveExpeditionModifiers } from "./expeditionModifiers.js";
+import { resolveCombinedRuntimeConfig } from "../worldtiers/worldTierDefinitions.js";
 import type { ExpeditionDefinition, ExpeditionProgressSnapshot } from "./types.js";
 
 // Expeditions, Checkpoints & Long Session Progression Phase I —
@@ -84,5 +86,17 @@ export function deriveExpeditionProgress(session: AdventureSession, timeline: Ad
     diedDuringExpedition,
     complete: encountersCompleted >= definition.expectedEncounters,
     startTickIndex: active.tickIndex,
+    // Vertical Slice — Dungeon Modifiers, Variants & Replayability Phase
+    // I — Fase 4: só empacota o que expeditionModifiers.ts já resolve
+    // (mesmo princípio de sempre — HUD nunca recalcula nada).
+    activeModifiers: resolveExpeditionModifiers(definition.modifiers),
+    // Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 4:
+    // o mesmo resolveCombinedRuntimeConfig() que dungeon/dungeonController.ts
+    // usa pra injetar o RuntimeConfig de verdade — esta função já recebe
+    // `session` (tem `session.worldTier`), então pode calcular o MESMO
+    // valor combinado que a Dungeon ativa está de fato aplicando, só pra
+    // exibição (nenhuma lógica de jogo nova).
+    rewardMultiplier: resolveCombinedRuntimeConfig(session.worldTier, resolveDungeonRuntimeConfig(definition.modifiers)).rewardMultiplier,
+    worldTier: session.worldTier ?? null,
   };
 }

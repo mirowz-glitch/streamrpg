@@ -93,6 +93,44 @@ export const MONSTER_LOOT_IDENTITIES: MonsterLootIdentity[] = [
     archetypeId: "humanoid",
     lootBiasOverride: { rarityBias: { rare: 2.5, unique: 0.5 } },
   },
+  // Vertical Slice — Multi-Dungeon Content & Data Expansion Phase I —
+  // um registro por monstro novo (enemy/templates.ts), mesmo padrão de
+  // sempre: mobs regulares reaproveitam o Archetype sem override, os 3
+  // Chefes de Dungeon ganham uma sorte de raridade própria acima do
+  // arquétipo (mesmo princípio de "bandit_captain"/"dark-knight" acima),
+  // escalando com a ordem das Dungeons (Rei Gélido < Bispo Corrompido <
+  // Dragão Ancião, o "Boss lendário").
+  {
+    monsterId: "frost-wolf",
+    archetypeId: "beast",
+  },
+  {
+    monsterId: "ice-golem",
+    archetypeId: "construct",
+  },
+  {
+    monsterId: "frost-king",
+    archetypeId: "construct",
+    lootBiasOverride: { rarityBias: { rare: 2, unique: 0.4 } },
+  },
+  {
+    monsterId: "corrupted-acolyte",
+    archetypeId: "mage",
+  },
+  {
+    monsterId: "corrupted-bishop",
+    archetypeId: "undead",
+    lootBiasOverride: { rarityBias: { rare: 2.2, unique: 0.45 } },
+  },
+  {
+    monsterId: "fire-cultist",
+    archetypeId: "demon",
+  },
+  {
+    monsterId: "ancient-dragon",
+    archetypeId: "demon",
+    lootBiasOverride: { rarityBias: { rare: 2.5, unique: 0.6 } },
+  },
 ];
 
 export function getLootIdentity(monsterId: string): MonsterLootIdentity | undefined {

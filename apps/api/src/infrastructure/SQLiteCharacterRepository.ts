@@ -108,6 +108,19 @@ export class SQLiteCharacterRepository implements CharacterRepository {
   }
 
   /**
+   * Vertical Slice — Persistent Player Experience Phase I — mesmo padrão
+   * de applyXP() acima (leitura não necessária: ouro nunca decide nível,
+   * só soma), só que pra ouro. Nenhum sistema de gasto/economia existe
+   * ainda (ver auditorias anteriores) — só concessão, mesmo estado que
+   * `characters.gold` já tinha antes desta Sprint.
+   */
+  async grantGold(characterId: string, amount: number): Promise<void> {
+    getDb()
+      .prepare(`UPDATE characters SET gold = gold + ?, updated_at = ? WHERE id = ?`)
+      .run(amount, nowUnix(), characterId);
+  }
+
+  /**
    * Incrementa o total de minutos assistidos de um personagem.
    *
    * ATENÇÃO: este método NÃO é chamado ainda — está preparado para M-008+

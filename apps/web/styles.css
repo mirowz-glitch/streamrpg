@@ -1347,6 +1347,27 @@ nav {
   letter-spacing: 0.15rem;
 }
 
+/* Front Door Experience — Vertical Slice Phase I — Fase 7 (City
+   Navigation): Portão Norte agora tem uma ação real correspondente à
+   sua narrativa ("saída para o mundo"). Estilo próprio (não roxo da
+   Twitch, que é só do login) — esta ação nunca exige login. */
+.north-gate-cta {
+  display: inline-block;
+  margin: 0.6rem 0 1rem;
+  padding: 0.7rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #1a1200;
+  background: linear-gradient(135deg, #ffcf5c, #ff9f43);
+  box-shadow: 0 6px 20px rgba(255, 159, 67, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.north-gate-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(255, 159, 67, 0.5);
+}
+
 /* Sprint Kingdom Visual Identity Phase I — só CSS (cor/borda/espaço/
    peso de fonte), nenhuma regra de negócio, nenhuma imagem/sprite.
    Cada classe abaixo só é somada à já existente `.city-building-screen`
@@ -1680,6 +1701,39 @@ nav {
   transform: translateY(-2px);
   box-shadow: 0 12px 36px rgba(145, 70, 255, 0.55);
 }
+/* Front Door Experience — Vertical Slice Phase I — Fase 3 (Primary
+   CTA): dois botões lado a lado (Hero e Chamada Final) — "Jogar Agora"
+   em destaque (dourado, cor do jogo em si), Twitch como secundário
+   (roxo, cor da marca, nunca escondido nem removido). */
+.hero-cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+.hero-cta-primary {
+  background: linear-gradient(135deg, #ffcf5c, #ff9f43);
+  box-shadow: 0 8px 30px rgba(255, 159, 67, 0.45);
+  color: #1a1200;
+}
+.hero-cta-primary:hover {
+  box-shadow: 0 12px 36px rgba(255, 159, 67, 0.55);
+}
+.hero-cta-secondary {
+  background: transparent;
+  border: 1px solid #6a3bd6;
+  box-shadow: none;
+}
+.hero-cta-secondary:hover:not(:disabled) {
+  background: rgba(145, 70, 255, 0.12);
+}
+.hero-cta-note {
+  margin: 1rem auto 0;
+  max-width: 520px;
+  font-size: 0.85rem;
+  color: #9aa0a6;
+  line-height: 1.5;
+}
 .hero-illustration {
   width: 100%;
   max-width: 1400px;
@@ -1751,6 +1805,20 @@ nav {
   font-size: 0.9rem;
   line-height: 1.4;
 }
+/* Front Door Experience — Vertical Slice Phase I — Fase 2 (Product
+   Positioning): mesmo estilo do `.landing-example-tag` já existente —
+   marca visível, nunca escondida, nos destaques que exigem login. */
+.feature-card-badge {
+  display: inline-block;
+  margin-top: 0.25rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(145, 70, 255, 0.15);
+  color: #bf94ff;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
 
 /* --- Como funciona --- */
 .how-it-works {
@@ -1788,6 +1856,32 @@ nav {
 }
 .how-it-works-text {
   font-size: 1.05rem;
+}
+
+/* --- O que precisa de login (Fase 5) --- */
+.login-clarity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.login-clarity-card {
+  padding: 1.5rem;
+  background: #1a1d27;
+  border: 1px solid #2a2f3d;
+  border-radius: 12px;
+}
+.login-clarity-card strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+}
+.login-clarity-card p {
+  margin: 0;
+  color: #9aa0a6;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
 /* --- Mundo --- */
@@ -1854,6 +1948,9 @@ nav {
   font-size: 1.2rem;
   padding: 1rem 2.6rem;
 }
+.final-cta-group {
+  margin-top: 0;
+}
 
 /* --- Responsivo (mobile) --- */
 @media (max-width: 720px) {
@@ -1881,6 +1978,13 @@ nav {
   }
   .final-cta-title {
     font-size: 1.8rem;
+  }
+  .login-clarity-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-cta-group {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
@@ -3331,6 +3435,13 @@ nav {
   justify-content: space-between;
   gap: 1rem;
 }
+/* Vertical Slice — Commercial Readiness & First Playable Experience
+   Phase I — mesmo estilo de ".hint" já usado em toda a interface. */
+.hud-adventure-subtitle {
+  color: #9aa0a6;
+  font-size: 0.875rem;
+  margin-top: -0.5rem;
+}
 .hud-health-bar {
   display: flex;
   flex-direction: column;
@@ -3407,6 +3518,29 @@ nav {
   border: 1px solid #2a2f3d;
   border-radius: 8px;
   font-size: 0.85rem;
+  color: #c4c7c5;
+}
+
+/* Player Feedback & Retention — Vertical Slice Phase I — Fase 3 (Loot
+   Feedback): não é uma animação transitória (fica até o próximo drop
+   sobrescrever) — o objetivo é dar tempo real de leitura, diferente
+   dos popups de 800-1100ms do Animation Controller. */
+.hud-loot-rejected-feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-bottom: 0.5rem;
+}
+.hud-loot-rejected-feedback-line {
+  margin: 0;
+  padding: 0.35rem 0.6rem;
+  background: #14161d;
+  border-left: 3px solid #5a5f6b;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  color: #9aa0a6;
+}
+.hud-loot-rejected-feedback-line strong {
   color: #c4c7c5;
 }
 
@@ -3496,6 +3630,69 @@ nav {
 .hud-defeat-message {
   color: #f28b82;
   font-weight: 600;
+}
+
+/* Player Feedback & Retention — Vertical Slice Phase I — Fase 1
+   (Session Safety): banner permanente, sempre visível enquanto a
+   sessão for uma demonstração — nunca uma animação transitória. */
+.hud-session-safety-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 0.75rem;
+  background: rgba(251, 188, 4, 0.12);
+  border: 1px solid #fbbc04;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #f3e8c8;
+}
+.hud-session-safety-banner-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.hud-session-safety-banner-text strong {
+  color: #fbbc04;
+}
+
+.hud-leave-session-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 11, 15, 0.75);
+  z-index: 1000;
+}
+.hud-leave-session-modal {
+  max-width: 380px;
+  padding: 1.5rem;
+  background: #14161d;
+  border: 1px solid #fbbc04;
+  border-radius: 10px;
+  text-align: center;
+}
+.hud-leave-session-modal h2 {
+  margin: 0 0 0.6rem;
+  color: #fbbc04;
+}
+.hud-leave-session-modal p {
+  margin: 0 0 1.1rem;
+  color: #c4c7c5;
+  font-size: 0.9rem;
+}
+.hud-leave-session-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+}
+.hud-leave-session-stay {
+  background: #4285f4;
+}
+.hud-leave-session-leave {
+  background: transparent;
+  border: 1px solid #5a5f6b;
+  color: #c4c7c5;
 }
 .hud-feed-title {
   margin-bottom: 0;
@@ -3798,6 +3995,13 @@ nav {
 .hud-event-feed-item-LevelUp {
   color: #f2c14e;
   font-weight: 700;
+  /* Player Feedback & Retention — Vertical Slice Phase I — Fase 7
+     (Timeline Readability): tinta de fundo + borda, não só cor de
+     texto — pra ser reconhecível numa lista rolando rápido, sem
+     precisar ler a palavra. Mesmo princípio aplicado abaixo às outras
+     categorias "críticas" (Objetivo/Região/Elite-MiniBoss-Chefe). */
+  background: rgba(242, 193, 78, 0.1);
+  border-left: 3px solid #f2c14e;
 }
 
 /* Recovery & Adventure Flow Phase I — requisito 5: "número verde de
@@ -3904,6 +4108,8 @@ nav {
 .hud-event-feed-item-ObjectiveCompleted {
   color: #8ab4f8;
   font-weight: 700;
+  background: rgba(138, 180, 248, 0.1);
+  border-left: 3px solid #8ab4f8;
 }
 
 /* Biomes, Regions & World Progression Phase I — identidade visual do
@@ -3946,6 +4152,8 @@ nav {
 .hud-event-feed-item-RegionUnlocked {
   color: #f28b82;
   font-weight: 700;
+  background: rgba(242, 139, 130, 0.1);
+  border-left: 3px solid #f28b82;
 }
 .hud-event-feed-item-RegionEntered {
   color: #9aa0a6;
@@ -4040,11 +4248,15 @@ nav {
 .hud-event-feed-item-EliteDefeated {
   color: #ff8c1a;
   font-weight: 700;
+  background: rgba(255, 140, 26, 0.1);
+  border-left: 3px solid #ff8c1a;
 }
 .hud-event-feed-item-MiniBossEncounter,
 .hud-event-feed-item-MiniBossDefeated {
   color: #ffd700;
   font-weight: 700;
+  background: rgba(255, 215, 0, 0.1);
+  border-left: 3px solid #ffd700;
 }
 
 /* World Events, Dynamic Encounters & Exploration Phase I — requisito 6:
@@ -4320,6 +4532,41 @@ nav {
   color: #fbbc04;
 }
 
+/* Vertical Slice — Dungeon Modifiers, Variants & Replayability Phase I
+   — Fase 4: seção "Modificadores" dentro do hud-expedition-card
+   existente, "apenas quando aplicável" (mesmo tratamento condicional
+   de .hud-expedition-card-boss acima) — nenhuma tela nova, paleta
+   roxa própria só pra distinguir visualmente da seção de Boss. */
+.hud-expedition-card-modifiers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(156, 39, 176, 0.3);
+}
+.hud-expedition-card-modifiers-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #ba68c8;
+  font-weight: 700;
+}
+.hud-expedition-card-modifiers-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.hud-expedition-card-modifier-chip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(156, 39, 176, 0.18);
+  color: #e1bee7;
+  border: 1px solid rgba(156, 39, 176, 0.4);
+}
+
 /* Requisito 9 — banner de surgimento/derrota do Chefe Final, mesmo
    padrão visual de hud-variant-banner (Elite/Mini-Boss), só que na
    paleta vermelho/dourado do Boss. */
@@ -4350,6 +4597,14 @@ nav {
 .hud-final-boss-banner-detail {
   font-size: 0.85rem;
   color: #c4c7c5;
+}
+/* Vertical Slice — Unique Dungeon Relics & Boss Loot Phase I — Fase 4:
+   linha condicional dentro do MESMO banner (nenhuma tela nova),
+   dourado (paleta "unique" já usada em .loot-drop-unique). */
+.hud-final-boss-banner-relic {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fbbc04;
 }
 .hud-final-boss-banner-defeated {
   background: linear-gradient(90deg, rgba(251, 188, 4, 0.25), rgba(234, 67, 53, 0.08));
@@ -4395,4 +4650,6 @@ nav {
 .hud-event-feed-item-DungeonCompleted {
   color: #fbbc04;
   font-weight: 700;
+  background: rgba(251, 188, 4, 0.1);
+  border-left: 3px solid #fbbc04;
 }

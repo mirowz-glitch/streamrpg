@@ -151,7 +151,7 @@ describe("Elites, Mini-Bosses & Risk/Reward Phase I", () => {
           statMultipliers: { life: ELITE_MODIFIER.lifeMultiplier, damage: ELITE_MODIFIER.damageMultiplier },
         });
         const killResult = killEnemy(instance, template, 1000);
-        const loot = generateLootForKilledEnemy(killResult, killResult.instance, seed);
+        const loot = generateLootForKilledEnemy(killResult, killResult.instance, seed, "bosque-sussurrante");
         assert.ok(loot.generatedItems.length >= 1, `seed ${seed}: esperava ao menos 1 item garantido pro Elite`);
         assert.ok(loot.generatedItems.every((item) => item.sourceVariant === "elite" && item.sourceEnemyTemplateId === "wolf"));
       }
@@ -162,7 +162,7 @@ describe("Elites, Mini-Bosses & Risk/Reward Phase I", () => {
       for (let seed = 0; seed < 50; seed++) {
         const instance = spawnEnemy(template, seed, 8, { variant: "miniboss" });
         const killResult = killEnemy(instance, template, 1000);
-        const loot = generateLootForKilledEnemy(killResult, killResult.instance, seed);
+        const loot = generateLootForKilledEnemy(killResult, killResult.instance, seed, "bosque-sussurrante");
         assert.ok(loot.generatedItems.length >= 1, `seed ${seed}: esperava ao menos 1 item garantido pro Mini-Boss`);
         assert.ok(loot.generatedItems.every((item) => item.sourceVariant === "miniboss"));
         assert.ok(loot.currencies.some((c) => c.type === "gold" && c.amount > 0), `seed ${seed}: esperava ouro adicional`);
@@ -173,7 +173,7 @@ describe("Elites, Mini-Bosses & Risk/Reward Phase I", () => {
       const template = getEnemyTemplate("wolf")!;
       const instance = spawnEnemy(template, 1, 8);
       const killResult = killEnemy(instance, template, 1000);
-      const loot = generateLootForKilledEnemy(killResult, killResult.instance, 1);
+      const loot = generateLootForKilledEnemy(killResult, killResult.instance, 1, "bosque-sussurrante");
       for (const item of loot.generatedItems) {
         assert.equal(item.sourceVariant, undefined);
       }

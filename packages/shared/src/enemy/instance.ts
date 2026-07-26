@@ -36,6 +36,21 @@ export function spawnEnemy(
   const lifeMultiplier = options.statMultipliers?.life ?? 1;
   const maximumLife = finalStats.maximumLife * lifeMultiplier;
 
+  // Vertical Slice — Dungeon Modifier Runtime Integration Phase I —
+  // Fase 2 (Combat): antes, `statMultipliers` só era guardado quando
+  // `options.variant` também estava presente (Elite/Mini-Boss) — um
+  // inimigo NORMAL com um multiplicador de dano (ex.: o
+  // `enemyDamageMultiplier` de uma Dungeon, que se aplica a QUALQUER
+  // inimigo da região, não só variantes) perdia o dado aqui, e
+  // toCombatant() (combatant.ts) nunca chegava a aplicá-lo. Corrigido
+  // pra guardar `statMultipliers` sempre que presente, independente de
+  // `variant` — `variant` continua opcional/independente (mesmo
+  // comportamento de sempre pra Elite/Mini-Boss).
+  const futureState = {
+    ...(options.variant ? { variant: options.variant } : {}),
+    ...(options.statMultipliers ? { statMultipliers: options.statMultipliers } : {}),
+  };
+
   return {
     instanceId: `${template.id}-${seed}`,
     templateId: template.id,
@@ -46,7 +61,7 @@ export function spawnEnemy(
     alive: true,
     spawnTime: options.spawnTime ?? Date.now(),
     position: options.position ?? null,
-    futureState: options.variant ? { variant: options.variant, statMultipliers: options.statMultipliers } : {},
+    futureState,
   };
 }
 

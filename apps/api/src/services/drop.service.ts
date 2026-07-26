@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { DamageType, InventoryItem, ItemSlot } from "@streamrpg/shared";
 import { getDb, nowUnix } from "../config/database.js";
 
@@ -39,6 +40,50 @@ export function listInventory(characterId: string): InventoryItem[] {
     .all(characterId) as Record<string, unknown>[];
 
   return rows.map(mapInventoryRow);
+}
+
+// Vertical Slice — Persistent Player Experience Phase I — a Aventura
+// (packages/shared: Item Generator, protegido/intocado nesta Sprint)
+// gera itens por `baseItemId` procedural (rarity/slot num vocabulário
+// próprio, ver itemgen/) — diferente do catálogo fixo que este serviço
+// já gerenciava. Em vez de um catálogo paralelo (proibido: "não criar
+// novos sistemas"), cada item encontrado vira uma linha NOVA nesta
+// MESMA tabela `items` (slug único por instância, já que cada rolagem
+// procedural é única) — dali em diante é um item de catálogo comum,
+// gerenciado pelos MESMOS equipItem/listInventory/unequipItem de
+// sempre, nenhuma lógica de equipar/desequipar nova.
+export interface AdventureLootInput {
+  baseItemId: string;
+  name: string;
+  rarity: string;
+  slot: string;
+  powerScore: number;
+}
+
+export function grantAdventureLoot(characterId: string, channelId: string | null, loot: AdventureLootInput): InventoryItem {
+  const db = getDb();
+  const slug = `adventure-${loot.baseItemId}-${randomUUID()}`;
+  const insert = db
+    .prepare(
+      `INSERT INTO items (slug, name, description, rarity, slot, min_level, base_item_id, power_score)
+       VALUES (?, ?, ?, ?, ?, 1, ?, ?)`,
+    )
+    .run(slug, loot.name, "", loot.rarity, loot.slot, loot.baseItemId, loot.powerScore);
+  const itemId = Number(insert.lastInsertRowid);
+
+  const characterItem = db
+    .prepare(
+      `INSERT INTO character_items (character_id, item_id, obtained_channel_id, obtained_at)
+       VALUES (?, ?, ?, ?)`,
+    )
+    .run(characterId, itemId, channelId, nowUnix());
+  const characterItemId = Number(characterItem.lastInsertRowid);
+
+  const item = listInventory(characterId).find((i) => i.id === characterItemId);
+  if (!item) {
+    throw new Error("Failed to grant adventure loot");
+  }
+  return item;
 }
 
 export function equipItem(characterId: string, characterItemId: number): InventoryItem {

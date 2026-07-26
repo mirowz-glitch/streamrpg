@@ -3,7 +3,7 @@ import type { InventoryItem } from "@streamrpg/shared";
 import { api } from "../../lib/api";
 import { RARITY_COLOR, RARITY_LABEL } from "../../lib/rarity";
 import { isFlagSet, setFlag } from "../../lib/onboarding";
-import { SLOT_LABEL } from "../../pages/InventoryPage";
+import { SLOT_LABEL } from "../../lib/itemSlots";
 import { DEFAULT_POLL_MS } from "../../lib/pollIntervals";
 
 // Sprint New Player Journey — apresentação especial na primeira vez que

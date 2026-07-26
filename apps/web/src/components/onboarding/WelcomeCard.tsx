@@ -28,6 +28,12 @@ export function WelcomeCard({ channelDisplayName }: WelcomeCardProps) {
         <li>👑 Conquistar títulos</li>
       </ul>
       <p className="welcome-card-wish">Boa sorte.</p>
+      {/* Vertical Slice — Commercial Readiness & First Playable
+          Experience Phase I — Fase 1/2: este botão só dispensa o card
+          (setFlag/setDismissed), nunca navega pra lugar nenhum — "Começar
+          aventura" prometia uma ação que não acontecia (achado da
+          auditoria hands-on: o clique não leva a /app/adventure). Rótulo
+          trocado por um que reflita o que o botão de fato faz. */}
       <button
         type="button"
         onClick={() => {
@@ -35,7 +41,7 @@ export function WelcomeCard({ channelDisplayName }: WelcomeCardProps) {
           setDismissed(true);
         }}
       >
-        Começar aventura
+        Entendido, vamos lá!
       </button>
     </div>
   );

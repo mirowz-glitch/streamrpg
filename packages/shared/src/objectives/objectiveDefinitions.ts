@@ -301,6 +301,45 @@ export const OBJECTIVE_DEFINITIONS: ObjectiveDefinition[] = [
     reward: { xpBonus: 400 },
     soundId: "objective-complete-major",
   },
+  // Vertical Slice — Multi-Dungeon Content & Data Expansion Phase I —
+  // Fase 3: "Completar todas as Dungeons"/"Derrotar três Bosses
+  // diferentes", reaproveitando os MESMOS 2 tipos já existentes
+  // (complete-dungeon/defeat-final-boss, ver objectives/types.ts) — só
+  // um `target` maior, "Sem alterar Objective System" (briefing).
+  //
+  // Limitação honesta, documentada em vez de mascarada (mesmo princípio
+  // já usado em "bosque-hunt"/"discover-worldevent" pra granularidade
+  // observável): `complete-dungeon`/`defeat-final-boss`
+  // (objectives/objectiveProgress.ts) contam QUALQUER DungeonCompleted/
+  // FinalBossDefeated desde a fronteira, sem distinguir QUAL Dungeon/
+  // Chefe — então "Conclua 4 Dungeons" é honesto (conta conclusões,
+  // não exige 4 DISTINTAS) e "Derrote 3 Chefes Finais" idem (não exige
+  // 3 DIFERENTES). Um objetivo amarrado a uma Dungeon/Chefe ESPECÍFICO
+  // (ex.: "Derrote o Dragão Ancião" ou "Conclua a Fortaleza Congelada")
+  // exigiria um novo campo em ObjectiveDefinition (ex.: `expeditionId`/
+  // `enemyTemplateId`) lido por um novo `case` em objectiveProgress.ts
+  // — alterar o Objective System, fora do escopo desta Sprint por
+  // instrução explícita. Documentado aqui como proposta pra uma Sprint
+  // futura (ver "Recomendações" na entrega), em vez de expandir o
+  // escopo atual — conforme o próprio briefing autoriza.
+  {
+    id: "complete-4-dungeons",
+    name: "Conquistador de Dungeons",
+    description: "Conclua 4 Dungeons",
+    type: "complete-dungeon",
+    target: 4,
+    reward: { xpBonus: 700 },
+    soundId: "objective-complete-major",
+  },
+  {
+    id: "defeat-3-bosses",
+    name: "Caçador de Chefes",
+    description: "Derrote 3 Chefes Finais",
+    type: "defeat-final-boss",
+    target: 3,
+    reward: { xpBonus: 550 },
+    soundId: "objective-complete-major",
+  },
 ];
 
 // Requisito 10 — "primeiro objetivo concluído em menos de 2 minutos":

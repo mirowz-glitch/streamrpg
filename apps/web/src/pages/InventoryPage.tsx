@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import { AppNav } from "../components/ui/AppNav";
 import { Feedback } from "../components/ui/Feedback";
 import { RARITY_COLOR } from "../lib/rarity";
+import { SLOT_LABEL, SLOT_ORDER } from "../lib/itemSlots";
 import { getItemRelated } from "../lib/knowledgeLinks";
 import { useCharacter } from "../hooks/useCharacter";
 import { useIdentity } from "../hooks/useIdentity";
@@ -19,17 +20,6 @@ import { getItemNpcThreadCandidates } from "../lib/knowledgeThreads";
 import { getNextSteps } from "../lib/knowledgeNetwork";
 import { useExpedition } from "../hooks/useExpedition";
 import { buildExpeditionEchoContext } from "../lib/expeditionEchoes";
-
-const SLOT_ORDER: ItemSlot[] = ["weapon", "armor", "helmet", "boots", "amulet", "ring"];
-
-export const SLOT_LABEL: Record<ItemSlot, string> = {
-  weapon: "Arma",
-  armor: "Armadura",
-  helmet: "Elmo",
-  boots: "Botas",
-  amulet: "Amuleto",
-  ring: "Anel",
-};
 
 // Sprint Equipment Experience — watermark de "visto" fica só no navegador
 // (localStorage), sem nenhuma coluna/tabela nova. Mesmo padrão já sugerido
@@ -182,10 +172,26 @@ export function InventoryPage() {
         {message ? <Feedback kind="notice">{message}</Feedback> : null}
         {loading ? (
           <p className="loading-state">Carregando inventário...</p>
+        ) : !identity ? (
+          // Player Feedback & Retention — Vertical Slice Phase I — Fase 6
+          // (Inventory Consistency): sem login, `/api/items` nunca
+          // retorna os itens de verdade — a tela antiga mostrava "vazio"
+          // igual a quem realmente não tinha nada, escondendo a causa
+          // real (achado #4 do playtest anterior). Mesmo padrão de
+          // CharacterPage pra esse caso.
+          <div className="empty-state">
+            <p>Faça login para ver seu inventário.</p>
+            <p className="hint">Os itens que você encontra jogando a Aventura ficam aqui depois de entrar com sua conta.</p>
+          </div>
         ) : items.length === 0 ? (
+          // Fase 6: a frase antiga ("Continue assistindo — drops têm boa
+          // chance a cada minuto de presença") era da mecânica antiga de
+          // espectador passivo — não tem nenhuma relação com o fluxo
+          // atual (jogar a Aventura). Corrigido pra descrever o que
+          // realmente concede itens hoje.
           <div className="empty-state">
             <p>Seu inventário está vazio.</p>
-            <p className="hint">Continue assistindo — drops têm boa chance a cada minuto de presença.</p>
+            <p className="hint">Jogue uma Aventura para encontrar seus primeiros equipamentos.</p>
           </div>
         ) : (
           SLOT_ORDER.filter((slot) => bySlot[slot]?.length).map((slot) => (

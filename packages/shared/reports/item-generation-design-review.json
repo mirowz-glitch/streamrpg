@@ -1,0 +1,1160 @@
+{
+  "practicalItemLevelCeiling": 38,
+  "maxLevel": 30,
+  "fase2_expectedValueByRegion": [
+    {
+      "region": "bosque-sussurrante",
+      "playerLevel": 1,
+      "weapon": {
+        "n": 20000,
+        "mean": 20.22865,
+        "median": 11,
+        "p10": 11,
+        "p25": 11,
+        "p75": 23,
+        "p90": 47,
+        "p99": 86,
+        "min": 11,
+        "max": 120,
+        "stddev": 17.627718774064345
+      },
+      "armor": {
+        "n": 20000,
+        "mean": 15.144,
+        "median": 12,
+        "p10": 12,
+        "p25": 12,
+        "p75": 12,
+        "p90": 27,
+        "p99": 42,
+        "min": 12,
+        "max": 48,
+        "stddev": 6.844542643594909
+      }
+    },
+    {
+      "region": "pantano-podre",
+      "playerLevel": 5,
+      "weapon": {
+        "n": 20000,
+        "mean": 20.18585,
+        "median": 11,
+        "p10": 11,
+        "p25": 11,
+        "p75": 23,
+        "p90": 46,
+        "p99": 85,
+        "min": 11,
+        "max": 131,
+        "stddev": 17.39124232990471
+      },
+      "armor": {
+        "n": 20000,
+        "mean": 15.22215,
+        "median": 12,
+        "p10": 12,
+        "p25": 12,
+        "p75": 12,
+        "p90": 27,
+        "p99": 41,
+        "min": 12,
+        "max": 48,
+        "stddev": 6.951258834016874
+      }
+    },
+    {
+      "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+      "playerLevel": 15,
+      "weapon": {
+        "n": 20000,
+        "mean": 23.06525,
+        "median": 11,
+        "p10": 11,
+        "p25": 11,
+        "p75": 26,
+        "p90": 55,
+        "p99": 114,
+        "min": 11,
+        "max": 204,
+        "stddev": 23.389063522029808
+      },
+      "armor": {
+        "n": 20000,
+        "mean": 16.0347,
+        "median": 12,
+        "p10": 12,
+        "p25": 12,
+        "p75": 12,
+        "p90": 29,
+        "p99": 56,
+        "min": 12,
+        "max": 80,
+        "stddev": 9.218134079629356
+      }
+    },
+    {
+      "region": "picos-congelados",
+      "playerLevel": 20,
+      "weapon": {
+        "n": 20000,
+        "mean": 27.15995,
+        "median": 11,
+        "p10": 11,
+        "p25": 11,
+        "p75": 34,
+        "p90": 69,
+        "p99": 138,
+        "min": 11,
+        "max": 228,
+        "stddev": 29.375623669933844
+      },
+      "armor": {
+        "n": 20000,
+        "mean": 20.5082,
+        "median": 12,
+        "p10": 12,
+        "p25": 12,
+        "p75": 25,
+        "p90": 48,
+        "p99": 65,
+        "min": 12,
+        "max": 80,
+        "stddev": 14.994566774667858
+      }
+    },
+    {
+      "region": "litoral-quebrado",
+      "playerLevel": 24,
+      "weapon": {
+        "n": 20000,
+        "mean": 27.0067,
+        "median": 11,
+        "p10": 11,
+        "p25": 11,
+        "p75": 34,
+        "p90": 67,
+        "p99": 137,
+        "min": 11,
+        "max": 217,
+        "stddev": 28.83444390152432
+      },
+      "armor": {
+        "n": 20000,
+        "mean": 20.2886,
+        "median": 12,
+        "p10": 12,
+        "p25": 12,
+        "p75": 24,
+        "p90": 47,
+        "p99": 65,
+        "min": 12,
+        "max": 79,
+        "stddev": 14.824631868615457
+      }
+    },
+    {
+      "region": "deserto-de-vidro",
+      "playerLevel": 28,
+      "weapon": {
+        "n": 20000,
+        "mean": 27.1703,
+        "median": 11,
+        "p10": 11,
+        "p25": 11,
+        "p75": 34,
+        "p90": 68,
+        "p99": 137,
+        "min": 11,
+        "max": 224,
+        "stddev": 29.400880903643536
+      },
+      "armor": {
+        "n": 20000,
+        "mean": 20.46635,
+        "median": 12,
+        "p10": 12,
+        "p25": 12,
+        "p75": 24,
+        "p90": 48,
+        "p99": 66,
+        "min": 12,
+        "max": 78,
+        "stddev": 14.98426066502687
+      }
+    },
+    {
+      "region": "fortaleza-sombria",
+      "playerLevel": 30,
+      "weapon": {
+        "n": 20000,
+        "mean": 28.26145,
+        "median": 11,
+        "p10": 11,
+        "p25": 11,
+        "p75": 35,
+        "p90": 70,
+        "p99": 158,
+        "min": 11,
+        "max": 276,
+        "stddev": 32.54655425536836
+      },
+      "armor": {
+        "n": 20000,
+        "mean": 20.50595,
+        "median": 12,
+        "p10": 12,
+        "p25": 12,
+        "p75": 24,
+        "p90": 48,
+        "p99": 69,
+        "min": 12,
+        "max": 89,
+        "stddev": 15.31141941811722
+      }
+    }
+  ],
+  "fase3_upgradeProbability": {
+    "weapon": [
+      {
+        "region": "bosque-sussurrante",
+        "runningBest": 0,
+        "upgradeProbability": 1
+      },
+      {
+        "region": "pantano-podre",
+        "runningBest": 120,
+        "upgradeProbability": 0.0001
+      },
+      {
+        "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+        "runningBest": 131,
+        "upgradeProbability": 0.0045
+      },
+      {
+        "region": "picos-congelados",
+        "runningBest": 204,
+        "upgradeProbability": 0.0002
+      },
+      {
+        "region": "litoral-quebrado",
+        "runningBest": 228,
+        "upgradeProbability": 0
+      },
+      {
+        "region": "deserto-de-vidro",
+        "runningBest": 228,
+        "upgradeProbability": 0
+      },
+      {
+        "region": "fortaleza-sombria",
+        "runningBest": 228,
+        "upgradeProbability": 0.0008
+      }
+    ],
+    "armor": [
+      {
+        "region": "bosque-sussurrante",
+        "runningBest": 0,
+        "upgradeProbability": 1
+      },
+      {
+        "region": "pantano-podre",
+        "runningBest": 48,
+        "upgradeProbability": 0
+      },
+      {
+        "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+        "runningBest": 48,
+        "upgradeProbability": 0.01515
+      },
+      {
+        "region": "picos-congelados",
+        "runningBest": 80,
+        "upgradeProbability": 0
+      },
+      {
+        "region": "litoral-quebrado",
+        "runningBest": 80,
+        "upgradeProbability": 0
+      },
+      {
+        "region": "deserto-de-vidro",
+        "runningBest": 80,
+        "upgradeProbability": 0
+      },
+      {
+        "region": "fortaleza-sombria",
+        "runningBest": 80,
+        "upgradeProbability": 0.00085
+      }
+    ]
+  },
+  "fase4_runningMaximum": {
+    "iid": {
+      "level": 20,
+      "n": 2000,
+      "totalRecords": 7,
+      "theoreticalVsEmpirical": [
+        {
+          "n": 100,
+          "theoretical": 5.187377517639621,
+          "empirical": 3
+        },
+        {
+          "n": 500,
+          "theoretical": 6.79282342999052,
+          "empirical": 6
+        },
+        {
+          "n": 1000,
+          "theoretical": 7.485470860550343,
+          "empirical": 6
+        },
+        {
+          "n": 2000,
+          "theoretical": 8.178368103610284,
+          "empirical": 7
+        }
+      ]
+    },
+    "real": {
+      "totalRecords": 18,
+      "perRegion": [
+        {
+          "region": "bosque-sussurrante",
+          "newRecords": 8,
+          "totalDraws": 20000
+        },
+        {
+          "region": "pantano-podre",
+          "newRecords": 1,
+          "totalDraws": 20000
+        },
+        {
+          "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+          "newRecords": 4,
+          "totalDraws": 20000
+        },
+        {
+          "region": "picos-congelados",
+          "newRecords": 1,
+          "totalDraws": 20000
+        },
+        {
+          "region": "litoral-quebrado",
+          "newRecords": 0,
+          "totalDraws": 20000
+        },
+        {
+          "region": "deserto-de-vidro",
+          "newRecords": 0,
+          "totalDraws": 20000
+        },
+        {
+          "region": "fortaleza-sombria",
+          "newRecords": 4,
+          "totalDraws": 20000
+        }
+      ]
+    }
+  },
+  "fase5_decomposition": {
+    "rngOnly": {
+      "n": 5000,
+      "mean": 94.9908,
+      "median": 93,
+      "p10": 51,
+      "p25": 70,
+      "p75": 118,
+      "p90": 143,
+      "p99": 187,
+      "min": 11,
+      "max": 248,
+      "stddev": 35.68381587442685
+    },
+    "itemLevelSweep": [
+      {
+        "itemLevel": 1,
+        "n": 3000,
+        "mean": 61.954,
+        "median": 61,
+        "p10": 34,
+        "p25": 47,
+        "p75": 77,
+        "p90": 90,
+        "p99": 111,
+        "min": 16,
+        "max": 135,
+        "stddev": 20.959911354774327
+      },
+      {
+        "itemLevel": 10,
+        "n": 3000,
+        "mean": 71.225,
+        "median": 67,
+        "p10": 37,
+        "p25": 51,
+        "p75": 87,
+        "p90": 112,
+        "p99": 154,
+        "min": 11,
+        "max": 182,
+        "stddev": 28.955857927772264
+      },
+      {
+        "itemLevel": 20,
+        "n": 3000,
+        "mean": 93.33433333333333,
+        "median": 91,
+        "p10": 49,
+        "p25": 68,
+        "p75": 117,
+        "p90": 139,
+        "p99": 189,
+        "min": 11,
+        "max": 218,
+        "stddev": 35.2117104747207
+      },
+      {
+        "itemLevel": 30,
+        "n": 3000,
+        "mean": 101.646,
+        "median": 95,
+        "p10": 52,
+        "p25": 72,
+        "p75": 125,
+        "p90": 160,
+        "p99": 221,
+        "min": 11,
+        "max": 287,
+        "stddev": 42.451831731190765
+      },
+      {
+        "itemLevel": 40,
+        "n": 3000,
+        "mean": 112.82233333333333,
+        "median": 108,
+        "p10": 56,
+        "p25": 77,
+        "p75": 142,
+        "p90": 177,
+        "p99": 242,
+        "min": 11,
+        "max": 340,
+        "stddev": 47.302932621091905
+      },
+      {
+        "itemLevel": 50,
+        "n": 3000,
+        "mean": 138.842,
+        "median": 134,
+        "p10": 74,
+        "p25": 100,
+        "p75": 171,
+        "p90": 211,
+        "p99": 289,
+        "min": 11,
+        "max": 370,
+        "stddev": 53.69045572538949
+      },
+      {
+        "itemLevel": 60,
+        "n": 3000,
+        "mean": 141.91033333333334,
+        "median": 136,
+        "p10": 73,
+        "p25": 101,
+        "p75": 176,
+        "p90": 219,
+        "p99": 297,
+        "min": 11,
+        "max": 390,
+        "stddev": 56.4045709721789
+      }
+    ],
+    "rarityComparison": {
+      "natural": {
+        "n": 5000,
+        "mean": 26.7138,
+        "median": 11,
+        "p10": 11,
+        "p25": 11,
+        "p75": 34,
+        "p90": 67,
+        "p99": 135,
+        "min": 11,
+        "max": 201,
+        "stddev": 28.428828494330222
+      },
+      "forcedCommon": {
+        "n": 5000,
+        "mean": 11,
+        "median": 11,
+        "p10": 11,
+        "p25": 11,
+        "p75": 11,
+        "p90": 11,
+        "p99": 11,
+        "min": 11,
+        "max": 11,
+        "stddev": 0
+      }
+    },
+    "affixPoolComparison": {
+      "weaponRichPool": {
+        "n": 5000,
+        "mean": 94.2868,
+        "median": 92,
+        "p10": 50,
+        "p25": 68,
+        "p75": 116,
+        "p90": 143,
+        "p99": 187,
+        "min": 11,
+        "max": 248,
+        "stddev": 35.85948334485596
+      },
+      "armorPoorPool": {
+        "n": 5000,
+        "mean": 37.8088,
+        "median": 36,
+        "p10": 17,
+        "p25": 21,
+        "p75": 54,
+        "p90": 63,
+        "p99": 71,
+        "min": 12,
+        "max": 75,
+        "stddev": 17.185978079818064
+      }
+    }
+  },
+  "fase6_7_affixScalingAndCeiling": {
+    "totalTiers": 50,
+    "reachableAtMaxLevel": 28,
+    "reachableAtPracticalCeiling": 34,
+    "modsWhoseBestTierIsUnreachable": [
+      "prefix_cruel",
+      "prefix_heavy",
+      "prefix_vigorous",
+      "prefix_massive",
+      "prefix_swift",
+      "prefix_mystic",
+      "suffix_of_the_bear",
+      "suffix_of_accuracy",
+      "suffix_of_precision",
+      "suffix_of_fire",
+      "suffix_of_frost",
+      "suffix_of_storms",
+      "suffix_of_the_vampire"
+    ],
+    "tierReachability": [
+      {
+        "modId": "prefix_cruel",
+        "name": "Cruel",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 60,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 40,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 20,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "prefix_heavy",
+        "name": "Heavy",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 50,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 30,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 10,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "prefix_healthy",
+        "name": "Healthy",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 10,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "prefix_vigorous",
+        "name": "Vigorous",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 40,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 20,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "prefix_massive",
+        "name": "Massive",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 65,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 50,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          }
+        ]
+      },
+      {
+        "modId": "prefix_swift",
+        "name": "Swift",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 50,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 30,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 10,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "prefix_mystic",
+        "name": "Mystic",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 55,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 35,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 15,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "suffix_of_the_bear",
+        "name": "of the Bear",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 55,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 35,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 15,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "suffix_of_accuracy",
+        "name": "of Accuracy",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 50,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 30,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 10,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "suffix_of_precision",
+        "name": "of Precision",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 55,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 35,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 15,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "suffix_of_fire",
+        "name": "of Fire",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 55,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 35,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 15,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "suffix_of_frost",
+        "name": "of Frost",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 55,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 35,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 15,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "suffix_of_storms",
+        "name": "of Storms",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 55,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 35,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 15,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      },
+      {
+        "modId": "suffix_of_the_vampire",
+        "name": "of the Vampire",
+        "tiers": [
+          {
+            "tier": 1,
+            "minItemLevel": 60,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 2,
+            "minItemLevel": 40,
+            "reachableAtMaxLevel": false,
+            "reachableAtPracticalCeiling": false
+          },
+          {
+            "tier": 3,
+            "minItemLevel": 20,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          },
+          {
+            "tier": 4,
+            "minItemLevel": 1,
+            "reachableAtMaxLevel": true,
+            "reachableAtPracticalCeiling": true
+          }
+        ]
+      }
+    ],
+    "theoreticalCeilingAtMaxLevel": 390,
+    "theoreticalCeilingAtPracticalCeiling": 485,
+    "theoreticalAbsoluteCeiling65": 700,
+    "observedMaxAtFortaleza": 276
+  },
+  "fase8_monteCarlo": {
+    "n": 50000,
+    "stats": {
+      "n": 50000,
+      "mean": 26.77818,
+      "median": 11,
+      "p10": 11,
+      "p25": 11,
+      "p75": 33,
+      "p90": 67,
+      "p99": 136,
+      "min": 11,
+      "max": 248,
+      "stddev": 28.812433702965624
+    },
+    "recordsPerBlock": [
+      {
+        "block": 0,
+        "newRecords": 4
+      },
+      {
+        "block": 1,
+        "newRecords": 0
+      },
+      {
+        "block": 2,
+        "newRecords": 0
+      },
+      {
+        "block": 3,
+        "newRecords": 0
+      },
+      {
+        "block": 4,
+        "newRecords": 0
+      },
+      {
+        "block": 5,
+        "newRecords": 0
+      },
+      {
+        "block": 6,
+        "newRecords": 0
+      },
+      {
+        "block": 7,
+        "newRecords": 0
+      },
+      {
+        "block": 8,
+        "newRecords": 0
+      },
+      {
+        "block": 9,
+        "newRecords": 0
+      },
+      {
+        "block": 10,
+        "newRecords": 0
+      },
+      {
+        "block": 11,
+        "newRecords": 0
+      },
+      {
+        "block": 12,
+        "newRecords": 0
+      },
+      {
+        "block": 13,
+        "newRecords": 0
+      },
+      {
+        "block": 14,
+        "newRecords": 1
+      },
+      {
+        "block": 15,
+        "newRecords": 0
+      },
+      {
+        "block": 16,
+        "newRecords": 0
+      },
+      {
+        "block": 17,
+        "newRecords": 0
+      },
+      {
+        "block": 18,
+        "newRecords": 0
+      },
+      {
+        "block": 19,
+        "newRecords": 0
+      },
+      {
+        "block": 20,
+        "newRecords": 0
+      },
+      {
+        "block": 21,
+        "newRecords": 0
+      },
+      {
+        "block": 22,
+        "newRecords": 0
+      },
+      {
+        "block": 23,
+        "newRecords": 0
+      },
+      {
+        "block": 24,
+        "newRecords": 0
+      },
+      {
+        "block": 25,
+        "newRecords": 0
+      },
+      {
+        "block": 26,
+        "newRecords": 0
+      },
+      {
+        "block": 27,
+        "newRecords": 0
+      },
+      {
+        "block": 28,
+        "newRecords": 1
+      },
+      {
+        "block": 29,
+        "newRecords": 0
+      },
+      {
+        "block": 30,
+        "newRecords": 0
+      },
+      {
+        "block": 31,
+        "newRecords": 0
+      },
+      {
+        "block": 32,
+        "newRecords": 0
+      },
+      {
+        "block": 33,
+        "newRecords": 0
+      },
+      {
+        "block": 34,
+        "newRecords": 0
+      },
+      {
+        "block": 35,
+        "newRecords": 0
+      },
+      {
+        "block": 36,
+        "newRecords": 0
+      },
+      {
+        "block": 37,
+        "newRecords": 0
+      },
+      {
+        "block": 38,
+        "newRecords": 0
+      },
+      {
+        "block": 39,
+        "newRecords": 0
+      },
+      {
+        "block": 40,
+        "newRecords": 0
+      },
+      {
+        "block": 41,
+        "newRecords": 0
+      },
+      {
+        "block": 42,
+        "newRecords": 0
+      },
+      {
+        "block": 43,
+        "newRecords": 0
+      },
+      {
+        "block": 44,
+        "newRecords": 0
+      },
+      {
+        "block": 45,
+        "newRecords": 0
+      },
+      {
+        "block": 46,
+        "newRecords": 0
+      },
+      {
+        "block": 47,
+        "newRecords": 0
+      },
+      {
+        "block": 48,
+        "newRecords": 0
+      },
+      {
+        "block": 49,
+        "newRecords": 0
+      }
+    ]
+  }
+}

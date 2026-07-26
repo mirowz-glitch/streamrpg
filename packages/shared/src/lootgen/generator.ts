@@ -15,17 +15,21 @@ const RARITY_VALUE_MULTIPLIER: Record<ItemGenRarityId, number> = {
   unique: 10,
 };
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
-}
+const MINIMUM_ITEM_LEVEL = 1;
 
-// Requisito 2 — Item Level: nível do monstro + pequena variação
-// aleatória configurável (`itemLevelVariance`), sempre limitado por
-// `minLevel`/`maxLevel` da Loot Table (nunca sai fixo, nunca sai do
-// intervalo configurado).
-function rollItemLevel(rng: ItemGenRandom, monsterLevel: number, table: LootTable): number {
-  const raw = monsterLevel + randomInt(rng, -table.itemLevelVariance, table.itemLevelVariance);
-  return clamp(raw, table.minLevel, table.maxLevel);
+// Loot Table Normalization Phase I — `itemLevelAnchor` (Region-Anchored
+// Item Level, regions.ts) já é a única fonte de progressão pra Item
+// Level; `table.minLevel`/`maxLevel` foram removidos (verificado: eram
+// 100% duplicados de `EnemyTemplate.levelRange`, nunca um dado próprio
+// da Loot Table — ver LootTable.itemLevelOffset em types.ts). Requisito
+// 2 do Loot Generator original ("nível do monstro + variação") agora é
+// "anchor de região + offset opcional da tabela + variação" — o único
+// limite que resta é o piso absoluto (nunca abaixo de 1); não há mais
+// teto próprio da tabela, porque o anchor de região já é, por
+// construção, o único teto (regions.ts: HIGHEST_AFFIX_TIER_THRESHOLD).
+function rollItemLevel(rng: ItemGenRandom, itemLevelAnchor: number, table: LootTable): number {
+  const raw = itemLevelAnchor + (table.itemLevelOffset ?? 0) + randomInt(rng, -table.itemLevelVariance, table.itemLevelVariance);
+  return Math.max(MINIMUM_ITEM_LEVEL, raw);
 }
 
 // Requisito 4 — "chance do Base Item": sorteio ponderado e independente
@@ -54,7 +58,7 @@ function estimateItemValue(item: ItemGenGeneratedItem): number {
 // Item Affinity, Affix Affinity, Rarity Bias de um Monster Archetype),
 // sem duplicar nenhuma lógica de sorteio que já existe aqui. Todos os
 // campos são opcionais, com default `{}` — nenhuma chamada existente de
-// generateLoot(sourceId, monsterLevel, seed) muda de comportamento.
+// generateLoot(sourceId, itemLevelAnchor, seed) muda de comportamento.
 // Elites, Mini-Bosses & Risk/Reward Phase I — requisito 1/4:
 // `dropChanceOverride` também é aditivo/opcional (ausente = usa
 // `table.dropChance` normalmente, nenhuma chamada existente muda de
@@ -71,14 +75,21 @@ export interface GenerateLootOptions {
 
 // Pipeline completo do Loot Generator (requisitos 1-7):
 //
-//   Monster (sourceId + monsterLevel) -> Loot Table -> Drop Chance ->
+//   Loot Source (sourceId + itemLevelAnchor) -> Loot Table -> Drop Chance ->
 //   Quantidade -> (Item Level -> Base Item -> generateItem()) x N ->
 //   LootResult
 //
 // Toda geração de item passa OBRIGATORIAMENTE por generateItem() —
 // nenhum item é montado à mão aqui.
 //
-// Determinístico (requisito 6): mesmo sourceId + mesmo monsterLevel +
+// Region-Anchored Item Level (regions.ts) — `itemLevelAnchor` já foi
+// `monsterLevel` (nível do monstro abatido); desde a Sprint "Region-
+// Anchored Item Level" passou a ser getRegionItemLevelAnchor(regionId)
+// pra todo chamador real (enemy/lootIntegration.ts, dungeonController.ts,
+// presentationLayer.ts) — este arquivo nunca soube nem precisa saber
+// disso, só recebe um `number`, exatamente como antes.
+//
+// Determinístico (requisito 6): mesmo sourceId + mesmo itemLevelAnchor +
 // mesma seed = mesmo LootResult, sempre. `table.seedOffset` é somado à
 // seed recebida antes de criar o PRNG desta tabela — puro dado
 // constante, não quebra determinismo, só evita que tabelas diferentes
@@ -96,7 +107,7 @@ export interface GenerateLootOptions {
 // inserir um registro em lootTables.ts.
 export function generateLoot(
   sourceId: string,
-  monsterLevel: number,
+  itemLevelAnchor: number,
   seed: number,
   options: GenerateLootOptions = {},
 ): LootResult {
@@ -133,7 +144,7 @@ export function generateLoot(
 
   const generatedItems: ItemGenGeneratedItem[] = [];
   for (let i = 0; i < quantity; i++) {
-    const itemLevel = rollItemLevel(rng, monsterLevel, table);
+    const itemLevel = rollItemLevel(rng, itemLevelAnchor, table);
     const baseItemId = rollBaseItemId(rng, table, options.baseItemWeightOverrides);
     // Seed própria por item, derivada do MESMO stream determinístico —
     // generateItem() nunca reaproveita a seed da Loot Table diretamente,

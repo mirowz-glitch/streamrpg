@@ -1,0 +1,2880 @@
+{
+  "restoredCorrectly": true,
+  "results": {
+    "current": {
+      "monteCarlo": {
+        "expectedValueByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "playerLevel": 1,
+            "weapon": {
+              "n": 8000,
+              "mean": 19.905625,
+              "median": 11,
+              "ci95Low": 19.530725863356338,
+              "ci95High": 20.280524136643663,
+              "p10": 11,
+              "p90": 46,
+              "p99": 82,
+              "max": 118,
+              "stddev": 17.10816233145332
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.213,
+              "median": 12,
+              "ci95Low": 15.060416909501091,
+              "ci95High": 15.365583090498907,
+              "p10": 12,
+              "p90": 27,
+              "p99": 42,
+              "max": 48,
+              "stddev": 6.96298290964409
+            }
+          },
+          {
+            "region": "pantano-podre",
+            "playerLevel": 5,
+            "weapon": {
+              "n": 8000,
+              "mean": 20.335,
+              "median": 11,
+              "ci95Low": 19.951201717167717,
+              "ci95High": 20.718798282832285,
+              "p10": 11,
+              "p90": 47,
+              "p99": 85,
+              "max": 131,
+              "stddev": 17.514266327768976
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.083625,
+              "median": 12,
+              "ci95Low": 14.934182017833324,
+              "ci95High": 15.233067982166675,
+              "p10": 12,
+              "p90": 27,
+              "p99": 41,
+              "max": 48,
+              "stddev": 6.819687079285243
+            }
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "playerLevel": 15,
+            "weapon": {
+              "n": 8000,
+              "mean": 23.114125,
+              "median": 11,
+              "ci95Low": 22.595929855722694,
+              "ci95High": 23.63232014427731,
+              "p10": 11,
+              "p90": 56,
+              "p99": 115,
+              "max": 204,
+              "stddev": 23.647338126823787
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.9695,
+              "median": 12,
+              "ci95Low": 15.770958893314393,
+              "ci95High": 16.168041106685607,
+              "p10": 12,
+              "p90": 29,
+              "p99": 54,
+              "max": 77,
+              "stddev": 9.060232875041905
+            }
+          },
+          {
+            "region": "picos-congelados",
+            "playerLevel": 20,
+            "weapon": {
+              "n": 8000,
+              "mean": 27.33675,
+              "median": 11,
+              "ci95Low": 26.688681383339816,
+              "ci95High": 27.98481861666018,
+              "p10": 11,
+              "p90": 69,
+              "p99": 141,
+              "max": 228,
+              "stddev": 29.573989406865717
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.6375,
+              "median": 12,
+              "ci95Low": 20.306200680699828,
+              "ci95High": 20.96879931930017,
+              "p10": 12,
+              "p90": 48,
+              "p99": 65,
+              "max": 80,
+              "stddev": 15.118526507236536
+            }
+          },
+          {
+            "region": "litoral-quebrado",
+            "playerLevel": 24,
+            "weapon": {
+              "n": 8000,
+              "mean": 27.052875,
+              "median": 11,
+              "ci95Low": 26.41741675514959,
+              "ci95High": 27.688333244850412,
+              "p10": 11,
+              "p90": 68,
+              "p99": 140,
+              "max": 206,
+              "stddev": 28.998527190780152
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.39625,
+              "median": 12,
+              "ci95Low": 20.070535801818245,
+              "ci95High": 20.72196419818175,
+              "p10": 12,
+              "p90": 47,
+              "p99": 65,
+              "max": 79,
+              "stddev": 14.863654864719123
+            }
+          },
+          {
+            "region": "deserto-de-vidro",
+            "playerLevel": 28,
+            "weapon": {
+              "n": 8000,
+              "mean": 27.163875,
+              "median": 11,
+              "ci95Low": 26.524066416792063,
+              "ci95High": 27.80368358320794,
+              "p10": 11,
+              "p90": 67,
+              "p99": 135,
+              "max": 224,
+              "stddev": 29.19705070695463
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.324,
+              "median": 12,
+              "ci95Low": 19.997147944132532,
+              "ci95High": 20.65085205586747,
+              "p10": 12,
+              "p90": 48,
+              "p99": 66,
+              "max": 78,
+              "stddev": 14.915579908269871
+            }
+          },
+          {
+            "region": "fortaleza-sombria",
+            "playerLevel": 30,
+            "weapon": {
+              "n": 8000,
+              "mean": 28.480625,
+              "median": 11,
+              "ci95Low": 27.760402879340425,
+              "ci95High": 29.200847120659574,
+              "p10": 11,
+              "p90": 71,
+              "p99": 161,
+              "max": 250,
+              "stddev": 32.86664532028301
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.674,
+              "median": 12,
+              "ci95Low": 20.334521773209556,
+              "ci95High": 21.013478226790443,
+              "p10": 12,
+              "p90": 49,
+              "p99": 69,
+              "max": 89,
+              "stddev": 15.491763101724992
+            }
+          }
+        ],
+        "upgradeProbabilityByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "upgradeProbabilityWeapon": 1,
+            "upgradeProbabilityArmor": 1
+          },
+          {
+            "region": "pantano-podre",
+            "upgradeProbabilityWeapon": 0.000125,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "upgradeProbabilityWeapon": 0.00475,
+            "upgradeProbabilityArmor": 0.0135
+          },
+          {
+            "region": "picos-congelados",
+            "upgradeProbabilityWeapon": 0.00025,
+            "upgradeProbabilityArmor": 0.0005
+          },
+          {
+            "region": "litoral-quebrado",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "deserto-de-vidro",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "fortaleza-sombria",
+            "upgradeProbabilityWeapon": 0.000375,
+            "upgradeProbabilityArmor": 0.000875
+          }
+        ]
+      },
+      "campaign": {
+        "survivalRate": 0,
+        "averageFinalLevel": 19.97,
+        "totalUpgradeEvents": 1452,
+        "averageUpgradesPerRun": 4.84,
+        "deadLootRate": 0.9526152724621834,
+        "slotProgression": [
+          {
+            "slotId": "weapon",
+            "totalUpgrades": 605
+          },
+          {
+            "slotId": "helmet",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "chest",
+            "totalUpgrades": 146
+          },
+          {
+            "slotId": "gloves",
+            "totalUpgrades": 48
+          },
+          {
+            "slotId": "boots",
+            "totalUpgrades": 247
+          },
+          {
+            "slotId": "ring1",
+            "totalUpgrades": 164
+          },
+          {
+            "slotId": "ring2",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "amulet",
+            "totalUpgrades": 20
+          },
+          {
+            "slotId": "belt",
+            "totalUpgrades": 162
+          }
+        ],
+        "powerCurveByLevel": [
+          {
+            "level": 1,
+            "averagePowerScore": 303.5706371191136,
+            "averageMaximumLife": 147.94903047091412,
+            "averageArmor": 69.5,
+            "averageEstimatedDps": 110.8018282548507,
+            "samples": 1805
+          },
+          {
+            "level": 2,
+            "averagePowerScore": 343.50946008306414,
+            "averageMaximumLife": 169.8193354868482,
+            "averageArmor": 72.25,
+            "averageEstimatedDps": 150.38868804799267,
+            "samples": 2167
+          },
+          {
+            "level": 3,
+            "averagePowerScore": 377.9303135888502,
+            "averageMaximumLife": 190.54161827332558,
+            "averageArmor": 75,
+            "averageEstimatedDps": 184.4101517615157,
+            "samples": 2583
+          },
+          {
+            "level": 4,
+            "averagePowerScore": 414.1740905716407,
+            "averageMaximumLife": 212.18671121009652,
+            "averageArmor": 77.75,
+            "averageEstimatedDps": 217.32573162583503,
+            "samples": 2694
+          },
+          {
+            "level": 5,
+            "averagePowerScore": 449.8875192604006,
+            "averageMaximumLife": 233.36787365177196,
+            "averageArmor": 80.5,
+            "averageEstimatedDps": 246.6457765793531,
+            "samples": 2596
+          },
+          {
+            "level": 6,
+            "averagePowerScore": 484.59968102073367,
+            "averageMaximumLife": 254.26315789473685,
+            "averageArmor": 83.25,
+            "averageEstimatedDps": 276.9049342105255,
+            "samples": 2508
+          },
+          {
+            "level": 7,
+            "averagePowerScore": 512.7496972143722,
+            "averageMaximumLife": 271.84457004440856,
+            "averageArmor": 86,
+            "averageEstimatedDps": 298.6757052886576,
+            "samples": 2477
+          },
+          {
+            "level": 8,
+            "averagePowerScore": 536.1032338308457,
+            "averageMaximumLife": 288.10281923714757,
+            "averageArmor": 88.75,
+            "averageEstimatedDps": 318.6517010779428,
+            "samples": 2412
+          },
+          {
+            "level": 9,
+            "averagePowerScore": 558.7185654008439,
+            "averageMaximumLife": 304.0801687763713,
+            "averageArmor": 91.5,
+            "averageEstimatedDps": 336.140978902952,
+            "samples": 2370
+          },
+          {
+            "level": 10,
+            "averagePowerScore": 580.9035012809564,
+            "averageMaximumLife": 319.5371477369769,
+            "averageArmor": 94.25,
+            "averageEstimatedDps": 348.5116490179346,
+            "samples": 2342
+          },
+          {
+            "level": 11,
+            "averagePowerScore": 603.0746333045729,
+            "averageMaximumLife": 335.08153580672996,
+            "averageArmor": 97,
+            "averageEstimatedDps": 363.2387618636755,
+            "samples": 2318
+          },
+          {
+            "level": 12,
+            "averagePowerScore": 625.2259816207185,
+            "averageMaximumLife": 350.62698412698415,
+            "averageArmor": 99.75,
+            "averageEstimatedDps": 379.9631282372628,
+            "samples": 2394
+          },
+          {
+            "level": 13,
+            "averagePowerScore": 647.9521367521368,
+            "averageMaximumLife": 366.14444444444445,
+            "averageArmor": 102.5,
+            "averageEstimatedDps": 393.42952991453046,
+            "samples": 2340
+          },
+          {
+            "level": 14,
+            "averagePowerScore": 670.3491250533503,
+            "averageMaximumLife": 381.63145539906105,
+            "averageArmor": 105.25,
+            "averageEstimatedDps": 411.0924058898842,
+            "samples": 2343
+          },
+          {
+            "level": 15,
+            "averagePowerScore": 692.2778139232271,
+            "averageMaximumLife": 396.8093689004554,
+            "averageArmor": 108,
+            "averageEstimatedDps": 426.2039635653886,
+            "samples": 1537
+          },
+          {
+            "level": 16,
+            "averagePowerScore": 716.3685770750989,
+            "averageMaximumLife": 413.22628458498025,
+            "averageArmor": 110.75,
+            "averageEstimatedDps": 448.16615612648195,
+            "samples": 1012
+          },
+          {
+            "level": 17,
+            "averagePowerScore": 737.8129251700681,
+            "averageMaximumLife": 428.1215986394558,
+            "averageArmor": 113.5,
+            "averageEstimatedDps": 458.19849999999997,
+            "samples": 1176
+          },
+          {
+            "level": 18,
+            "averagePowerScore": 759.7838827838827,
+            "averageMaximumLife": 443.7087912087912,
+            "averageArmor": 116.25,
+            "averageEstimatedDps": 474.6544578754569,
+            "samples": 1092
+          },
+          {
+            "level": 19,
+            "averagePowerScore": 783.2386759581882,
+            "averageMaximumLife": 459.3135888501742,
+            "averageArmor": 119,
+            "averageEstimatedDps": 486.83822473867554,
+            "samples": 1148
+          },
+          {
+            "level": 20,
+            "averagePowerScore": 803.7739557739558,
+            "averageMaximumLife": 474.7129402129402,
+            "averageArmor": 121.75,
+            "averageEstimatedDps": 507.41660196560224,
+            "samples": 1221
+          },
+          {
+            "level": 21,
+            "averagePowerScore": 829.041928721174,
+            "averageMaximumLife": 489.937106918239,
+            "averageArmor": 124.5,
+            "averageEstimatedDps": 526.7349056603764,
+            "samples": 954
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 854.2679938744258,
+            "averageMaximumLife": 506.40352220520674,
+            "averageArmor": 127.25,
+            "averageEstimatedDps": 556.6046523736599,
+            "samples": 653
+          },
+          {
+            "level": 23,
+            "averagePowerScore": 881.9845758354755,
+            "averageMaximumLife": 523.8946015424165,
+            "averageArmor": 130,
+            "averageEstimatedDps": 576.2852596401024,
+            "samples": 389
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 908.9190476190477,
+            "averageMaximumLife": 540.3571428571429,
+            "averageArmor": 132.75,
+            "averageEstimatedDps": 606.7873095238093,
+            "samples": 210
+          },
+          {
+            "level": 25,
+            "averagePowerScore": 929.4072398190045,
+            "averageMaximumLife": 555.3665158371041,
+            "averageArmor": 135.5,
+            "averageEstimatedDps": 628.8229683257923,
+            "samples": 221
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 954.1218274111675,
+            "averageMaximumLife": 572.3578680203045,
+            "averageArmor": 138.25,
+            "averageEstimatedDps": 660.2355329949241,
+            "samples": 197
+          },
+          {
+            "level": 27,
+            "averagePowerScore": 976.4705882352941,
+            "averageMaximumLife": 588.7235294117647,
+            "averageArmor": 141,
+            "averageEstimatedDps": 679.80694117647,
+            "samples": 170
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1001.32,
+            "averageMaximumLife": 604.37,
+            "averageArmor": 143.75,
+            "averageEstimatedDps": 642.9747750000004,
+            "samples": 200
+          },
+          {
+            "level": 29,
+            "averagePowerScore": 1029.162393162393,
+            "averageMaximumLife": 620.5042735042736,
+            "averageArmor": 146.5,
+            "averageEstimatedDps": 672.890324786325,
+            "samples": 117
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1059.3684210526317,
+            "averageMaximumLife": 643.7105263157895,
+            "averageArmor": 149.25,
+            "averageEstimatedDps": 665.3004736842106,
+            "samples": 19
+          }
+        ],
+        "powerAtRegionEntry": [
+          {
+            "region": "bosque-sussurrante",
+            "averagePowerScoreAtEntry": 298.38666666666666,
+            "entries": 300
+          },
+          {
+            "region": "pantano-podre",
+            "averagePowerScoreAtEntry": 442.6254295532646,
+            "entries": 291
+          },
+          {
+            "region": "colinas-aridas",
+            "averagePowerScoreAtEntry": 692.7131782945736,
+            "entries": 258
+          },
+          {
+            "region": "minas-abandonadas",
+            "averagePowerScoreAtEntry": 693.25,
+            "entries": 248
+          },
+          {
+            "region": "ruinas-esquecidas",
+            "averagePowerScoreAtEntry": 693.2697095435684,
+            "entries": 241
+          },
+          {
+            "region": "picos-congelados",
+            "averagePowerScoreAtEntry": 804.4957627118644,
+            "entries": 236
+          },
+          {
+            "region": "litoral-quebrado",
+            "averagePowerScoreAtEntry": 908.12,
+            "entries": 50
+          },
+          {
+            "region": "deserto-de-vidro",
+            "averagePowerScoreAtEntry": 1000.0294117647059,
+            "entries": 34
+          },
+          {
+            "region": "fortaleza-sombria",
+            "averagePowerScoreAtEntry": 1059.888888888889,
+            "entries": 9
+          }
+        ],
+        "earlyGamePowerScoreLevel1": 303.5706371191136,
+        "maxPowerScoreObserved": 1093
+      }
+    },
+    "A": {
+      "monteCarlo": {
+        "expectedValueByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "playerLevel": 1,
+            "weapon": {
+              "n": 8000,
+              "mean": 19.905625,
+              "median": 11,
+              "ci95Low": 19.530725863356338,
+              "ci95High": 20.280524136643663,
+              "p10": 11,
+              "p90": 46,
+              "p99": 82,
+              "max": 118,
+              "stddev": 17.10816233145332
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.213,
+              "median": 12,
+              "ci95Low": 15.060416909501091,
+              "ci95High": 15.365583090498907,
+              "p10": 12,
+              "p90": 27,
+              "p99": 42,
+              "max": 48,
+              "stddev": 6.96298290964409
+            }
+          },
+          {
+            "region": "pantano-podre",
+            "playerLevel": 5,
+            "weapon": {
+              "n": 8000,
+              "mean": 21.93175,
+              "median": 11,
+              "ci95Low": 21.465490942502555,
+              "ci95High": 22.398009057497447,
+              "p10": 11,
+              "p90": 50,
+              "p99": 108,
+              "max": 160,
+              "stddev": 21.277284646719902
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.65075,
+              "median": 12,
+              "ci95Low": 15.47725294329619,
+              "ci95High": 15.824247056703811,
+              "p10": 12,
+              "p90": 29,
+              "p99": 44,
+              "max": 55,
+              "stddev": 7.917371687466464
+            }
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "playerLevel": 15,
+            "weapon": {
+              "n": 8000,
+              "mean": 28.06875,
+              "median": 11,
+              "ci95Low": 27.371369208391407,
+              "ci95High": 28.766130791608596,
+              "p10": 11,
+              "p90": 70,
+              "p99": 153,
+              "max": 256,
+              "stddev": 31.82430318855993
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.56875,
+              "median": 12,
+              "ci95Low": 20.23357834233083,
+              "ci95High": 20.903921657669173,
+              "p10": 12,
+              "p90": 48,
+              "p99": 67,
+              "max": 84,
+              "stddev": 15.29523695264407
+            }
+          },
+          {
+            "region": "picos-congelados",
+            "playerLevel": 20,
+            "weapon": {
+              "n": 8000,
+              "mean": 30.727,
+              "median": 11,
+              "ci95Low": 29.91389487375607,
+              "ci95High": 31.54010512624393,
+              "p10": 11,
+              "p90": 80,
+              "p99": 175,
+              "max": 305,
+              "stddev": 37.10527214561164
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 21.6905,
+              "median": 12,
+              "ci95Low": 21.30695332725736,
+              "ci95High": 22.07404667274264,
+              "p10": 12,
+              "p90": 52,
+              "p99": 78,
+              "max": 121,
+              "stddev": 17.50278434278389
+            }
+          },
+          {
+            "region": "litoral-quebrado",
+            "playerLevel": 24,
+            "weapon": {
+              "n": 8000,
+              "mean": 37.3925,
+              "median": 11,
+              "ci95Low": 36.38682482038748,
+              "ci95High": 38.398175179612515,
+              "p10": 11,
+              "p90": 100,
+              "p99": 212,
+              "max": 380,
+              "stddev": 45.89302173261009
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 29.894875,
+              "median": 12,
+              "ci95Low": 29.281715296368706,
+              "ci95High": 30.508034703631292,
+              "p10": 12,
+              "p90": 85,
+              "p99": 105,
+              "max": 124,
+              "stddev": 27.980954660881604
+            }
+          },
+          {
+            "region": "deserto-de-vidro",
+            "playerLevel": 28,
+            "weapon": {
+              "n": 8000,
+              "mean": 37.574875,
+              "median": 11,
+              "ci95Low": 36.56457576441622,
+              "ci95High": 38.58517423558378,
+              "p10": 11,
+              "p90": 101,
+              "p99": 209,
+              "max": 344,
+              "stddev": 46.104036089416475
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 30.35125,
+              "median": 12,
+              "ci95Low": 29.722033857267878,
+              "ci95High": 30.980466142732123,
+              "p10": 12,
+              "p90": 86,
+              "p99": 108,
+              "max": 130,
+              "stddev": 28.71367485080076
+            }
+          },
+          {
+            "region": "fortaleza-sombria",
+            "playerLevel": 30,
+            "weapon": {
+              "n": 8000,
+              "mean": 38.416,
+              "median": 11,
+              "ci95Low": 37.3679030704134,
+              "ci95High": 39.464096929586596,
+              "p10": 11,
+              "p90": 108,
+              "p99": 219,
+              "max": 331,
+              "stddev": 47.82889758294793
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 30.92475,
+              "median": 12,
+              "ci95Low": 30.26562000645742,
+              "ci95High": 31.583879993542578,
+              "p10": 12,
+              "p90": 87,
+              "p99": 119,
+              "max": 145,
+              "stddev": 30.07876472592252
+            }
+          }
+        ],
+        "upgradeProbabilityByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "upgradeProbabilityWeapon": 1,
+            "upgradeProbabilityArmor": 1
+          },
+          {
+            "region": "pantano-podre",
+            "upgradeProbabilityWeapon": 0.005875,
+            "upgradeProbabilityArmor": 0.003125
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "upgradeProbabilityWeapon": 0.00825,
+            "upgradeProbabilityArmor": 0.056125
+          },
+          {
+            "region": "picos-congelados",
+            "upgradeProbabilityWeapon": 0.000625,
+            "upgradeProbabilityArmor": 0.006125
+          },
+          {
+            "region": "litoral-quebrado",
+            "upgradeProbabilityWeapon": 0.000875,
+            "upgradeProbabilityArmor": 0.000375
+          },
+          {
+            "region": "deserto-de-vidro",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0.001125
+          },
+          {
+            "region": "fortaleza-sombria",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0.00125
+          }
+        ]
+      },
+      "campaign": {
+        "survivalRate": 0,
+        "averageFinalLevel": 20.356666666666666,
+        "totalUpgradeEvents": 1469,
+        "averageUpgradesPerRun": 4.8966666666666665,
+        "deadLootRate": 0.9527178293185278,
+        "slotProgression": [
+          {
+            "slotId": "weapon",
+            "totalUpgrades": 627
+          },
+          {
+            "slotId": "helmet",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "chest",
+            "totalUpgrades": 144
+          },
+          {
+            "slotId": "gloves",
+            "totalUpgrades": 48
+          },
+          {
+            "slotId": "boots",
+            "totalUpgrades": 248
+          },
+          {
+            "slotId": "ring1",
+            "totalUpgrades": 159
+          },
+          {
+            "slotId": "ring2",
+            "totalUpgrades": 29
+          },
+          {
+            "slotId": "amulet",
+            "totalUpgrades": 19
+          },
+          {
+            "slotId": "belt",
+            "totalUpgrades": 165
+          }
+        ],
+        "powerCurveByLevel": [
+          {
+            "level": 1,
+            "averagePowerScore": 303.5772853185596,
+            "averageMaximumLife": 147.9556786703601,
+            "averageArmor": 69.5,
+            "averageEstimatedDps": 110.8018282548507,
+            "samples": 1805
+          },
+          {
+            "level": 2,
+            "averagePowerScore": 343.78864790032304,
+            "averageMaximumLife": 169.9231656668205,
+            "averageArmor": 72.25,
+            "averageEstimatedDps": 150.2763784033226,
+            "samples": 2167
+          },
+          {
+            "level": 3,
+            "averagePowerScore": 378.5319396051103,
+            "averageMaximumLife": 190.89740611691832,
+            "averageArmor": 75,
+            "averageEstimatedDps": 183.55366705381147,
+            "samples": 2583
+          },
+          {
+            "level": 4,
+            "averagePowerScore": 415.6236080178174,
+            "averageMaximumLife": 212.84780994803268,
+            "averageArmor": 77.75,
+            "averageEstimatedDps": 217.86180066815135,
+            "samples": 2694
+          },
+          {
+            "level": 5,
+            "averagePowerScore": 454.3551617873652,
+            "averageMaximumLife": 234.71918335901387,
+            "averageArmor": 80.5,
+            "averageEstimatedDps": 252.30157010785817,
+            "samples": 2596
+          },
+          {
+            "level": 6,
+            "averagePowerScore": 492.35921943448824,
+            "averageMaximumLife": 256.75925925925924,
+            "averageArmor": 83.25,
+            "averageEstimatedDps": 293.6846674631611,
+            "samples": 2511
+          },
+          {
+            "level": 7,
+            "averagePowerScore": 522.3486127864898,
+            "averageMaximumLife": 275.2332127060716,
+            "averageArmor": 86,
+            "averageEstimatedDps": 324.4330969039015,
+            "samples": 2487
+          },
+          {
+            "level": 8,
+            "averagePowerScore": 546.7383983572895,
+            "averageMaximumLife": 292.21006160164274,
+            "averageArmor": 88.75,
+            "averageEstimatedDps": 348.0727926078024,
+            "samples": 2435
+          },
+          {
+            "level": 9,
+            "averagePowerScore": 569.1400665004156,
+            "averageMaximumLife": 307.65835411471323,
+            "averageArmor": 91.5,
+            "averageEstimatedDps": 364.0478071487906,
+            "samples": 2406
+          },
+          {
+            "level": 10,
+            "averagePowerScore": 591.8490566037735,
+            "averageMaximumLife": 323.18888888888887,
+            "averageArmor": 94.25,
+            "averageEstimatedDps": 378.1971530398321,
+            "samples": 2385
+          },
+          {
+            "level": 11,
+            "averagePowerScore": 613.7660025434507,
+            "averageMaximumLife": 338.6401017380246,
+            "averageArmor": 97,
+            "averageEstimatedDps": 394.38230182280444,
+            "samples": 2359
+          },
+          {
+            "level": 12,
+            "averagePowerScore": 635.6294165981923,
+            "averageMaximumLife": 353.9100246507806,
+            "averageArmor": 99.75,
+            "averageEstimatedDps": 413.2578981101097,
+            "samples": 2434
+          },
+          {
+            "level": 13,
+            "averagePowerScore": 658.8083403538332,
+            "averageMaximumLife": 369.8946925021061,
+            "averageArmor": 102.5,
+            "averageEstimatedDps": 431.753705139005,
+            "samples": 2374
+          },
+          {
+            "level": 14,
+            "averagePowerScore": 681.1669456066945,
+            "averageMaximumLife": 385.39456066945604,
+            "averageArmor": 105.25,
+            "averageEstimatedDps": 447.71031589957977,
+            "samples": 2390
+          },
+          {
+            "level": 15,
+            "averagePowerScore": 703.3480486244401,
+            "averageMaximumLife": 400.45745361484325,
+            "averageArmor": 108,
+            "averageEstimatedDps": 473.57809852847095,
+            "samples": 1563
+          },
+          {
+            "level": 16,
+            "averagePowerScore": 727.6784688995215,
+            "averageMaximumLife": 417.2837320574163,
+            "averageArmor": 110.75,
+            "averageEstimatedDps": 501.0397607655496,
+            "samples": 1045
+          },
+          {
+            "level": 17,
+            "averagePowerScore": 748.2908633696563,
+            "averageMaximumLife": 431.86253143336126,
+            "averageArmor": 113.5,
+            "averageEstimatedDps": 498.6800905280791,
+            "samples": 1193
+          },
+          {
+            "level": 18,
+            "averagePowerScore": 770.2694023193577,
+            "averageMaximumLife": 446.9487065120428,
+            "averageArmor": 116.25,
+            "averageEstimatedDps": 529.4876797502225,
+            "samples": 1121
+          },
+          {
+            "level": 19,
+            "averagePowerScore": 793.4614733276884,
+            "averageMaximumLife": 462.8272650296359,
+            "averageArmor": 119,
+            "averageEstimatedDps": 530.9916460626588,
+            "samples": 1181
+          },
+          {
+            "level": 20,
+            "averagePowerScore": 813.8261211644375,
+            "averageMaximumLife": 478.0302911093627,
+            "averageArmor": 121.75,
+            "averageEstimatedDps": 564.3566490952023,
+            "samples": 1271
+          },
+          {
+            "level": 21,
+            "averagePowerScore": 838.1525423728814,
+            "averageMaximumLife": 492.3519441674975,
+            "averageArmor": 124.5,
+            "averageEstimatedDps": 575.9789631106671,
+            "samples": 1003
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 863.9085872576177,
+            "averageMaximumLife": 509.69806094182826,
+            "averageArmor": 127.25,
+            "averageEstimatedDps": 600.732779778394,
+            "samples": 722
+          },
+          {
+            "level": 23,
+            "averagePowerScore": 891.723897911833,
+            "averageMaximumLife": 527.9489559164733,
+            "averageArmor": 130,
+            "averageEstimatedDps": 616.6186867749424,
+            "samples": 431
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 918.7757009345794,
+            "averageMaximumLife": 545.4065420560747,
+            "averageArmor": 132.75,
+            "averageEstimatedDps": 607.8893271028035,
+            "samples": 214
+          },
+          {
+            "level": 25,
+            "averagePowerScore": 939.1353711790393,
+            "averageMaximumLife": 559.5589519650655,
+            "averageArmor": 135.5,
+            "averageEstimatedDps": 619.7380960698692,
+            "samples": 229
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 965.0412844036697,
+            "averageMaximumLife": 577.9770642201835,
+            "averageArmor": 138.25,
+            "averageEstimatedDps": 667.0086009174305,
+            "samples": 218
+          },
+          {
+            "level": 27,
+            "averagePowerScore": 989.1904761904761,
+            "averageMaximumLife": 594.3862433862433,
+            "averageArmor": 141,
+            "averageEstimatedDps": 690.2601269841264,
+            "samples": 189
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1014.6294642857143,
+            "averageMaximumLife": 610.84375,
+            "averageArmor": 143.75,
+            "averageEstimatedDps": 667.0554062500006,
+            "samples": 224
+          },
+          {
+            "level": 29,
+            "averagePowerScore": 1045.6666666666667,
+            "averageMaximumLife": 627.4728682170543,
+            "averageArmor": 146.5,
+            "averageEstimatedDps": 748.9991937984493,
+            "samples": 129
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1078.842105263158,
+            "averageMaximumLife": 655.5,
+            "averageArmor": 149.25,
+            "averageEstimatedDps": 760.5378421052633,
+            "samples": 19
+          }
+        ],
+        "powerAtRegionEntry": [
+          {
+            "region": "bosque-sussurrante",
+            "averagePowerScoreAtEntry": 298.38666666666666,
+            "entries": 300
+          },
+          {
+            "region": "pantano-podre",
+            "averagePowerScoreAtEntry": 444.9553264604811,
+            "entries": 291
+          },
+          {
+            "region": "colinas-aridas",
+            "averagePowerScoreAtEntry": 703.4083969465648,
+            "entries": 262
+          },
+          {
+            "region": "minas-abandonadas",
+            "averagePowerScoreAtEntry": 703.9606299212599,
+            "entries": 254
+          },
+          {
+            "region": "ruinas-esquecidas",
+            "averagePowerScoreAtEntry": 704.2672064777328,
+            "entries": 247
+          },
+          {
+            "region": "picos-congelados",
+            "averagePowerScoreAtEntry": 815.1475409836065,
+            "entries": 244
+          },
+          {
+            "region": "litoral-quebrado",
+            "averagePowerScoreAtEntry": 917.28,
+            "entries": 50
+          },
+          {
+            "region": "deserto-de-vidro",
+            "averagePowerScoreAtEntry": 1011.3055555555555,
+            "entries": 36
+          },
+          {
+            "region": "fortaleza-sombria",
+            "averagePowerScoreAtEntry": 1078.111111111111,
+            "entries": 9
+          }
+        ],
+        "earlyGamePowerScoreLevel1": 303.5772853185596,
+        "maxPowerScoreObserved": 1142
+      }
+    },
+    "B": {
+      "monteCarlo": {
+        "expectedValueByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "playerLevel": 1,
+            "weapon": {
+              "n": 8000,
+              "mean": 19.905625,
+              "median": 11,
+              "ci95Low": 19.530725863356338,
+              "ci95High": 20.280524136643663,
+              "p10": 11,
+              "p90": 46,
+              "p99": 82,
+              "max": 118,
+              "stddev": 17.10816233145332
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.213,
+              "median": 12,
+              "ci95Low": 15.060416909501091,
+              "ci95High": 15.365583090498907,
+              "p10": 12,
+              "p90": 27,
+              "p99": 42,
+              "max": 48,
+              "stddev": 6.96298290964409
+            }
+          },
+          {
+            "region": "pantano-podre",
+            "playerLevel": 5,
+            "weapon": {
+              "n": 8000,
+              "mean": 20.335,
+              "median": 11,
+              "ci95Low": 19.951201717167717,
+              "ci95High": 20.718798282832285,
+              "p10": 11,
+              "p90": 47,
+              "p99": 85,
+              "max": 131,
+              "stddev": 17.514266327768976
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.083625,
+              "median": 12,
+              "ci95Low": 14.934182017833324,
+              "ci95High": 15.233067982166675,
+              "p10": 12,
+              "p90": 27,
+              "p99": 41,
+              "max": 48,
+              "stddev": 6.819687079285243
+            }
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "playerLevel": 15,
+            "weapon": {
+              "n": 8000,
+              "mean": 23.114125,
+              "median": 11,
+              "ci95Low": 22.595929855722694,
+              "ci95High": 23.63232014427731,
+              "p10": 11,
+              "p90": 56,
+              "p99": 115,
+              "max": 204,
+              "stddev": 23.647338126823787
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.9695,
+              "median": 12,
+              "ci95Low": 15.770958893314393,
+              "ci95High": 16.168041106685607,
+              "p10": 12,
+              "p90": 29,
+              "p99": 54,
+              "max": 77,
+              "stddev": 9.060232875041905
+            }
+          },
+          {
+            "region": "picos-congelados",
+            "playerLevel": 20,
+            "weapon": {
+              "n": 8000,
+              "mean": 27.33675,
+              "median": 11,
+              "ci95Low": 26.688681383339816,
+              "ci95High": 27.98481861666018,
+              "p10": 11,
+              "p90": 69,
+              "p99": 141,
+              "max": 228,
+              "stddev": 29.573989406865717
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.6375,
+              "median": 12,
+              "ci95Low": 20.306200680699828,
+              "ci95High": 20.96879931930017,
+              "p10": 12,
+              "p90": 48,
+              "p99": 65,
+              "max": 80,
+              "stddev": 15.118526507236536
+            }
+          },
+          {
+            "region": "litoral-quebrado",
+            "playerLevel": 24,
+            "weapon": {
+              "n": 8000,
+              "mean": 30.294,
+              "median": 11,
+              "ci95Low": 29.499151860898706,
+              "ci95High": 31.088848139101295,
+              "p10": 11,
+              "p90": 79,
+              "p99": 175,
+              "max": 294,
+              "stddev": 36.272132057544944
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 21.440625,
+              "median": 12,
+              "ci95Low": 21.062313916356626,
+              "ci95High": 21.818936083643376,
+              "p10": 12,
+              "p90": 51,
+              "p99": 78,
+              "max": 118,
+              "stddev": 17.263863258534624
+            }
+          },
+          {
+            "region": "deserto-de-vidro",
+            "playerLevel": 28,
+            "weapon": {
+              "n": 8000,
+              "mean": 37.327125,
+              "median": 11,
+              "ci95Low": 36.32696265157581,
+              "ci95High": 38.32728734842419,
+              "p10": 11,
+              "p90": 100,
+              "p99": 209,
+              "max": 344,
+              "stddev": 45.64144897167989
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 30.35125,
+              "median": 12,
+              "ci95Low": 29.722033857267878,
+              "ci95High": 30.980466142732123,
+              "p10": 12,
+              "p90": 86,
+              "p99": 108,
+              "max": 130,
+              "stddev": 28.71367485080076
+            }
+          },
+          {
+            "region": "fortaleza-sombria",
+            "playerLevel": 30,
+            "weapon": {
+              "n": 8000,
+              "mean": 38.416,
+              "median": 11,
+              "ci95Low": 37.3679030704134,
+              "ci95High": 39.464096929586596,
+              "p10": 11,
+              "p90": 108,
+              "p99": 219,
+              "max": 331,
+              "stddev": 47.82889758294793
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 30.92475,
+              "median": 12,
+              "ci95Low": 30.26562000645742,
+              "ci95High": 31.583879993542578,
+              "p10": 12,
+              "p90": 87,
+              "p99": 119,
+              "max": 145,
+              "stddev": 30.07876472592252
+            }
+          }
+        ],
+        "upgradeProbabilityByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "upgradeProbabilityWeapon": 1,
+            "upgradeProbabilityArmor": 1
+          },
+          {
+            "region": "pantano-podre",
+            "upgradeProbabilityWeapon": 0.000125,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "upgradeProbabilityWeapon": 0.00475,
+            "upgradeProbabilityArmor": 0.0135
+          },
+          {
+            "region": "picos-congelados",
+            "upgradeProbabilityWeapon": 0.00025,
+            "upgradeProbabilityArmor": 0.0005
+          },
+          {
+            "region": "litoral-quebrado",
+            "upgradeProbabilityWeapon": 0.002125,
+            "upgradeProbabilityArmor": 0.00825
+          },
+          {
+            "region": "deserto-de-vidro",
+            "upgradeProbabilityWeapon": 0.00025,
+            "upgradeProbabilityArmor": 0.0025
+          },
+          {
+            "region": "fortaleza-sombria",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0.00125
+          }
+        ]
+      },
+      "campaign": {
+        "survivalRate": 0,
+        "averageFinalLevel": 19.97,
+        "totalUpgradeEvents": 1452,
+        "averageUpgradesPerRun": 4.84,
+        "deadLootRate": 0.9526152724621834,
+        "slotProgression": [
+          {
+            "slotId": "weapon",
+            "totalUpgrades": 605
+          },
+          {
+            "slotId": "helmet",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "chest",
+            "totalUpgrades": 146
+          },
+          {
+            "slotId": "gloves",
+            "totalUpgrades": 48
+          },
+          {
+            "slotId": "boots",
+            "totalUpgrades": 247
+          },
+          {
+            "slotId": "ring1",
+            "totalUpgrades": 164
+          },
+          {
+            "slotId": "ring2",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "amulet",
+            "totalUpgrades": 20
+          },
+          {
+            "slotId": "belt",
+            "totalUpgrades": 162
+          }
+        ],
+        "powerCurveByLevel": [
+          {
+            "level": 1,
+            "averagePowerScore": 303.5706371191136,
+            "averageMaximumLife": 147.94903047091412,
+            "averageArmor": 69.5,
+            "averageEstimatedDps": 110.8018282548507,
+            "samples": 1805
+          },
+          {
+            "level": 2,
+            "averagePowerScore": 343.50946008306414,
+            "averageMaximumLife": 169.8193354868482,
+            "averageArmor": 72.25,
+            "averageEstimatedDps": 150.38868804799267,
+            "samples": 2167
+          },
+          {
+            "level": 3,
+            "averagePowerScore": 377.9303135888502,
+            "averageMaximumLife": 190.54161827332558,
+            "averageArmor": 75,
+            "averageEstimatedDps": 184.4101517615157,
+            "samples": 2583
+          },
+          {
+            "level": 4,
+            "averagePowerScore": 414.1740905716407,
+            "averageMaximumLife": 212.18671121009652,
+            "averageArmor": 77.75,
+            "averageEstimatedDps": 217.32573162583503,
+            "samples": 2694
+          },
+          {
+            "level": 5,
+            "averagePowerScore": 449.8875192604006,
+            "averageMaximumLife": 233.36787365177196,
+            "averageArmor": 80.5,
+            "averageEstimatedDps": 246.6457765793531,
+            "samples": 2596
+          },
+          {
+            "level": 6,
+            "averagePowerScore": 484.59968102073367,
+            "averageMaximumLife": 254.26315789473685,
+            "averageArmor": 83.25,
+            "averageEstimatedDps": 276.9049342105255,
+            "samples": 2508
+          },
+          {
+            "level": 7,
+            "averagePowerScore": 512.7496972143722,
+            "averageMaximumLife": 271.84457004440856,
+            "averageArmor": 86,
+            "averageEstimatedDps": 298.6757052886576,
+            "samples": 2477
+          },
+          {
+            "level": 8,
+            "averagePowerScore": 536.1032338308457,
+            "averageMaximumLife": 288.10281923714757,
+            "averageArmor": 88.75,
+            "averageEstimatedDps": 318.6517010779428,
+            "samples": 2412
+          },
+          {
+            "level": 9,
+            "averagePowerScore": 558.7185654008439,
+            "averageMaximumLife": 304.0801687763713,
+            "averageArmor": 91.5,
+            "averageEstimatedDps": 336.140978902952,
+            "samples": 2370
+          },
+          {
+            "level": 10,
+            "averagePowerScore": 580.9035012809564,
+            "averageMaximumLife": 319.5371477369769,
+            "averageArmor": 94.25,
+            "averageEstimatedDps": 348.5116490179346,
+            "samples": 2342
+          },
+          {
+            "level": 11,
+            "averagePowerScore": 603.0746333045729,
+            "averageMaximumLife": 335.08153580672996,
+            "averageArmor": 97,
+            "averageEstimatedDps": 363.2387618636755,
+            "samples": 2318
+          },
+          {
+            "level": 12,
+            "averagePowerScore": 625.2259816207185,
+            "averageMaximumLife": 350.62698412698415,
+            "averageArmor": 99.75,
+            "averageEstimatedDps": 379.9631282372628,
+            "samples": 2394
+          },
+          {
+            "level": 13,
+            "averagePowerScore": 647.9521367521368,
+            "averageMaximumLife": 366.14444444444445,
+            "averageArmor": 102.5,
+            "averageEstimatedDps": 393.42952991453046,
+            "samples": 2340
+          },
+          {
+            "level": 14,
+            "averagePowerScore": 670.3491250533503,
+            "averageMaximumLife": 381.63145539906105,
+            "averageArmor": 105.25,
+            "averageEstimatedDps": 411.0924058898842,
+            "samples": 2343
+          },
+          {
+            "level": 15,
+            "averagePowerScore": 692.2778139232271,
+            "averageMaximumLife": 396.8093689004554,
+            "averageArmor": 108,
+            "averageEstimatedDps": 426.2039635653886,
+            "samples": 1537
+          },
+          {
+            "level": 16,
+            "averagePowerScore": 716.3685770750989,
+            "averageMaximumLife": 413.22628458498025,
+            "averageArmor": 110.75,
+            "averageEstimatedDps": 448.16615612648195,
+            "samples": 1012
+          },
+          {
+            "level": 17,
+            "averagePowerScore": 737.8129251700681,
+            "averageMaximumLife": 428.1215986394558,
+            "averageArmor": 113.5,
+            "averageEstimatedDps": 458.19849999999997,
+            "samples": 1176
+          },
+          {
+            "level": 18,
+            "averagePowerScore": 759.7838827838827,
+            "averageMaximumLife": 443.7087912087912,
+            "averageArmor": 116.25,
+            "averageEstimatedDps": 474.6544578754569,
+            "samples": 1092
+          },
+          {
+            "level": 19,
+            "averagePowerScore": 783.2386759581882,
+            "averageMaximumLife": 459.3135888501742,
+            "averageArmor": 119,
+            "averageEstimatedDps": 486.83822473867554,
+            "samples": 1148
+          },
+          {
+            "level": 20,
+            "averagePowerScore": 803.7739557739558,
+            "averageMaximumLife": 474.7129402129402,
+            "averageArmor": 121.75,
+            "averageEstimatedDps": 507.41660196560224,
+            "samples": 1221
+          },
+          {
+            "level": 21,
+            "averagePowerScore": 829.041928721174,
+            "averageMaximumLife": 489.937106918239,
+            "averageArmor": 124.5,
+            "averageEstimatedDps": 526.7349056603764,
+            "samples": 954
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 854.2679938744258,
+            "averageMaximumLife": 506.40352220520674,
+            "averageArmor": 127.25,
+            "averageEstimatedDps": 556.6046523736599,
+            "samples": 653
+          },
+          {
+            "level": 23,
+            "averagePowerScore": 881.9845758354755,
+            "averageMaximumLife": 523.8946015424165,
+            "averageArmor": 130,
+            "averageEstimatedDps": 576.2852596401024,
+            "samples": 389
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 908.9190476190477,
+            "averageMaximumLife": 540.3571428571429,
+            "averageArmor": 132.75,
+            "averageEstimatedDps": 606.7873095238093,
+            "samples": 210
+          },
+          {
+            "level": 25,
+            "averagePowerScore": 929.4072398190045,
+            "averageMaximumLife": 555.3665158371041,
+            "averageArmor": 135.5,
+            "averageEstimatedDps": 628.8229683257923,
+            "samples": 221
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 954.1218274111675,
+            "averageMaximumLife": 572.3578680203045,
+            "averageArmor": 138.25,
+            "averageEstimatedDps": 660.2355329949241,
+            "samples": 197
+          },
+          {
+            "level": 27,
+            "averagePowerScore": 976.4705882352941,
+            "averageMaximumLife": 588.7235294117647,
+            "averageArmor": 141,
+            "averageEstimatedDps": 679.80694117647,
+            "samples": 170
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1001.32,
+            "averageMaximumLife": 604.37,
+            "averageArmor": 143.75,
+            "averageEstimatedDps": 642.9747750000004,
+            "samples": 200
+          },
+          {
+            "level": 29,
+            "averagePowerScore": 1029.162393162393,
+            "averageMaximumLife": 620.5042735042736,
+            "averageArmor": 146.5,
+            "averageEstimatedDps": 672.890324786325,
+            "samples": 117
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1059.3684210526317,
+            "averageMaximumLife": 643.7105263157895,
+            "averageArmor": 149.25,
+            "averageEstimatedDps": 665.3004736842106,
+            "samples": 19
+          }
+        ],
+        "powerAtRegionEntry": [
+          {
+            "region": "bosque-sussurrante",
+            "averagePowerScoreAtEntry": 298.38666666666666,
+            "entries": 300
+          },
+          {
+            "region": "pantano-podre",
+            "averagePowerScoreAtEntry": 442.6254295532646,
+            "entries": 291
+          },
+          {
+            "region": "colinas-aridas",
+            "averagePowerScoreAtEntry": 692.7131782945736,
+            "entries": 258
+          },
+          {
+            "region": "minas-abandonadas",
+            "averagePowerScoreAtEntry": 693.25,
+            "entries": 248
+          },
+          {
+            "region": "ruinas-esquecidas",
+            "averagePowerScoreAtEntry": 693.2697095435684,
+            "entries": 241
+          },
+          {
+            "region": "picos-congelados",
+            "averagePowerScoreAtEntry": 804.4957627118644,
+            "entries": 236
+          },
+          {
+            "region": "litoral-quebrado",
+            "averagePowerScoreAtEntry": 908.12,
+            "entries": 50
+          },
+          {
+            "region": "deserto-de-vidro",
+            "averagePowerScoreAtEntry": 1000.0294117647059,
+            "entries": 34
+          },
+          {
+            "region": "fortaleza-sombria",
+            "averagePowerScoreAtEntry": 1059.888888888889,
+            "entries": 9
+          }
+        ],
+        "earlyGamePowerScoreLevel1": 303.5706371191136,
+        "maxPowerScoreObserved": 1093
+      }
+    },
+    "C": {
+      "monteCarlo": {
+        "expectedValueByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "playerLevel": 1,
+            "weapon": {
+              "n": 8000,
+              "mean": 19.905625,
+              "median": 11,
+              "ci95Low": 19.530725863356338,
+              "ci95High": 20.280524136643663,
+              "p10": 11,
+              "p90": 46,
+              "p99": 82,
+              "max": 118,
+              "stddev": 17.10816233145332
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.213,
+              "median": 12,
+              "ci95Low": 15.060416909501091,
+              "ci95High": 15.365583090498907,
+              "p10": 12,
+              "p90": 27,
+              "p99": 42,
+              "max": 48,
+              "stddev": 6.96298290964409
+            }
+          },
+          {
+            "region": "pantano-podre",
+            "playerLevel": 5,
+            "weapon": {
+              "n": 8000,
+              "mean": 20.335,
+              "median": 11,
+              "ci95Low": 19.951201717167717,
+              "ci95High": 20.718798282832285,
+              "p10": 11,
+              "p90": 47,
+              "p99": 85,
+              "max": 131,
+              "stddev": 17.514266327768976
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.083625,
+              "median": 12,
+              "ci95Low": 14.934182017833324,
+              "ci95High": 15.233067982166675,
+              "p10": 12,
+              "p90": 27,
+              "p99": 41,
+              "max": 48,
+              "stddev": 6.819687079285243
+            }
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "playerLevel": 15,
+            "weapon": {
+              "n": 8000,
+              "mean": 26.950875,
+              "median": 11,
+              "ci95Low": 26.317719641675627,
+              "ci95High": 27.584030358324373,
+              "p10": 11,
+              "p90": 68,
+              "p99": 135,
+              "max": 224,
+              "stddev": 28.893437174113057
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.275,
+              "median": 12,
+              "ci95Low": 19.949464138265853,
+              "ci95High": 20.600535861734144,
+              "p10": 12,
+              "p90": 48,
+              "p99": 65,
+              "max": 77,
+              "stddev": 14.8555166520719
+            }
+          },
+          {
+            "region": "picos-congelados",
+            "playerLevel": 20,
+            "weapon": {
+              "n": 8000,
+              "mean": 28.67375,
+              "median": 11,
+              "ci95Low": 27.94709501373613,
+              "ci95High": 29.400404986263865,
+              "p10": 11,
+              "p90": 70,
+              "p99": 163,
+              "max": 283,
+              "stddev": 33.16020296888131
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.97,
+              "median": 12,
+              "ci95Low": 20.627511135845257,
+              "ci95High": 21.31248886415474,
+              "p10": 12,
+              "p90": 49,
+              "p99": 69,
+              "max": 89,
+              "stddev": 15.629150648708055
+            }
+          },
+          {
+            "region": "litoral-quebrado",
+            "playerLevel": 24,
+            "weapon": {
+              "n": 8000,
+              "mean": 30.294,
+              "median": 11,
+              "ci95Low": 29.499151860898706,
+              "ci95High": 31.088848139101295,
+              "p10": 11,
+              "p90": 79,
+              "p99": 175,
+              "max": 294,
+              "stddev": 36.272132057544944
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 21.440625,
+              "median": 12,
+              "ci95Low": 21.062313916356626,
+              "ci95High": 21.818936083643376,
+              "p10": 12,
+              "p90": 51,
+              "p99": 78,
+              "max": 118,
+              "stddev": 17.263863258534624
+            }
+          },
+          {
+            "region": "deserto-de-vidro",
+            "playerLevel": 28,
+            "weapon": {
+              "n": 8000,
+              "mean": 37.327125,
+              "median": 11,
+              "ci95Low": 36.32696265157581,
+              "ci95High": 38.32728734842419,
+              "p10": 11,
+              "p90": 100,
+              "p99": 209,
+              "max": 344,
+              "stddev": 45.64144897167989
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 30.35125,
+              "median": 12,
+              "ci95Low": 29.722033857267878,
+              "ci95High": 30.980466142732123,
+              "p10": 12,
+              "p90": 86,
+              "p99": 108,
+              "max": 130,
+              "stddev": 28.71367485080076
+            }
+          },
+          {
+            "region": "fortaleza-sombria",
+            "playerLevel": 30,
+            "weapon": {
+              "n": 8000,
+              "mean": 38.416,
+              "median": 11,
+              "ci95Low": 37.3679030704134,
+              "ci95High": 39.464096929586596,
+              "p10": 11,
+              "p90": 108,
+              "p99": 219,
+              "max": 331,
+              "stddev": 47.82889758294793
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 30.92475,
+              "median": 12,
+              "ci95Low": 30.26562000645742,
+              "ci95High": 31.583879993542578,
+              "p10": 12,
+              "p90": 87,
+              "p99": 119,
+              "max": 145,
+              "stddev": 30.07876472592252
+            }
+          }
+        ],
+        "upgradeProbabilityByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "upgradeProbabilityWeapon": 1,
+            "upgradeProbabilityArmor": 1
+          },
+          {
+            "region": "pantano-podre",
+            "upgradeProbabilityWeapon": 0.000125,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "upgradeProbabilityWeapon": 0.011125,
+            "upgradeProbabilityArmor": 0.094125
+          },
+          {
+            "region": "picos-congelados",
+            "upgradeProbabilityWeapon": 0.001375,
+            "upgradeProbabilityArmor": 0.002375
+          },
+          {
+            "region": "litoral-quebrado",
+            "upgradeProbabilityWeapon": 0.000125,
+            "upgradeProbabilityArmor": 0.004625
+          },
+          {
+            "region": "deserto-de-vidro",
+            "upgradeProbabilityWeapon": 0.00025,
+            "upgradeProbabilityArmor": 0.0025
+          },
+          {
+            "region": "fortaleza-sombria",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0.00125
+          }
+        ]
+      },
+      "campaign": {
+        "survivalRate": 0,
+        "averageFinalLevel": 19.97,
+        "totalUpgradeEvents": 1452,
+        "averageUpgradesPerRun": 4.84,
+        "deadLootRate": 0.9526152724621834,
+        "slotProgression": [
+          {
+            "slotId": "weapon",
+            "totalUpgrades": 605
+          },
+          {
+            "slotId": "helmet",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "chest",
+            "totalUpgrades": 146
+          },
+          {
+            "slotId": "gloves",
+            "totalUpgrades": 48
+          },
+          {
+            "slotId": "boots",
+            "totalUpgrades": 247
+          },
+          {
+            "slotId": "ring1",
+            "totalUpgrades": 164
+          },
+          {
+            "slotId": "ring2",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "amulet",
+            "totalUpgrades": 20
+          },
+          {
+            "slotId": "belt",
+            "totalUpgrades": 162
+          }
+        ],
+        "powerCurveByLevel": [
+          {
+            "level": 1,
+            "averagePowerScore": 303.5706371191136,
+            "averageMaximumLife": 147.94903047091412,
+            "averageArmor": 69.5,
+            "averageEstimatedDps": 110.8018282548507,
+            "samples": 1805
+          },
+          {
+            "level": 2,
+            "averagePowerScore": 343.50946008306414,
+            "averageMaximumLife": 169.8193354868482,
+            "averageArmor": 72.25,
+            "averageEstimatedDps": 150.38868804799267,
+            "samples": 2167
+          },
+          {
+            "level": 3,
+            "averagePowerScore": 377.9303135888502,
+            "averageMaximumLife": 190.54161827332558,
+            "averageArmor": 75,
+            "averageEstimatedDps": 184.4101517615157,
+            "samples": 2583
+          },
+          {
+            "level": 4,
+            "averagePowerScore": 414.1740905716407,
+            "averageMaximumLife": 212.18671121009652,
+            "averageArmor": 77.75,
+            "averageEstimatedDps": 217.32573162583503,
+            "samples": 2694
+          },
+          {
+            "level": 5,
+            "averagePowerScore": 449.8875192604006,
+            "averageMaximumLife": 233.36787365177196,
+            "averageArmor": 80.5,
+            "averageEstimatedDps": 246.6457765793531,
+            "samples": 2596
+          },
+          {
+            "level": 6,
+            "averagePowerScore": 484.59968102073367,
+            "averageMaximumLife": 254.26315789473685,
+            "averageArmor": 83.25,
+            "averageEstimatedDps": 276.9049342105255,
+            "samples": 2508
+          },
+          {
+            "level": 7,
+            "averagePowerScore": 512.7496972143722,
+            "averageMaximumLife": 271.84457004440856,
+            "averageArmor": 86,
+            "averageEstimatedDps": 298.6757052886576,
+            "samples": 2477
+          },
+          {
+            "level": 8,
+            "averagePowerScore": 536.1032338308457,
+            "averageMaximumLife": 288.10281923714757,
+            "averageArmor": 88.75,
+            "averageEstimatedDps": 318.6517010779428,
+            "samples": 2412
+          },
+          {
+            "level": 9,
+            "averagePowerScore": 558.7185654008439,
+            "averageMaximumLife": 304.0801687763713,
+            "averageArmor": 91.5,
+            "averageEstimatedDps": 336.140978902952,
+            "samples": 2370
+          },
+          {
+            "level": 10,
+            "averagePowerScore": 580.9035012809564,
+            "averageMaximumLife": 319.5371477369769,
+            "averageArmor": 94.25,
+            "averageEstimatedDps": 348.5116490179346,
+            "samples": 2342
+          },
+          {
+            "level": 11,
+            "averagePowerScore": 603.0746333045729,
+            "averageMaximumLife": 335.08153580672996,
+            "averageArmor": 97,
+            "averageEstimatedDps": 363.2387618636755,
+            "samples": 2318
+          },
+          {
+            "level": 12,
+            "averagePowerScore": 625.2259816207185,
+            "averageMaximumLife": 350.62698412698415,
+            "averageArmor": 99.75,
+            "averageEstimatedDps": 379.9631282372628,
+            "samples": 2394
+          },
+          {
+            "level": 13,
+            "averagePowerScore": 647.9521367521368,
+            "averageMaximumLife": 366.14444444444445,
+            "averageArmor": 102.5,
+            "averageEstimatedDps": 393.42952991453046,
+            "samples": 2340
+          },
+          {
+            "level": 14,
+            "averagePowerScore": 670.3491250533503,
+            "averageMaximumLife": 381.63145539906105,
+            "averageArmor": 105.25,
+            "averageEstimatedDps": 411.0924058898842,
+            "samples": 2343
+          },
+          {
+            "level": 15,
+            "averagePowerScore": 692.2778139232271,
+            "averageMaximumLife": 396.8093689004554,
+            "averageArmor": 108,
+            "averageEstimatedDps": 426.2039635653886,
+            "samples": 1537
+          },
+          {
+            "level": 16,
+            "averagePowerScore": 716.3685770750989,
+            "averageMaximumLife": 413.22628458498025,
+            "averageArmor": 110.75,
+            "averageEstimatedDps": 448.16615612648195,
+            "samples": 1012
+          },
+          {
+            "level": 17,
+            "averagePowerScore": 737.8129251700681,
+            "averageMaximumLife": 428.1215986394558,
+            "averageArmor": 113.5,
+            "averageEstimatedDps": 458.19849999999997,
+            "samples": 1176
+          },
+          {
+            "level": 18,
+            "averagePowerScore": 759.7838827838827,
+            "averageMaximumLife": 443.7087912087912,
+            "averageArmor": 116.25,
+            "averageEstimatedDps": 474.6544578754569,
+            "samples": 1092
+          },
+          {
+            "level": 19,
+            "averagePowerScore": 783.2386759581882,
+            "averageMaximumLife": 459.3135888501742,
+            "averageArmor": 119,
+            "averageEstimatedDps": 486.83822473867554,
+            "samples": 1148
+          },
+          {
+            "level": 20,
+            "averagePowerScore": 803.7739557739558,
+            "averageMaximumLife": 474.7129402129402,
+            "averageArmor": 121.75,
+            "averageEstimatedDps": 507.41660196560224,
+            "samples": 1221
+          },
+          {
+            "level": 21,
+            "averagePowerScore": 829.041928721174,
+            "averageMaximumLife": 489.937106918239,
+            "averageArmor": 124.5,
+            "averageEstimatedDps": 526.7349056603764,
+            "samples": 954
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 854.2679938744258,
+            "averageMaximumLife": 506.40352220520674,
+            "averageArmor": 127.25,
+            "averageEstimatedDps": 556.6046523736599,
+            "samples": 653
+          },
+          {
+            "level": 23,
+            "averagePowerScore": 881.9845758354755,
+            "averageMaximumLife": 523.8946015424165,
+            "averageArmor": 130,
+            "averageEstimatedDps": 576.2852596401024,
+            "samples": 389
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 908.9190476190477,
+            "averageMaximumLife": 540.3571428571429,
+            "averageArmor": 132.75,
+            "averageEstimatedDps": 606.7873095238093,
+            "samples": 210
+          },
+          {
+            "level": 25,
+            "averagePowerScore": 929.4072398190045,
+            "averageMaximumLife": 555.3665158371041,
+            "averageArmor": 135.5,
+            "averageEstimatedDps": 628.8229683257923,
+            "samples": 221
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 954.1218274111675,
+            "averageMaximumLife": 572.3578680203045,
+            "averageArmor": 138.25,
+            "averageEstimatedDps": 660.2355329949241,
+            "samples": 197
+          },
+          {
+            "level": 27,
+            "averagePowerScore": 976.4705882352941,
+            "averageMaximumLife": 588.7235294117647,
+            "averageArmor": 141,
+            "averageEstimatedDps": 679.80694117647,
+            "samples": 170
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1001.32,
+            "averageMaximumLife": 604.37,
+            "averageArmor": 143.75,
+            "averageEstimatedDps": 642.9747750000004,
+            "samples": 200
+          },
+          {
+            "level": 29,
+            "averagePowerScore": 1029.162393162393,
+            "averageMaximumLife": 620.5042735042736,
+            "averageArmor": 146.5,
+            "averageEstimatedDps": 672.890324786325,
+            "samples": 117
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1059.3684210526317,
+            "averageMaximumLife": 643.7105263157895,
+            "averageArmor": 149.25,
+            "averageEstimatedDps": 665.3004736842106,
+            "samples": 19
+          }
+        ],
+        "powerAtRegionEntry": [
+          {
+            "region": "bosque-sussurrante",
+            "averagePowerScoreAtEntry": 298.38666666666666,
+            "entries": 300
+          },
+          {
+            "region": "pantano-podre",
+            "averagePowerScoreAtEntry": 442.6254295532646,
+            "entries": 291
+          },
+          {
+            "region": "colinas-aridas",
+            "averagePowerScoreAtEntry": 692.7131782945736,
+            "entries": 258
+          },
+          {
+            "region": "minas-abandonadas",
+            "averagePowerScoreAtEntry": 693.25,
+            "entries": 248
+          },
+          {
+            "region": "ruinas-esquecidas",
+            "averagePowerScoreAtEntry": 693.2697095435684,
+            "entries": 241
+          },
+          {
+            "region": "picos-congelados",
+            "averagePowerScoreAtEntry": 804.4957627118644,
+            "entries": 236
+          },
+          {
+            "region": "litoral-quebrado",
+            "averagePowerScoreAtEntry": 908.12,
+            "entries": 50
+          },
+          {
+            "region": "deserto-de-vidro",
+            "averagePowerScoreAtEntry": 1000.0294117647059,
+            "entries": 34
+          },
+          {
+            "region": "fortaleza-sombria",
+            "averagePowerScoreAtEntry": 1059.888888888889,
+            "entries": 9
+          }
+        ],
+        "earlyGamePowerScoreLevel1": 303.5706371191136,
+        "maxPowerScoreObserved": 1093
+      }
+    },
+    "D": {
+      "monteCarlo": {
+        "expectedValueByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "playerLevel": 1,
+            "weapon": {
+              "n": 8000,
+              "mean": 19.905625,
+              "median": 11,
+              "ci95Low": 19.530725863356338,
+              "ci95High": 20.280524136643663,
+              "p10": 11,
+              "p90": 46,
+              "p99": 82,
+              "max": 118,
+              "stddev": 17.10816233145332
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.213,
+              "median": 12,
+              "ci95Low": 15.060416909501091,
+              "ci95High": 15.365583090498907,
+              "p10": 12,
+              "p90": 27,
+              "p99": 42,
+              "max": 48,
+              "stddev": 6.96298290964409
+            }
+          },
+          {
+            "region": "pantano-podre",
+            "playerLevel": 5,
+            "weapon": {
+              "n": 8000,
+              "mean": 21.93175,
+              "median": 11,
+              "ci95Low": 21.465490942502555,
+              "ci95High": 22.398009057497447,
+              "p10": 11,
+              "p90": 50,
+              "p99": 108,
+              "max": 160,
+              "stddev": 21.277284646719902
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.65075,
+              "median": 12,
+              "ci95Low": 15.47725294329619,
+              "ci95High": 15.824247056703811,
+              "p10": 12,
+              "p90": 29,
+              "p99": 44,
+              "max": 55,
+              "stddev": 7.917371687466464
+            }
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "playerLevel": 15,
+            "weapon": {
+              "n": 8000,
+              "mean": 26.950875,
+              "median": 11,
+              "ci95Low": 26.317719641675627,
+              "ci95High": 27.584030358324373,
+              "p10": 11,
+              "p90": 68,
+              "p99": 135,
+              "max": 224,
+              "stddev": 28.893437174113057
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.275,
+              "median": 12,
+              "ci95Low": 19.949464138265853,
+              "ci95High": 20.600535861734144,
+              "p10": 12,
+              "p90": 48,
+              "p99": 65,
+              "max": 77,
+              "stddev": 14.8555166520719
+            }
+          },
+          {
+            "region": "picos-congelados",
+            "playerLevel": 20,
+            "weapon": {
+              "n": 8000,
+              "mean": 29.7735,
+              "median": 11,
+              "ci95Low": 29.002243051532428,
+              "ci95High": 30.54475694846757,
+              "p10": 11,
+              "p90": 76,
+              "p99": 168,
+              "max": 299,
+              "stddev": 35.195570712092604
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 21.246,
+              "median": 12,
+              "ci95Low": 20.88450734673189,
+              "ci95High": 21.607492653268107,
+              "p10": 12,
+              "p90": 50,
+              "p99": 75,
+              "max": 121,
+              "stddev": 16.496370328045888
+            }
+          },
+          {
+            "region": "litoral-quebrado",
+            "playerLevel": 24,
+            "weapon": {
+              "n": 8000,
+              "mean": 30.294,
+              "median": 11,
+              "ci95Low": 29.499151860898706,
+              "ci95High": 31.088848139101295,
+              "p10": 11,
+              "p90": 79,
+              "p99": 175,
+              "max": 294,
+              "stddev": 36.272132057544944
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 21.440625,
+              "median": 12,
+              "ci95Low": 21.062313916356626,
+              "ci95High": 21.818936083643376,
+              "p10": 12,
+              "p90": 51,
+              "p99": 78,
+              "max": 118,
+              "stddev": 17.263863258534624
+            }
+          },
+          {
+            "region": "deserto-de-vidro",
+            "playerLevel": 28,
+            "weapon": {
+              "n": 8000,
+              "mean": 37.327125,
+              "median": 11,
+              "ci95Low": 36.32696265157581,
+              "ci95High": 38.32728734842419,
+              "p10": 11,
+              "p90": 100,
+              "p99": 209,
+              "max": 344,
+              "stddev": 45.64144897167989
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 30.35125,
+              "median": 12,
+              "ci95Low": 29.722033857267878,
+              "ci95High": 30.980466142732123,
+              "p10": 12,
+              "p90": 86,
+              "p99": 108,
+              "max": 130,
+              "stddev": 28.71367485080076
+            }
+          },
+          {
+            "region": "fortaleza-sombria",
+            "playerLevel": 30,
+            "weapon": {
+              "n": 8000,
+              "mean": 38.416,
+              "median": 11,
+              "ci95Low": 37.3679030704134,
+              "ci95High": 39.464096929586596,
+              "p10": 11,
+              "p90": 108,
+              "p99": 219,
+              "max": 331,
+              "stddev": 47.82889758294793
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 30.92475,
+              "median": 12,
+              "ci95Low": 30.26562000645742,
+              "ci95High": 31.583879993542578,
+              "p10": 12,
+              "p90": 87,
+              "p99": 119,
+              "max": 145,
+              "stddev": 30.07876472592252
+            }
+          }
+        ],
+        "upgradeProbabilityByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "upgradeProbabilityWeapon": 1,
+            "upgradeProbabilityArmor": 1
+          },
+          {
+            "region": "pantano-podre",
+            "upgradeProbabilityWeapon": 0.005875,
+            "upgradeProbabilityArmor": 0.003125
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "upgradeProbabilityWeapon": 0.00325,
+            "upgradeProbabilityArmor": 0.052375
+          },
+          {
+            "region": "picos-congelados",
+            "upgradeProbabilityWeapon": 0.002,
+            "upgradeProbabilityArmor": 0.007875
+          },
+          {
+            "region": "litoral-quebrado",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "deserto-de-vidro",
+            "upgradeProbabilityWeapon": 0.00025,
+            "upgradeProbabilityArmor": 0.00175
+          },
+          {
+            "region": "fortaleza-sombria",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0.00125
+          }
+        ]
+      },
+      "campaign": {
+        "survivalRate": 0,
+        "averageFinalLevel": 20.413333333333334,
+        "totalUpgradeEvents": 1459,
+        "averageUpgradesPerRun": 4.863333333333333,
+        "deadLootRate": 0.9532424323441167,
+        "slotProgression": [
+          {
+            "slotId": "weapon",
+            "totalUpgrades": 621
+          },
+          {
+            "slotId": "helmet",
+            "totalUpgrades": 31
+          },
+          {
+            "slotId": "chest",
+            "totalUpgrades": 146
+          },
+          {
+            "slotId": "gloves",
+            "totalUpgrades": 48
+          },
+          {
+            "slotId": "boots",
+            "totalUpgrades": 245
+          },
+          {
+            "slotId": "ring1",
+            "totalUpgrades": 155
+          },
+          {
+            "slotId": "ring2",
+            "totalUpgrades": 29
+          },
+          {
+            "slotId": "amulet",
+            "totalUpgrades": 19
+          },
+          {
+            "slotId": "belt",
+            "totalUpgrades": 165
+          }
+        ],
+        "powerCurveByLevel": [
+          {
+            "level": 1,
+            "averagePowerScore": 304.0426592797784,
+            "averageMaximumLife": 148.0337950138504,
+            "averageArmor": 69.5,
+            "averageEstimatedDps": 111.16083102493384,
+            "samples": 1805
+          },
+          {
+            "level": 2,
+            "averagePowerScore": 345.2033271719039,
+            "averageMaximumLife": 170.36460258780036,
+            "averageArmor": 72.25,
+            "averageEstimatedDps": 150.4604870609982,
+            "samples": 2164
+          },
+          {
+            "level": 3,
+            "averagePowerScore": 380.61240310077517,
+            "averageMaximumLife": 191.51472868217056,
+            "averageArmor": 75,
+            "averageEstimatedDps": 186.0786937984478,
+            "samples": 2580
+          },
+          {
+            "level": 4,
+            "averagePowerScore": 418.5820341499629,
+            "averageMaximumLife": 213.57015590200444,
+            "averageArmor": 77.75,
+            "averageEstimatedDps": 223.1275374907204,
+            "samples": 2694
+          },
+          {
+            "level": 5,
+            "averagePowerScore": 457.84795996920707,
+            "averageMaximumLife": 235.445727482679,
+            "averageArmor": 80.5,
+            "averageEstimatedDps": 261.74466820631267,
+            "samples": 2598
+          },
+          {
+            "level": 6,
+            "averagePowerScore": 496.5595380326563,
+            "averageMaximumLife": 257.3853046594982,
+            "averageArmor": 83.25,
+            "averageEstimatedDps": 306.02788729589696,
+            "samples": 2511
+          },
+          {
+            "level": 7,
+            "averagePowerScore": 526.3681891025641,
+            "averageMaximumLife": 275.42027243589746,
+            "averageArmor": 86,
+            "averageEstimatedDps": 337.5740408653858,
+            "samples": 2496
+          },
+          {
+            "level": 8,
+            "averagePowerScore": 549.8087454025338,
+            "averageMaximumLife": 291.79015120555783,
+            "averageArmor": 88.75,
+            "averageEstimatedDps": 361.2247315079676,
+            "samples": 2447
+          },
+          {
+            "level": 9,
+            "averagePowerScore": 572.1396023198012,
+            "averageMaximumLife": 307.33264291632145,
+            "averageArmor": 91.5,
+            "averageEstimatedDps": 376.75733885666574,
+            "samples": 2414
+          },
+          {
+            "level": 10,
+            "averagePowerScore": 594.8687839531968,
+            "averageMaximumLife": 322.81842875052234,
+            "averageArmor": 94.25,
+            "averageEstimatedDps": 393.75887714166447,
+            "samples": 2393
+          },
+          {
+            "level": 11,
+            "averagePowerScore": 616.7094594594595,
+            "averageMaximumLife": 338.35430743243245,
+            "averageArmor": 97,
+            "averageEstimatedDps": 409.41792652026686,
+            "samples": 2368
+          },
+          {
+            "level": 12,
+            "averagePowerScore": 638.8497748669669,
+            "averageMaximumLife": 353.7431436758084,
+            "averageArmor": 99.75,
+            "averageEstimatedDps": 428.2376741711046,
+            "samples": 2443
+          },
+          {
+            "level": 13,
+            "averagePowerScore": 661.6892062158756,
+            "averageMaximumLife": 369.54220915581686,
+            "averageArmor": 102.5,
+            "averageEstimatedDps": 448.9983217135638,
+            "samples": 2381
+          },
+          {
+            "level": 14,
+            "averagePowerScore": 684.3176910299003,
+            "averageMaximumLife": 385.16320598006644,
+            "averageArmor": 105.25,
+            "averageEstimatedDps": 466.2401004983392,
+            "samples": 2408
+          },
+          {
+            "level": 15,
+            "averagePowerScore": 706.5367882277671,
+            "averageMaximumLife": 400.2284069097889,
+            "averageArmor": 108,
+            "averageEstimatedDps": 486.8154817658347,
+            "samples": 1563
+          },
+          {
+            "level": 16,
+            "averagePowerScore": 730.5661274976213,
+            "averageMaximumLife": 417.47621313035205,
+            "averageArmor": 110.75,
+            "averageEstimatedDps": 510.2193862987627,
+            "samples": 1051
+          },
+          {
+            "level": 17,
+            "averagePowerScore": 751.6267782426778,
+            "averageMaximumLife": 431.87196652719666,
+            "averageArmor": 113.5,
+            "averageEstimatedDps": 519.8429958158987,
+            "samples": 1195
+          },
+          {
+            "level": 18,
+            "averagePowerScore": 774.4726947179946,
+            "averageMaximumLife": 447.23052820053715,
+            "averageArmor": 116.25,
+            "averageEstimatedDps": 549.1444879140546,
+            "samples": 1117
+          },
+          {
+            "level": 19,
+            "averagePowerScore": 796.7779661016949,
+            "averageMaximumLife": 462.8805084745763,
+            "averageArmor": 119,
+            "averageEstimatedDps": 540.7550000000001,
+            "samples": 1180
+          },
+          {
+            "level": 20,
+            "averagePowerScore": 817.5256511444356,
+            "averageMaximumLife": 478.15193370165747,
+            "averageArmor": 121.75,
+            "averageEstimatedDps": 581.82015153907,
+            "samples": 1267
+          },
+          {
+            "level": 21,
+            "averagePowerScore": 840.7068627450981,
+            "averageMaximumLife": 492.3156862745098,
+            "averageArmor": 124.5,
+            "averageEstimatedDps": 597.9756862745085,
+            "samples": 1020
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 869.1636615811373,
+            "averageMaximumLife": 510.26560332871014,
+            "averageArmor": 127.25,
+            "averageEstimatedDps": 626.6267212205279,
+            "samples": 721
+          },
+          {
+            "level": 23,
+            "averagePowerScore": 897.5101123595506,
+            "averageMaximumLife": 528.867415730337,
+            "averageArmor": 130,
+            "averageEstimatedDps": 613.3291235955064,
+            "samples": 445
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 924.3700440528635,
+            "averageMaximumLife": 546.7687224669603,
+            "averageArmor": 132.75,
+            "averageEstimatedDps": 606.3228105726873,
+            "samples": 227
+          },
+          {
+            "level": 25,
+            "averagePowerScore": 945.2857142857143,
+            "averageMaximumLife": 561.017316017316,
+            "averageArmor": 135.5,
+            "averageEstimatedDps": 596.8805887445887,
+            "samples": 231
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 970.5972850678733,
+            "averageMaximumLife": 578.9615384615385,
+            "averageArmor": 138.25,
+            "averageEstimatedDps": 643.4883484162895,
+            "samples": 221
+          },
+          {
+            "level": 27,
+            "averagePowerScore": 993.6417112299465,
+            "averageMaximumLife": 595.6256684491979,
+            "averageArmor": 141,
+            "averageEstimatedDps": 676.2545026737963,
+            "samples": 187
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1017.2511210762332,
+            "averageMaximumLife": 611.1636771300448,
+            "averageArmor": 143.75,
+            "averageEstimatedDps": 673.9896950672654,
+            "samples": 223
+          },
+          {
+            "level": 29,
+            "averagePowerScore": 1047.9291338582677,
+            "averageMaximumLife": 625.7007874015748,
+            "averageArmor": 146.5,
+            "averageEstimatedDps": 744.6635275590545,
+            "samples": 127
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1080.25,
+            "averageMaximumLife": 649.625,
+            "averageArmor": 149.25,
+            "averageEstimatedDps": 765.331625,
+            "samples": 16
+          }
+        ],
+        "powerAtRegionEntry": [
+          {
+            "region": "bosque-sussurrante",
+            "averagePowerScoreAtEntry": 298.5566666666667,
+            "entries": 300
+          },
+          {
+            "region": "pantano-podre",
+            "averagePowerScoreAtEntry": 448.11340206185565,
+            "entries": 291
+          },
+          {
+            "region": "colinas-aridas",
+            "averagePowerScoreAtEntry": 706.5019011406844,
+            "entries": 263
+          },
+          {
+            "region": "minas-abandonadas",
+            "averagePowerScoreAtEntry": 706.9803921568628,
+            "entries": 255
+          },
+          {
+            "region": "ruinas-esquecidas",
+            "averagePowerScoreAtEntry": 707.4696356275304,
+            "entries": 247
+          },
+          {
+            "region": "picos-congelados",
+            "averagePowerScoreAtEntry": 818.3524590163935,
+            "entries": 244
+          },
+          {
+            "region": "litoral-quebrado",
+            "averagePowerScoreAtEntry": 923.9807692307693,
+            "entries": 52
+          },
+          {
+            "region": "deserto-de-vidro",
+            "averagePowerScoreAtEntry": 1015.3055555555555,
+            "entries": 36
+          },
+          {
+            "region": "fortaleza-sombria",
+            "averagePowerScoreAtEntry": 1080.25,
+            "entries": 8
+          }
+        ],
+        "earlyGamePowerScoreLevel1": 304.0426592797784,
+        "maxPowerScoreObserved": 1142
+      }
+    }
+  }
+}

@@ -71,7 +71,14 @@ export function advanceAdventureWithRecovery(
 
   if (encounterFinished && tickResult.characterAlive) {
     const finalStats = calculateFinalStats(session.character.characterBuild, session.character.equipment);
-    const healAmount = resolveHealAmount(config, finalStats.maximumLife);
+    // Vertical Slice — Dungeon Modifier Runtime Integration Phase I —
+    // Fase 2 (Recovery): "reduced-healing." `options.runtimeConfig` já
+    // chega resolvido (nunca um id de modificador) — mesmo princípio de
+    // sempre: multiplica o MESMO cálculo que já existia
+    // (resolveHealAmount(), RECOVERY_CONFIG, intocados), nunca uma
+    // segunda fórmula de cura. Ausente = multiplicador 1, comportamento
+    // idêntico a antes.
+    const healAmount = resolveHealAmount(config, finalStats.maximumLife) * (options.runtimeConfig?.healingMultiplier ?? 1);
     const lifeBefore = session.character.currentLife;
     const lifeAfter = Math.min(finalStats.maximumLife, lifeBefore + healAmount);
     const lifeHealed = lifeAfter - lifeBefore;

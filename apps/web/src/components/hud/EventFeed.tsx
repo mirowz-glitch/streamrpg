@@ -1,7 +1,13 @@
-import { getRegionName, type PresentationEvent } from "@streamrpg/shared";
+import { getRegionName, getBaseItem, getEquipmentSlotDefinition, ITEM_GEN_RARITIES, type PresentationEvent } from "@streamrpg/shared";
 
 interface EventFeedProps {
   events: PresentationEvent[];
+}
+
+// Fase 2/6: mesmo lookup já usado por LootPopup — raridade também
+// aparecia crua ("magic"/"common") no feed de eventos.
+function rarityLabel(rarity: string): string {
+  return ITEM_GEN_RARITIES.find((entry) => entry.id === rarity)?.label ?? rarity;
 }
 
 // HUD & Gameplay UI Phase I — requisito 5: consome os Presentation
@@ -11,8 +17,13 @@ interface EventFeedProps {
 // pra exibição o que já está no evento.
 function describeEvent(event: PresentationEvent): string {
   switch (event.kind) {
+    // Vertical Slice — Commercial Readiness & First Playable Experience
+    // Phase I — Fase 2: era o único caso deste arquivo que mostrava
+    // `regionId` cru em vez de `getRegionName(...)` — todos os outros
+    // (RegionUnlocked/RegionEntered/EliteEncounter/MiniBossEncounter)
+    // já seguiam esse padrão; inconsistência corrigida.
     case "EncounterStarted":
-      return `Encontro iniciado em ${event.regionId} (${event.enemyCount} inimigo${event.enemyCount === 1 ? "" : "s"})`;
+      return `Encontro iniciado em ${getRegionName(event.regionId)} (${event.enemyCount} inimigo${event.enemyCount === 1 ? "" : "s"})`;
     case "AttackStarted":
       return `Combate contra ${event.enemyCount} inimigo${event.enemyCount === 1 ? "" : "s"}`;
     case "AttackHit":
@@ -23,10 +34,13 @@ function describeEvent(event: PresentationEvent): string {
       return "Ataque errou";
     case "EnemyKilled":
       return `${event.count} inimigo${event.count === 1 ? "" : "s"} derrotado${event.count === 1 ? "" : "s"}`;
+    // Fase 2/6: nome/slot vinham como ids brutos em inglês ("boots",
+    // "slot belt") — mesmo achado do LootPopup/EquipmentPopup, mesma
+    // correção (getBaseItem/getEquipmentSlotDefinition).
     case "LootDropped":
-      return `Item encontrado: ${event.baseItemId} (${event.rarity})`;
+      return `Item encontrado: ${getBaseItem(event.baseItemId)?.name ?? event.baseItemId} (${rarityLabel(event.rarity)})`;
     case "ItemEquipped":
-      return `Equipado: ${event.baseItemId} no slot ${event.slotId}`;
+      return `Equipado: ${getBaseItem(event.baseItemId)?.name ?? event.baseItemId} no slot ${getEquipmentSlotDefinition(event.slotId)?.label ?? event.slotId}`;
     case "EncounterFinished":
       return `Encontro concluído (${event.enemiesKilled} derrotado${event.enemiesKilled === 1 ? "" : "s"})`;
     case "CharacterDied":
@@ -62,7 +76,15 @@ function describeEvent(event: PresentationEvent): string {
       return `Tesouro aberto: ${event.itemCount} item${event.itemCount === 1 ? "" : "ns"}${event.goldAmount > 0 ? ` + ${event.goldAmount} ouro` : ""}`;
     case "MerchantFound":
       return `Mercador encontrado: +${event.goldAmount} ouro`;
+    // Fase 2/3 (Gameplay Feedback): a rolagem do Santuário pode conceder
+    // 0 em tudo — mostrar "+0 HP, +0 XP, +0 ouro" depois de "Evento
+    // encontrado: Altar Antigo" lê como um anticlímax (achado da
+    // auditoria hands-on desta Sprint). Mesmo dado real, só a frase
+    // muda quando não há nada a conceder.
     case "ShrineBlessing":
+      if (event.recoveryAmount <= 0 && event.xpAmount <= 0 && event.goldAmount <= 0) {
+        return "Bênção recebida: o santuário permanece em silêncio desta vez";
+      }
       return `Bênção recebida: +${event.recoveryAmount.toFixed(0)} HP, +${event.xpAmount} XP, +${event.goldAmount} ouro`;
     case "DiscoveryMade":
       return `Descoberta feita: +${event.xpAmount} XP`;

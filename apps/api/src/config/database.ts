@@ -143,6 +143,33 @@ function runMigrations(database: DatabaseSync): void {
       "[Migration] first_item_quest_completed_at adicionada e populada para personagens existentes.",
     );
   }
+
+  // Vertical Slice — Persistent Player Experience Phase I — a Aventura
+  // (packages/shared: Item Generator, protegido nesta Sprint) gera itens
+  // por `baseItemId` procedural + Power Score, um modelo diferente do
+  // catálogo fixo já existente aqui (slug/name/rarity/slot fixos,
+  // services/items.service.ts). Em vez de um catálogo paralelo (proibido:
+  // "não criar novos sistemas"), cada item encontrado na Aventura vira uma
+  // linha NOVA nesta MESMA tabela `items` (mesmo mecanismo de sempre:
+  // items -> character_items -> equipped_items) — `base_item_id`/
+  // `power_score` só guardam o dado extra que o catálogo fixo não tinha
+  // motivo pra ter. NULL para todo o catálogo já existente (nenhum item
+  // fixo "ganha" um Power Score retroativamente).
+  const itemColumnsV2 = database
+    .prepare("PRAGMA table_info(items)")
+    .all() as Array<{ name: string }>;
+
+  const hasBaseItemId = itemColumnsV2.some((col) => col.name === "base_item_id");
+  if (!hasBaseItemId) {
+    database.exec("ALTER TABLE items ADD COLUMN base_item_id TEXT");
+    console.log("[Migration] items.base_item_id adicionada.");
+  }
+
+  const hasPowerScore = itemColumnsV2.some((col) => col.name === "power_score");
+  if (!hasPowerScore) {
+    database.exec("ALTER TABLE items ADD COLUMN power_score INTEGER");
+    console.log("[Migration] items.power_score adicionada.");
+  }
 }
 
 export function getDb(): DatabaseSync {

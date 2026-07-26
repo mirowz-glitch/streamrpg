@@ -106,8 +106,18 @@ export function runSimulatedAdventure(options: SimulatedAdventureOptions): Simul
   const equipment = new Equipment(characterId);
   const character = createAdventureCharacter(build, inventory, equipment);
   equipStarterKit(character, classId, options.seed);
+  // Vertical Slice — Progression Economy & Reward Curve Phase I — Fase
+  // 1: única linha nova — mesmo canal de XP de sempre
+  // (characterBuild.addExperience()), só chamado ANTES da 1ª tick real.
+  if (options.startingXp) character.characterBuild.addExperience(options.startingXp);
 
   const session = createAdventureSession(`${characterId}-session`, character, options.regionId, options.seed, 0);
+  // Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 5:
+  // única linha nova nesta função — `session.worldTier` é lido
+  // automaticamente por dungeon/dungeonController.ts em toda tick daqui
+  // pra frente, sem nenhum laço/caminho de código próprio pro
+  // Simulador.
+  session.worldTier = options.worldTier;
   const timeline = createAdventureTimeline(session.sessionId);
 
   // First Dungeon, Final Boss & Complete Game Loop Phase I — requisito
@@ -810,6 +820,12 @@ export interface DungeonSimulationOptions {
   seedBase?: number;
   secondsPerTick?: number;
   maxSimulatedSeconds?: number;
+  // Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 5:
+  // repassado tal qual pra runSimulatedAdventure() abaixo.
+  worldTier?: string;
+  // Vertical Slice — Progression Economy & Reward Curve Phase I — Fase
+  // 1: idem, repassado tal qual.
+  startingXp?: number;
 }
 
 const DEFAULT_DUNGEON_EXPEDITION_ID = "queda-da-fortaleza-sombria";
@@ -857,6 +873,8 @@ export function runDungeonSimulation(options: DungeonSimulationOptions = {}): Si
         secondsPerTick: options.secondsPerTick,
         maxSimulatedSeconds: options.maxSimulatedSeconds ?? DEFAULT_DUNGEON_MAX_SIMULATED_SECONDS,
         forceExpeditionId: expeditionId,
+        worldTier: options.worldTier,
+        startingXp: options.startingXp,
       }),
     );
   }

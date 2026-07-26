@@ -11,6 +11,7 @@ import { ITEM_GEN_RARITIES } from "../itemgen/rarities.js";
 import { calculateFinalStats } from "../characterbuild/finalStats.js";
 import { createSeededRandom, randomInt } from "../itemgen/rng.js";
 import { xpRewardForKill } from "../xp.js";
+import { getRegionItemLevelAnchor } from "../regions.js";
 import { deriveFloatingNumbers, estimateLifeLeech } from "./floatingNumbers.js";
 import type { AdventureTimeline, FloatingNumberEvent, PresentationEvent } from "./types.js";
 
@@ -48,7 +49,6 @@ interface AppliedExplorationReward {
 function applyExplorationEventReward(
   session: AdventureSession,
   reward: ExplorationEventReward,
-  playerLevel: number,
   lootSeed: number,
 ): AppliedExplorationReward {
   let recoveryAmount = 0;
@@ -76,7 +76,12 @@ function applyExplorationEventReward(
   // nenhuma regra de gameplay muda aqui).
   const lootDrops: LootDropRecord[] = [];
   if (reward.lootTableId) {
-    const loot = generateLoot(reward.lootTableId, playerLevel, lootSeed);
+    // Region-Anchored Item Level — Implementation Validation Phase I:
+    // getRegionItemLevelAnchor(session.currentRegion) substitui
+    // `playerLevel` como base do Item Level deste loot — `playerLevel`
+    // continua sendo usado, intocado, pra XP/recompensa acima
+    // (`reward.xpAmount`) e por quem chama esta função.
+    const loot = generateLoot(reward.lootTableId, getRegionItemLevelAnchor(session.currentRegion), lootSeed);
     for (let i = 0; i < loot.generatedItems.length; i++) {
       const item = loot.generatedItems[i];
       const instanceId = `${session.sessionId}-explorationevent-${lootSeed}-${i}`;
@@ -204,7 +209,7 @@ export function advanceAdventureWithPresentation(
   // XP de recompensa entrar na MESMA rolagem de LevelUp.
   const appliedExplorationReward =
     predictedExplorationEvent && tickResult.encounterGenerated
-      ? applyExplorationEventReward(session, predictedExplorationEvent.reward, session.character.characterBuild.level, predictedLootSeed)
+      ? applyExplorationEventReward(session, predictedExplorationEvent.reward, predictedLootSeed)
       : null;
 
   if (tickResult.encounterGenerated) {

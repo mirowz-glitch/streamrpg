@@ -67,6 +67,16 @@ export interface AdventureSession {
   seed: number;
   startTime: number;
   futureHooks: AdventureFutureHooks;
+  // Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 1/2:
+  // a escolha do jogador (id de WorldTierDefinition, ex.: "WT3"), uma
+  // propriedade PERSISTENTE da sessão (não um AdvanceAdventureOptions
+  // por tick — o jogador não troca de Tier a cada tick). Nunca lida
+  // diretamente por nenhum sistema de gameplay (Adventure Loop/Combat/
+  // Recovery/Encounter continuam sem saber que World Tiers existem) —
+  // só dungeon/dungeonController.ts (o único ponto de resolução) e
+  // expeditions/expeditionProgress.ts (pro HUD mostrar o Tier atual)
+  // leem este campo. `undefined` = WT1/comportamento neutro.
+  worldTier?: string;
 }
 
 // Engine Observability & Event Derivation Phase I — fato bruto de UM

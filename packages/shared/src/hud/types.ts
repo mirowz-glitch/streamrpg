@@ -261,6 +261,20 @@ export interface HudExpeditionInfo {
   // Requisito 8 — `null` quando esta Expedição não é uma Dungeon (sem
   // Chefe Final designado).
   finalBoss: HudFinalBossInfo | null;
+  // Vertical Slice — Dungeon Modifiers, Variants & Replayability Phase I
+  // — Fase 4: "nome dos modificadores ativos... bônus total de
+  // recompensa." `[]`/0 pra uma Expedição sem modificadores (mesmo
+  // tratamento de sempre — ExpeditionCard simplesmente não renderiza a
+  // seção quando vazia).
+  activeModifiers: { id: string; name: string }[];
+  // Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 4:
+  // "WT3 / +32%." `rewardBonusPercent` já reflete o combinado (World
+  // Tier x Dungeon Modifiers, ver expeditionProgress.ts) — nenhuma
+  // mudança de cálculo aqui, só um campo novo (`worldTier`) pro rótulo.
+  // `null` = WT1/nenhuma escolha (mesmo tratamento de sempre — a seção
+  // já existente só aparece "quando aplicável").
+  rewardBonusPercent: number;
+  worldTier: string | null;
 }
 
 // Factions, Reputation & World Consequences Phase I — requisito 5:

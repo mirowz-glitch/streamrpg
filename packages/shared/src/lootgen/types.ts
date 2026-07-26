@@ -26,17 +26,27 @@ export interface LootCurrencyDrop {
 }
 
 // Loot Table — uma por entidade (Wolf/Goblin/Skeleton/Bandit/Chest/
-// Boss). Requisito 1: id/peso/nível mínimo/nível máximo/chance de
-// drop/baseItems permitidos/multiplicador de raridade/multiplicador de
+// Boss). Requisito 1: id/peso/variação de nível/chance de drop/
+// baseItems permitidos/multiplicador de raridade/multiplicador de
 // quantidade/seed offset — tudo em dados, nada hardcoded no gerador
 // (lootgen/generator.ts nunca lê o `id` pra decidir comportamento).
 //
-// - `minLevel`/`maxLevel`: limites do Item Level calculado (requisito
-//   2) — o Item Level nunca sai desse intervalo, mesmo com a variação
-//   aleatória.
 // - `itemLevelVariance`: tamanho da variação aleatória em torno do
-//   nível do monstro (ex.: monstro nível 20 + variance 2 = Item Level
-//   entre 18 e 22, sempre dentro de [minLevel, maxLevel]).
+//   Item Level de referência (Region-Anchored Item Level, regions.ts —
+//   ver `itemLevelOffset` abaixo pra exceções).
+// - `itemLevelOffset` (Region-Anchored Item Level — Loot Table
+//   Normalization Phase I): opcional, default 0. Até esta Sprint,
+//   TODA Loot Table ligada a um monstro tinha seu próprio `minLevel`/
+//   `maxLevel` — verificado nesta Sprint: em 100% dos casos (21 de 21
+//   tabelas ligadas a um Enemy Template), esses valores eram uma cópia
+//   EXATA de `EnemyTemplate.levelRange` — uma segunda fonte da verdade
+//   pra progressão que já vinha da região (getRegionItemLevelAnchor(),
+//   regions.ts), nunca um dado genuinamente próprio da tabela. Removido:
+//   o Item Level agora vem inteiramente do anchor de região (mesmo pra
+//   todo monstro comum), sem clamp próprio nenhum. `itemLevelOffset`
+//   existe só pra uma FUTURA exceção genuína (ex.: um Chefe cujo loot
+//   deva rolar acima/abaixo do anchor da própria região por decisão de
+//   design) — nenhuma tabela usa isso hoje (todas em 0/ausente).
 // - `dropChance`: requisito 4, "chance de dropar item" — completamente
 //   separada da raridade/base item/mods (cada uma tem seu próprio sorteio
 //   independente em lootgen/generator.ts).
@@ -59,9 +69,8 @@ export interface LootCurrencyDrop {
 export interface LootTable {
   id: string;
   weight: number;
-  minLevel: number;
-  maxLevel: number;
   itemLevelVariance: number;
+  itemLevelOffset?: number;
   dropChance: number;
   allowedBaseItems: string[];
   baseItemWeights: Partial<Record<string, number>>;

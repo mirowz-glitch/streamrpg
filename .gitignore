@@ -1,1 +1,12 @@
-node_modules/ 
+node_modules/
+
+# Build artifacts (esbuild output uses content-hashed filenames that churn
+# every build — never stable enough to be worth versioning).
+dist/
+*.tsbuildinfo
+
+# Local runtime/dev databases — mutable state, not source.
+data/*.db
+data/*.db-shm
+data/*.db-wal
+

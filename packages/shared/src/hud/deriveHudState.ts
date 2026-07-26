@@ -232,6 +232,9 @@ function toExpeditionInfo(session: AdventureSession, timeline: AdventureTimeline
     miniBossesDefeated: snapshot.miniBossesDefeated,
     worldEventsFound: snapshot.worldEventsFound,
     finalBoss: toFinalBossInfo(session, timeline),
+    activeModifiers: snapshot.activeModifiers.map((modifier) => ({ id: modifier.id, name: modifier.name })),
+    rewardBonusPercent: Math.round((snapshot.rewardMultiplier - 1) * 100),
+    worldTier: snapshot.worldTier,
   };
 }
 

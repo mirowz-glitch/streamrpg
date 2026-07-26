@@ -35,36 +35,40 @@ import type { BiomeDefinition } from "./types.js";
 // vive) — um gate real bem mais alto que o necessário no meio do
 // caminho pro Boss, inflando a maratona de encontros necessária.
 //
-// Enemy System está protegido nesta Sprint (não é possível baixar o
-// levelRange dos Enemy Templates de colinas-aridas — bandit/hyena/
-// bandit_captain continuam calibrados pra nível 15+, ver enemy/
-// templates.ts) — a correção tecnicamente correta e de menor raio de
-// impacto é reordenar a SEQUÊNCIA de desbloqueio (puro dado, `order`),
-// não os thresholds em si: pântano-podre (gate nível 1, trivial) e
-// minas-abandonadas (gate nível 12) passam a vir ANTES de colinas-
-// aridas (gate nível 15), e ruínas-esquecidas (gate nível 10, onde o
-// Chefe Final mora) fica alcançável assim que minas-abandonadas
-// desbloqueia — sem nunca exigir atravessar o gate de nível 15 a
-// caminho do Boss.
+// Vertical Slice — Player Journey Recovery & World Progression Phase I
+// — Fase 1/2 (Game Design Audit Phase I, achado #1): a auditoria mediu
+// 0/300 jornadas naturais alcançando qualquer região além de
+// ruinas-esquecidas (order 4) — causa raiz: fortaleza-sombria (então
+// order 5) exigia nível 60 (encounterTables.ts), impossível com
+// MAX_LEVEL=30, e como getNextBiome() só oferece SEMPRE o `order + 1`
+// imediato, isso bloqueava em cascata as 4 regiões seguintes mesmo com
+// gates individualmente alcançáveis (15/20/24/28).
 //
-// Colinas-aridas foi originalmente calibrada (Enemy Templates: bandit/
-// hyena/bandit_captain, frozen nesta Sprint) assumindo um encontro
-// LOGO no início da jornada (nível ~15) — ao virar conteúdo "tardio"
-// (1ª tentativa: order 5, depois de Ruínas Esquecidas), o personagem
-// chega lá num nível bem mais alto (~20-30+), e o `resolveGroupLevel`
-// escala os inimigos pra acompanhar — só que a curva de força desses
-// 3 Enemy Templates nesse patamar acabou se mostrando desproporcional
-// (medido empiricamente: 100% de taxa de morte em Colinas Áridas,
-// mesmo já reduzindo packSizeOptions/maximumGroup pra 1 — não era
-// "gauntlet" de múltiplos inimigos, é desproporção real de poder num
-// nível que a região nunca foi calibrada pra receber). Como o Enemy
-// System está fora de escopo, a correção segura é mover colinas-aridas
-// pro FIM da sequência (order 6, depois de Fortaleza Sombria, cujo
-// gate de nível 60 já raramente é alcançado nas simulações) — na
-// prática ela deixa de ser alcançada automaticamente (mesmo
-// comportamento seguro que Fortaleza Sombria já tinha), preservando o
-// equilíbrio geral em vez de introduzir uma região letal no caminho da
-// maioria das jornadas.
+// Correção de 2 partes:
+// 1) fortaleza-sombria: levelRange.min baixado de 60 pra 30 (=MAX_LEVEL,
+//    ver encounterTables.ts) — permanece a região mais dura do jogo
+//    (só alcançável no nível máximo), mas deixa de ser matematicamente
+//    impossível.
+// 2) Reordenada pro FIM da sequência (order 9), depois de colinas-
+//    aridas/picos-congelados/litoral-quebrado/deserto-de-vidro (gates
+//    15/20/24/28, todos abaixo de 30) — preserva sua identidade de
+//    capstone final, agora genuinamente alcançável.
+//
+// Colinas-aridas volta pra PERTO do início (order 3, logo depois de
+// pântano-podre) em vez do fim da sequência: o histórico documentado
+// abaixo (Player Journey, Retention & First Hour Experience Phase I)
+// mediu 100% de taxa de morte quando ela era alcançada TARDE (depois de
+// Ruínas Esquecidas, personagem já nível ~20-30+, Enemy Templates
+// bandit/hyena/bandit_captain desproporcionais nesse patamar) — mas o
+// MESMO comentário explica que ela "foi originalmente calibrada
+// assumindo um encontro LOGO no início da jornada (nível ~15)", que é
+// exatamente onde ela volta a cair agora (gate 15, logo após
+// pântano-podre gate 5) — evita reintroduzir a falha documentada
+// (chegada tardia/overlevada) sem depender de nenhuma mudança em Enemy
+// Templates (protegidos nesta Sprint). minas-abandonadas/ruinas-
+// esquecidas continuam alcançáveis normalmente logo em seguida (seus
+// próprios gates, 12/10, já ficam satisfeitos de sobra ao se chegar aos
+// 15 de colinas-aridas).
 export const BIOME_PROGRESSION: BiomeDefinition[] = [
   {
     regionId: "bosque-sussurrante",
@@ -83,8 +87,16 @@ export const BIOME_PROGRESSION: BiomeDefinition[] = [
     visualTheme: { color: "#5c7a5c", icon: "🌫️" },
   },
   {
-    regionId: "minas-abandonadas",
+    regionId: "colinas-aridas",
     order: 3,
+    climate: "Sol forte, pouca sombra, noites frias",
+    description: "Colinas ocre, vegetação rasteira e seca, ruínas de fazendas abandonadas espalhadas.",
+    difficultyLabel: "Baixa-Média",
+    visualTheme: { color: "#c9a227", icon: "🏜️" },
+  },
+  {
+    regionId: "minas-abandonadas",
+    order: 4,
     climate: "Subterrâneo — sem clima externo, temperatura em queda constante",
     description: "Túneis escavados, trilhos de vagonete quebrados, tochas apagadas há muito tempo.",
     difficultyLabel: "Média",
@@ -92,27 +104,66 @@ export const BIOME_PROGRESSION: BiomeDefinition[] = [
   },
   {
     regionId: "ruinas-esquecidas",
-    order: 4,
+    order: 5,
     climate: "Ameno, protegido pelas próprias ruínas",
     description: "Colunas quebradas, estátuas cobertas de vinha, salas subterrâneas com inscrições antigas.",
     difficultyLabel: "Alta",
     visualTheme: { color: "#d4af37", icon: "🏛️" },
   },
+  // Vertical Slice — Multi-Dungeon Content & Data Expansion Phase I —
+  // Fase 1: 3 novos biomas, um por Dungeon nova (ver dungeon/
+  // dungeonDefinitions.ts + expeditions/expeditionDefinitions.ts).
+  // `regionId` reaproveita 3 ids REAIS já documentados em regions.ts
+  // (REGION_GRAPH, desde a Sprint de Expedições) mas nunca antes usados
+  // por este módulo — "planicie-dourada"/"litoral-quebrado"/
+  // "picos-congelados"/"deserto-de-vidro" já existiam como nós do grafo
+  // de viagem sem Encounter Table/BiomeDefinition próprios (ver nota no
+  // topo de encounterTables.ts) — nenhuma região nova inventada, mesmo
+  // princípio de "Cavernas Antigas -> Minas Abandonadas" já usado nesta
+  // Sprint original. `order` 6/7/8 (Player Journey Recovery Phase I:
+  // renumerado de 7/8/9 pra abrir espaço pra colinas-aridas voltar pro
+  // início da sequência, order 3) continuam a sequência de desbloqueio
+  // automático (mesmo mecanismo de sempre, checkRegionUnlock) — como o
+  // nível MÍNIMO de cada uma fica <= MAX_LEVEL (30), elas ficam
+  // genuinamente alcançáveis assim que ruinas-esquecidas (order 5)
+  // desbloquear.
+  {
+    regionId: "picos-congelados",
+    order: 6,
+    climate: "Nevasca constante, ventos cortantes, frio que nunca cede",
+    description: "Picos nevados acima das nuvens, geleiras rachadas, o silêncio quebrado só pelo vento e o estalar do gelo.",
+    difficultyLabel: "Muito Alta",
+    visualTheme: { color: "#a8d8ff", icon: "❄️" },
+  },
+  {
+    regionId: "litoral-quebrado",
+    order: 7,
+    climate: "Névoa salgada constante, marés violentas e imprevisíveis",
+    description: "Destroços de navios encalhados na areia, uma catedral afundada meio submersa na maré, sinos que ainda tocam sozinhos.",
+    difficultyLabel: "Muito Alta",
+    visualTheme: { color: "#4a5a6a", icon: "⛪" },
+  },
+  {
+    regionId: "deserto-de-vidro",
+    order: 8,
+    climate: "Calor abrasador, areia que corta como vidro moído",
+    description: "Dunas vitrificadas por um fogo antigo, cristais afiados brotando da areia derretida, o covil de algo muito maior no centro.",
+    difficultyLabel: "Lendária",
+    visualTheme: { color: "#ff6b35", icon: "🐉" },
+  },
+  // Player Journey Recovery & World Progression Phase I — Fase 1/2:
+  // reordenada do order 5 pro FIM da sequência (order 9) — ver nota
+  // histórica completa no topo deste arquivo. Continua a região mais
+  // dura do jogo (gate baixado de 60 pra 30 = MAX_LEVEL em
+  // encounterTables.ts), agora genuinamente alcançável só depois de
+  // atravessar TODAS as outras 8 regiões.
   {
     regionId: "fortaleza-sombria",
-    order: 5,
+    order: 9,
     climate: "Céu permanentemente nublado, independente das regiões vizinhas",
     description: "Torres negras, pontes suspensas sobre abismos, portões de ferro maiores que qualquer construção vista antes.",
     difficultyLabel: "Muito Alta",
     visualTheme: { color: "#8b1e3f", icon: "🏰" },
-  },
-  {
-    regionId: "colinas-aridas",
-    order: 6,
-    climate: "Sol forte, pouca sombra, noites frias",
-    description: "Colinas ocre, vegetação rasteira e seca, ruínas de fazendas abandonadas espalhadas.",
-    difficultyLabel: "Baixa-Média",
-    visualTheme: { color: "#c9a227", icon: "🏜️" },
   },
 ];
 

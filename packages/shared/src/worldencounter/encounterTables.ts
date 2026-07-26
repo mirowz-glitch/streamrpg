@@ -183,6 +183,19 @@ export const ENCOUNTER_TABLES: EncounterTable[] = [
     // valor nominal (a supressão real permanece, só atenuada), mas uma
     // melhora grande e mensurável, o critério de aprovação desta
     // Sprint. Ver "Recomendações" na entrega final.
+    // Player Journey Recovery & World Progression Phase I — Fase 3:
+    // testado subir de 0.35 pra 0.5 (mesma técnica de compensar a
+    // supressão de RNG já documentada acima), combinado com vários
+    // valores de expectedEncounters (expeditionDefinitions.ts) — não
+    // melhorou a taxa de conclusão de forma consistente (calibração:
+    // 31-38% em ambos os patamares testados), então revertido pra 0.35
+    // (já validado por Sprints anteriores) pra manter o menor raio de
+    // alteração possível. O gargalo dominante da conclusão desta
+    // Dungeon hoje não é mais a chance do Guardião — é o personagem
+    // frequentemente avançar pra Picos Congelados (letal, ver
+    // "Problemas Remanescentes" na entrega) antes ou logo depois de
+    // encontrá-lo, fora do escopo desta Sprint (Fase 4 cobre só as 3
+    // Dungeons novas, não o balanceamento de região fora de Dungeon).
     variantChances: { elite: 0.04, miniBoss: 0.35 },
     miniBossTemplateId: "forgotten-guardian",
     entries: [
@@ -307,18 +320,32 @@ export const ENCOUNTER_TABLES: EncounterTable[] = [
     // vai de 20-80 no Enemy Template) — demonstra os dois clamps
     // sendo genuinamente diferentes (requisito 3).
     //
-    // First Dungeon, Final Boss & Complete Game Loop Phase I — nota:
-    // investigado (e revertido) baixar este limiar pra "encurtar" a
-    // jornada até o Chefe Final — descartado: o EnemyTemplate "boss"
-    // (baseStats.strength 40, growth.strength 4) foi claramente
-    // calibrado pra um personagem MUITO acima do nível 20 (medido
-    // empiricamente: um personagem recém-chegado nesta região morre
-    // quase sempre). A solução correta (ver expeditions/
-    // expeditionDefinitions.ts: "queda-da-fortaleza-sombria") foi
-    // dimensionar `expectedEncounters` da Dungeon pra concluir LOGO
-    // DEPOIS de derrotar o Guardião Esquecido em Ruínas Esquecidas —
-    // nunca exigindo que a Dungeon force o personagem a entrar aqui.
-    levelRange: { min: 60, max: 80 },
+    // First Dungeon, Final Boss & Complete Game Loop Phase I — nota
+    // histórica: investigado (e revertido) baixar este limiar pra
+    // "encurtar" a jornada até o Chefe Final — descartado na época
+    // porque o EnemyTemplate "boss" (baseStats.strength 40,
+    // growth.strength 4) foi claramente calibrado pra um personagem
+    // MUITO acima do nível 20. A solução daquela Sprint (ver
+    // expeditions/expeditionDefinitions.ts: "queda-da-fortaleza-
+    // sombria") foi dimensionar `expectedEncounters` da Dungeon pra
+    // concluir contra o Guardião Esquecido (Mini-Boss de Ruínas
+    // Esquecidas) SEM nunca exigir que a Dungeon force o personagem a
+    // entrar aqui — essa parte continua válida e intocada.
+    //
+    // Player Journey Recovery & World Progression Phase I — Fase 1
+    // (Game Design Audit Phase I, achado #1): 60 é MATEMATICAMENTE
+    // impossível com MAX_LEVEL=30 (xp.ts) — não "raro", impossível — e
+    // bloqueava em cascata as 4 regiões seguintes na sequência
+    // (getNextBiome() só oferece o `order + 1` imediato, ver
+    // biomes.ts). Baixado pra 30 (=MAX_LEVEL): esta região continua
+    // sendo a mais dura do jogo (só o personagem no nível máximo
+    // desbloqueia, reordenada pro FIM da sequência — biomes.ts), mas
+    // deixa de ser um gate fechado por definição. O EnemyTemplate
+    // "boss" em si NÃO foi alterado (fora do escopo desta Sprint,
+    // "boss" não está entre as Dungeons investigadas na Fase 4) — a
+    // região continua genuinamente letal pra quem a alcança, o que é
+    // a identidade pretendida de um capstone final, não um bug.
+    levelRange: { min: 30, max: 80 },
     packSizeOptions: [{ slots: 1, weight: 100 }],
     // Requisito 3 — "configurável por bioma": Elite fica em 0 aqui de
     // propósito — a única entry desta região já é o Boss final
@@ -338,6 +365,98 @@ export const ENCOUNTER_TABLES: EncounterTable[] = [
         minimumGroup: 1,
         maximumGroup: 1,
         futureFlags: { bossPackEligible: true },
+      },
+    ],
+  },
+  // Vertical Slice — Multi-Dungeon Content & Data Expansion Phase I —
+  // Fase 1/2: 3 novas regiões, uma por Dungeon nova (enemy/templates.ts
+  // + worldencounter/biomes.ts). `variantChances.miniBoss` reaproveita
+  // LITERALMENTE o mesmo valor já calibrado/validado empiricamente pra
+  // ruinas-esquecidas (0.14, ver comentário histórico acima) — nenhum
+  // número novo inventado, mesma taxa já testada de "Mini-Boss confiável
+  // ao longo de uma Dungeon inteira". `packSizeOptions` sempre 1 slot
+  // (mesma técnica anti-"gauntlet" já usada em todo bioma de nível
+  // médio/alto) e `maximumGroup` baixo (1-2), mesmo princípio de
+  // segurança de colinas-aridas/ruinas-esquecidas/minas-abandonadas.
+  {
+    regionId: "picos-congelados",
+    levelRange: { min: 20, max: 35 },
+    packSizeOptions: [{ slots: 1, weight: 100 }],
+    // Player Journey Recovery & World Progression Phase I — Fase 4:
+    // 0.14 só rendia 9/100 avistamentos do Chefe — subido pra 0.35.
+    //
+    // Combat Difficulty Calibration — Midgame & Lategame Phase I —
+    // Fase 2 (achado): 0.35 miniBoss + 0.04 elite = 39% de TODOS os
+    // encontros da região viravam luta contra o inimigo mais forte
+    // dela — bem acima do 5% das regiões que funcionam bem (bosque/
+    // pântano/colinas-aridas, todas em elite 0.04 + miniBoss 0.01).
+    // Combinado com o Chefe ainda relativamente forte, isso explica boa
+    // parte do HP médio catastroficamente baixo medido na região (ver
+    // relatório desta Sprint). Reduzido pra 0.25 — ainda bem acima do
+    // padrão histórico (0.01) pra compensar a supressão de RNG já
+    // documentada, mas sem transformar mais de 1 em cada 3 encontros no
+    // pior confronto possível.
+    variantChances: { elite: 0.04, miniBoss: 0.25 },
+    miniBossTemplateId: "frost-king",
+    entries: [
+      {
+        enemyTemplateId: "frost-wolf",
+        weight: 60,
+        minimumLevel: 20,
+        maximumLevel: 35,
+        minimumGroup: 1,
+        maximumGroup: 2,
+        futureFlags: {},
+      },
+      {
+        enemyTemplateId: "ice-golem",
+        weight: 40,
+        minimumLevel: 20,
+        maximumLevel: 35,
+        minimumGroup: 1,
+        maximumGroup: 1,
+        futureFlags: {},
+      },
+    ],
+  },
+  {
+    regionId: "litoral-quebrado",
+    levelRange: { min: 24, max: 38 },
+    packSizeOptions: [{ slots: 1, weight: 100 }],
+    // Combat Difficulty Calibration — Midgame & Lategame Phase I —
+    // Fase 2/3: mesmo achado de picos-congelados acima (0.35 -> 0.25).
+    variantChances: { elite: 0.04, miniBoss: 0.25 },
+    miniBossTemplateId: "corrupted-bishop",
+    entries: [
+      {
+        enemyTemplateId: "corrupted-acolyte",
+        weight: 100,
+        minimumLevel: 24,
+        maximumLevel: 38,
+        minimumGroup: 1,
+        maximumGroup: 2,
+        futureFlags: {},
+      },
+    ],
+  },
+  {
+    regionId: "deserto-de-vidro",
+    levelRange: { min: 28, max: 42 },
+    packSizeOptions: [{ slots: 1, weight: 100 }],
+    // Combat Difficulty Calibration — Midgame & Lategame Phase I —
+    // Fase 2/3: mesmo achado de picos-congelados/litoral-quebrado acima
+    // (0.35 -> 0.25).
+    variantChances: { elite: 0.04, miniBoss: 0.25 },
+    miniBossTemplateId: "ancient-dragon",
+    entries: [
+      {
+        enemyTemplateId: "fire-cultist",
+        weight: 100,
+        minimumLevel: 28,
+        maximumLevel: 42,
+        minimumGroup: 1,
+        maximumGroup: 1,
+        futureFlags: {},
       },
     ],
   },

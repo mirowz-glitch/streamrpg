@@ -17,8 +17,18 @@
 // nenhuma fase — ele só passa a ser TAMBÉM reconhecido como "Chefe
 // Final" quando derrotado dentro da Expedição "queda-da-fortaleza-
 // sombria" especificamente (ver dungeonProgress.ts/dungeonController.ts).
+// Vertical Slice — Multi-Dungeon Content & Data Expansion Phase I —
+// Fase 1/2: 3 novas entradas, uma por Dungeon nova (expeditions/
+// expeditionDefinitions.ts + enemy/templates.ts) — a ÚNICA coisa que
+// "cria" uma nova Dungeon aos olhos deste módulo é adicionar um par
+// (expeditionId, bossTemplateId) aqui; getFinalBossTemplateId()/
+// isDungeonExpedition() e todo o resto de dungeonController.ts
+// continuam 100% genéricos, sem nenhuma mudança de código.
 export const DUNGEON_FINAL_BOSS_BY_EXPEDITION: Record<string, string> = {
   "queda-da-fortaleza-sombria": "forgotten-guardian",
+  "fortaleza-congelada": "frost-king",
+  "catedral-esquecida": "corrupted-bishop",
+  "covil-do-dragao": "ancient-dragon",
 };
 
 export function getFinalBossTemplateId(expeditionId: string): string | undefined {

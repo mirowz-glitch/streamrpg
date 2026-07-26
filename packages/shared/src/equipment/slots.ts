@@ -8,16 +8,20 @@ import type { EquipmentSlotDefinition } from "./types.js";
 // Adicionar um novo slot (ex.: "Cloak"/"Ring 3") = inserir um novo
 // registro aqui, com o `acceptsItemSlot` correto. Nenhuma outra parte
 // desta camada precisa mudar.
+// Vertical Slice — Commercial Readiness & First Playable Experience
+// Phase I — Fase 2/6: `label` é puramente presentacional (nenhuma
+// lógica de equipar/comparar lê o texto, só `id`/`acceptsItemSlot`) —
+// traduzido pra português, consistente com o resto da interface.
 export const EQUIPMENT_SLOT_DEFINITIONS: EquipmentSlotDefinition[] = [
-  { id: "weapon", label: "Weapon", acceptsItemSlot: "weapon" },
-  { id: "helmet", label: "Helmet", acceptsItemSlot: "helmet" },
-  { id: "chest", label: "Chest", acceptsItemSlot: "chest" },
-  { id: "gloves", label: "Gloves", acceptsItemSlot: "gloves" },
-  { id: "boots", label: "Boots", acceptsItemSlot: "boots" },
-  { id: "ring1", label: "Ring 1", acceptsItemSlot: "ring" },
-  { id: "ring2", label: "Ring 2", acceptsItemSlot: "ring" },
-  { id: "amulet", label: "Amulet", acceptsItemSlot: "amulet" },
-  { id: "belt", label: "Belt", acceptsItemSlot: "belt" },
+  { id: "weapon", label: "Arma", acceptsItemSlot: "weapon" },
+  { id: "helmet", label: "Elmo", acceptsItemSlot: "helmet" },
+  { id: "chest", label: "Peitoral", acceptsItemSlot: "chest" },
+  { id: "gloves", label: "Luvas", acceptsItemSlot: "gloves" },
+  { id: "boots", label: "Botas", acceptsItemSlot: "boots" },
+  { id: "ring1", label: "Anel 1", acceptsItemSlot: "ring" },
+  { id: "ring2", label: "Anel 2", acceptsItemSlot: "ring" },
+  { id: "amulet", label: "Amuleto", acceptsItemSlot: "amulet" },
+  { id: "belt", label: "Cinto", acceptsItemSlot: "belt" },
 ];
 
 export function getEquipmentSlotDefinition(id: string): EquipmentSlotDefinition | undefined {

@@ -8,11 +8,31 @@ import { generateLootForKilledEnemy } from "../enemy/lootIntegration.js";
 import { resolveCombat } from "../combat/combatEngine.js";
 import { toAdventureCombatant } from "./session.js";
 import { tryAutoEquip } from "./autoEquip.js";
+import type { CombinedRuntimeConfig } from "../worldencounter/types.js";
 import type { AdventureSession, AdventureTickResult, LootDropRecord } from "./types.js";
 
 export interface AdvanceAdventureOptions {
   autoEquip?: boolean;
   currentTime?: number;
+  // Vertical Slice — Dungeon Modifier Runtime Integration Phase I —
+  // Fase 1/2: o RuntimeConfig já resolvido (nunca uma lista de ids de
+  // modificador) — mesmo princípio de `autoEquip`/`currentTime`: um
+  // campo opcional que atravessa TODA a cadeia de wrappers
+  // (dungeonController -> factionController -> expeditionController ->
+  // objectiveLayer -> recoveryLayer -> presentationLayer -> aqui) sem
+  // que nenhum deles precise saber o que é — só quem resolve
+  // (dungeon/dungeonController.ts) e quem consome de verdade
+  // (generateEncounter()/spawnWorldEncounter() logo abaixo,
+  // recovery/recoveryLayer.ts) leem este campo. `undefined` (fora de
+  // uma Dungeon, ou sessão/Simulador que nunca passa isso) = mesmo
+  // comportamento de sempre, sem nenhum "modo especial".
+  //
+  // Vertical Slice — World Tiers & Endgame Scaling Phase I — Fase 2:
+  // agora sempre um `CombinedRuntimeConfig` (World Tier x Dungeon
+  // Modifiers já combinados por dungeon/dungeonController.ts) — este
+  // arquivo continua sem saber que World Tiers existem, só ganhou 2
+  // campos novos no MESMO objeto que já lia.
+  runtimeConfig?: CombinedRuntimeConfig;
 }
 
 // Requisito 2 — Adventure Tick: a ÚNICA função que orquestra um ciclo
@@ -56,8 +76,8 @@ export function advanceAdventure(session: AdventureSession, options: AdvanceAdve
   if (!session.currentEncounter) {
     const playerLevel = session.character.characterBuild.level;
     const recipeSeed = randomInt(rng, 0, 2_147_483_647);
-    const recipe = generateEncounter(session.currentRegion, playerLevel, recipeSeed);
-    session.currentEncounter = spawnWorldEncounter(recipe);
+    const recipe = generateEncounter(session.currentRegion, playerLevel, recipeSeed, options.runtimeConfig);
+    session.currentEncounter = spawnWorldEncounter(recipe, options.runtimeConfig);
     encounterGenerated = true;
   }
 
@@ -128,7 +148,7 @@ export function advanceAdventure(session: AdventureSession, options: AdvanceAdve
       session.statistics.enemiesKilled++;
 
       const lootSeed = randomInt(rng, 0, 2_147_483_647);
-      const loot = generateLootForKilledEnemy(killResult, killResult.instance, lootSeed);
+      const loot = generateLootForKilledEnemy(killResult, killResult.instance, lootSeed, session.currentRegion);
 
       for (const item of loot.generatedItems) {
         const instanceId = `${session.sessionId}-item-${randomInt(rng, 0, 2_147_483_647)}`;

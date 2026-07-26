@@ -60,11 +60,14 @@ describe("HUD State Phase I", () => {
       assert.equal(hud.region.name, "Fortaleza Sombria");
     });
 
+    // Player Journey Recovery & World Progression Phase I — Fase 1:
+    // levelRange.min de fortaleza-sombria baixado de 60 pra 30
+    // (=MAX_LEVEL) — ver encounterTables.ts.
     it("nível recomendado vem da Encounter Table real da região", () => {
       const session = freshSession("fortaleza-sombria", 1);
       const timeline = createAdventureTimeline(session.sessionId);
       const hud = deriveHudState(session, timeline);
-      assert.deepEqual(hud.region.recommendedLevelRange, { min: 60, max: 80 });
+      assert.deepEqual(hud.region.recommendedLevelRange, { min: 30, max: 80 });
     });
 
     it("região sem Encounter Table produz recommendedLevelRange/difficulty null, nunca um valor inventado", () => {

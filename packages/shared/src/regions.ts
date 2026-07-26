@@ -127,6 +127,64 @@ export function allRegionIds(): string[] {
   return Object.keys(REGION_GRAPH);
 }
 
+// Region-Anchored Item Level — Implementation Validation Phase I.
+//
+// Item Level (a única entrada que generateItem() usa pra decidir Tier
+// Eligibility — itemgen/generator.ts) deixava de crescer a partir de
+// ~metade do jogo porque vinha do nível do PERSONAGEM (`MAX_LEVEL=30`,
+// xp.ts — um teto de Combat Engine, sem nenhuma relação com a escala
+// de 60-65 do banco de afixos). A investigação da Sprint anterior
+// (reports/item-level-progression-model-phase-1.md) mediu que um
+// modelo orientado por REGIÃO alcança 100% dos tiers de afixo do jogo
+// na última região, contra 45% do modelo por nível de personagem — e
+// que só ajustar o clamp de região (sem trocar a variável) não muda
+// nada (o clamp já existe em resolveGroupLevel(), nunca é o limite
+// ativo). Esta função é o "Modelo C — Region Floor" daquela
+// investigação, agora implementado.
+//
+// Ordem = ordem REAL de progressão medida empiricamente
+// (equipment-progression-audit-phase-1.md, fase4b_powerCurveByRegionEntry),
+// não a distância no grafo de viagem (REGION_GRAPH acima) nem o
+// `levelRange` bruto de worldencounter/encounterTables.ts (que tem uma
+// inconsistência já documentada: colinas-aridas, região de 1º anel,
+// declara max=45 — maior que minas-abandonadas, de 2º anel, que
+// declara max=25). Usar a ordem empírica evita herdar essa
+// inconsistência sem precisar reautorar nenhuma Encounter Table.
+const REGION_PROGRESSION_ORDER: readonly string[] = [
+  "bosque-sussurrante",
+  "pantano-podre",
+  "colinas-aridas",
+  "minas-abandonadas",
+  "picos-congelados",
+  "litoral-quebrado",
+  "deserto-de-vidro",
+  "ruinas-esquecidas",
+  "fortaleza-sombria",
+];
+
+// Maior `minItemLevel` já cadastrado em qualquer tier de qualquer mod
+// do Item Generator (itemgen/prefixes.ts/suffixes.ts — 14 mods, 50
+// tiers; valor mais alto = 65). Número fixo e documentado aqui, não
+// importado de itemgen/ (mantém regions.ts sem depender do Item
+// Generator, mesmo princípio de camadas separadas já documentado em
+// docs/architecture/domain-vocabulary.md) — precisa ser revisado
+// manualmente se um mod futuro exigir um Item Level mais alto.
+const HIGHEST_AFFIX_TIER_THRESHOLD = 65;
+
+// Puramente determinística (sem RNG) — a variância por monstro/Loot
+// Table (`rollItemLevel()`, lootgen/generator.ts, intocado) continua
+// aplicando a própria dispersão em cima do valor devolvido aqui, exatamente
+// como já fazia em cima do antigo `monsterLevel`. Região sem Encounter
+// Table (hub seguro, sem combate) nunca chega a gerar loot de verdade —
+// o fallback (1) existe só pra a função nunca lançar erro.
+export function getRegionItemLevelAnchor(regionId: string): number {
+  const index = REGION_PROGRESSION_ORDER.indexOf(regionId);
+  if (index === -1) return 1;
+  const maxIndex = REGION_PROGRESSION_ORDER.length - 1;
+  const progress = maxIndex === 0 ? 1 : index / maxIndex;
+  return Math.round(1 + progress * (HIGHEST_AFFIX_TIER_THRESHOLD - 1));
+}
+
 /**
  * Distância em número de estradas (BFS) entre duas regiões do grafo já
  * existente — usada para que o tempo de viagem de uma expedição escale

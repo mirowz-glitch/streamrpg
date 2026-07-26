@@ -1,6 +1,11 @@
+import { useEffect } from "react";
+import { useBlocker } from "react-router-dom";
 import { useAdventureSession } from "../hooks/useAdventureSession";
 import { useAnimationController } from "../hooks/useAnimationController";
 import { AppNav } from "../components/ui/AppNav";
+import { SessionSafetyBanner } from "../components/hud/SessionSafetyBanner";
+import { LeaveSessionModal } from "../components/hud/LeaveSessionModal";
+import { LootRejectedFeedback } from "../components/hud/LootRejectedFeedback";
 import { HealthBar } from "../components/hud/HealthBar";
 import { RegionPanel } from "../components/hud/RegionPanel";
 import { EncounterPanel } from "../components/hud/EncounterPanel";
@@ -47,9 +52,37 @@ import { DungeonCompletedBanner } from "../components/hud/DungeonCompletedBanner
 // apresentado (shake/flash/fade/etc). Esta página nunca calcula
 // nenhuma animação sozinha, só conecta os dois hooks.
 export function AdventurePage() {
-  const { hudState, error, advance, restart } = useAdventureSession();
+  const { hudState, error, advance, restart, ready, isDemoSession, lootRejectedFeedback } = useAdventureSession();
   const { active, playTick, reset } = useAnimationController();
   const isDefeated = hudState.sessionStatus === "derrota";
+
+  // Player Feedback & Retention — Vertical Slice Phase I — Fase 1
+  // (Session Safety): "nunca permitir perda silenciosa de progresso".
+  // `hasProgress` é a mesma checagem simples usada em toda a Sprint
+  // (pelo menos 1 abate real) — não bloqueia a navegação de quem ainda
+  // nem começou a jogar, só de quem já tem algo real a perder.
+  const hasProgress = hudState.statistics.enemiesKilled > 0;
+  const shouldGuardSession = ready && isDemoSession && hasProgress;
+
+  // useBlocker (React Router, data router já em uso neste projeto)
+  // intercepta navegação PARA DENTRO do app (cliques nos links de
+  // AppNav) — cobre o caso real encontrado no playtest anterior
+  // (Personagem/Inventário/Cidade).
+  const blocker = useBlocker(({ nextLocation, currentLocation }) => shouldGuardSession && nextLocation.pathname !== currentLocation.pathname);
+
+  // beforeunload cobre o caso complementar que useBlocker não alcança:
+  // fechar a aba/janela ou navegar por fora do app (digitar uma nova
+  // URL). Só ativo quando há progresso real de demonstração em risco —
+  // nunca interfere com quem está numa sessão real (logada) ou ainda
+  // não jogou nada.
+  useEffect(() => {
+    if (!shouldGuardSession) return;
+    function handleBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [shouldGuardSession]);
 
   function handleAdvance() {
     const outcome = advance(true);
@@ -61,10 +94,33 @@ export function AdventurePage() {
     reset();
   }
 
+  // Vertical Slice — Persistent Player Experience Phase I — Fase 5:
+  // a Aventura passou a carregar/gravar o personagem real
+  // (useAdventureSession.ts busca GET /api/character e sincroniza cada
+  // tick de volta) — o subtítulo de "prévia" da Sprint anterior deixou
+  // de ser verdade e foi removido; um breve estado de carregamento
+  // evita mostrar nível/itens errados no instante entre montar a
+  // página e a resposta de /api/character chegar.
+  if (!ready) {
+    return (
+      <main className="page">
+        <AppNav />
+        <div className="card hud-adventure-page">
+          <div className="hud-header">
+            <h1>Aventura</h1>
+          </div>
+          <p className="hud-adventure-subtitle">Carregando seu personagem...</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="page">
       <AppNav />
+      {blocker.state === "blocked" ? <LeaveSessionModal onConfirm={() => blocker.proceed()} onCancel={() => blocker.reset()} /> : null}
       <div className="card hud-adventure-page">
+        {isDemoSession ? <SessionSafetyBanner /> : null}
         <div className="hud-header">
           <h1>Aventura</h1>
           <SessionStatusBadge status={hudState.sessionStatus} />
@@ -92,6 +148,8 @@ export function AdventurePage() {
 
         <SessionOverlay statistics={hudState.statistics} />
         <SessionHistoryPanel history={hudState.sessionHistory} />
+
+        <LootRejectedFeedback entries={lootRejectedFeedback} />
 
         <div className="hud-popups-row">
           <LootPopup active={active} />
