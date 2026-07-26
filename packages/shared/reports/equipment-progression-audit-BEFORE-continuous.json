@@ -1,0 +1,752 @@
+{
+  "totalRuns": 300,
+  "survivalRate": 0,
+  "fase2_upgradeFrequency": {
+    "totalUpgradeEvents": 1464,
+    "averageUpgradesPerRun": 4.88,
+    "averageGapSeconds": 624.6256830601093,
+    "medianGapSeconds": 176,
+    "p75GapSeconds": 440,
+    "p90GapSeconds": 2574,
+    "p99GapSeconds": 3542,
+    "maxGapSecondsObserved": 4554,
+    "averageLongestGapPerRun": 2374.1666666666665,
+    "medianLongestGapPerRun": 2574
+  },
+  "fase3_slotProgression": [
+    {
+      "slotId": "weapon",
+      "label": "Arma",
+      "totalUpgrades": 612,
+      "averageUpgradesPerRun": 2.04
+    },
+    {
+      "slotId": "helmet",
+      "label": "Elmo",
+      "totalUpgrades": 30,
+      "averageUpgradesPerRun": 0.1
+    },
+    {
+      "slotId": "chest",
+      "label": "Peitoral",
+      "totalUpgrades": 145,
+      "averageUpgradesPerRun": 0.48333333333333334
+    },
+    {
+      "slotId": "gloves",
+      "label": "Luvas",
+      "totalUpgrades": 48,
+      "averageUpgradesPerRun": 0.16
+    },
+    {
+      "slotId": "boots",
+      "label": "Botas",
+      "totalUpgrades": 247,
+      "averageUpgradesPerRun": 0.8233333333333334
+    },
+    {
+      "slotId": "ring1",
+      "label": "Anel 1",
+      "totalUpgrades": 170,
+      "averageUpgradesPerRun": 0.5666666666666667
+    },
+    {
+      "slotId": "ring2",
+      "label": "Anel 2",
+      "totalUpgrades": 30,
+      "averageUpgradesPerRun": 0.1
+    },
+    {
+      "slotId": "amulet",
+      "label": "Amuleto",
+      "totalUpgrades": 20,
+      "averageUpgradesPerRun": 0.06666666666666667
+    },
+    {
+      "slotId": "belt",
+      "label": "Cinto",
+      "totalUpgrades": 162,
+      "averageUpgradesPerRun": 0.54
+    }
+  ],
+  "fase4_powerCurveByLevel": [
+    {
+      "level": 1,
+      "averagePowerScore": 303.5706371191136,
+      "averageMaximumLife": 147.94903047091412,
+      "averageArmor": 69.5,
+      "averageEstimatedDps": 110.8018282548507,
+      "samples": 1805
+    },
+    {
+      "level": 2,
+      "averagePowerScore": 343.50946008306414,
+      "averageMaximumLife": 169.8193354868482,
+      "averageArmor": 72.25,
+      "averageEstimatedDps": 150.38868804799267,
+      "samples": 2167
+    },
+    {
+      "level": 3,
+      "averagePowerScore": 377.9303135888502,
+      "averageMaximumLife": 190.54161827332558,
+      "averageArmor": 75,
+      "averageEstimatedDps": 184.4101517615157,
+      "samples": 2583
+    },
+    {
+      "level": 4,
+      "averagePowerScore": 414.1740905716407,
+      "averageMaximumLife": 212.18671121009652,
+      "averageArmor": 77.75,
+      "averageEstimatedDps": 217.32573162583503,
+      "samples": 2694
+    },
+    {
+      "level": 5,
+      "averagePowerScore": 450.7950693374422,
+      "averageMaximumLife": 233.48228043143297,
+      "averageArmor": 80.5,
+      "averageEstimatedDps": 246.44582280431464,
+      "samples": 2596
+    },
+    {
+      "level": 6,
+      "averagePowerScore": 486.69964100518547,
+      "averageMaximumLife": 254.73135221380136,
+      "averageArmor": 83.25,
+      "averageEstimatedDps": 277.41361188671635,
+      "samples": 2507
+    },
+    {
+      "level": 7,
+      "averagePowerScore": 515.2548309178744,
+      "averageMaximumLife": 272.62882447665055,
+      "averageArmor": 86,
+      "averageEstimatedDps": 296.6435563607106,
+      "samples": 2484
+    },
+    {
+      "level": 8,
+      "averagePowerScore": 538.9192880794702,
+      "averageMaximumLife": 289.1552152317881,
+      "averageArmor": 88.75,
+      "averageEstimatedDps": 317.8703327814556,
+      "samples": 2416
+    },
+    {
+      "level": 9,
+      "averagePowerScore": 561.5613445378151,
+      "averageMaximumLife": 304.89915966386553,
+      "averageArmor": 91.5,
+      "averageEstimatedDps": 336.3640168067207,
+      "samples": 2380
+    },
+    {
+      "level": 10,
+      "averagePowerScore": 583.8949829931972,
+      "averageMaximumLife": 320.42644557823127,
+      "averageArmor": 94.25,
+      "averageEstimatedDps": 347.07391666666695,
+      "samples": 2352
+    },
+    {
+      "level": 11,
+      "averagePowerScore": 605.8234536082474,
+      "averageMaximumLife": 335.86254295532643,
+      "averageArmor": 97,
+      "averageEstimatedDps": 361.6154424398614,
+      "samples": 2328
+    },
+    {
+      "level": 12,
+      "averagePowerScore": 627.9541666666667,
+      "averageMaximumLife": 351.4008333333333,
+      "averageArmor": 99.75,
+      "averageEstimatedDps": 379.8147208333363,
+      "samples": 2400
+    },
+    {
+      "level": 13,
+      "averagePowerScore": 650.8378723404255,
+      "averageMaximumLife": 367.08978723404255,
+      "averageArmor": 102.5,
+      "averageEstimatedDps": 394.6427914893616,
+      "samples": 2350
+    },
+    {
+      "level": 14,
+      "averagePowerScore": 673.4051760712771,
+      "averageMaximumLife": 382.55515485787015,
+      "averageArmor": 105.25,
+      "averageEstimatedDps": 410.2121056427655,
+      "samples": 2357
+    },
+    {
+      "level": 15,
+      "averagePowerScore": 695.5022742040286,
+      "averageMaximumLife": 397.8862897985705,
+      "averageArmor": 108,
+      "averageEstimatedDps": 424.5301130604297,
+      "samples": 1539
+    },
+    {
+      "level": 16,
+      "averagePowerScore": 719.2906746031746,
+      "averageMaximumLife": 414.4672619047619,
+      "averageArmor": 110.75,
+      "averageEstimatedDps": 448.27281746031747,
+      "samples": 1008
+    },
+    {
+      "level": 17,
+      "averagePowerScore": 740.4041272570937,
+      "averageMaximumLife": 428.9742046431642,
+      "averageArmor": 113.5,
+      "averageEstimatedDps": 458.8694995700768,
+      "samples": 1163
+    },
+    {
+      "level": 18,
+      "averagePowerScore": 762.4022140221402,
+      "averageMaximumLife": 444.61162361623616,
+      "averageArmor": 116.25,
+      "averageEstimatedDps": 474.9168321033198,
+      "samples": 1084
+    },
+    {
+      "level": 19,
+      "averagePowerScore": 785.9729493891798,
+      "averageMaximumLife": 459.9685863874345,
+      "averageArmor": 119,
+      "averageEstimatedDps": 487.0364345549731,
+      "samples": 1146
+    },
+    {
+      "level": 20,
+      "averagePowerScore": 806.7289107289107,
+      "averageMaximumLife": 475.45986895986897,
+      "averageArmor": 121.75,
+      "averageEstimatedDps": 506.690590499591,
+      "samples": 1221
+    },
+    {
+      "level": 21,
+      "averagePowerScore": 831.5925155925156,
+      "averageMaximumLife": 490.6133056133056,
+      "averageArmor": 124.5,
+      "averageEstimatedDps": 529.8800415800403,
+      "samples": 962
+    },
+    {
+      "level": 22,
+      "averagePowerScore": 856.6924242424243,
+      "averageMaximumLife": 506.7530303030303,
+      "averageArmor": 127.25,
+      "averageEstimatedDps": 554.049909090909,
+      "samples": 660
+    },
+    {
+      "level": 23,
+      "averagePowerScore": 884.7010309278351,
+      "averageMaximumLife": 524.8118556701031,
+      "averageArmor": 130,
+      "averageEstimatedDps": 577.4622216494839,
+      "samples": 388
+    },
+    {
+      "level": 24,
+      "averagePowerScore": 912.5294117647059,
+      "averageMaximumLife": 541.920814479638,
+      "averageArmor": 132.75,
+      "averageEstimatedDps": 600.5197466063347,
+      "samples": 221
+    },
+    {
+      "level": 25,
+      "averagePowerScore": 932.9737991266376,
+      "averageMaximumLife": 556.5458515283843,
+      "averageArmor": 135.5,
+      "averageEstimatedDps": 621.1809781659395,
+      "samples": 229
+    },
+    {
+      "level": 26,
+      "averagePowerScore": 958.8591549295775,
+      "averageMaximumLife": 574.3920187793427,
+      "averageArmor": 138.25,
+      "averageEstimatedDps": 673.7082159624412,
+      "samples": 213
+    },
+    {
+      "level": 27,
+      "averagePowerScore": 982.695652173913,
+      "averageMaximumLife": 590.5217391304348,
+      "averageArmor": 141,
+      "averageEstimatedDps": 696.6624130434778,
+      "samples": 184
+    },
+    {
+      "level": 28,
+      "averagePowerScore": 1006.2660550458716,
+      "averageMaximumLife": 606.1880733944954,
+      "averageArmor": 143.75,
+      "averageEstimatedDps": 669.7425091743119,
+      "samples": 218
+    },
+    {
+      "level": 29,
+      "averagePowerScore": 1035.484126984127,
+      "averageMaximumLife": 622.936507936508,
+      "averageArmor": 146.5,
+      "averageEstimatedDps": 707.5493968253965,
+      "samples": 126
+    },
+    {
+      "level": 30,
+      "averagePowerScore": 1067.4285714285713,
+      "averageMaximumLife": 646.3571428571429,
+      "averageArmor": 149.25,
+      "averageEstimatedDps": 721.751,
+      "samples": 21
+    }
+  ],
+  "fase4b_powerCurveByRegionEntry": [
+    {
+      "region": "bosque-sussurrante",
+      "entries": 300,
+      "averagePowerScoreAtEntry": 298.38666666666666,
+      "averageLevelAtEntry": 1
+    },
+    {
+      "region": "pantano-podre",
+      "entries": 291,
+      "averagePowerScoreAtEntry": 442.6254295532646,
+      "averageLevelAtEntry": 5
+    },
+    {
+      "region": "colinas-aridas",
+      "entries": 259,
+      "averagePowerScoreAtEntry": 695.5907335907336,
+      "averageLevelAtEntry": 15
+    },
+    {
+      "region": "minas-abandonadas",
+      "entries": 249,
+      "averagePowerScoreAtEntry": 696.2409638554217,
+      "averageLevelAtEntry": 15
+    },
+    {
+      "region": "ruinas-esquecidas",
+      "entries": 242,
+      "averagePowerScoreAtEntry": 696.2727272727273,
+      "averageLevelAtEntry": 15
+    },
+    {
+      "region": "picos-congelados",
+      "entries": 235,
+      "averagePowerScoreAtEntry": 807.2851063829787,
+      "averageLevelAtEntry": 20
+    },
+    {
+      "region": "litoral-quebrado",
+      "entries": 52,
+      "averagePowerScoreAtEntry": 911.5,
+      "averageLevelAtEntry": 24
+    },
+    {
+      "region": "deserto-de-vidro",
+      "entries": 36,
+      "averagePowerScoreAtEntry": 1004.8055555555555,
+      "averageLevelAtEntry": 28
+    },
+    {
+      "region": "fortaleza-sombria",
+      "entries": 10,
+      "averagePowerScoreAtEntry": 1068.3,
+      "averageLevelAtEntry": 30
+    }
+  ],
+  "fase5_lootQualityByRegion": [
+    {
+      "region": "bosque-sussurrante",
+      "drops": 5738,
+      "averagePowerScore": 10.737539212269084,
+      "usageRate": 0.1779365632624608,
+      "rarityCounts": {
+        "magic": 1717,
+        "common": 3456,
+        "rare": 543,
+        "unique": 22
+      }
+    },
+    {
+      "region": "pantano-podre",
+      "drops": 16723,
+      "averagePowerScore": 15.270465825509778,
+      "usageRate": 0.033247623034144594,
+      "rarityCounts": {
+        "magic": 5043,
+        "rare": 2063,
+        "common": 9435,
+        "unique": 182
+      }
+    },
+    {
+      "region": "minas-abandonadas",
+      "drops": 98,
+      "averagePowerScore": 22.540816326530614,
+      "usageRate": 0,
+      "rarityCounts": {
+        "magic": 36,
+        "common": 48,
+        "rare": 14
+      }
+    },
+    {
+      "region": "ruinas-esquecidas",
+      "drops": 5872,
+      "averagePowerScore": 42.745061307901906,
+      "usageRate": 0,
+      "rarityCounts": {
+        "magic": 2323,
+        "common": 1987,
+        "unique": 365,
+        "rare": 1197
+      }
+    },
+    {
+      "region": "picos-congelados",
+      "drops": 3240,
+      "averagePowerScore": 27.017283950617283,
+      "usageRate": 0,
+      "rarityCounts": {
+        "common": 1134,
+        "magic": 1294,
+        "rare": 650,
+        "unique": 162
+      }
+    },
+    {
+      "region": "litoral-quebrado",
+      "drops": 817,
+      "averagePowerScore": 27.806609547123625,
+      "usageRate": 0,
+      "rarityCounts": {
+        "magic": 305,
+        "unique": 47,
+        "rare": 174,
+        "common": 291
+      }
+    },
+    {
+      "region": "deserto-de-vidro",
+      "drops": 258,
+      "averagePowerScore": 30.496124031007753,
+      "usageRate": 0,
+      "rarityCounts": {
+        "magic": 110,
+        "common": 85,
+        "rare": 50,
+        "unique": 13
+      }
+    },
+    {
+      "region": "colinas-aridas",
+      "drops": 216,
+      "averagePowerScore": 13.88425925925926,
+      "usageRate": 0,
+      "rarityCounts": {
+        "common": 120,
+        "magic": 67,
+        "rare": 27,
+        "unique": 2
+      }
+    },
+    {
+      "region": "fortaleza-sombria",
+      "drops": 20,
+      "averagePowerScore": 44.55,
+      "usageRate": 0,
+      "rarityCounts": {
+        "rare": 7,
+        "magic": 9,
+        "unique": 2,
+        "common": 2
+      }
+    }
+  ],
+  "fase6_deadLoot": {
+    "totalDrops": 32982,
+    "totalUsed": 1577,
+    "deadLootRate": 0.952186040870778
+  },
+  "fase7_plateaus": {
+    "totalPlateausDetected": 7,
+    "averagePlateauDuration": 320.57142857142856,
+    "longestPlateaus": [
+      {
+        "region": "colinas-aridas",
+        "level": 15,
+        "startTime": 2750,
+        "endTime": 3102,
+        "duration": 352
+      },
+      {
+        "region": "pantano-podre",
+        "level": 8,
+        "startTime": 1342,
+        "endTime": 1672,
+        "duration": 330
+      },
+      {
+        "region": "pantano-podre",
+        "level": 14,
+        "startTime": 2354,
+        "endTime": 2684,
+        "duration": 330
+      },
+      {
+        "region": "pantano-podre",
+        "level": 9,
+        "startTime": 1298,
+        "endTime": 1606,
+        "duration": 308
+      },
+      {
+        "region": "bosque-sussurrante",
+        "level": 3,
+        "startTime": 330,
+        "endTime": 638,
+        "duration": 308
+      },
+      {
+        "region": "bosque-sussurrante",
+        "level": 3,
+        "startTime": 440,
+        "endTime": 748,
+        "duration": 308
+      },
+      {
+        "region": "bosque-sussurrante",
+        "level": 4,
+        "startTime": 550,
+        "endTime": 858,
+        "duration": 308
+      }
+    ],
+    "plateausByRegion": [
+      [
+        "pantano-podre",
+        3
+      ],
+      [
+        "bosque-sussurrante",
+        3
+      ],
+      [
+        "colinas-aridas",
+        1
+      ]
+    ]
+  },
+  "fase8_endgameFunnelCorrelation": {
+    "reachRate": 0.7833333333333333,
+    "diedAtFunnelRate": 0.7787234042553192,
+    "diedCohort": {
+      "count": 183,
+      "averagePowerScoreAtEntry": 802.9617486338798,
+      "averageUpgradesBeforeEntry": 5,
+      "averageEmptySlotsAtEntry": 2.841530054644809
+    },
+    "survivedEntryCohort": {
+      "count": 52,
+      "averagePowerScoreAtEntry": 822.5,
+      "averageUpgradesBeforeEntry": 5.346153846153846,
+      "averageEmptySlotsAtEntry": 2.75
+    }
+  },
+  "fase1_sampleTimelines": [
+    {
+      "seed": 1,
+      "survived": false,
+      "diedInRegion": "deserto-de-vidro",
+      "equips": [
+        {
+          "time": 88,
+          "region": "bosque-sussurrante",
+          "level": 1,
+          "slotId": "boots",
+          "baseItemId": "boots",
+          "powerScore": 17,
+          "previousPowerScore": 4,
+          "percentIncrease": 325
+        },
+        {
+          "time": 220,
+          "region": "bosque-sussurrante",
+          "level": 2,
+          "slotId": "weapon",
+          "baseItemId": "bow",
+          "powerScore": 23,
+          "previousPowerScore": 11,
+          "percentIncrease": 109.09090909090908
+        },
+        {
+          "time": 308,
+          "region": "bosque-sussurrante",
+          "level": 3,
+          "slotId": "weapon",
+          "baseItemId": "dagger",
+          "powerScore": 61,
+          "previousPowerScore": 23,
+          "percentIncrease": 165.2173913043478
+        },
+        {
+          "time": 352,
+          "region": "bosque-sussurrante",
+          "level": 3,
+          "slotId": "boots",
+          "baseItemId": "boots",
+          "powerScore": 20,
+          "previousPowerScore": 17,
+          "percentIncrease": 17.647058823529413
+        },
+        {
+          "time": 396,
+          "region": "bosque-sussurrante",
+          "level": 3,
+          "slotId": "gloves",
+          "baseItemId": "gloves",
+          "powerScore": 23,
+          "previousPowerScore": 4,
+          "percentIncrease": 475
+        },
+        {
+          "time": 682,
+          "region": "pantano-podre",
+          "level": 5,
+          "slotId": "boots",
+          "baseItemId": "boots",
+          "powerScore": 22,
+          "previousPowerScore": 20,
+          "percentIncrease": 10
+        },
+        {
+          "time": 902,
+          "region": "pantano-podre",
+          "level": 6,
+          "slotId": "chest",
+          "baseItemId": "chest",
+          "powerScore": 32,
+          "previousPowerScore": 12,
+          "percentIncrease": 166.66666666666669
+        },
+        {
+          "time": 946,
+          "region": "pantano-podre",
+          "level": 6,
+          "slotId": "ring1",
+          "baseItemId": "ring",
+          "powerScore": 14,
+          "previousPowerScore": 0,
+          "percentIncrease": null
+        },
+        {
+          "time": 1078,
+          "region": "pantano-podre",
+          "level": 7,
+          "slotId": "ring2",
+          "baseItemId": "ring",
+          "powerScore": 3,
+          "previousPowerScore": 0,
+          "percentIncrease": null
+        }
+      ]
+    },
+    {
+      "seed": 99992,
+      "survived": false,
+      "diedInRegion": "picos-congelados",
+      "equips": [
+        {
+          "time": 44,
+          "region": "bosque-sussurrante",
+          "level": 1,
+          "slotId": "belt",
+          "baseItemId": "belt",
+          "powerScore": 6,
+          "previousPowerScore": 0,
+          "percentIncrease": null
+        },
+        {
+          "time": 528,
+          "region": "bosque-sussurrante",
+          "level": 3,
+          "slotId": "boots",
+          "baseItemId": "boots",
+          "powerScore": 33,
+          "previousPowerScore": 4,
+          "percentIncrease": 725
+        },
+        {
+          "time": 550,
+          "region": "bosque-sussurrante",
+          "level": 4,
+          "slotId": "weapon",
+          "baseItemId": "dagger",
+          "powerScore": 27,
+          "previousPowerScore": 11,
+          "percentIncrease": 145.45454545454547
+        },
+        {
+          "time": 704,
+          "region": "bosque-sussurrante",
+          "level": 4,
+          "slotId": "weapon",
+          "baseItemId": "dagger",
+          "powerScore": 38,
+          "previousPowerScore": 27,
+          "percentIncrease": 40.74074074074074
+        },
+        {
+          "time": 748,
+          "region": "pantano-podre",
+          "level": 5,
+          "slotId": "weapon",
+          "baseItemId": "dagger",
+          "powerScore": 42,
+          "previousPowerScore": 38,
+          "percentIncrease": 10.526315789473683
+        }
+      ]
+    },
+    {
+      "seed": 199983,
+      "survived": false,
+      "diedInRegion": "picos-congelados",
+      "equips": [
+        {
+          "time": 506,
+          "region": "bosque-sussurrante",
+          "level": 3,
+          "slotId": "weapon",
+          "baseItemId": "bow",
+          "powerScore": 69,
+          "previousPowerScore": 11,
+          "percentIncrease": 527.2727272727273
+        },
+        {
+          "time": 990,
+          "region": "pantano-podre",
+          "level": 5,
+          "slotId": "ring1",
+          "baseItemId": "ring",
+          "powerScore": 11,
+          "previousPowerScore": 0,
+          "percentIncrease": null
+        }
+      ]
+    }
+  ]
+}

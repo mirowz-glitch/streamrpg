@@ -7,29 +7,29 @@
       "playerLevel": 1,
       "weapon": {
         "n": 20000,
-        "mean": 24.80765,
+        "mean": 20.22865,
         "median": 11,
         "p10": 11,
         "p25": 11,
-        "p75": 35,
-        "p90": 58,
-        "p99": 104,
+        "p75": 23,
+        "p90": 47,
+        "p99": 86,
         "min": 11,
-        "max": 164,
-        "stddev": 22.711469601888606
+        "max": 120,
+        "stddev": 17.627718774064345
       },
       "armor": {
         "n": 20000,
-        "mean": 20.5526,
+        "mean": 15.144,
         "median": 12,
         "p10": 12,
         "p25": 12,
-        "p75": 31,
-        "p90": 40,
-        "p99": 49,
+        "p75": 12,
+        "p90": 27,
+        "p99": 42,
         "min": 12,
-        "max": 53,
-        "stddev": 11.81964607084421
+        "max": 48,
+        "stddev": 6.844542643594909
       }
     },
     {
@@ -37,29 +37,29 @@
       "playerLevel": 5,
       "weapon": {
         "n": 20000,
-        "mean": 38.3355,
+        "mean": 20.18585,
         "median": 11,
         "p10": 11,
         "p25": 11,
-        "p75": 57,
-        "p90": 103,
-        "p99": 192,
+        "p75": 23,
+        "p90": 46,
+        "p99": 85,
         "min": 11,
-        "max": 271,
-        "stddev": 43.969055479389155
+        "max": 131,
+        "stddev": 17.39124232990471
       },
       "armor": {
         "n": 20000,
-        "mean": 28.9118,
+        "mean": 15.22215,
         "median": 12,
         "p10": 12,
         "p25": 12,
-        "p75": 51,
-        "p90": 64,
-        "p99": 78,
+        "p75": 12,
+        "p90": 27,
+        "p99": 41,
         "min": 12,
-        "max": 83,
-        "stddev": 22.377511496145686
+        "max": 48,
+        "stddev": 6.951258834016874
       }
     },
     {
@@ -67,29 +67,29 @@
       "playerLevel": 15,
       "weapon": {
         "n": 20000,
-        "mean": 67.9449,
+        "mean": 23.06525,
         "median": 11,
         "p10": 11,
         "p25": 11,
-        "p75": 101,
-        "p90": 206,
-        "p99": 387,
+        "p75": 26,
+        "p90": 55,
+        "p99": 114,
         "min": 11,
-        "max": 520,
-        "stddev": 91.84335013483108
+        "max": 204,
+        "stddev": 23.389063522029808
       },
       "armor": {
         "n": 20000,
-        "mean": 46.71885,
+        "mean": 16.0347,
         "median": 12,
         "p10": 12,
         "p25": 12,
-        "p75": 96,
-        "p90": 112,
-        "p99": 133,
+        "p75": 12,
+        "p90": 29,
+        "p99": 56,
         "min": 12,
-        "max": 139,
-        "stddev": 45.11573566592312
+        "max": 80,
+        "stddev": 9.218134079629356
       }
     },
     {
@@ -97,29 +97,29 @@
       "playerLevel": 20,
       "weapon": {
         "n": 20000,
-        "mean": 76.78305,
+        "mean": 27.15995,
         "median": 11,
         "p10": 11,
         "p25": 11,
-        "p75": 113,
-        "p90": 236,
-        "p99": 439,
+        "p75": 34,
+        "p90": 69,
+        "p99": 138,
         "min": 11,
-        "max": 589,
-        "stddev": 105.55503390506529
+        "max": 228,
+        "stddev": 29.375623669933844
       },
       "armor": {
         "n": 20000,
-        "mean": 52.41185,
+        "mean": 20.5082,
         "median": 12,
         "p10": 12,
         "p25": 12,
-        "p75": 109,
-        "p90": 128,
-        "p99": 148,
+        "p75": 25,
+        "p90": 48,
+        "p99": 65,
         "min": 12,
-        "max": 152,
-        "stddev": 51.81423674607005
+        "max": 80,
+        "stddev": 14.994566774667858
       }
     },
     {
@@ -127,29 +127,29 @@
       "playerLevel": 24,
       "weapon": {
         "n": 20000,
-        "mean": 78.75995,
+        "mean": 27.0067,
         "median": 11,
         "p10": 11,
         "p25": 11,
-        "p75": 116,
-        "p90": 243,
-        "p99": 452,
+        "p75": 34,
+        "p90": 67,
+        "p99": 137,
         "min": 11,
-        "max": 599,
-        "stddev": 108.67100131128203
+        "max": 217,
+        "stddev": 28.83444390152432
       },
       "armor": {
         "n": 20000,
-        "mean": 52.8504,
+        "mean": 20.2886,
         "median": 12,
         "p10": 12,
         "p25": 12,
-        "p75": 112,
-        "p90": 134,
-        "p99": 148,
+        "p75": 24,
+        "p90": 47,
+        "p99": 65,
         "min": 12,
-        "max": 152,
-        "stddev": 53.12090661726011
+        "max": 79,
+        "stddev": 14.824631868615457
       }
     },
     {
@@ -157,29 +157,29 @@
       "playerLevel": 28,
       "weapon": {
         "n": 20000,
-        "mean": 80.33185,
+        "mean": 27.1703,
         "median": 11,
         "p10": 11,
         "p25": 11,
-        "p75": 117,
-        "p90": 255,
-        "p99": 470,
+        "p75": 34,
+        "p90": 68,
+        "p99": 137,
         "min": 11,
-        "max": 600,
-        "stddev": 112.45083826088072
+        "max": 224,
+        "stddev": 29.400880903643536
       },
       "armor": {
         "n": 20000,
-        "mean": 54.4605,
+        "mean": 20.46635,
         "median": 12,
         "p10": 12,
         "p25": 12,
-        "p75": 114,
-        "p90": 138,
-        "p99": 149,
+        "p75": 24,
+        "p90": 48,
+        "p99": 66,
         "min": 12,
-        "max": 152,
-        "stddev": 54.36472790099547
+        "max": 78,
+        "stddev": 14.98426066502687
       }
     },
     {
@@ -187,29 +187,29 @@
       "playerLevel": 30,
       "weapon": {
         "n": 20000,
-        "mean": 79.4633,
+        "mean": 28.26145,
         "median": 11,
         "p10": 11,
         "p25": 11,
-        "p75": 117,
-        "p90": 247,
-        "p99": 461,
+        "p75": 35,
+        "p90": 70,
+        "p99": 158,
         "min": 11,
-        "max": 594,
-        "stddev": 110.57854743622933
+        "max": 276,
+        "stddev": 32.54655425536836
       },
       "armor": {
         "n": 20000,
-        "mean": 53.49,
+        "mean": 20.50595,
         "median": 12,
         "p10": 12,
         "p25": 12,
-        "p75": 114,
-        "p90": 137,
-        "p99": 149,
+        "p75": 24,
+        "p90": 48,
+        "p99": 69,
         "min": 12,
-        "max": 152,
-        "stddev": 54.031898911669444
+        "max": 89,
+        "stddev": 15.31141941811722
       }
     }
   ],
@@ -222,33 +222,33 @@
       },
       {
         "region": "pantano-podre",
-        "runningBest": 164,
-        "upgradeProbability": 0.02445
+        "runningBest": 120,
+        "upgradeProbability": 0.0001
       },
       {
         "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
-        "runningBest": 271,
-        "upgradeProbability": 0.0506
+        "runningBest": 131,
+        "upgradeProbability": 0.0045
       },
       {
         "region": "picos-congelados",
-        "runningBest": 520,
-        "upgradeProbability": 0.0016
+        "runningBest": 204,
+        "upgradeProbability": 0.0002
       },
       {
         "region": "litoral-quebrado",
-        "runningBest": 589,
-        "upgradeProbability": 0.0001
+        "runningBest": 228,
+        "upgradeProbability": 0
       },
       {
         "region": "deserto-de-vidro",
-        "runningBest": 599,
-        "upgradeProbability": 0.0001
+        "runningBest": 228,
+        "upgradeProbability": 0
       },
       {
         "region": "fortaleza-sombria",
-        "runningBest": 600,
-        "upgradeProbability": 0
+        "runningBest": 228,
+        "upgradeProbability": 0.0008
       }
     ],
     "armor": [
@@ -259,33 +259,33 @@
       },
       {
         "region": "pantano-podre",
-        "runningBest": 53,
-        "upgradeProbability": 0.2241
+        "runningBest": 48,
+        "upgradeProbability": 0
       },
       {
         "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
-        "runningBest": 83,
-        "upgradeProbability": 0.35115
+        "runningBest": 48,
+        "upgradeProbability": 0.01515
       },
       {
         "region": "picos-congelados",
-        "runningBest": 139,
-        "upgradeProbability": 0.04665
+        "runningBest": 80,
+        "upgradeProbability": 0
       },
       {
         "region": "litoral-quebrado",
-        "runningBest": 152,
+        "runningBest": 80,
         "upgradeProbability": 0
       },
       {
         "region": "deserto-de-vidro",
-        "runningBest": 152,
+        "runningBest": 80,
         "upgradeProbability": 0
       },
       {
         "region": "fortaleza-sombria",
-        "runningBest": 152,
-        "upgradeProbability": 0
+        "runningBest": 80,
+        "upgradeProbability": 0.00085
       }
     ]
   },
@@ -293,32 +293,32 @@
     "iid": {
       "level": 20,
       "n": 2000,
-      "totalRecords": 10,
+      "totalRecords": 7,
       "theoreticalVsEmpirical": [
         {
           "n": 100,
           "theoretical": 5.187377517639621,
-          "empirical": 5
+          "empirical": 3
         },
         {
           "n": 500,
           "theoretical": 6.79282342999052,
-          "empirical": 9
+          "empirical": 6
         },
         {
           "n": 1000,
           "theoretical": 7.485470860550343,
-          "empirical": 10
+          "empirical": 6
         },
         {
           "n": 2000,
           "theoretical": 8.178368103610284,
-          "empirical": 10
+          "empirical": 7
         }
       ]
     },
     "real": {
-      "totalRecords": 28,
+      "totalRecords": 18,
       "perRegion": [
         {
           "region": "bosque-sussurrante",
@@ -327,32 +327,32 @@
         },
         {
           "region": "pantano-podre",
-          "newRecords": 6,
-          "totalDraws": 20000
-        },
-        {
-          "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
-          "newRecords": 7,
-          "totalDraws": 20000
-        },
-        {
-          "region": "picos-congelados",
-          "newRecords": 4,
-          "totalDraws": 20000
-        },
-        {
-          "region": "litoral-quebrado",
-          "newRecords": 2,
-          "totalDraws": 20000
-        },
-        {
-          "region": "deserto-de-vidro",
           "newRecords": 1,
           "totalDraws": 20000
         },
         {
-          "region": "fortaleza-sombria",
+          "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+          "newRecords": 4,
+          "totalDraws": 20000
+        },
+        {
+          "region": "picos-congelados",
+          "newRecords": 1,
+          "totalDraws": 20000
+        },
+        {
+          "region": "litoral-quebrado",
           "newRecords": 0,
+          "totalDraws": 20000
+        },
+        {
+          "region": "deserto-de-vidro",
+          "newRecords": 0,
+          "totalDraws": 20000
+        },
+        {
+          "region": "fortaleza-sombria",
+          "newRecords": 4,
           "totalDraws": 20000
         }
       ]
@@ -361,130 +361,130 @@
   "fase5_decomposition": {
     "rngOnly": {
       "n": 5000,
-      "mean": 344.4986,
-      "median": 344,
-      "p10": 227,
-      "p25": 289,
-      "p75": 404,
-      "p90": 459,
-      "p99": 541,
+      "mean": 94.9908,
+      "median": 93,
+      "p10": 51,
+      "p25": 70,
+      "p75": 118,
+      "p90": 143,
+      "p99": 187,
       "min": 11,
-      "max": 583,
-      "stddev": 86.26004867863224
+      "max": 248,
+      "stddev": 35.68381587442685
     },
     "itemLevelSweep": [
       {
         "itemLevel": 1,
         "n": 3000,
-        "mean": 80.95666666666666,
-        "median": 80,
-        "p10": 53,
-        "p25": 65,
-        "p75": 96,
-        "p90": 110,
-        "p99": 132,
-        "min": 24,
-        "max": 152,
-        "stddev": 21.826821166221592
+        "mean": 61.954,
+        "median": 61,
+        "p10": 34,
+        "p25": 47,
+        "p75": 77,
+        "p90": 90,
+        "p99": 111,
+        "min": 16,
+        "max": 135,
+        "stddev": 20.959911354774327
       },
       {
         "itemLevel": 10,
         "n": 3000,
-        "mean": 236.09933333333333,
-        "median": 236,
-        "p10": 157,
-        "p25": 195,
-        "p75": 277,
-        "p90": 314,
-        "p99": 374,
+        "mean": 71.225,
+        "median": 67,
+        "p10": 37,
+        "p25": 51,
+        "p75": 87,
+        "p90": 112,
+        "p99": 154,
         "min": 11,
-        "max": 426,
-        "stddev": 59.55401021668383
+        "max": 182,
+        "stddev": 28.955857927772264
       },
       {
         "itemLevel": 20,
         "n": 3000,
-        "mean": 342.65766666666667,
-        "median": 343,
-        "p10": 223,
-        "p25": 284,
-        "p75": 404,
-        "p90": 456,
-        "p99": 545,
+        "mean": 93.33433333333333,
+        "median": 91,
+        "p10": 49,
+        "p25": 68,
+        "p75": 117,
+        "p90": 139,
+        "p99": 189,
         "min": 11,
-        "max": 579,
-        "stddev": 87.85990254123658
+        "max": 218,
+        "stddev": 35.2117104747207
       },
       {
         "itemLevel": 30,
         "n": 3000,
-        "mean": 361.941,
-        "median": 364,
-        "p10": 239,
-        "p25": 303,
-        "p75": 422,
-        "p90": 482,
-        "p99": 567,
+        "mean": 101.646,
+        "median": 95,
+        "p10": 52,
+        "p25": 72,
+        "p75": 125,
+        "p90": 160,
+        "p99": 221,
         "min": 11,
-        "max": 605,
-        "stddev": 89.91685892534278
+        "max": 287,
+        "stddev": 42.451831731190765
       },
       {
         "itemLevel": 40,
         "n": 3000,
-        "mean": 362.48,
-        "median": 363,
-        "p10": 240,
-        "p25": 303,
-        "p75": 422,
-        "p90": 479,
-        "p99": 570,
+        "mean": 112.82233333333333,
+        "median": 108,
+        "p10": 56,
+        "p25": 77,
+        "p75": 142,
+        "p90": 177,
+        "p99": 242,
         "min": 11,
-        "max": 592,
-        "stddev": 89.87471056977044
+        "max": 340,
+        "stddev": 47.302932621091905
       },
       {
         "itemLevel": 50,
         "n": 3000,
-        "mean": 363.582,
-        "median": 369.5,
-        "p10": 238,
-        "p25": 302,
-        "p75": 423,
-        "p90": 482,
-        "p99": 569,
+        "mean": 138.842,
+        "median": 134,
+        "p10": 74,
+        "p25": 100,
+        "p75": 171,
+        "p90": 211,
+        "p99": 289,
         "min": 11,
-        "max": 605,
-        "stddev": 90.58321372822523
+        "max": 370,
+        "stddev": 53.69045572538949
       },
       {
         "itemLevel": 60,
         "n": 3000,
-        "mean": 361.43,
-        "median": 363,
-        "p10": 237,
-        "p25": 301,
-        "p75": 423,
-        "p90": 481,
-        "p99": 572,
+        "mean": 141.91033333333334,
+        "median": 136,
+        "p10": 73,
+        "p25": 101,
+        "p75": 176,
+        "p90": 219,
+        "p99": 297,
         "min": 11,
-        "max": 604,
-        "stddev": 91.24947360578753
+        "max": 390,
+        "stddev": 56.4045709721789
       }
     ],
     "rarityComparison": {
       "natural": {
         "n": 5000,
-        "mean": 74.926,
+        "mean": 26.7138,
         "median": 11,
         "p10": 11,
         "p25": 11,
-        "p75": 111,
-        "p90": 233,
-        "p99": 441,
+        "p75": 34,
+        "p90": 67,
+        "p99": 135,
         "min": 11,
-        "max": 594,
-        "stddev": 103.78171574993556
+        "max": 201,
+        "stddev": 28.428828494330222
       },
       "forcedCommon": {
         "n": 5000,
@@ -503,29 +503,29 @@
     "affixPoolComparison": {
       "weaponRichPool": {
         "n": 5000,
-        "mean": 342.6262,
-        "median": 344,
-        "p10": 224,
-        "p25": 286,
-        "p75": 404,
-        "p90": 455,
-        "p99": 536,
+        "mean": 94.2868,
+        "median": 92,
+        "p10": 50,
+        "p25": 68,
+        "p75": 116,
+        "p90": 143,
+        "p99": 187,
         "min": 11,
-        "max": 593,
-        "stddev": 86.90829692014454
+        "max": 248,
+        "stddev": 35.85948334485596
       },
       "armorPoorPool": {
         "n": 5000,
-        "mean": 135.4338,
-        "median": 136,
-        "p10": 125,
-        "p25": 129,
-        "p75": 142,
-        "p90": 146,
-        "p99": 151,
+        "mean": 37.8088,
+        "median": 36,
+        "p10": 17,
+        "p25": 21,
+        "p75": 54,
+        "p90": 63,
+        "p99": 71,
         "min": 12,
-        "max": 152,
-        "stddev": 9.346615299668644
+        "max": 75,
+        "stddev": 17.185978079818064
       }
     }
   },
@@ -937,22 +937,22 @@
     "theoreticalCeilingAtMaxLevel": 390,
     "theoreticalCeilingAtPracticalCeiling": 485,
     "theoreticalAbsoluteCeiling65": 700,
-    "observedMaxAtFortaleza": 594
+    "observedMaxAtFortaleza": 276
   },
   "fase8_monteCarlo": {
     "n": 50000,
     "stats": {
       "n": 50000,
-      "mean": 75.37998,
+      "mean": 26.77818,
       "median": 11,
       "p10": 11,
       "p25": 11,
-      "p75": 112,
-      "p90": 233,
-      "p99": 441,
+      "p75": 33,
+      "p90": 67,
+      "p99": 136,
       "min": 11,
-      "max": 590,
-      "stddev": 104.60277814287214
+      "max": 248,
+      "stddev": 28.812433702965624
     },
     "recordsPerBlock": [
       {
@@ -961,11 +961,11 @@
       },
       {
         "block": 1,
-        "newRecords": 1
+        "newRecords": 0
       },
       {
         "block": 2,
-        "newRecords": 1
+        "newRecords": 0
       },
       {
         "block": 3,
@@ -985,7 +985,7 @@
       },
       {
         "block": 7,
-        "newRecords": 1
+        "newRecords": 0
       },
       {
         "block": 8,
@@ -1013,7 +1013,7 @@
       },
       {
         "block": 14,
-        "newRecords": 0
+        "newRecords": 1
       },
       {
         "block": 15,
@@ -1069,7 +1069,7 @@
       },
       {
         "block": 28,
-        "newRecords": 0
+        "newRecords": 1
       },
       {
         "block": 29,
@@ -1101,7 +1101,7 @@
       },
       {
         "block": 36,
-        "newRecords": 1
+        "newRecords": 0
       },
       {
         "block": 37,
@@ -1125,7 +1125,7 @@
       },
       {
         "block": 42,
-        "newRecords": 1
+        "newRecords": 0
       },
       {
         "block": 43,

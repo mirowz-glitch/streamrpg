@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import {
   CharacterBuild,
   Inventory,
@@ -240,31 +240,93 @@ async function persistTick(session: AdventureSession, events: PresentationEvent[
   await Promise.allSettled(requests);
 }
 
+interface AdventureSingleton {
+  session: AdventureSession;
+  timeline: AdventureTimeline;
+  lastSynced: { xp: number; gold: number };
+  isDemoSession: boolean;
+}
+
+// Adventure Session Persistence — RC1 Blocker Fix: `singleton` vive no
+// escopo do módulo, não em um useRef de componente. `AdventurePage` é
+// desmontada a cada troca de rota (router.tsx não tem layout
+// persistente entre páginas-irmãs) — um useRef morre junto. Um `let`
+// de módulo sobrevive a qualquer remontagem, porque o módulo JS só é
+// recarregado num reload de página de verdade (F5), nunca numa
+// navegação normal do React Router. Isso é EXATAMENTE a linha entre o
+// que deve/não deve sobreviver: reload continua reiniciando (mesmo
+// comportamento de sempre), navegação interna passa a preservar tudo.
+let singleton: AdventureSingleton | null = null;
+let initPromise: Promise<void> | null = null;
+
+function buildSingleton(real: RealCharacterSnapshot | null): AdventureSingleton {
+  const { session, timeline } = createSessionState(Date.now(), real);
+  return {
+    session,
+    timeline,
+    lastSynced: { xp: real ? cumulativeXpForLevel(real.level) + real.xp : 0, gold: real?.gold ?? 0 },
+    isDemoSession: real === null,
+  };
+}
+
+// Dedupa a busca inicial: StrictMode invoca o efeito de montagem 2x
+// (monta/desmonta/monta) em dev — sem este cache, a segunda invocação
+// disparia um segundo fetchRealCharacter() e uma segunda criação de
+// sessão antes da primeira resolver. Uma vez que `singleton` existe,
+// esta função nunca mais é chamada de verdade (todo `useAdventureSession()`
+// futuro cai direto no `if (singleton) return`).
+function ensureSingletonInit(): Promise<void> {
+  if (singleton) return Promise.resolve();
+  if (!initPromise) {
+    initPromise = fetchRealCharacter().then((real) => {
+      singleton = buildSingleton(real);
+    });
+  }
+  return initPromise;
+}
+
+// Só para testes automatizados (useAdventureSession.test.ts) — expõe o
+// singleton de módulo sem passar pelos hooks do React (que exigem um
+// renderer/DOM que este projeto não tem instalado). Nunca importado
+// por código de produção.
+export const __testing = {
+  ensureSingletonInit,
+  buildSingleton,
+  getSingleton: () => singleton,
+  resetSingleton: () => {
+    singleton = null;
+    initPromise = null;
+  },
+};
+
 export function useAdventureSession() {
-  const stateRef = useRef<AdventureDemoState>(createSessionState(Date.now(), null));
-  const lastSyncedRef = useRef({ xp: 0, gold: 0 });
+  // Só usado durante a primeiríssima carga, antes do singleton existir
+  // — mesmo valor inicial que o código anterior sempre criou de
+  // qualquer forma (useState lazy-init roda só 1x, nunca mais é lido
+  // depois que `singleton` existe).
+  const [fallback] = useState<AdventureDemoState>(() => createSessionState(Date.now(), null));
   const [renderVersion, forceRender] = useReducer((version: number) => version + 1, 0);
   const [error, setError] = useState<string | null>(null);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(() => singleton !== null);
   // Player Feedback & Retention — Vertical Slice Phase I — Fase 1
   // (Session Safety): `real === null` (fetchRealCharacter() falhou —
   // sem login válido, ver comentário da função) significa que NENHUM
   // dos POSTs de persistTick() abaixo tem efeito real (o backend
   // rejeita sem sessão autenticada) — a sessão inteira vive só na
-  // memória deste componente e desaparece ao desmontar. Exposto aqui
-  // pra a UI poder avisar isso explicitamente, em vez de deixar o
-  // jogador descobrir sozinho perdendo o progresso (achado #1 do
-  // playtest da Sprint anterior).
-  const [isDemoSession, setIsDemoSession] = useState(false);
+  // memória deste módulo e desaparece só num reload de verdade.
+  // Exposto aqui pra a UI poder avisar isso explicitamente, em vez de
+  // deixar o jogador descobrir sozinho perdendo o progresso (achado #1
+  // do playtest de uma Sprint anterior).
   const [lootRejectedFeedback, setLootRejectedFeedback] = useState<LootRejectedFeedback[]>([]);
 
   useEffect(() => {
+    if (singleton) {
+      setReady(true);
+      return;
+    }
     let cancelled = false;
-    void fetchRealCharacter().then((real) => {
+    void ensureSingletonInit().then(() => {
       if (cancelled) return;
-      stateRef.current = createSessionState(Date.now(), real);
-      lastSyncedRef.current = { xp: real ? cumulativeXpForLevel(real.level) + real.xp : 0, gold: real?.gold ?? 0 };
-      setIsDemoSession(real === null);
       setReady(true);
       forceRender();
     });
@@ -273,16 +335,21 @@ export function useAdventureSession() {
     };
   }, []);
 
+  const current: AdventureDemoState = singleton ?? fallback;
+
   const hudState: HudState = useMemo(
-    () => deriveHudState(stateRef.current.session, stateRef.current.timeline),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- renderVersion é a única dependência real (session/timeline são mutáveis, não re-criados)
-    [renderVersion],
+    () => deriveHudState(current.session, current.timeline),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- renderVersion é a única dependência real (session/timeline são mutáveis, não re-criados); `current` muda de identidade só quando `singleton` passa de null pra um valor real, o que `ready` já cobre.
+    [renderVersion, ready],
   );
 
+  const isDemoSession = singleton?.isDemoSession ?? false;
+
   const advance = useCallback((autoEquip: boolean): AdventureTickOutcome | null => {
+    if (!singleton) return null;
     let outcome: AdventureTickOutcome | null = null;
     try {
-      const { events, floatingNumbers } = advanceDungeonTick(stateRef.current.session, stateRef.current.timeline, {
+      const { events, floatingNumbers } = advanceDungeonTick(singleton.session, singleton.timeline, {
         autoEquip,
         currentTime: Date.now(),
       });
@@ -295,9 +362,9 @@ export function useAdventureSession() {
       // seguinte mesmo sem novo drop teria o MESMO problema. Fica
       // visível até o PRÓXIMO drop, nunca some sozinha.
       if (events.some((event) => event.kind === "LootDropped")) {
-        setLootRejectedFeedback(buildLootRejectedFeedback(stateRef.current.session, events));
+        setLootRejectedFeedback(buildLootRejectedFeedback(singleton.session, events));
       }
-      void persistTick(stateRef.current.session, events, lastSyncedRef.current);
+      void persistTick(singleton.session, events, singleton.lastSynced);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : String(caught));
     }
@@ -306,17 +373,26 @@ export function useAdventureSession() {
   }, []);
 
   const restart = useCallback(() => {
-    stateRef.current = createSessionState(Date.now(), null);
+    // Reset otimista e imediato (mesma UX de sempre: o clique em
+    // "Reiniciar" já mostra nível 1 na hora), substituído pelo
+    // personagem real assim que a busca resolver.
+    singleton = buildSingleton(null);
     setLootRejectedFeedback([]);
-    void fetchRealCharacter().then((real) => {
-      stateRef.current = createSessionState(Date.now(), real);
-      lastSyncedRef.current = { xp: real ? cumulativeXpForLevel(real.level) + real.xp : 0, gold: real?.gold ?? 0 };
-      setIsDemoSession(real === null);
-      forceRender();
-    });
     setError(null);
     forceRender();
+    void fetchRealCharacter().then((real) => {
+      singleton = buildSingleton(real);
+      forceRender();
+    });
   }, []);
 
-  return { hudState, error, advance, restart, ready, isDemoSession, lootRejectedFeedback };
+  return {
+    hudState,
+    error,
+    advance,
+    restart,
+    ready,
+    isDemoSession,
+    lootRejectedFeedback,
+  };
 }

@@ -288,8 +288,18 @@ export const ENEMY_TEMPLATES: EnemyTemplate[] = [
     // Mantido este corte (melhora real e mensurável de "HP do Boss ao
     // perder", mesmo sem cruzar pra vitória) — reverter não
     // desfaria o gargalo raiz. Ver "Recomendações" na entrega final.
-    baseStats: { strength: 6, dexterity: 7, intelligence: 9, vitality: 8 },
-    growth: { strength: 0.5, dexterity: 0.5, intelligence: 0.8, vitality: 0.75 },
+    //
+    // Global Gameplay Rebalance Phase I — Fase 4 (Boss Audit): com
+    // Continuous Affix Scaling em produção, o jogador chega MUITO mais
+    // forte (Power Score médio ~962 no encontro, contra a base
+    // "esgotada" que motivou todos os cortes acima) — taxa de vitória
+    // medida em 100% (2.020 encontros, 0 derrotas). Um primeiro buff de
+    // +10% não moveu a taxa de vitória (ainda 100%/2.020, 0 derrotas) —
+    // buff adicional de +25% em cima (~+37,5% do valor original) pra
+    // sair de um "0 derrotas em 2.000+" que só ruído estatístico não
+    // explica.
+    baseStats: { strength: 8.75, dexterity: 10, intelligence: 12.5, vitality: 11.25 },
+    growth: { strength: 0.69, dexterity: 0.69, intelligence: 1.1, vitality: 1.04 },
     criticalMultiplier: 1.6,
     futureFlags: {},
   },
@@ -378,8 +388,14 @@ export const ENEMY_TEMPLATES: EnemyTemplate[] = [
     // fino (densidade ~1.5/nível). frost-king ainda estava em ~1.96/
     // nível mesmo após o corte da Sprint anterior — reduzido mais uma
     // vez (~21%) pra ~1.55/nível, alinhado à referência.
-    baseStats: { strength: 12, dexterity: 7, intelligence: 5, vitality: 19 },
-    growth: { strength: 0.95, dexterity: 0.47, intelligence: 0.24, vitality: 1.5 },
+    //
+    // Global Gameplay Rebalance Phase I — Fase 4 (Boss Audit): Continuous
+    // Affix Scaling elevou o Power Score médio do jogador ao encontrar
+    // este Chefe pra ~1.088 — taxa de vitória medida em 98,7%/99,0%
+    // (Chefe Final/Mini-Boss, 1.197/2.277 encontros). Buff de +18% em
+    // todos os stats/growth.
+    baseStats: { strength: 14.2, dexterity: 8.3, intelligence: 5.9, vitality: 22.4 },
+    growth: { strength: 1.12, dexterity: 0.55, intelligence: 0.28, vitality: 1.77 },
     criticalMultiplier: 1.7,
     futureFlags: { isBoss: true },
   },
@@ -409,8 +425,13 @@ export const ENEMY_TEMPLATES: EnemyTemplate[] = [
     // Fase 3: era o Chefe com maior densidade de poder dos 3 (~2.16/
     // nível) mesmo já tendo alguma vitória real — reduzido ~30% pra
     // ~1.5/nível, mesma referência de forgotten-guardian.
-    baseStats: { strength: 10, dexterity: 8, intelligence: 14, vitality: 15 },
-    growth: { strength: 0.67, dexterity: 0.53, intelligence: 1.12, vitality: 1.19 },
+    //
+    // Global Gameplay Rebalance Phase I — Fase 4 (Boss Audit): taxa de
+    // vitória medida em 99,3%/99,5% (Chefe Final/Mini-Boss, 138/1.879
+    // encontros) — Power Score médio do jogador ao encontrar ~1.201.
+    // Buff de +18% em todos os stats/growth.
+    baseStats: { strength: 11.8, dexterity: 9.4, intelligence: 16.5, vitality: 17.7 },
+    growth: { strength: 0.79, dexterity: 0.63, intelligence: 1.32, vitality: 1.4 },
     criticalMultiplier: 1.7,
     futureFlags: { isBoss: true },
   },
@@ -446,8 +467,14 @@ export const ENEMY_TEMPLATES: EnemyTemplate[] = [
     // ACIMA da referência de forgotten-guardian (1.5) e dos outros 2
     // Chefes novos (agora ~1.55/~1.5) — continua o mais forte dos 3
     // Chefes novos, preservando a hierarquia já documentada.
-    baseStats: { strength: 16, dexterity: 10, intelligence: 9, vitality: 22 },
-    growth: { strength: 1.38, dexterity: 0.69, intelligence: 0.52, vitality: 1.72 },
+    //
+    // Global Gameplay Rebalance Phase I — Fase 4 (Boss Audit): taxa de
+    // vitória medida em 94,4%/96,2% (Chefe Final/Mini-Boss, 216/1.024
+    // encontros) — a mais baixa dos 4 Chefes, hierarquia preservada.
+    // Buff de +20% (o maior dos 4) em todos os stats/growth — continua
+    // o mais forte dos 3 Chefes novos.
+    baseStats: { strength: 19.2, dexterity: 12, intelligence: 10.8, vitality: 26.4 },
+    growth: { strength: 1.66, dexterity: 0.83, intelligence: 0.62, vitality: 2.06 },
     criticalMultiplier: 2.0,
     futureFlags: { isBoss: true },
   },

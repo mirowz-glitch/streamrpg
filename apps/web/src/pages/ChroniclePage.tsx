@@ -51,18 +51,19 @@ export function ChroniclePage() {
       <div className="card">
         <h1>📖 Crônicas</h1>
         <p className="hint">O Livro do seu aventureiro — os momentos que ele contaria anos depois.</p>
-        {character && identity ? (
-          <p className="hint">
-            {STAGE_CHRONICLE_INTRO[getCharacterStage(buildPlayerFacts(character, identity, kingdomRoles))]}
-          </p>
-        ) : null}
 
         {!data ? (
           <p className="loading-state">Abrindo o Livro...</p>
         ) : data.entries.length === 0 ? (
           <p className="hint">Nenhum capítulo escrito ainda. A jornada está apenas começando.</p>
         ) : (
-          <ul className="chronicle-list">
+          <>
+            {character && identity ? (
+              <p className="hint">
+                {STAGE_CHRONICLE_INTRO[getCharacterStage(buildPlayerFacts(character, identity, kingdomRoles))]}
+              </p>
+            ) : null}
+            <ul className="chronicle-list">
             {data.entries.map((entry) => (
               <li key={entry.id} className="chronicle-entry">
                 <div className="chronicle-entry-header">
@@ -75,7 +76,8 @@ export function ChroniclePage() {
                 <p className="chronicle-entry-text">{entry.text}</p>
               </li>
             ))}
-          </ul>
+            </ul>
+          </>
         )}
       </div>
     </main>

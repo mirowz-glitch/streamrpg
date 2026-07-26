@@ -72,13 +72,23 @@ describe("Item Generator Phase I", () => {
     }
   });
 
-  it("Item Level baixo nunca libera valores de tier alto (ex.: T1 exige item level 60)", () => {
-    for (let seed = 0; seed < 300; seed++) {
-      const item = generateItem("sword", 5, seed);
-      for (const mod of [...item.prefixes, ...item.suffixes]) {
-        assert.notEqual(mod.tier, 1);
+  it("Continuous Affix Scaling: o valor médio de um afixo cresce continuamente com o Item Level (não depende mais de liberar um tier por limiar)", () => {
+    const averageValueAt = (itemLevel: number): number => {
+      const values: number[] = [];
+      for (let seed = 0; seed < 500; seed++) {
+        const item = generateItem("sword", itemLevel, seed);
+        for (const mod of [...item.prefixes, ...item.suffixes]) {
+          if (mod.modId === "prefix_cruel") values.push(mod.value);
+        }
       }
-    }
+      assert.ok(values.length > 0, `esperava ao menos uma rolagem de Cruel no nível ${itemLevel} em 500 seeds`);
+      return values.reduce((a, b) => a + b, 0) / values.length;
+    };
+    const low = averageValueAt(1);
+    const mid = averageValueAt(15);
+    const high = averageValueAt(30);
+    assert.ok(low < mid, `valor médio no nível 1 (${low}) deveria ser menor que no nível 15 (${mid})`);
+    assert.ok(mid < high, `valor médio no nível 15 (${mid}) deveria ser menor que no nível 30 (${high})`);
   });
 
   it("valor rolado sempre cai dentro da faixa do tier escolhido", () => {
@@ -181,7 +191,7 @@ describe("Item Generator Phase II — Affix System", () => {
     assert.ok(weightOnUnique > weightOnMagic);
   });
 
-  it("peso por Item Level: tier pior (T4) aparece com MUITA mais frequência que o melhor (T1) quando ambos elegíveis", () => {
+  it("Continuous Affix Scaling: em Item Level saturado (>= MAX_LEVEL) o rótulo de tier predominante é o melhor (T1), não mais o pior — tier deixou de ser um sorteio ponderado fixo (2/8/18/72 ou qualquer peso estático)", () => {
     const tierCounts = new Map<number, number>();
     for (let seed = 0; seed < 3000; seed++) {
       const item = generateItem("sword", 70, seed);
@@ -192,9 +202,8 @@ describe("Item Generator Phase II — Affix System", () => {
     }
     const t1 = tierCounts.get(1) ?? 0;
     const t4 = tierCounts.get(4) ?? 0;
-    assert.ok(t1 > 0, "esperava ver ao menos um T1 de Cruel em 3000 seeds");
-    assert.ok(t4 > 0, "esperava ver ao menos um T4 de Cruel em 3000 seeds");
-    assert.ok(t4 > t1 * 5, `T4 (${t4}) deveria ser bem mais frequente que T1 (${t1})`);
+    assert.ok(t1 > 0, "esperava ver ao menos um T1 de Cruel em 3000 seeds (nível saturado)");
+    assert.ok(t1 > t4, `T1 (${t1}) deveria dominar sobre T4 (${t4}) em Item Level saturado — o valor esperado da curva contínua já está no teto`);
   });
 
   it("integridade de dados: todo `group` usado em algum mod está registrado em ITEM_GEN_MOD_GROUPS", () => {

@@ -1,0 +1,656 @@
+{
+  "totalRuns": 500,
+  "survivalRate": 0,
+  "averageFinalLevel": 27.046,
+  "fase1_2_regionOverview": [
+    {
+      "region": "bosque-sussurrante",
+      "entries": 500,
+      "reachRate": 1,
+      "mortalityRate": 0.018,
+      "averageTimeSpentSeconds": 702.988,
+      "averageLevelAtEntry": 1,
+      "averagePowerScoreAtEntry": 301.588
+    },
+    {
+      "region": "pantano-podre",
+      "entries": 491,
+      "reachRate": 0.982,
+      "mortalityRate": 0.016293279022403257,
+      "averageTimeSpentSeconds": 1954.8635437881874,
+      "averageLevelAtEntry": 5,
+      "averagePowerScoreAtEntry": 515.7902240325866
+    },
+    {
+      "region": "colinas-aridas",
+      "entries": 483,
+      "reachRate": 0.966,
+      "mortalityRate": 0.012422360248447204,
+      "averageTimeSpentSeconds": 21.726708074534162,
+      "averageLevelAtEntry": 15,
+      "averagePowerScoreAtEntry": 910.6231884057971
+    },
+    {
+      "region": "minas-abandonadas",
+      "entries": 477,
+      "reachRate": 0.954,
+      "mortalityRate": 0.0041928721174004195,
+      "averageTimeSpentSeconds": 21.90775681341719,
+      "averageLevelAtEntry": 15,
+      "averagePowerScoreAtEntry": 912.1446540880503
+    },
+    {
+      "region": "ruinas-esquecidas",
+      "entries": 475,
+      "reachRate": 0.95,
+      "mortalityRate": 0.002105263157894737,
+      "averageTimeSpentSeconds": 505.90736842105264,
+      "averageLevelAtEntry": 15,
+      "averagePowerScoreAtEntry": 913.0589473684211
+    },
+    {
+      "region": "picos-congelados",
+      "entries": 474,
+      "reachRate": 0.948,
+      "mortalityRate": 0.1962025316455696,
+      "averageTimeSpentSeconds": 417.8143459915612,
+      "averageLevelAtEntry": 20,
+      "averagePowerScoreAtEntry": 1024.0632911392406
+    },
+    {
+      "region": "litoral-quebrado",
+      "entries": 381,
+      "reachRate": 0.762,
+      "mortalityRate": 0.05249343832020997,
+      "averageTimeSpentSeconds": 441.501312335958,
+      "averageLevelAtEntry": 24,
+      "averagePowerScoreAtEntry": 1132.5301837270342
+    },
+    {
+      "region": "deserto-de-vidro",
+      "entries": 361,
+      "reachRate": 0.722,
+      "mortalityRate": 0.15512465373961218,
+      "averageTimeSpentSeconds": 232.49307479224376,
+      "averageLevelAtEntry": 28,
+      "averagePowerScoreAtEntry": 1226.2049861495846
+    },
+    {
+      "region": "fortaleza-sombria",
+      "entries": 305,
+      "reachRate": 0.61,
+      "mortalityRate": 1,
+      "averageTimeSpentSeconds": 30.8,
+      "averageLevelAtEntry": 30,
+      "averagePowerScoreAtEntry": 1286.049180327869
+    }
+  ],
+  "fase3_note": "Enemy Scaling avaliado via Boss/Elite/MiniBoss win rate (fase4) e Combat Pacing (fase9) — vida/ataque/defesa/velocidade não são reamostrados aqui pois já são dado estático (enemy/templates.ts), a auditoria mede o RESULTADO desses stats contra o jogador atual.",
+  "fase4_bossReport": [
+    {
+      "templateId": "forgotten-guardian",
+      "encounters": 2020,
+      "winRate": 0.9995049504950495,
+      "averagePlayerLevel": 16.633168316831682,
+      "averagePlayerPowerScore": 962.3594059405941
+    },
+    {
+      "templateId": "frost-king",
+      "encounters": 1197,
+      "winRate": 0.9866332497911445,
+      "averagePlayerLevel": 21.983291562238932,
+      "averagePlayerPowerScore": 1088.0551378446116
+    },
+    {
+      "templateId": "ancient-dragon",
+      "encounters": 216,
+      "winRate": 0.9444444444444444,
+      "averagePlayerLevel": 28.75462962962963,
+      "averagePlayerPowerScore": 1271.0601851851852
+    },
+    {
+      "templateId": "corrupted-bishop",
+      "encounters": 138,
+      "winRate": 0.9927536231884058,
+      "averagePlayerLevel": 25.73913043478261,
+      "averagePlayerPowerScore": 1200.572463768116
+    }
+  ],
+  "fase4b_eliteMiniBossReport": [
+    {
+      "templateId": "wolf-alpha",
+      "encounters": 138,
+      "winRate": 1
+    },
+    {
+      "templateId": "swamp-witch",
+      "encounters": 389,
+      "winRate": 1
+    },
+    {
+      "templateId": "goblin",
+      "encounters": 1676,
+      "winRate": 0.997016706443914
+    },
+    {
+      "templateId": "ancient-construct",
+      "encounters": 2,
+      "winRate": 1
+    },
+    {
+      "templateId": "forgotten-guardian",
+      "encounters": 3569,
+      "winRate": 0.9997198094704399
+    },
+    {
+      "templateId": "skeleton",
+      "encounters": 411,
+      "winRate": 1
+    },
+    {
+      "templateId": "frost-wolf",
+      "encounters": 221,
+      "winRate": 0.9819004524886877
+    },
+    {
+      "templateId": "frost-king",
+      "encounters": 2277,
+      "winRate": 0.98989898989899
+    },
+    {
+      "templateId": "spider",
+      "encounters": 92,
+      "winRate": 1
+    },
+    {
+      "templateId": "ice-golem",
+      "encounters": 158,
+      "winRate": 0.8607594936708861
+    },
+    {
+      "templateId": "wolf",
+      "encounters": 365,
+      "winRate": 0.9945205479452055
+    },
+    {
+      "templateId": "corrupted-bishop",
+      "encounters": 1879,
+      "winRate": 0.9946780202235231
+    },
+    {
+      "templateId": "corrupted-acolyte",
+      "encounters": 351,
+      "winRate": 0.9886039886039886
+    },
+    {
+      "templateId": "ancient-dragon",
+      "encounters": 1024,
+      "winRate": 0.9619140625
+    },
+    {
+      "templateId": "fire-cultist",
+      "encounters": 202,
+      "winRate": 0.9455445544554455
+    },
+    {
+      "templateId": "boar",
+      "encounters": 152,
+      "winRate": 0.993421052631579
+    },
+    {
+      "templateId": "bandit",
+      "encounters": 13,
+      "winRate": 0.6923076923076923
+    },
+    {
+      "templateId": "dark-knight",
+      "encounters": 12,
+      "winRate": 0.75
+    },
+    {
+      "templateId": "hyena",
+      "encounters": 5,
+      "winRate": 1
+    },
+    {
+      "templateId": "stone-construct",
+      "encounters": 16,
+      "winRate": 0.9375
+    },
+    {
+      "templateId": "bandit_captain",
+      "encounters": 12,
+      "winRate": 0.8333333333333334
+    }
+  ],
+  "fase5_dungeonReport": [
+    {
+      "expeditionId": "queda-da-fortaleza-sombria",
+      "bossTemplateId": "forgotten-guardian",
+      "attempts": 429,
+      "completionRate": 0.9277389277389277
+    },
+    {
+      "expeditionId": "exploracao-das-ruinas",
+      "bossTemplateId": null,
+      "attempts": 352,
+      "completionRate": 0.9375
+    },
+    {
+      "expeditionId": "fortaleza-congelada",
+      "bossTemplateId": "frost-king",
+      "attempts": 409,
+      "completionRate": 0.4841075794621027
+    },
+    {
+      "expeditionId": "bosque-antigo",
+      "bossTemplateId": null,
+      "attempts": 391,
+      "completionRate": 0.9974424552429667
+    },
+    {
+      "expeditionId": "covil-do-dragao",
+      "bossTemplateId": "ancient-dragon",
+      "attempts": 124,
+      "completionRate": 0
+    },
+    {
+      "expeditionId": "travessia-do-pantano",
+      "bossTemplateId": null,
+      "attempts": 420,
+      "completionRate": 0.9952380952380953
+    },
+    {
+      "expeditionId": "catedral-esquecida",
+      "bossTemplateId": "corrupted-bishop",
+      "attempts": 47,
+      "completionRate": 0
+    },
+    {
+      "expeditionId": "rota-das-colinas",
+      "bossTemplateId": null,
+      "attempts": 7,
+      "completionRate": 1
+    },
+    {
+      "expeditionId": "descida-as-minas",
+      "bossTemplateId": null,
+      "attempts": 8,
+      "completionRate": 1
+    }
+  ],
+  "fase6_regionRewards": [
+    {
+      "region": "bosque-sussurrante",
+      "drops": 9878,
+      "usageRate": 0.25490990078963355,
+      "averagePowerScore": 16.908989674023083
+    },
+    {
+      "region": "pantano-podre",
+      "drops": 30549,
+      "usageRate": 0.05260401322465547,
+      "averagePowerScore": 44.57759664800812
+    },
+    {
+      "region": "minas-abandonadas",
+      "drops": 274,
+      "usageRate": 0,
+      "averagePowerScore": 62.32116788321168
+    },
+    {
+      "region": "ruinas-esquecidas",
+      "drops": 12359,
+      "usageRate": 0,
+      "averagePowerScore": 101.4225260943442
+    },
+    {
+      "region": "picos-congelados",
+      "drops": 9401,
+      "usageRate": 0,
+      "averagePowerScore": 85.1637059887246
+    },
+    {
+      "region": "colinas-aridas",
+      "drops": 191,
+      "usageRate": 0,
+      "averagePowerScore": 84.61780104712042
+    },
+    {
+      "region": "litoral-quebrado",
+      "drops": 7034,
+      "usageRate": 0,
+      "averagePowerScore": 96.62979812340062
+    },
+    {
+      "region": "deserto-de-vidro",
+      "drops": 3524,
+      "usageRate": 0,
+      "averagePowerScore": 102.14500567536889
+    },
+    {
+      "region": "fortaleza-sombria",
+      "drops": 1247,
+      "usageRate": 0,
+      "averagePowerScore": 125.72574178027266
+    }
+  ],
+  "fase7_upgradeCadence": {
+    "totalUpgradeEvents": 3859,
+    "averageUpgradesPerRun": 7.718,
+    "averageGapSeconds": 127.45459958320929,
+    "medianGapSeconds": 88,
+    "p90GapSeconds": 286
+  },
+  "fase8_powerCurve": [
+    {
+      "level": 1,
+      "averagePowerScore": 319.60703058016577,
+      "averageMaximumLife": 161.58188053729637,
+      "averageArmor": 69.89296941983424,
+      "averageEstimatedDps": 121.34235638753458,
+      "samples": 3499
+    },
+    {
+      "level": 2,
+      "averagePowerScore": 377.87974683544303,
+      "averageMaximumLife": 200.7146395156852,
+      "averageArmor": 72.62837094111173,
+      "averageEstimatedDps": 171.33223004953246,
+      "samples": 3634
+    },
+    {
+      "level": 3,
+      "averagePowerScore": 424.9358264081256,
+      "averageMaximumLife": 233.38931209602956,
+      "averageArmor": 75.31550092336103,
+      "averageEstimatedDps": 211.21540466297583,
+      "samples": 4332
+    },
+    {
+      "level": 4,
+      "averagePowerScore": 470.97978676143936,
+      "averageMaximumLife": 265.52876499333627,
+      "averageArmor": 78.04992225677476,
+      "averageEstimatedDps": 243.4305330964018,
+      "samples": 4502
+    },
+    {
+      "level": 5,
+      "averagePowerScore": 570.3804889090086,
+      "averageMaximumLife": 326.6518786781349,
+      "averageArmor": 80.8037573562698,
+      "averageEstimatedDps": 371.98576052512357,
+      "samples": 4418
+    },
+    {
+      "level": 6,
+      "averagePowerScore": 674.3871115173674,
+      "averageMaximumLife": 386.8176416819013,
+      "averageArmor": 83.55415904936015,
+      "averageEstimatedDps": 502.8410829524662,
+      "samples": 4376
+    },
+    {
+      "level": 7,
+      "averagePowerScore": 728.1894232961021,
+      "averageMaximumLife": 419.7477775245042,
+      "averageArmor": 86.30276954638705,
+      "averageEstimatedDps": 573.1202509687741,
+      "samples": 4387
+    },
+    {
+      "level": 8,
+      "averagePowerScore": 756.185100548446,
+      "averageMaximumLife": 439.17561700182813,
+      "averageArmor": 89.05353062157221,
+      "averageEstimatedDps": 611.6495450182864,
+      "samples": 4376
+    },
+    {
+      "level": 9,
+      "averagePowerScore": 779.1918470750807,
+      "averageMaximumLife": 455.2442422846614,
+      "averageArmor": 91.80590741593736,
+      "averageEstimatedDps": 632.0634866421087,
+      "samples": 4342
+    },
+    {
+      "level": 10,
+      "averagePowerScore": 802.2553775743708,
+      "averageMaximumLife": 471.48386727688785,
+      "averageArmor": 94.55394736842105,
+      "averageEstimatedDps": 651.3404718535427,
+      "samples": 4370
+    },
+    {
+      "level": 11,
+      "averagePowerScore": 823.6962378077102,
+      "averageMaximumLife": 486.03704133766837,
+      "averageArmor": 97.30846493265211,
+      "averageEstimatedDps": 672.6869770088309,
+      "samples": 4306
+    },
+    {
+      "level": 12,
+      "averagePowerScore": 845.0276634659351,
+      "averageMaximumLife": 501.1990169181527,
+      "averageArmor": 100.05366941015089,
+      "averageEstimatedDps": 694.4404339277482,
+      "samples": 4374
+    },
+    {
+      "level": 13,
+      "averagePowerScore": 868.4247015610651,
+      "averageMaximumLife": 517.524678604224,
+      "averageArmor": 102.80492424242425,
+      "averageEstimatedDps": 711.8329933425262,
+      "samples": 4356
+    },
+    {
+      "level": 14,
+      "averagePowerScore": 892.1032658693653,
+      "averageMaximumLife": 533.7908233670653,
+      "averageArmor": 105.55548528058878,
+      "averageEstimatedDps": 744.0698810947592,
+      "samples": 4348
+    },
+    {
+      "level": 15,
+      "averagePowerScore": 912.4870836165874,
+      "averageMaximumLife": 547.8985384092454,
+      "averageArmor": 108.44400067980965,
+      "averageEstimatedDps": 755.8295893949722,
+      "samples": 2942
+    },
+    {
+      "level": 16,
+      "averagePowerScore": 944.07332368548,
+      "averageMaximumLife": 568.802460202605,
+      "averageArmor": 111.3787988422576,
+      "averageEstimatedDps": 815.7278359864895,
+      "samples": 2073
+    },
+    {
+      "level": 17,
+      "averagePowerScore": 962.0108499095841,
+      "averageMaximumLife": 583.3639240506329,
+      "averageArmor": 114.08928571428571,
+      "averageEstimatedDps": 803.2574046112121,
+      "samples": 2212
+    },
+    {
+      "level": 18,
+      "averagePowerScore": 985.8879003558719,
+      "averageMaximumLife": 599.3794483985765,
+      "averageArmor": 116.82984875444839,
+      "averageEstimatedDps": 852.5348518683244,
+      "samples": 2248
+    },
+    {
+      "level": 19,
+      "averagePowerScore": 1007.5392692146157,
+      "averageMaximumLife": 613.2704745905082,
+      "averageArmor": 119.54745905081899,
+      "averageEstimatedDps": 855.3539298613938,
+      "samples": 2381
+    },
+    {
+      "level": 20,
+      "averagePowerScore": 1028.9067315490672,
+      "averageMaximumLife": 629.8742903487429,
+      "averageArmor": 122.27412814274128,
+      "averageEstimatedDps": 867.8704971613886,
+      "samples": 2466
+    },
+    {
+      "level": 21,
+      "averagePowerScore": 1054.6434205064343,
+      "averageMaximumLife": 643.9840182648402,
+      "averageArmor": 125.0148401826484,
+      "averageEstimatedDps": 905.8477339144891,
+      "samples": 2409
+    },
+    {
+      "level": 22,
+      "averagePowerScore": 1083.361982719418,
+      "averageMaximumLife": 662.5306957708049,
+      "averageArmor": 127.77148703956344,
+      "averageEstimatedDps": 935.6281059572536,
+      "samples": 2199
+    },
+    {
+      "level": 23,
+      "averagePowerScore": 1110.7560613557646,
+      "averageMaximumLife": 677.3500742206828,
+      "averageArmor": 130.51843146956952,
+      "averageEstimatedDps": 964.1170653142029,
+      "samples": 2021
+    },
+    {
+      "level": 24,
+      "averagePowerScore": 1137.6319336443753,
+      "averageMaximumLife": 694.2317262830483,
+      "averageArmor": 133.2817522032141,
+      "averageEstimatedDps": 1040.7930077760525,
+      "samples": 1929
+    },
+    {
+      "level": 25,
+      "averagePowerScore": 1162.995353639649,
+      "averageMaximumLife": 711.7367062467733,
+      "averageArmor": 136.02245740836344,
+      "averageEstimatedDps": 1098.0021935983457,
+      "samples": 1937
+    },
+    {
+      "level": 26,
+      "averagePowerScore": 1185.9948744233727,
+      "averageMaximumLife": 727.8903126601742,
+      "averageArmor": 138.76166068682727,
+      "averageEstimatedDps": 1110.6088841619733,
+      "samples": 1951
+    },
+    {
+      "level": 27,
+      "averagePowerScore": 1207.3649946638207,
+      "averageMaximumLife": 741.9666488794023,
+      "averageArmor": 141.5297491995731,
+      "averageEstimatedDps": 1116.8046061899663,
+      "samples": 1874
+    },
+    {
+      "level": 28,
+      "averagePowerScore": 1231.9960396039603,
+      "averageMaximumLife": 758.7809405940594,
+      "averageArmor": 144.2115099009901,
+      "averageEstimatedDps": 1144.3618490099032,
+      "samples": 2020
+    },
+    {
+      "level": 29,
+      "averagePowerScore": 1257.7124253933803,
+      "averageMaximumLife": 773.9139989148129,
+      "averageArmor": 146.95510037981552,
+      "averageEstimatedDps": 1205.8429826370063,
+      "samples": 1843
+    },
+    {
+      "level": 30,
+      "averagePowerScore": 1311.8498659517427,
+      "averageMaximumLife": 794.9597855227883,
+      "averageArmor": 149.25,
+      "averageEstimatedDps": 1401.7075750670267,
+      "samples": 746
+    }
+  ],
+  "fase9_combatPacing": {
+    "byRegion": [
+      {
+        "region": "bosque-sussurrante",
+        "encounters": 14792,
+        "averageDamageDealt": 139.78679915672777,
+        "averageDamageTaken": 6.2932947587201955,
+        "averageAttacksPerEncounter": 1
+      },
+      {
+        "region": "pantano-podre",
+        "encounters": 42258,
+        "averageDamageDealt": 209.21987301773495,
+        "averageDamageTaken": 4.167522472842735,
+        "averageAttacksPerEncounter": 1
+      },
+      {
+        "region": "colinas-aridas",
+        "encounters": 459,
+        "averageDamageDealt": 286.5260585894242,
+        "averageDamageTaken": 55.872165946783284,
+        "averageAttacksPerEncounter": 1
+      },
+      {
+        "region": "minas-abandonadas",
+        "encounters": 456,
+        "averageDamageDealt": 544.0070178294673,
+        "averageDamageTaken": 54.94232559368399,
+        "averageAttacksPerEncounter": 1
+      },
+      {
+        "region": "ruinas-esquecidas",
+        "encounters": 10029,
+        "averageDamageDealt": 234.9100050127794,
+        "averageDamageTaken": 7.070734779264631,
+        "averageAttacksPerEncounter": 1
+      },
+      {
+        "region": "picos-congelados",
+        "encounters": 9095,
+        "averageDamageDealt": 379.1063838135442,
+        "averageDamageTaken": 31.01405854585099,
+        "averageAttacksPerEncounter": 1
+      },
+      {
+        "region": "litoral-quebrado",
+        "encounters": 7666,
+        "averageDamageDealt": 389.3809185853093,
+        "averageDamageTaken": 15.694523166064826,
+        "averageAttacksPerEncounter": 1
+      },
+      {
+        "region": "deserto-de-vidro",
+        "encounters": 3871,
+        "averageDamageDealt": 386.05957207825054,
+        "averageDamageTaken": 41.90707318294581,
+        "averageAttacksPerEncounter": 1
+      },
+      {
+        "region": "fortaleza-sombria",
+        "encounters": 715,
+        "averageDamageDealt": 647.9870764527983,
+        "averageDamageTaken": 233.60696205388848,
+        "averageAttacksPerEncounter": 1
+      }
+    ],
+    "totalRecoveryEvents": 80429,
+    "averageRecoveryEventsPerRun": 160.858
+  }
+}

@@ -234,13 +234,16 @@ export const EXPEDITION_DEFINITIONS: ExpeditionDefinition[] = [
     description: "Desça até a catedral afundada do Litoral Quebrado e enfrente o Bispo Corrompido antes que sua corrupção alcance a costa.",
     startBiome: "litoral-quebrado",
     allowedBiomes: ["litoral-quebrado"],
-    // Player Journey Recovery & World Progression Phase I — Fase 4:
-    // mesmo ajuste de fortaleza-congelada acima — orçamento subido
-    // (28->48) pra dar margem pós-Chefe (Dungeon de região única, sem
-    // risco de "vagar pra região seguinte letal").
-    expectedEncounters: 48,
-    expectedSeconds: 1056,
-    checkpointCount: 24,
+    // Global Gameplay Rebalance Phase I: auditoria sob Continuous Affix
+    // Scaling mediu 0% de conclusão em 47 tentativas, apesar do Chefe
+    // (corrupted-bishop) sendo derrotado em 99,3% dos encontros — o
+    // gargalo não é mais o Chefe, é o orçamento de encontros (48) muito
+    // maior que o tempo médio real gasto em litoral-quebrado (442s ≈ 20
+    // ticks) antes de morrer/seguir pra próxima região. Reduzido pra um
+    // valor alcançável dentro dessa janela real.
+    expectedEncounters: 22,
+    expectedSeconds: 484,
+    checkpointCount: 11,
     reward: { xpAmount: 1300, goldAmount: 320, guaranteedLootTableId: "corrupted-bishop-relic" },
     difficulty: "Lendária",
     // Combinado x1.32.
@@ -252,12 +255,17 @@ export const EXPEDITION_DEFINITIONS: ExpeditionDefinition[] = [
     description: "Atravesse o Deserto de Vidro, vitrificado por um fogo antigo, até o covil do Dragão Ancião — o desafio mais lendário do reino.",
     startBiome: "deserto-de-vidro",
     allowedBiomes: ["deserto-de-vidro"],
-    // Player Journey Recovery & World Progression Phase I — Fase 4:
-    // mesmo ajuste acima — orçamento subido (32->52) pra dar margem
-    // pós-Chefe.
-    expectedEncounters: 52,
-    expectedSeconds: 1144,
-    checkpointCount: 26,
+    // Global Gameplay Rebalance Phase I: mesmo achado de
+    // catedral-esquecida acima — 0% de conclusão em 124 tentativas
+    // apesar do Chefe (ancient-dragon) vencido em 94,4% dos encontros;
+    // deserto-de-vidro tem tempo médio real ainda menor (232s ≈ 10,5
+    // ticks). Um primeiro corte (52->18) ainda mediu 0% (122 tentativas)
+    // — reduzido mais uma vez, agora abaixo da própria média de tempo
+    // em região, dando margem real de conclusão pras jornadas acima da
+    // média (as únicas que realmente chegam ao Chefe).
+    expectedEncounters: 10,
+    expectedSeconds: 220,
+    checkpointCount: 5,
     reward: { xpAmount: 1800, goldAmount: 450, guaranteedLootTableId: "ancient-dragon-relic" },
     difficulty: "Lendária",
     // Combinado x1.326 (a mais forte das 3, condizente com "Boss

@@ -1,0 +1,3236 @@
+{
+  "restoredCorrectly": true,
+  "matrix": [
+    {
+      "name": "Baseline",
+      "threshold": "current",
+      "weight": "current"
+    },
+    {
+      "name": "Threshold",
+      "threshold": "new",
+      "weight": "current"
+    },
+    {
+      "name": "Weight",
+      "threshold": "current",
+      "weight": "new"
+    },
+    {
+      "name": "Combined",
+      "threshold": "new",
+      "weight": "new"
+    }
+  ],
+  "results": {
+    "Baseline": {
+      "monteCarlo": {
+        "expectedValueByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "playerLevel": 1,
+            "weapon": {
+              "n": 8000,
+              "mean": 19.905625,
+              "median": 11,
+              "se": 0.19127506971615457,
+              "ci95Low": 19.530725863356338,
+              "ci95High": 20.280524136643663,
+              "p90": 46,
+              "max": 118,
+              "stddev": 17.10816233145332
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.213,
+              "median": 12,
+              "se": 0.0778485155606673,
+              "ci95Low": 15.060416909501091,
+              "ci95High": 15.365583090498907,
+              "p90": 27,
+              "max": 48,
+              "stddev": 6.96298290964409
+            }
+          },
+          {
+            "region": "pantano-podre",
+            "playerLevel": 5,
+            "weapon": {
+              "n": 8000,
+              "mean": 20.335,
+              "median": 11,
+              "se": 0.1958154504246352,
+              "ci95Low": 19.951201717167717,
+              "ci95High": 20.718798282832285,
+              "p90": 47,
+              "max": 131,
+              "stddev": 17.514266327768976
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.083625,
+              "median": 12,
+              "se": 0.07624641947279401,
+              "ci95Low": 14.934182017833324,
+              "ci95High": 15.233067982166675,
+              "p90": 27,
+              "max": 48,
+              "stddev": 6.819687079285243
+            }
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "playerLevel": 15,
+            "weapon": {
+              "n": 8000,
+              "mean": 23.114125,
+              "median": 11,
+              "se": 0.26438527769250264,
+              "ci95Low": 22.595929855722694,
+              "ci95High": 23.63232014427731,
+              "p90": 56,
+              "max": 204,
+              "stddev": 23.647338126823787
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.9695,
+              "median": 12,
+              "se": 0.10129648300286027,
+              "ci95Low": 15.770958893314393,
+              "ci95High": 16.168041106685607,
+              "p90": 29,
+              "max": 77,
+              "stddev": 9.060232875041905
+            }
+          },
+          {
+            "region": "picos-congelados",
+            "playerLevel": 20,
+            "weapon": {
+              "n": 8000,
+              "mean": 27.33675,
+              "median": 11,
+              "se": 0.3306472533980521,
+              "ci95Low": 26.688681383339816,
+              "ci95High": 27.98481861666018,
+              "p90": 69,
+              "max": 228,
+              "stddev": 29.573989406865717
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.6375,
+              "median": 12,
+              "se": 0.1690302649490668,
+              "ci95Low": 20.306200680699828,
+              "ci95High": 20.96879931930017,
+              "p90": 48,
+              "max": 80,
+              "stddev": 15.118526507236536
+            }
+          },
+          {
+            "region": "litoral-quebrado",
+            "playerLevel": 24,
+            "weapon": {
+              "n": 8000,
+              "mean": 27.052875,
+              "median": 11,
+              "se": 0.32421339022980217,
+              "ci95Low": 26.41741675514959,
+              "ci95High": 27.688333244850412,
+              "p90": 68,
+              "max": 206,
+              "stddev": 28.998527190780152
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.39625,
+              "median": 12,
+              "se": 0.166180713358037,
+              "ci95Low": 20.070535801818245,
+              "ci95High": 20.72196419818175,
+              "p90": 47,
+              "max": 79,
+              "stddev": 14.863654864719123
+            }
+          },
+          {
+            "region": "deserto-de-vidro",
+            "playerLevel": 28,
+            "weapon": {
+              "n": 8000,
+              "mean": 27.163875,
+              "median": 11,
+              "se": 0.32643295061629424,
+              "ci95Low": 26.524066416792063,
+              "ci95High": 27.80368358320794,
+              "p90": 67,
+              "max": 224,
+              "stddev": 29.19705070695463
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.324,
+              "median": 12,
+              "se": 0.16676125299360753,
+              "ci95Low": 19.997147944132532,
+              "ci95High": 20.65085205586747,
+              "p90": 48,
+              "max": 78,
+              "stddev": 14.915579908269871
+            }
+          },
+          {
+            "region": "fortaleza-sombria",
+            "playerLevel": 30,
+            "weapon": {
+              "n": 8000,
+              "mean": 28.480625,
+              "median": 11,
+              "se": 0.3674602656426408,
+              "ci95Low": 27.760402879340425,
+              "ci95High": 29.200847120659574,
+              "p90": 71,
+              "max": 250,
+              "stddev": 32.86664532028301
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.674,
+              "median": 12,
+              "se": 0.17320317693390036,
+              "ci95Low": 20.334521773209556,
+              "ci95High": 21.013478226790443,
+              "p90": 49,
+              "max": 89,
+              "stddev": 15.491763101724992
+            }
+          }
+        ],
+        "upgradeProbabilityByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "upgradeProbabilityWeapon": 1,
+            "upgradeProbabilityArmor": 1
+          },
+          {
+            "region": "pantano-podre",
+            "upgradeProbabilityWeapon": 0.000125,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "upgradeProbabilityWeapon": 0.00475,
+            "upgradeProbabilityArmor": 0.0135
+          },
+          {
+            "region": "picos-congelados",
+            "upgradeProbabilityWeapon": 0.00025,
+            "upgradeProbabilityArmor": 0.0005
+          },
+          {
+            "region": "litoral-quebrado",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "deserto-de-vidro",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "fortaleza-sombria",
+            "upgradeProbabilityWeapon": 0.000375,
+            "upgradeProbabilityArmor": 0.000875
+          }
+        ],
+        "tierDistribution": {
+          "1": 2070,
+          "2": 15215,
+          "3": 12567,
+          "4": 35768
+        },
+        "modDistribution": {
+          "prefix_cruel": 5887,
+          "prefix_swift": 4780,
+          "suffix_of_frost": 3490,
+          "suffix_of_precision": 3664,
+          "prefix_healthy": 10605,
+          "prefix_heavy": 14201,
+          "suffix_of_accuracy": 3808,
+          "suffix_of_storms": 3514,
+          "suffix_of_the_vampire": 2649,
+          "suffix_of_the_bear": 3439,
+          "suffix_of_fire": 3439,
+          "prefix_vigorous": 6144
+        }
+      },
+      "campaign": {
+        "survivalRate": 0,
+        "averageFinalLevel": 20.03,
+        "totalUpgradeEvents": 1464,
+        "upgradesPerRun": [
+          9,
+          5,
+          2,
+          5,
+          6,
+          4,
+          6,
+          3,
+          5,
+          6,
+          5,
+          5,
+          5,
+          3,
+          3,
+          6,
+          6,
+          5,
+          5,
+          4,
+          7,
+          5,
+          5,
+          7,
+          6,
+          4,
+          8,
+          9,
+          7,
+          4,
+          4,
+          7,
+          4,
+          5,
+          6,
+          4,
+          6,
+          6,
+          4,
+          6,
+          7,
+          3,
+          4,
+          5,
+          4,
+          4,
+          6,
+          3,
+          5,
+          5,
+          8,
+          6,
+          9,
+          5,
+          6,
+          6,
+          6,
+          8,
+          8,
+          6,
+          4,
+          5,
+          5,
+          4,
+          5,
+          5,
+          3,
+          2,
+          3,
+          8,
+          5,
+          3,
+          5,
+          7,
+          6,
+          4,
+          3,
+          7,
+          4,
+          7,
+          4,
+          6,
+          5,
+          3,
+          7,
+          4,
+          4,
+          5,
+          5,
+          7,
+          6,
+          2,
+          7,
+          7,
+          7,
+          8,
+          3,
+          6,
+          2,
+          4,
+          0,
+          3,
+          3,
+          1,
+          5,
+          7,
+          2,
+          3,
+          2,
+          4,
+          5,
+          6,
+          6,
+          5,
+          7,
+          2,
+          5,
+          6,
+          1,
+          7,
+          7,
+          7,
+          6,
+          2,
+          4,
+          5,
+          4,
+          3,
+          7,
+          6,
+          4,
+          6,
+          2,
+          2,
+          6,
+          9,
+          4,
+          4,
+          3,
+          6,
+          5,
+          7,
+          8,
+          4,
+          3,
+          5,
+          5,
+          4,
+          4,
+          3,
+          5,
+          3,
+          7,
+          8,
+          2,
+          8,
+          5,
+          4,
+          4,
+          6,
+          5,
+          5,
+          5,
+          5,
+          4,
+          4,
+          4,
+          5,
+          7,
+          3,
+          6,
+          5,
+          3,
+          4,
+          5,
+          6,
+          2,
+          7,
+          5,
+          4,
+          4,
+          7,
+          10,
+          3,
+          5,
+          2,
+          2,
+          7,
+          3,
+          7,
+          4,
+          3,
+          6,
+          5,
+          4,
+          5,
+          6,
+          2,
+          4,
+          4,
+          7,
+          5,
+          1,
+          4,
+          7,
+          4,
+          3,
+          5,
+          4,
+          7,
+          4,
+          6,
+          4,
+          5,
+          4,
+          2,
+          3,
+          5,
+          2,
+          6,
+          4,
+          7,
+          5,
+          4,
+          6,
+          3,
+          6,
+          5,
+          12,
+          3,
+          4,
+          4,
+          6,
+          5,
+          7,
+          5,
+          5,
+          6,
+          7,
+          8,
+          4,
+          3,
+          3,
+          4,
+          2,
+          2,
+          7,
+          4,
+          8,
+          8,
+          8,
+          5,
+          7,
+          3,
+          6,
+          7,
+          1,
+          5,
+          4,
+          7,
+          6,
+          5,
+          2,
+          3,
+          2,
+          5,
+          4,
+          3,
+          4,
+          2,
+          4,
+          5,
+          2,
+          5,
+          7,
+          6,
+          6,
+          2,
+          4,
+          4,
+          5,
+          7,
+          3,
+          4,
+          4,
+          3,
+          7,
+          2,
+          5,
+          3,
+          5,
+          6,
+          5,
+          7,
+          4,
+          5,
+          7,
+          4,
+          6,
+          6
+        ],
+        "deadLootRate": 0.952186040870778,
+        "slotProgression": [
+          {
+            "slotId": "weapon",
+            "totalUpgrades": 612
+          },
+          {
+            "slotId": "helmet",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "chest",
+            "totalUpgrades": 145
+          },
+          {
+            "slotId": "gloves",
+            "totalUpgrades": 48
+          },
+          {
+            "slotId": "boots",
+            "totalUpgrades": 247
+          },
+          {
+            "slotId": "ring1",
+            "totalUpgrades": 170
+          },
+          {
+            "slotId": "ring2",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "amulet",
+            "totalUpgrades": 20
+          },
+          {
+            "slotId": "belt",
+            "totalUpgrades": 162
+          }
+        ],
+        "upgradesByRegion": {
+          "bosque-sussurrante": 963,
+          "pantano-podre": 501
+        },
+        "powerCurveByLevel": [
+          {
+            "level": 1,
+            "averagePowerScore": 303.5706371191136,
+            "samples": 1805
+          },
+          {
+            "level": 2,
+            "averagePowerScore": 343.50946008306414,
+            "samples": 2167
+          },
+          {
+            "level": 3,
+            "averagePowerScore": 377.9303135888502,
+            "samples": 2583
+          },
+          {
+            "level": 4,
+            "averagePowerScore": 414.1740905716407,
+            "samples": 2694
+          },
+          {
+            "level": 5,
+            "averagePowerScore": 450.7950693374422,
+            "samples": 2596
+          },
+          {
+            "level": 6,
+            "averagePowerScore": 486.69964100518547,
+            "samples": 2507
+          },
+          {
+            "level": 7,
+            "averagePowerScore": 515.2548309178744,
+            "samples": 2484
+          },
+          {
+            "level": 8,
+            "averagePowerScore": 538.9192880794702,
+            "samples": 2416
+          },
+          {
+            "level": 9,
+            "averagePowerScore": 561.5613445378151,
+            "samples": 2380
+          },
+          {
+            "level": 10,
+            "averagePowerScore": 583.8949829931972,
+            "samples": 2352
+          },
+          {
+            "level": 11,
+            "averagePowerScore": 605.8234536082474,
+            "samples": 2328
+          },
+          {
+            "level": 12,
+            "averagePowerScore": 627.9541666666667,
+            "samples": 2400
+          },
+          {
+            "level": 13,
+            "averagePowerScore": 650.8378723404255,
+            "samples": 2350
+          },
+          {
+            "level": 14,
+            "averagePowerScore": 673.4051760712771,
+            "samples": 2357
+          },
+          {
+            "level": 15,
+            "averagePowerScore": 695.5022742040286,
+            "samples": 1539
+          },
+          {
+            "level": 16,
+            "averagePowerScore": 719.2906746031746,
+            "samples": 1008
+          },
+          {
+            "level": 17,
+            "averagePowerScore": 740.4041272570937,
+            "samples": 1163
+          },
+          {
+            "level": 18,
+            "averagePowerScore": 762.4022140221402,
+            "samples": 1084
+          },
+          {
+            "level": 19,
+            "averagePowerScore": 785.9729493891798,
+            "samples": 1146
+          },
+          {
+            "level": 20,
+            "averagePowerScore": 806.7289107289107,
+            "samples": 1221
+          },
+          {
+            "level": 21,
+            "averagePowerScore": 831.5925155925156,
+            "samples": 962
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 856.6924242424243,
+            "samples": 660
+          },
+          {
+            "level": 23,
+            "averagePowerScore": 884.7010309278351,
+            "samples": 388
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 912.5294117647059,
+            "samples": 221
+          },
+          {
+            "level": 25,
+            "averagePowerScore": 932.9737991266376,
+            "samples": 229
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 958.8591549295775,
+            "samples": 213
+          },
+          {
+            "level": 27,
+            "averagePowerScore": 982.695652173913,
+            "samples": 184
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1006.2660550458716,
+            "samples": 218
+          },
+          {
+            "level": 29,
+            "averagePowerScore": 1035.484126984127,
+            "samples": 126
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1067.4285714285713,
+            "samples": 21
+          }
+        ],
+        "powerScoreLevel1": 303.5706371191136,
+        "powerScoreLevel20to30": [
+          {
+            "level": 20,
+            "averagePowerScore": 806.7289107289107
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 856.6924242424243
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 912.5294117647059
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 958.8591549295775
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1006.2660550458716
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1067.4285714285713
+          }
+        ],
+        "maxPowerScoreObserved": 1121,
+        "runningMaxRecordsByRegion": {
+          "bosque-sussurrante": 954,
+          "pantano-podre": 517,
+          "ruinas-esquecidas": 429,
+          "picos-congelados": 30,
+          "litoral-quebrado": 11,
+          "minas-abandonadas": 6,
+          "deserto-de-vidro": 4
+        },
+        "totalRunningMaxRecords": 1951
+      }
+    },
+    "Threshold": {
+      "monteCarlo": {
+        "expectedValueByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "playerLevel": 1,
+            "weapon": {
+              "n": 8000,
+              "mean": 19.905625,
+              "median": 11,
+              "se": 0.19127506971615457,
+              "ci95Low": 19.530725863356338,
+              "ci95High": 20.280524136643663,
+              "p90": 46,
+              "max": 118,
+              "stddev": 17.10816233145332
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.213,
+              "median": 12,
+              "se": 0.0778485155606673,
+              "ci95Low": 15.060416909501091,
+              "ci95High": 15.365583090498907,
+              "p90": 27,
+              "max": 48,
+              "stddev": 6.96298290964409
+            }
+          },
+          {
+            "region": "pantano-podre",
+            "playerLevel": 5,
+            "weapon": {
+              "n": 8000,
+              "mean": 21.93175,
+              "median": 11,
+              "se": 0.23788727423339148,
+              "ci95Low": 21.465490942502555,
+              "ci95High": 22.398009057497447,
+              "p90": 50,
+              "max": 160,
+              "stddev": 21.277284646719902
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.65075,
+              "median": 12,
+              "se": 0.08851890648153617,
+              "ci95Low": 15.47725294329619,
+              "ci95High": 15.824247056703811,
+              "p90": 29,
+              "max": 55,
+              "stddev": 7.917371687466464
+            }
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "playerLevel": 15,
+            "weapon": {
+              "n": 8000,
+              "mean": 28.06875,
+              "median": 11,
+              "se": 0.35580652633091653,
+              "ci95Low": 27.371369208391407,
+              "ci95High": 28.766130791608596,
+              "p90": 70,
+              "max": 256,
+              "stddev": 31.82430318855993
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.56875,
+              "median": 12,
+              "se": 0.17100594779039435,
+              "ci95Low": 20.23357834233083,
+              "ci95High": 20.903921657669173,
+              "p90": 48,
+              "max": 84,
+              "stddev": 15.29523695264407
+            }
+          },
+          {
+            "region": "picos-congelados",
+            "playerLevel": 20,
+            "weapon": {
+              "n": 8000,
+              "mean": 30.727,
+              "median": 11,
+              "se": 0.41484955420608555,
+              "ci95Low": 29.91389487375607,
+              "ci95High": 31.54010512624393,
+              "p90": 80,
+              "max": 305,
+              "stddev": 37.10527214561164
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 21.6905,
+              "median": 12,
+              "se": 0.1956870779299188,
+              "ci95Low": 21.30695332725736,
+              "ci95High": 22.07404667274264,
+              "p90": 52,
+              "max": 121,
+              "stddev": 17.50278434278389
+            }
+          },
+          {
+            "region": "litoral-quebrado",
+            "playerLevel": 24,
+            "weapon": {
+              "n": 8000,
+              "mean": 37.3925,
+              "median": 11,
+              "se": 0.5130995814349566,
+              "ci95Low": 36.38682482038748,
+              "ci95High": 38.398175179612515,
+              "p90": 100,
+              "max": 380,
+              "stddev": 45.89302173261009
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 29.894875,
+              "median": 12,
+              "se": 0.3128365834853542,
+              "ci95Low": 29.281715296368706,
+              "ci95High": 30.508034703631292,
+              "p90": 85,
+              "max": 124,
+              "stddev": 27.980954660881604
+            }
+          },
+          {
+            "region": "deserto-de-vidro",
+            "playerLevel": 28,
+            "weapon": {
+              "n": 8000,
+              "mean": 37.574875,
+              "median": 11,
+              "se": 0.515458793665194,
+              "ci95Low": 36.56457576441622,
+              "ci95High": 38.58517423558378,
+              "p90": 101,
+              "max": 344,
+              "stddev": 46.104036089416475
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 30.35125,
+              "median": 12,
+              "se": 0.32102864425108313,
+              "ci95Low": 29.722033857267878,
+              "ci95High": 30.980466142732123,
+              "p90": 86,
+              "max": 130,
+              "stddev": 28.71367485080076
+            }
+          },
+          {
+            "region": "fortaleza-sombria",
+            "playerLevel": 30,
+            "weapon": {
+              "n": 8000,
+              "mean": 38.416,
+              "median": 11,
+              "se": 0.5347433314217348,
+              "ci95Low": 37.3679030704134,
+              "ci95High": 39.464096929586596,
+              "p90": 108,
+              "max": 331,
+              "stddev": 47.82889758294793
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 30.92475,
+              "median": 12,
+              "se": 0.3362908130319279,
+              "ci95Low": 30.26562000645742,
+              "ci95High": 31.583879993542578,
+              "p90": 87,
+              "max": 145,
+              "stddev": 30.07876472592252
+            }
+          }
+        ],
+        "upgradeProbabilityByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "upgradeProbabilityWeapon": 1,
+            "upgradeProbabilityArmor": 1
+          },
+          {
+            "region": "pantano-podre",
+            "upgradeProbabilityWeapon": 0.005875,
+            "upgradeProbabilityArmor": 0.003125
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "upgradeProbabilityWeapon": 0.00825,
+            "upgradeProbabilityArmor": 0.056125
+          },
+          {
+            "region": "picos-congelados",
+            "upgradeProbabilityWeapon": 0.000625,
+            "upgradeProbabilityArmor": 0.006125
+          },
+          {
+            "region": "litoral-quebrado",
+            "upgradeProbabilityWeapon": 0.000875,
+            "upgradeProbabilityArmor": 0.000375
+          },
+          {
+            "region": "deserto-de-vidro",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0.001125
+          },
+          {
+            "region": "fortaleza-sombria",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0.00125
+          }
+        ],
+        "tierDistribution": {
+          "1": 5315,
+          "2": 23320,
+          "3": 12272,
+          "4": 30763
+        },
+        "modDistribution": {
+          "prefix_cruel": 5887,
+          "prefix_swift": 4780,
+          "suffix_of_frost": 3479,
+          "suffix_of_precision": 3684,
+          "prefix_healthy": 10605,
+          "prefix_heavy": 14201,
+          "suffix_of_accuracy": 3829,
+          "suffix_of_storms": 3499,
+          "suffix_of_the_vampire": 2653,
+          "suffix_of_the_bear": 3439,
+          "suffix_of_fire": 3420,
+          "prefix_vigorous": 7663,
+          "prefix_massive": 4531
+        }
+      },
+      "campaign": {
+        "survivalRate": 0,
+        "averageFinalLevel": 20.923333333333332,
+        "totalUpgradeEvents": 1535,
+        "upgradesPerRun": [
+          9,
+          5,
+          4,
+          5,
+          6,
+          4,
+          6,
+          3,
+          6,
+          6,
+          7,
+          6,
+          5,
+          3,
+          3,
+          6,
+          6,
+          5,
+          5,
+          5,
+          7,
+          6,
+          5,
+          7,
+          6,
+          4,
+          8,
+          9,
+          6,
+          4,
+          5,
+          8,
+          4,
+          5,
+          7,
+          5,
+          5,
+          6,
+          4,
+          7,
+          7,
+          3,
+          4,
+          5,
+          7,
+          5,
+          6,
+          4,
+          6,
+          5,
+          8,
+          6,
+          9,
+          5,
+          6,
+          5,
+          6,
+          8,
+          7,
+          7,
+          5,
+          5,
+          5,
+          4,
+          4,
+          6,
+          3,
+          3,
+          3,
+          8,
+          3,
+          3,
+          5,
+          5,
+          7,
+          4,
+          3,
+          7,
+          4,
+          7,
+          4,
+          8,
+          5,
+          3,
+          7,
+          5,
+          5,
+          5,
+          5,
+          6,
+          6,
+          2,
+          7,
+          4,
+          8,
+          8,
+          3,
+          6,
+          2,
+          4,
+          0,
+          3,
+          3,
+          1,
+          5,
+          7,
+          2,
+          3,
+          2,
+          4,
+          5,
+          6,
+          6,
+          6,
+          7,
+          3,
+          5,
+          6,
+          1,
+          7,
+          7,
+          7,
+          6,
+          2,
+          4,
+          6,
+          4,
+          4,
+          7,
+          7,
+          4,
+          6,
+          2,
+          2,
+          6,
+          5,
+          4,
+          4,
+          6,
+          6,
+          5,
+          7,
+          9,
+          4,
+          3,
+          5,
+          5,
+          4,
+          4,
+          3,
+          6,
+          3,
+          7,
+          8,
+          2,
+          8,
+          6,
+          5,
+          5,
+          6,
+          5,
+          5,
+          6,
+          5,
+          6,
+          4,
+          5,
+          4,
+          7,
+          7,
+          6,
+          7,
+          3,
+          5,
+          6,
+          6,
+          2,
+          7,
+          5,
+          6,
+          4,
+          7,
+          10,
+          3,
+          5,
+          2,
+          2,
+          7,
+          3,
+          7,
+          4,
+          3,
+          7,
+          5,
+          4,
+          6,
+          8,
+          5,
+          4,
+          4,
+          5,
+          5,
+          1,
+          4,
+          7,
+          5,
+          3,
+          6,
+          4,
+          10,
+          5,
+          6,
+          4,
+          5,
+          4,
+          2,
+          3,
+          5,
+          2,
+          6,
+          5,
+          7,
+          5,
+          4,
+          6,
+          3,
+          6,
+          5,
+          12,
+          4,
+          5,
+          6,
+          6,
+          6,
+          8,
+          5,
+          5,
+          6,
+          8,
+          9,
+          4,
+          3,
+          4,
+          4,
+          2,
+          2,
+          8,
+          4,
+          7,
+          6,
+          8,
+          5,
+          8,
+          2,
+          6,
+          7,
+          1,
+          5,
+          8,
+          7,
+          6,
+          5,
+          2,
+          3,
+          5,
+          5,
+          4,
+          3,
+          4,
+          2,
+          4,
+          5,
+          2,
+          6,
+          7,
+          6,
+          5,
+          2,
+          4,
+          6,
+          5,
+          7,
+          5,
+          4,
+          6,
+          3,
+          7,
+          2,
+          5,
+          4,
+          5,
+          5,
+          5,
+          7,
+          4,
+          5,
+          7,
+          5,
+          6,
+          6
+        ],
+        "deadLootRate": 0.9522968197879859,
+        "slotProgression": [
+          {
+            "slotId": "weapon",
+            "totalUpgrades": 648
+          },
+          {
+            "slotId": "helmet",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "chest",
+            "totalUpgrades": 162
+          },
+          {
+            "slotId": "gloves",
+            "totalUpgrades": 48
+          },
+          {
+            "slotId": "boots",
+            "totalUpgrades": 247
+          },
+          {
+            "slotId": "ring1",
+            "totalUpgrades": 185
+          },
+          {
+            "slotId": "ring2",
+            "totalUpgrades": 31
+          },
+          {
+            "slotId": "amulet",
+            "totalUpgrades": 22
+          },
+          {
+            "slotId": "belt",
+            "totalUpgrades": 162
+          }
+        ],
+        "upgradesByRegion": {
+          "bosque-sussurrante": 963,
+          "pantano-podre": 572
+        },
+        "powerCurveByLevel": [
+          {
+            "level": 1,
+            "averagePowerScore": 303.5706371191136,
+            "samples": 1805
+          },
+          {
+            "level": 2,
+            "averagePowerScore": 343.50946008306414,
+            "samples": 2167
+          },
+          {
+            "level": 3,
+            "averagePowerScore": 377.9303135888502,
+            "samples": 2583
+          },
+          {
+            "level": 4,
+            "averagePowerScore": 414.1740905716407,
+            "samples": 2694
+          },
+          {
+            "level": 5,
+            "averagePowerScore": 456.45902270103886,
+            "samples": 2599
+          },
+          {
+            "level": 6,
+            "averagePowerScore": 501.53769841269843,
+            "samples": 2520
+          },
+          {
+            "level": 7,
+            "averagePowerScore": 534.1824701195219,
+            "samples": 2510
+          },
+          {
+            "level": 8,
+            "averagePowerScore": 558.2321428571429,
+            "samples": 2464
+          },
+          {
+            "level": 9,
+            "averagePowerScore": 580.5603765861646,
+            "samples": 2443
+          },
+          {
+            "level": 10,
+            "averagePowerScore": 602.6361386138614,
+            "samples": 2424
+          },
+          {
+            "level": 11,
+            "averagePowerScore": 624.7727652464495,
+            "samples": 2394
+          },
+          {
+            "level": 12,
+            "averagePowerScore": 647.2917847025495,
+            "samples": 2471
+          },
+          {
+            "level": 13,
+            "averagePowerScore": 670.1098673300165,
+            "samples": 2412
+          },
+          {
+            "level": 14,
+            "averagePowerScore": 692.4810855263158,
+            "samples": 2432
+          },
+          {
+            "level": 15,
+            "averagePowerScore": 714.0984326018809,
+            "samples": 1595
+          },
+          {
+            "level": 16,
+            "averagePowerScore": 738.2881355932203,
+            "samples": 1062
+          },
+          {
+            "level": 17,
+            "averagePowerScore": 759.6371168185584,
+            "samples": 1207
+          },
+          {
+            "level": 18,
+            "averagePowerScore": 781.7235701906412,
+            "samples": 1154
+          },
+          {
+            "level": 19,
+            "averagePowerScore": 804.4799015586547,
+            "samples": 1219
+          },
+          {
+            "level": 20,
+            "averagePowerScore": 825.2511485451761,
+            "samples": 1306
+          },
+          {
+            "level": 21,
+            "averagePowerScore": 849.3828996282527,
+            "samples": 1076
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 876.3218543046357,
+            "samples": 755
+          },
+          {
+            "level": 23,
+            "averagePowerScore": 905.0693641618498,
+            "samples": 519
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 934.7879858657244,
+            "samples": 283
+          },
+          {
+            "level": 25,
+            "averagePowerScore": 955.2237762237762,
+            "samples": 286
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 980.4452830188679,
+            "samples": 265
+          },
+          {
+            "level": 27,
+            "averagePowerScore": 1004.0607287449393,
+            "samples": 247
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1029.0228136882129,
+            "samples": 263
+          },
+          {
+            "level": 29,
+            "averagePowerScore": 1058.4064171122996,
+            "samples": 187
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1086.923076923077,
+            "samples": 39
+          }
+        ],
+        "powerScoreLevel1": 303.5706371191136,
+        "powerScoreLevel20to30": [
+          {
+            "level": 20,
+            "averagePowerScore": 825.2511485451761
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 876.3218543046357
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 934.7879858657244
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 980.4452830188679
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1029.0228136882129
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1086.923076923077
+          }
+        ],
+        "maxPowerScoreObserved": 1168,
+        "runningMaxRecordsByRegion": {
+          "bosque-sussurrante": 954,
+          "pantano-podre": 671,
+          "picos-congelados": 72,
+          "ruinas-esquecidas": 328,
+          "litoral-quebrado": 24,
+          "minas-abandonadas": 4,
+          "deserto-de-vidro": 5,
+          "colinas-aridas": 1
+        },
+        "totalRunningMaxRecords": 2059
+      }
+    },
+    "Weight": {
+      "monteCarlo": {
+        "expectedValueByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "playerLevel": 1,
+            "weapon": {
+              "n": 8000,
+              "mean": 19.905625,
+              "median": 11,
+              "se": 0.19127506971615457,
+              "ci95Low": 19.530725863356338,
+              "ci95High": 20.280524136643663,
+              "p90": 46,
+              "max": 118,
+              "stddev": 17.10816233145332
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.213,
+              "median": 12,
+              "se": 0.0778485155606673,
+              "ci95Low": 15.060416909501091,
+              "ci95High": 15.365583090498907,
+              "p90": 27,
+              "max": 48,
+              "stddev": 6.96298290964409
+            }
+          },
+          {
+            "region": "pantano-podre",
+            "playerLevel": 5,
+            "weapon": {
+              "n": 8000,
+              "mean": 20.335,
+              "median": 11,
+              "se": 0.1958154504246352,
+              "ci95Low": 19.951201717167717,
+              "ci95High": 20.718798282832285,
+              "p90": 47,
+              "max": 131,
+              "stddev": 17.514266327768976
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.083625,
+              "median": 12,
+              "se": 0.07624641947279401,
+              "ci95Low": 14.934182017833324,
+              "ci95High": 15.233067982166675,
+              "p90": 27,
+              "max": 48,
+              "stddev": 6.819687079285243
+            }
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "playerLevel": 15,
+            "weapon": {
+              "n": 8000,
+              "mean": 24.0765,
+              "median": 11,
+              "se": 0.2844860272821059,
+              "ci95Low": 23.518907386527072,
+              "ci95High": 24.634092613472927,
+              "p90": 60,
+              "max": 213,
+              "stddev": 25.445203826065946
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 16.272125,
+              "median": 12,
+              "se": 0.10978278154176052,
+              "ci95Low": 16.05695074817815,
+              "ci95High": 16.48729925182185,
+              "p90": 30,
+              "max": 79,
+              "stddev": 9.819270491455429
+            }
+          },
+          {
+            "region": "picos-congelados",
+            "playerLevel": 20,
+            "weapon": {
+              "n": 8000,
+              "mean": 28.61525,
+              "median": 11,
+              "se": 0.35567650636452375,
+              "ci95Low": 27.918124047525534,
+              "ci95High": 29.312375952474465,
+              "p90": 72,
+              "max": 244,
+              "stddev": 31.812673849228467
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.9805,
+              "median": 12,
+              "se": 0.17382853252198496,
+              "ci95Low": 20.639796076256907,
+              "ci95High": 21.32120392374309,
+              "p90": 49,
+              "max": 80,
+              "stddev": 15.547696605927655
+            }
+          },
+          {
+            "region": "litoral-quebrado",
+            "playerLevel": 24,
+            "weapon": {
+              "n": 8000,
+              "mean": 28.231125,
+              "median": 11,
+              "se": 0.34773233352579014,
+              "ci95Low": 27.54956962628945,
+              "ci95High": 28.912680373710547,
+              "p90": 71,
+              "max": 230,
+              "stddev": 31.10212542953184
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.710125,
+              "median": 12,
+              "se": 0.17086941193656785,
+              "ci95Low": 20.37522095260433,
+              "ci95High": 21.045029047395673,
+              "p90": 48,
+              "max": 80,
+              "stddev": 15.283024814623188
+            }
+          },
+          {
+            "region": "deserto-de-vidro",
+            "playerLevel": 28,
+            "weapon": {
+              "n": 8000,
+              "mean": 28.46325,
+              "median": 11,
+              "se": 0.35207361613685334,
+              "ci95Low": 27.773185712371767,
+              "ci95High": 29.15331428762823,
+              "p90": 71,
+              "max": 227,
+              "stddev": 31.49042155064684
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 20.649125,
+              "median": 12,
+              "se": 0.17156968763974226,
+              "ci95Low": 20.312848412226106,
+              "ci95High": 20.985401587773897,
+              "p90": 49,
+              "max": 79,
+              "stddev": 15.345659377634767
+            }
+          },
+          {
+            "region": "fortaleza-sombria",
+            "playerLevel": 30,
+            "weapon": {
+              "n": 8000,
+              "mean": 30.357,
+              "median": 11,
+              "se": 0.4095921448526486,
+              "ci95Low": 29.55419939608881,
+              "ci95High": 31.15980060391119,
+              "p90": 76,
+              "max": 272,
+              "stddev": 36.63503515761852
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 21.178125,
+              "median": 12,
+              "se": 0.18110197282346394,
+              "ci95Low": 20.823165133266013,
+              "ci95High": 21.53308486673399,
+              "p90": 50,
+              "max": 89,
+              "stddev": 16.198252883703397
+            }
+          }
+        ],
+        "upgradeProbabilityByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "upgradeProbabilityWeapon": 1,
+            "upgradeProbabilityArmor": 1
+          },
+          {
+            "region": "pantano-podre",
+            "upgradeProbabilityWeapon": 0.000125,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "upgradeProbabilityWeapon": 0.00725,
+            "upgradeProbabilityArmor": 0.019125
+          },
+          {
+            "region": "picos-congelados",
+            "upgradeProbabilityWeapon": 0.000125,
+            "upgradeProbabilityArmor": 0.000125
+          },
+          {
+            "region": "litoral-quebrado",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "deserto-de-vidro",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0
+          },
+          {
+            "region": "fortaleza-sombria",
+            "upgradeProbabilityWeapon": 0.000625,
+            "upgradeProbabilityArmor": 0.001875
+          }
+        ],
+        "tierDistribution": {
+          "1": 2963,
+          "2": 14742,
+          "3": 16604,
+          "4": 31311
+        },
+        "modDistribution": {
+          "prefix_cruel": 5887,
+          "prefix_swift": 4780,
+          "suffix_of_frost": 3490,
+          "suffix_of_precision": 3664,
+          "prefix_healthy": 10605,
+          "prefix_heavy": 14201,
+          "suffix_of_accuracy": 3808,
+          "suffix_of_storms": 3514,
+          "suffix_of_the_vampire": 2649,
+          "suffix_of_the_bear": 3439,
+          "suffix_of_fire": 3439,
+          "prefix_vigorous": 6144
+        }
+      },
+      "campaign": {
+        "survivalRate": 0,
+        "averageFinalLevel": 20.073333333333334,
+        "totalUpgradeEvents": 1467,
+        "upgradesPerRun": [
+          9,
+          5,
+          2,
+          5,
+          6,
+          4,
+          6,
+          3,
+          5,
+          6,
+          5,
+          5,
+          5,
+          3,
+          3,
+          6,
+          6,
+          5,
+          5,
+          4,
+          7,
+          5,
+          6,
+          7,
+          6,
+          4,
+          8,
+          9,
+          7,
+          4,
+          4,
+          7,
+          4,
+          5,
+          6,
+          4,
+          6,
+          6,
+          4,
+          6,
+          7,
+          3,
+          4,
+          7,
+          4,
+          4,
+          6,
+          3,
+          5,
+          5,
+          8,
+          6,
+          9,
+          5,
+          6,
+          6,
+          6,
+          8,
+          8,
+          6,
+          4,
+          5,
+          5,
+          4,
+          5,
+          5,
+          3,
+          2,
+          3,
+          8,
+          4,
+          3,
+          5,
+          7,
+          6,
+          5,
+          3,
+          7,
+          4,
+          7,
+          4,
+          6,
+          5,
+          3,
+          7,
+          4,
+          4,
+          5,
+          5,
+          7,
+          6,
+          2,
+          7,
+          5,
+          7,
+          8,
+          3,
+          6,
+          2,
+          4,
+          0,
+          3,
+          3,
+          1,
+          5,
+          7,
+          2,
+          3,
+          2,
+          4,
+          5,
+          6,
+          6,
+          5,
+          8,
+          2,
+          5,
+          6,
+          1,
+          7,
+          7,
+          7,
+          6,
+          2,
+          4,
+          5,
+          4,
+          3,
+          7,
+          6,
+          4,
+          6,
+          2,
+          2,
+          6,
+          9,
+          4,
+          4,
+          3,
+          6,
+          5,
+          7,
+          8,
+          4,
+          3,
+          5,
+          5,
+          4,
+          4,
+          3,
+          5,
+          3,
+          7,
+          8,
+          2,
+          8,
+          5,
+          4,
+          4,
+          6,
+          5,
+          5,
+          5,
+          5,
+          4,
+          4,
+          4,
+          5,
+          7,
+          3,
+          6,
+          5,
+          3,
+          4,
+          5,
+          6,
+          2,
+          7,
+          5,
+          4,
+          4,
+          7,
+          10,
+          3,
+          5,
+          2,
+          2,
+          7,
+          3,
+          7,
+          4,
+          3,
+          6,
+          5,
+          4,
+          5,
+          6,
+          2,
+          4,
+          4,
+          7,
+          5,
+          1,
+          4,
+          7,
+          4,
+          3,
+          5,
+          4,
+          7,
+          4,
+          6,
+          4,
+          5,
+          4,
+          2,
+          3,
+          5,
+          2,
+          6,
+          4,
+          7,
+          5,
+          4,
+          6,
+          3,
+          5,
+          5,
+          12,
+          3,
+          4,
+          4,
+          6,
+          5,
+          7,
+          5,
+          5,
+          6,
+          7,
+          8,
+          4,
+          3,
+          3,
+          4,
+          2,
+          2,
+          7,
+          4,
+          8,
+          8,
+          8,
+          5,
+          7,
+          3,
+          6,
+          7,
+          1,
+          5,
+          4,
+          7,
+          6,
+          5,
+          2,
+          3,
+          3,
+          5,
+          4,
+          3,
+          4,
+          2,
+          4,
+          5,
+          2,
+          5,
+          7,
+          6,
+          6,
+          2,
+          4,
+          4,
+          5,
+          7,
+          3,
+          4,
+          4,
+          3,
+          7,
+          2,
+          5,
+          3,
+          5,
+          6,
+          5,
+          8,
+          4,
+          5,
+          7,
+          4,
+          6,
+          6
+        ],
+        "deadLootRate": 0.9522053266422806,
+        "slotProgression": [
+          {
+            "slotId": "weapon",
+            "totalUpgrades": 615
+          },
+          {
+            "slotId": "helmet",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "chest",
+            "totalUpgrades": 147
+          },
+          {
+            "slotId": "gloves",
+            "totalUpgrades": 48
+          },
+          {
+            "slotId": "boots",
+            "totalUpgrades": 247
+          },
+          {
+            "slotId": "ring1",
+            "totalUpgrades": 167
+          },
+          {
+            "slotId": "ring2",
+            "totalUpgrades": 31
+          },
+          {
+            "slotId": "amulet",
+            "totalUpgrades": 20
+          },
+          {
+            "slotId": "belt",
+            "totalUpgrades": 162
+          }
+        ],
+        "upgradesByRegion": {
+          "bosque-sussurrante": 963,
+          "pantano-podre": 504
+        },
+        "powerCurveByLevel": [
+          {
+            "level": 1,
+            "averagePowerScore": 303.5706371191136,
+            "samples": 1805
+          },
+          {
+            "level": 2,
+            "averagePowerScore": 343.50946008306414,
+            "samples": 2167
+          },
+          {
+            "level": 3,
+            "averagePowerScore": 377.9303135888502,
+            "samples": 2583
+          },
+          {
+            "level": 4,
+            "averagePowerScore": 414.1740905716407,
+            "samples": 2694
+          },
+          {
+            "level": 5,
+            "averagePowerScore": 451.44530046224963,
+            "samples": 2596
+          },
+          {
+            "level": 6,
+            "averagePowerScore": 488.70761866773034,
+            "samples": 2507
+          },
+          {
+            "level": 7,
+            "averagePowerScore": 517.2467793880837,
+            "samples": 2484
+          },
+          {
+            "level": 8,
+            "averagePowerScore": 540.8725165562914,
+            "samples": 2416
+          },
+          {
+            "level": 9,
+            "averagePowerScore": 563.5357142857143,
+            "samples": 2380
+          },
+          {
+            "level": 10,
+            "averagePowerScore": 585.7580782312925,
+            "samples": 2352
+          },
+          {
+            "level": 11,
+            "averagePowerScore": 607.6323024054983,
+            "samples": 2328
+          },
+          {
+            "level": 12,
+            "averagePowerScore": 629.8083333333333,
+            "samples": 2400
+          },
+          {
+            "level": 13,
+            "averagePowerScore": 652.6970212765957,
+            "samples": 2350
+          },
+          {
+            "level": 14,
+            "averagePowerScore": 675.1607976240984,
+            "samples": 2357
+          },
+          {
+            "level": 15,
+            "averagePowerScore": 697.5136363636364,
+            "samples": 1540
+          },
+          {
+            "level": 16,
+            "averagePowerScore": 721.7188118811881,
+            "samples": 1010
+          },
+          {
+            "level": 17,
+            "averagePowerScore": 742.2301112061591,
+            "samples": 1169
+          },
+          {
+            "level": 18,
+            "averagePowerScore": 764.4793767186068,
+            "samples": 1091
+          },
+          {
+            "level": 19,
+            "averagePowerScore": 787.8859878154917,
+            "samples": 1149
+          },
+          {
+            "level": 20,
+            "averagePowerScore": 808.681336593317,
+            "samples": 1227
+          },
+          {
+            "level": 21,
+            "averagePowerScore": 833.8302277432712,
+            "samples": 966
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 860.3194650817236,
+            "samples": 673
+          },
+          {
+            "level": 23,
+            "averagePowerScore": 888.5816326530612,
+            "samples": 392
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 915.1296296296297,
+            "samples": 216
+          },
+          {
+            "level": 25,
+            "averagePowerScore": 936.7173913043479,
+            "samples": 230
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 961.4524886877828,
+            "samples": 221
+          },
+          {
+            "level": 27,
+            "averagePowerScore": 984.1595744680851,
+            "samples": 188
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1007.5758928571429,
+            "samples": 224
+          },
+          {
+            "level": 29,
+            "averagePowerScore": 1038.371212121212,
+            "samples": 132
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1068.7826086956522,
+            "samples": 23
+          }
+        ],
+        "powerScoreLevel1": 303.5706371191136,
+        "powerScoreLevel20to30": [
+          {
+            "level": 20,
+            "averagePowerScore": 808.681336593317
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 860.3194650817236
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 915.1296296296297
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 961.4524886877828
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1007.5758928571429
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1068.7826086956522
+          }
+        ],
+        "maxPowerScoreObserved": 1121,
+        "runningMaxRecordsByRegion": {
+          "bosque-sussurrante": 954,
+          "pantano-podre": 515,
+          "ruinas-esquecidas": 475,
+          "picos-congelados": 25,
+          "litoral-quebrado": 12,
+          "minas-abandonadas": 7,
+          "deserto-de-vidro": 2
+        },
+        "totalRunningMaxRecords": 1990
+      }
+    },
+    "Combined": {
+      "monteCarlo": {
+        "expectedValueByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "playerLevel": 1,
+            "weapon": {
+              "n": 8000,
+              "mean": 19.905625,
+              "median": 11,
+              "se": 0.19127506971615457,
+              "ci95Low": 19.530725863356338,
+              "ci95High": 20.280524136643663,
+              "p90": 46,
+              "max": 118,
+              "stddev": 17.10816233145332
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.213,
+              "median": 12,
+              "se": 0.0778485155606673,
+              "ci95Low": 15.060416909501091,
+              "ci95High": 15.365583090498907,
+              "p90": 27,
+              "max": 48,
+              "stddev": 6.96298290964409
+            }
+          },
+          {
+            "region": "pantano-podre",
+            "playerLevel": 5,
+            "weapon": {
+              "n": 8000,
+              "mean": 22.51175,
+              "median": 11,
+              "se": 0.2514015990247309,
+              "ci95Low": 22.019002865911528,
+              "ci95High": 23.00449713408847,
+              "p90": 51,
+              "max": 160,
+              "stddev": 22.486042602857726
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 15.86425,
+              "median": 12,
+              "se": 0.0929156687119388,
+              "ci95Low": 15.6821352893246,
+              "ci95High": 16.0463647106754,
+              "p90": 31,
+              "max": 55,
+              "stddev": 8.31063005658982
+            }
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "playerLevel": 15,
+            "weapon": {
+              "n": 8000,
+              "mean": 29.9985,
+              "median": 11,
+              "se": 0.3993813963102853,
+              "ci95Low": 29.215712463231842,
+              "ci95High": 30.781287536768158,
+              "p90": 76,
+              "max": 283,
+              "stddev": 35.72175804394327
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 21.125625,
+              "median": 12,
+              "se": 0.1797680252990453,
+              "ci95Low": 20.77327967041387,
+              "ci95High": 21.477970329586128,
+              "p90": 50,
+              "max": 85,
+              "stddev": 16.07894098998269
+            }
+          },
+          {
+            "region": "picos-congelados",
+            "playerLevel": 20,
+            "weapon": {
+              "n": 8000,
+              "mean": 33.891125,
+              "median": 11,
+              "se": 0.47910916960991806,
+              "ci95Low": 32.952071027564564,
+              "ci95High": 34.83017897243544,
+              "p90": 90,
+              "max": 319,
+              "stddev": 42.85282687565013
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 22.643,
+              "median": 12,
+              "se": 0.21448726681320238,
+              "ci95Low": 22.222604957046123,
+              "ci95High": 23.06339504295388,
+              "p90": 56,
+              "max": 123,
+              "stddev": 19.18432435609821
+            }
+          },
+          {
+            "region": "litoral-quebrado",
+            "playerLevel": 24,
+            "weapon": {
+              "n": 8000,
+              "mean": 41.46725,
+              "median": 11,
+              "se": 0.5939584294626272,
+              "ci95Low": 40.30309147825325,
+              "ci95High": 42.63140852174675,
+              "p90": 112,
+              "max": 411,
+              "stddev": 53.12525696349794
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 31.092875,
+              "median": 12,
+              "se": 0.32704152053570046,
+              "ci95Low": 30.451873619750028,
+              "ci95High": 31.73387638024997,
+              "p90": 86,
+              "max": 130,
+              "stddev": 29.251482855308787
+            }
+          },
+          {
+            "region": "deserto-de-vidro",
+            "playerLevel": 28,
+            "weapon": {
+              "n": 8000,
+              "mean": 43.124,
+              "median": 11,
+              "se": 0.6286030021006744,
+              "ci95Low": 41.89193811588268,
+              "ci95High": 44.356061884117324,
+              "p90": 120,
+              "max": 423,
+              "stddev": 56.22396174230205
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 31.746125,
+              "median": 12,
+              "se": 0.3397517333444362,
+              "ci95Low": 31.080211602644905,
+              "ci95High": 32.4120383973551,
+              "p90": 88,
+              "max": 150,
+              "stddev": 30.388318849261655
+            }
+          },
+          {
+            "region": "fortaleza-sombria",
+            "playerLevel": 30,
+            "weapon": {
+              "n": 8000,
+              "mean": 44.1645,
+              "median": 11,
+              "se": 0.6506033199797913,
+              "ci95Low": 42.88931749283961,
+              "ci95High": 45.439682507160384,
+              "p90": 125,
+              "max": 423,
+              "stddev": 58.19172999447442
+            },
+            "armor": {
+              "n": 8000,
+              "mean": 32.647875,
+              "median": 12,
+              "se": 0.3627389097174899,
+              "ci95Low": 31.93690673695372,
+              "ci95High": 33.35884326304628,
+              "p90": 91,
+              "max": 151,
+              "stddev": 32.44435440849866
+            }
+          }
+        ],
+        "upgradeProbabilityByRegion": [
+          {
+            "region": "bosque-sussurrante",
+            "upgradeProbabilityWeapon": 1,
+            "upgradeProbabilityArmor": 1
+          },
+          {
+            "region": "pantano-podre",
+            "upgradeProbabilityWeapon": 0.008125,
+            "upgradeProbabilityArmor": 0.004375
+          },
+          {
+            "region": "colinas-aridas/minas-abandonadas/ruinas-esquecidas",
+            "upgradeProbabilityWeapon": 0.014375,
+            "upgradeProbabilityArmor": 0.065
+          },
+          {
+            "region": "picos-congelados",
+            "upgradeProbabilityWeapon": 0.00025,
+            "upgradeProbabilityArmor": 0.01075
+          },
+          {
+            "region": "litoral-quebrado",
+            "upgradeProbabilityWeapon": 0.00175,
+            "upgradeProbabilityArmor": 0.001375
+          },
+          {
+            "region": "deserto-de-vidro",
+            "upgradeProbabilityWeapon": 0.000125,
+            "upgradeProbabilityArmor": 0.001875
+          },
+          {
+            "region": "fortaleza-sombria",
+            "upgradeProbabilityWeapon": 0,
+            "upgradeProbabilityArmor": 0.000125
+          }
+        ],
+        "tierDistribution": {
+          "1": 9246,
+          "2": 24599,
+          "3": 13687,
+          "4": 24138
+        },
+        "modDistribution": {
+          "prefix_cruel": 5887,
+          "prefix_swift": 4780,
+          "suffix_of_frost": 3479,
+          "suffix_of_precision": 3684,
+          "prefix_healthy": 10605,
+          "prefix_heavy": 14201,
+          "suffix_of_accuracy": 3829,
+          "suffix_of_storms": 3499,
+          "suffix_of_the_vampire": 2653,
+          "suffix_of_the_bear": 3439,
+          "suffix_of_fire": 3420,
+          "prefix_vigorous": 7663,
+          "prefix_massive": 4531
+        }
+      },
+      "campaign": {
+        "survivalRate": 0,
+        "averageFinalLevel": 21.176666666666666,
+        "totalUpgradeEvents": 1561,
+        "upgradesPerRun": [
+          9,
+          5,
+          4,
+          5,
+          6,
+          4,
+          6,
+          3,
+          6,
+          6,
+          7,
+          6,
+          7,
+          3,
+          3,
+          6,
+          6,
+          5,
+          5,
+          5,
+          7,
+          6,
+          6,
+          7,
+          6,
+          4,
+          8,
+          9,
+          7,
+          4,
+          5,
+          8,
+          4,
+          5,
+          7,
+          5,
+          5,
+          6,
+          4,
+          7,
+          7,
+          3,
+          4,
+          7,
+          4,
+          6,
+          6,
+          4,
+          6,
+          5,
+          8,
+          6,
+          9,
+          5,
+          6,
+          5,
+          6,
+          8,
+          7,
+          7,
+          5,
+          6,
+          5,
+          4,
+          4,
+          6,
+          3,
+          3,
+          3,
+          8,
+          3,
+          3,
+          5,
+          5,
+          7,
+          5,
+          3,
+          7,
+          4,
+          7,
+          4,
+          8,
+          5,
+          3,
+          7,
+          5,
+          5,
+          5,
+          5,
+          6,
+          6,
+          2,
+          7,
+          4,
+          8,
+          8,
+          3,
+          6,
+          2,
+          4,
+          0,
+          3,
+          3,
+          1,
+          5,
+          7,
+          2,
+          3,
+          2,
+          4,
+          5,
+          6,
+          6,
+          6,
+          7,
+          3,
+          5,
+          6,
+          1,
+          7,
+          7,
+          8,
+          6,
+          2,
+          5,
+          6,
+          4,
+          7,
+          7,
+          7,
+          4,
+          6,
+          2,
+          2,
+          6,
+          11,
+          4,
+          4,
+          6,
+          6,
+          5,
+          8,
+          9,
+          4,
+          3,
+          5,
+          5,
+          4,
+          4,
+          3,
+          6,
+          4,
+          7,
+          8,
+          2,
+          8,
+          6,
+          5,
+          5,
+          6,
+          5,
+          5,
+          6,
+          5,
+          6,
+          4,
+          6,
+          4,
+          7,
+          5,
+          6,
+          7,
+          3,
+          5,
+          6,
+          6,
+          2,
+          7,
+          5,
+          6,
+          5,
+          7,
+          10,
+          3,
+          5,
+          2,
+          2,
+          7,
+          5,
+          7,
+          4,
+          3,
+          7,
+          5,
+          4,
+          6,
+          8,
+          5,
+          4,
+          4,
+          5,
+          5,
+          1,
+          4,
+          7,
+          5,
+          3,
+          6,
+          4,
+          10,
+          5,
+          6,
+          4,
+          5,
+          4,
+          4,
+          4,
+          5,
+          2,
+          6,
+          5,
+          7,
+          5,
+          4,
+          6,
+          3,
+          6,
+          5,
+          12,
+          4,
+          5,
+          6,
+          6,
+          6,
+          8,
+          6,
+          5,
+          6,
+          8,
+          10,
+          4,
+          3,
+          4,
+          4,
+          2,
+          2,
+          7,
+          4,
+          7,
+          6,
+          7,
+          5,
+          8,
+          2,
+          6,
+          7,
+          1,
+          5,
+          8,
+          7,
+          6,
+          9,
+          2,
+          3,
+          4,
+          5,
+          4,
+          4,
+          4,
+          2,
+          4,
+          5,
+          2,
+          6,
+          7,
+          6,
+          5,
+          3,
+          4,
+          6,
+          5,
+          7,
+          5,
+          4,
+          4,
+          3,
+          6,
+          2,
+          5,
+          4,
+          5,
+          5,
+          5,
+          7,
+          4,
+          5,
+          7,
+          5,
+          6,
+          6
+        ],
+        "deadLootRate": 0.9520718350539049,
+        "slotProgression": [
+          {
+            "slotId": "weapon",
+            "totalUpgrades": 666
+          },
+          {
+            "slotId": "helmet",
+            "totalUpgrades": 30
+          },
+          {
+            "slotId": "chest",
+            "totalUpgrades": 164
+          },
+          {
+            "slotId": "gloves",
+            "totalUpgrades": 48
+          },
+          {
+            "slotId": "boots",
+            "totalUpgrades": 247
+          },
+          {
+            "slotId": "ring1",
+            "totalUpgrades": 185
+          },
+          {
+            "slotId": "ring2",
+            "totalUpgrades": 36
+          },
+          {
+            "slotId": "amulet",
+            "totalUpgrades": 23
+          },
+          {
+            "slotId": "belt",
+            "totalUpgrades": 162
+          }
+        ],
+        "upgradesByRegion": {
+          "bosque-sussurrante": 963,
+          "pantano-podre": 598
+        },
+        "powerCurveByLevel": [
+          {
+            "level": 1,
+            "averagePowerScore": 303.5706371191136,
+            "samples": 1805
+          },
+          {
+            "level": 2,
+            "averagePowerScore": 343.50946008306414,
+            "samples": 2167
+          },
+          {
+            "level": 3,
+            "averagePowerScore": 377.9303135888502,
+            "samples": 2583
+          },
+          {
+            "level": 4,
+            "averagePowerScore": 414.1740905716407,
+            "samples": 2694
+          },
+          {
+            "level": 5,
+            "averagePowerScore": 457.9026548672566,
+            "samples": 2599
+          },
+          {
+            "level": 6,
+            "averagePowerScore": 505.7940476190476,
+            "samples": 2520
+          },
+          {
+            "level": 7,
+            "averagePowerScore": 540.1338645418326,
+            "samples": 2510
+          },
+          {
+            "level": 8,
+            "averagePowerScore": 564.4586038961039,
+            "samples": 2464
+          },
+          {
+            "level": 9,
+            "averagePowerScore": 587.011841567987,
+            "samples": 2449
+          },
+          {
+            "level": 10,
+            "averagePowerScore": 608.8845047266749,
+            "samples": 2433
+          },
+          {
+            "level": 11,
+            "averagePowerScore": 630.8646397334444,
+            "samples": 2401
+          },
+          {
+            "level": 12,
+            "averagePowerScore": 653.7041515517936,
+            "samples": 2481
+          },
+          {
+            "level": 13,
+            "averagePowerScore": 676.3369160810253,
+            "samples": 2419
+          },
+          {
+            "level": 14,
+            "averagePowerScore": 698.5544635544636,
+            "samples": 2442
+          },
+          {
+            "level": 15,
+            "averagePowerScore": 721.0062421972534,
+            "samples": 1602
+          },
+          {
+            "level": 16,
+            "averagePowerScore": 745.1885553470919,
+            "samples": 1066
+          },
+          {
+            "level": 17,
+            "averagePowerScore": 767.2232289950576,
+            "samples": 1214
+          },
+          {
+            "level": 18,
+            "averagePowerScore": 788.1252158894646,
+            "samples": 1158
+          },
+          {
+            "level": 19,
+            "averagePowerScore": 810.6385936222404,
+            "samples": 1223
+          },
+          {
+            "level": 20,
+            "averagePowerScore": 832.093058733791,
+            "samples": 1311
+          },
+          {
+            "level": 21,
+            "averagePowerScore": 856.236148955495,
+            "samples": 1101
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 884.4522613065327,
+            "samples": 796
+          },
+          {
+            "level": 23,
+            "averagePowerScore": 914.2368896925859,
+            "samples": 553
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 946.1832797427653,
+            "samples": 311
+          },
+          {
+            "level": 25,
+            "averagePowerScore": 967.6739811912225,
+            "samples": 319
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 994.4229508196721,
+            "samples": 305
+          },
+          {
+            "level": 27,
+            "averagePowerScore": 1014.3210702341137,
+            "samples": 299
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1039.8698412698413,
+            "samples": 315
+          },
+          {
+            "level": 29,
+            "averagePowerScore": 1073.705357142857,
+            "samples": 224
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1107.2,
+            "samples": 60
+          }
+        ],
+        "powerScoreLevel1": 303.5706371191136,
+        "powerScoreLevel20to30": [
+          {
+            "level": 20,
+            "averagePowerScore": 832.093058733791
+          },
+          {
+            "level": 22,
+            "averagePowerScore": 884.4522613065327
+          },
+          {
+            "level": 24,
+            "averagePowerScore": 946.1832797427653
+          },
+          {
+            "level": 26,
+            "averagePowerScore": 994.4229508196721
+          },
+          {
+            "level": 28,
+            "averagePowerScore": 1039.8698412698413
+          },
+          {
+            "level": 30,
+            "averagePowerScore": 1107.2
+          }
+        ],
+        "maxPowerScoreObserved": 1219,
+        "runningMaxRecordsByRegion": {
+          "bosque-sussurrante": 954,
+          "pantano-podre": 691,
+          "picos-congelados": 66,
+          "ruinas-esquecidas": 381,
+          "litoral-quebrado": 28,
+          "minas-abandonadas": 6,
+          "deserto-de-vidro": 5,
+          "fortaleza-sombria": 1,
+          "colinas-aridas": 2
+        },
+        "totalRunningMaxRecords": 2134
+      }
+    }
+  },
+  "interaction": {
+    "averageUpgradesPerRun": {
+      "baseline": 4.88,
+      "threshold": 5.116666666666666,
+      "weight": 4.89,
+      "combined": 5.203333333333333,
+      "effectThreshold": 0.23666666666666636,
+      "effectWeight": 0.009999999999999787,
+      "combinedObserved": 0.32333333333333325,
+      "additivePrediction": 0.24666666666666615,
+      "synergy": 0.0766666666666671
+    },
+    "deadLootRatePct": {
+      "baseline": 95.2186040870778,
+      "threshold": 95.22968197879858,
+      "weight": 95.22053266422806,
+      "combined": 95.20718350539049,
+      "effectThreshold": 0.011077891720788102,
+      "effectWeight": 0.0019285771502666194,
+      "combinedObserved": -0.011420581687303866,
+      "additivePrediction": 0.013006468871054722,
+      "synergy": -0.024427050558358587
+    },
+    "powerScoreLevel30": {
+      "baseline": 1067.4285714285713,
+      "threshold": 1086.923076923077,
+      "weight": 1068.7826086956522,
+      "combined": 1107.2,
+      "effectThreshold": 19.494505494505574,
+      "effectWeight": 1.354037267080912,
+      "combinedObserved": 39.771428571428714,
+      "additivePrediction": 20.848542761586486,
+      "synergy": 18.922885809842228
+    },
+    "totalRunningMaxRecords": {
+      "baseline": 1951,
+      "threshold": 2059,
+      "weight": 1990,
+      "combined": 2134,
+      "effectThreshold": 108,
+      "effectWeight": 39,
+      "combinedObserved": 183,
+      "additivePrediction": 147,
+      "synergy": 36
+    }
+  },
+  "significance": {
+    "thresholdVsBaseline": {
+      "zScore": 1.5961720882674093,
+      "classification": "pequeno"
+    },
+    "weightVsBaseline": {
+      "zScore": 0.06760718955052863,
+      "classification": "inexistente"
+    },
+    "combinedVsBaseline": {
+      "zScore": 2.1623594499706384,
+      "classification": "moderado"
+    },
+    "combinedVsBestIndividual": {
+      "zScore": 0.5774195561007371,
+      "classification": "inexistente"
+    }
+  }
+}

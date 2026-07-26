@@ -211,7 +211,7 @@ export function WorldPage() {
             },
             {
               label: "Exploração",
-              value: `${kingdom.expeditions_active} expedição${kingdom.expeditions_active === 1 ? "" : "ões"} em andamento`,
+              value: `${kingdom.expeditions_active} ${kingdom.expeditions_active === 1 ? "expedição" : "expedições"} em andamento`,
             },
             { label: "Gold em circulação", value: kingdom.gold_in_circulation.toFixed(1) },
           ]}

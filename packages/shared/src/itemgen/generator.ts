@@ -3,8 +3,9 @@ import { getRarityDefinition, ITEM_GEN_RARITIES } from "./rarities.js";
 import { ITEM_GEN_PREFIXES } from "./prefixes.js";
 import { ITEM_GEN_SUFFIXES } from "./suffixes.js";
 import { calculatePowerScore } from "./powerScore.js";
+import { getEffectiveModWeight } from "./weights.js";
 import { createSeededRandom, pickWeighted, randomInt, type ItemGenRandom } from "./rng.js";
-import { getDefaultAffixSelectionStrategy, type AffixSelectionStrategy, type ModRollState } from "./selectionStrategy.js";
+import { getAffixEnvelope, rollContinuousAffixValue, identityTierForValue } from "./continuousScaling.js";
 import type {
   ItemGenBaseItem,
   ItemGenGeneratedItem,
@@ -20,27 +21,83 @@ function isModEligibleForBase(mod: ItemGenModDefinition, base: ItemGenBaseItem):
   return mod.requiredTags.every((tag) => base.tags.includes(tag));
 }
 
-// Affix Selection Redesign — Prototype Phase I: a escolha de QUAIS mods
-// entram (antes `rollDistinctMods`) e QUAL tier cada um rola (antes o
-// `pickWeighted` direto abaixo) agora vive atrás de `AffixSelectionStrategy`
-// (selectionStrategy.ts) — generator.ts só chama a estratégia ativa,
-// nunca sabe qual é. `CurrentAffixSelectionStrategy` (o default
-// permanente) reproduz exatamente a mesma lógica/ordem de chamadas de
-// `rng()` que existia aqui antes desta Sprint — zero mudança de
-// comportamento para qualquer chamador que não passe `options.strategy`.
+// Continuous Affix Scaling Phase I — substitui o "Affix Selection
+// Strategy" (selectionStrategy.ts, Sprint "Affix Selection Redesign —
+// Prototype Phase I") e a filtragem de elegibilidade por
+// `minItemLevel` que existia aqui: 4 Sprints de investigação (Threshold
+// Rescaling, Tier Weight Rebalance, Threshold+Weight Interaction,
+// Selection Strategy) demonstraram que nenhum ajuste de PARÂMETRO do
+// sistema de tiers-com-degraus resolve a estagnação de Dead Loot/
+// progressão (ver reports/item-generation-*.md) — a linha de
+// parametrização foi oficialmente encerrada. Esta Sprint substitui o
+// MECANISMO: `continuousScaling.ts` computa o valor de cada afixo como
+// função contínua do Item Level, e os tiers deixam de gatear
+// elegibilidade ou ser sorteados por peso (Fase 6 — só rotulam
+// qualidade/identidade do valor já rolado). `selectionStrategy.ts` não
+// é mais importado por este arquivo (não há mais um "tier a escolher");
+// mod SELECTION (`rollDistinctMods` abaixo) continua EXATAMENTE como
+// antes — nunca foi a variável experimental de nenhuma das Sprints
+// anteriores.
+interface ModRollState {
+  committedGroups: Set<string>;
+  blockedGroups: Set<string>;
+}
 
-// Passos 5+6 do pipeline (Tier Roll + Value Roll) para um mod já
-// escolhido: filtra os tiers desbloqueados pelo Item Level e delega à
-// estratégia ativa a escolha ENTRE os elegíveis, então rola o valor
-// dentro da faixa do tier sorteado. Retorna null quando o Item Level é
-// baixo demais para desbloquear qualquer tier deste mod — esse mod
-// simplesmente não entra no item final.
-function rollMod(rng: ItemGenRandom, mod: ItemGenModDefinition, itemLevel: number, strategy: AffixSelectionStrategy): ItemGenRolledMod | null {
-  const eligibleTiers = mod.tiers.filter((tier) => tier.minItemLevel <= itemLevel);
-  if (eligibleTiers.length === 0) return null;
+function isModCompatibleWithState(mod: ItemGenModDefinition, state: ModRollState): boolean {
+  if (state.committedGroups.has(mod.group)) return false;
+  if (state.blockedGroups.has(mod.group)) return false;
+  // Bloqueio bidirecional: se o mod candidato exclui o grupo de algo já
+  // escolhido, também não pode entrar — não é preciso declarar
+  // `excludesGroups` dos dois lados.
+  if (mod.excludesGroups.some((group) => state.committedGroups.has(group))) return false;
+  return true;
+}
 
-  const tier = strategy.pickTier(rng, eligibleTiers, itemLevel);
-  const value = randomInt(rng, tier.min, tier.max);
+function commitMod(mod: ItemGenModDefinition, state: ModRollState): void {
+  state.committedGroups.add(mod.group);
+  for (const group of mod.excludesGroups) state.blockedGroups.add(group);
+}
+
+// Sorteia até `count` mods distintos e compatíveis entre si (grupo
+// único + sem exclusão), usando o peso EFETIVO (base x Base Item x
+// raridade — weights.ts) em vez do peso bruto do mod. Passo 4 do
+// pipeline (Mod Selection) — inalterado por esta Sprint.
+function rollDistinctMods(
+  rng: ItemGenRandom,
+  eligiblePool: readonly ItemGenModDefinition[],
+  count: number,
+  base: ItemGenBaseItem,
+  rarity: ItemGenRarityId,
+  state: ModRollState,
+  modTagWeightMultipliers: Partial<Record<string, number>> | undefined,
+): ItemGenModDefinition[] {
+  const picked: ItemGenModDefinition[] = [];
+  while (picked.length < count) {
+    const candidates = eligiblePool
+      .filter((mod) => isModCompatibleWithState(mod, state))
+      .map((mod) => ({ mod, weight: getEffectiveModWeight(mod, base, rarity, modTagWeightMultipliers) }))
+      .filter((candidate) => candidate.weight > 0);
+    if (candidates.length === 0) break;
+
+    const choice = pickWeighted(rng, candidates).mod;
+    picked.push(choice);
+    commitMod(choice, state);
+  }
+  return picked;
+}
+
+// Passos 5+6 do pipeline (Tier Roll + Value Roll), agora contínuos: o
+// valor é `rollContinuousAffixValue()` sobre o envelope do GROUP do mod
+// (não do mod individual — ver continuousScaling.ts pra a razão), e o
+// `tier` retornado é só o rótulo de qualidade mais próximo dentre os
+// PRÓPRIOS tiers do mod (identidade, nunca controla o valor). Nunca
+// retorna null — todo mod agora produz um valor em qualquer Item Level
+// (o antigo "Item Level baixo demais, mod nem entra no item" deixou de
+// existir junto com a elegibilidade por limiar).
+function rollMod(rng: ItemGenRandom, mod: ItemGenModDefinition, itemLevel: number): ItemGenRolledMod {
+  const envelope = getAffixEnvelope(mod.group);
+  const value = rollContinuousAffixValue(rng, envelope, itemLevel);
+  const tier = identityTierForValue(mod.tiers, value);
 
   return {
     modId: mod.id,
@@ -49,7 +106,7 @@ function rollMod(rng: ItemGenRandom, mod: ItemGenModDefinition, itemLevel: numbe
     name: mod.name,
     statLabel: mod.statLabel,
     tags: mod.tags,
-    tier: tier.tier,
+    tier,
     value,
   };
 }
@@ -71,15 +128,6 @@ function rollMod(rng: ItemGenRandom, mod: ItemGenModDefinition, itemLevel: numbe
 export interface GenerateItemOptions {
   rarityWeightMultipliers?: Partial<Record<ItemGenRarityId, number>>;
   modTagWeightMultipliers?: Partial<Record<string, number>>;
-  // Affix Selection Redesign — Prototype Phase I: override POR CHAMADA,
-  // usado só pela camada de comparação experimental (nunca por
-  // lootgen/adventure/dungeon, que continuam chamando generateItem()
-  // sem este campo e por isso sempre recebem o default global — ver
-  // getDefaultAffixSelectionStrategy() em selectionStrategy.ts). Ausente
-  // = usa o default global (CurrentAffixSelectionStrategy, a menos que
-  // um experimento de campanha completa o tenha trocado via
-  // setDefaultAffixSelectionStrategy()).
-  strategy?: AffixSelectionStrategy;
 }
 
 // Pipeline completo do Item Generator (requisitos 1-8 do Phase I + o
@@ -109,7 +157,6 @@ export function generateItem(
   }
 
   const rng = createSeededRandom(seed);
-  const strategy = options.strategy ?? getDefaultAffixSelectionStrategy();
 
   // ITEM_GEN_RARITIES usa `dropWeight` (nome do requisito 2: "peso de
   // drop"), não `weight` (usado pelos mods em prefixes.ts/suffixes.ts)
@@ -137,15 +184,13 @@ export function generateItem(
   // não só dentro de cada lista.
   const state: ModRollState = { committedGroups: new Set(), blockedGroups: new Set() };
 
-  const rolledPrefixes = strategy
-    .pickMods(rng, eligiblePrefixes, prefixCount, base, rarityDef.id, state, options.modTagWeightMultipliers)
-    .map((mod) => rollMod(rng, mod, itemLevel, strategy))
-    .filter((mod): mod is ItemGenRolledMod => mod !== null);
+  const rolledPrefixes = rollDistinctMods(rng, eligiblePrefixes, prefixCount, base, rarityDef.id, state, options.modTagWeightMultipliers).map((mod) =>
+    rollMod(rng, mod, itemLevel),
+  );
 
-  const rolledSuffixes = strategy
-    .pickMods(rng, eligibleSuffixes, suffixCount, base, rarityDef.id, state, options.modTagWeightMultipliers)
-    .map((mod) => rollMod(rng, mod, itemLevel, strategy))
-    .filter((mod): mod is ItemGenRolledMod => mod !== null);
+  const rolledSuffixes = rollDistinctMods(rng, eligibleSuffixes, suffixCount, base, rarityDef.id, state, options.modTagWeightMultipliers).map((mod) =>
+    rollMod(rng, mod, itemLevel),
+  );
 
   const powerScore = calculatePowerScore(base, [...rolledPrefixes, ...rolledSuffixes]);
 
