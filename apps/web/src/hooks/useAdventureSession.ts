@@ -13,6 +13,8 @@ import {
   xpForLevel,
   EQUIPMENT_SLOT_DEFINITIONS,
   getEquipmentSlotDefinition,
+  IdleDriver,
+  type IdleDriverStatus,
   type AdventureSession,
   type AdventureTimeline,
   type PresentationEvent,
@@ -25,10 +27,24 @@ import {
 } from "@streamrpg/shared";
 import { api } from "../lib/api";
 
+// Global Idle System — Architecture Refactor: intervalo real do driver
+// (2.5s, valor herdado de "Idle Loop Implementation Phase I", nunca
+// mudou) e frequência do polling que checa "já é hora?" (100ms, mesmo
+// valor que o antigo useIdleDriver.ts já usava). Ambos migraram de
+// AdventurePage.tsx pra cá porque o timer que os usa agora vive no
+// singleton de módulo, não mais dentro do componente.
+const IDLE_TICK_INTERVAL_MS = 2500;
+const IDLE_POLL_INTERVAL_MS = 100;
+
 const DEMO_CHARACTER_ID = "vertical-slice-hero";
 const DEMO_CLASS_ID = "warrior";
 const DEMO_REGION_ID = "bosque-sussurrante";
-const DEMO_INVENTORY_CAPACITY = 24;
+// Backpack Experience Phase I — exportado pra que a Mochila (Fase 5,
+// "sinais de mochila") use a MESMA referência de capacidade que o
+// motor já usa, em vez de inventar um número novo — só leitura, nunca
+// um novo limite/gate (o real continua sendo decidido só por
+// `Inventory` em packages/shared).
+export const DEMO_INVENTORY_CAPACITY = 24;
 
 // Vertical Slice — Persistent Player Experience Phase I — Fase 2/3: o
 // motor (packages/shared, Item Generator, intocado) usa 4 raridades
@@ -259,6 +275,29 @@ interface AdventureSingleton {
 let singleton: AdventureSingleton | null = null;
 let initPromise: Promise<void> | null = null;
 
+// Global Idle System — Architecture Refactor: "A interface nunca deverá
+// controlar a simulação. A interface apenas observa e envia comandos.
+// A simulação vive sozinha. Sempre." — o IdleDriver e seu setInterval
+// agora vivem no MESMO escopo de módulo que `singleton` (não mais
+// dentro de AdventurePage/useIdleDriver.ts), pelo mesmo motivo que
+// `session`/`timeline` vieram pra cá na Sprint "Adventure Session
+// Persistence": este módulo só é recarregado num F5 de verdade, nunca
+// numa troca de rota — então o timer sobrevive a qualquer navegação.
+// `subscribers` é o mecanismo de notificação: cada `useAdventureSession()`
+// montado registra seu próprio `forceRender` aqui; `runGlobalTick()`
+// nunca conhece React, só chama `notifySubscribers()` no final.
+let idleDriverInstance: IdleDriver | null = null;
+let idleTickIntervalId: ReturnType<typeof setInterval> | null = null;
+const subscribers = new Set<() => void>();
+let globalError: string | null = null;
+let globalLootRejectedFeedback: LootRejectedFeedback[] = [];
+let globalLastTickOutcome: AdventureTickOutcome | null = null;
+// Registrado por quem precisa adiar um tick (hoje só AdventurePage, via
+// registerIdleBlockChecker) — ex.: um banner de Level Up ainda tocando.
+// O driver não sabe POR QUE está bloqueado, só respeita o sinal (mesma
+// separação que o IdleDriver puro já tinha antes desta Sprint).
+let externalBlockedCheck: (() => boolean) | null = null;
+
 function buildSingleton(real: RealCharacterSnapshot | null): AdventureSingleton {
   const { session, timeline } = createSessionState(Date.now(), real);
   return {
@@ -269,34 +308,147 @@ function buildSingleton(real: RealCharacterSnapshot | null): AdventureSingleton 
   };
 }
 
+function notifySubscribers(): void {
+  for (const listener of subscribers) listener();
+}
+
+// Extraído do antigo `advance()` do hook (Idle Loop Implementation
+// Phase I) — mesma chamada, mesma ordem de efeitos colaterais
+// (advanceDungeonTick -> feedback de loot -> persistTick fire-and-
+// forget), só que lendo/escrevendo estado de MÓDULO em vez de useState
+// de componente, porque agora quem chama isto é o setInterval global,
+// não um onClick/onTick de um componente específico. `autoEquip: true`
+// preserva o único valor que `handleAdvance()` sempre passou — Princípio
+// 4 (AutoEquip não muda) fica satisfeito por nunca ter existido outra
+// chamada com `false`.
+function runGlobalTick(): void {
+  if (!singleton) return;
+
+  // A checagem de derrota antes pertencia ao `disabled` do botão
+  // "Avançar" (removido na Sprint anterior) — sem um clique manual pra
+  // gatilhar, essa responsabilidade precisa morar aqui: o próprio
+  // tick-runner recusa avançar uma sessão já derrotada e para o driver.
+  const hudState = deriveHudState(singleton.session, singleton.timeline);
+  if (hudState.sessionStatus === "derrota") {
+    idleDriverInstance?.stop();
+    notifySubscribers();
+    return;
+  }
+
+  try {
+    const { events, floatingNumbers } = advanceDungeonTick(singleton.session, singleton.timeline, {
+      autoEquip: true,
+      currentTime: Date.now(),
+    });
+    globalLastTickOutcome = { events, floatingNumbers };
+    globalError = null;
+    if (events.some((event) => event.kind === "LootDropped")) {
+      globalLootRejectedFeedback = buildLootRejectedFeedback(singleton.session, events);
+    }
+    void persistTick(singleton.session, events, singleton.lastSynced);
+  } catch (caught) {
+    globalError = caught instanceof Error ? caught.message : String(caught);
+  }
+  notifySubscribers();
+}
+
+// Fase 8 (Singleton): protegido exatamente como `ensureSingletonInit`
+// já protege a sessão — se um IdleDriver já existe, a chamada é um
+// no-op registrado (aviso de dev), a instância existente nunca é
+// substituída. É assim que a Sprint garante "nunca dois IdleDrivers
+// simultâneos" mesmo se `useAdventureSession()` acabar sendo chamado
+// por mais de uma tela ao mesmo tempo no futuro (hoje só AdventurePage
+// chama).
+function ensureIdleDriverStarted(intervalMs: number = IDLE_TICK_INTERVAL_MS): void {
+  if (idleDriverInstance) {
+    console.warn(
+      "[useAdventureSession] ensureIdleDriverStarted() chamado com um IdleDriver já ativo — ignorado, instância existente preservada (Fase 8, Global Idle System).",
+    );
+    return;
+  }
+  idleDriverInstance = new IdleDriver({ intervalMs });
+  idleTickIntervalId = setInterval(() => {
+    if (!idleDriverInstance) return;
+    if (idleDriverInstance.shouldTick(Date.now(), externalBlockedCheck?.() ?? false)) {
+      runGlobalTick();
+    }
+  }, IDLE_POLL_INTERVAL_MS);
+}
+
+// Único ponto de entrada pra quem precisa adiar um tick (ver
+// `externalBlockedCheck` acima). Passar `null` desregistra — usado pelo
+// cleanup de montagem/desmontagem de AdventurePage.
+function registerIdleBlockChecker(checker: (() => boolean) | null): void {
+  externalBlockedCheck = checker;
+}
+
+function subscribe(listener: () => void): void {
+  subscribers.add(listener);
+}
+
+function unsubscribe(listener: () => void): void {
+  subscribers.delete(listener);
+}
+
 // Dedupa a busca inicial: StrictMode invoca o efeito de montagem 2x
 // (monta/desmonta/monta) em dev — sem este cache, a segunda invocação
 // disparia um segundo fetchRealCharacter() e uma segunda criação de
 // sessão antes da primeira resolver. Uma vez que `singleton` existe,
 // esta função nunca mais é chamada de verdade (todo `useAdventureSession()`
 // futuro cai direto no `if (singleton) return`).
+//
+// Global Idle System — Architecture Refactor: o boot do IdleDriver
+// global acontece logo depois que o singleton nasce pela primeira vez
+// — o mesmo momento em que, antes desta Sprint, `AdventurePage` criava
+// sua própria instância de `useIdleDriver()`. O gatilho não mudou, só
+// deixou de estar amarrado ao ciclo de vida de um componente.
 function ensureSingletonInit(): Promise<void> {
   if (singleton) return Promise.resolve();
   if (!initPromise) {
     initPromise = fetchRealCharacter().then((real) => {
       singleton = buildSingleton(real);
+      ensureIdleDriverStarted();
     });
   }
   return initPromise;
 }
 
 // Só para testes automatizados (useAdventureSession.test.ts) — expõe o
-// singleton de módulo sem passar pelos hooks do React (que exigem um
-// renderer/DOM que este projeto não tem instalado). Nunca importado
-// por código de produção.
+// singleton de módulo e o IdleDriver global sem passar pelos hooks do
+// React (que exigem um renderer/DOM que este projeto não tem
+// instalado). Nunca importado por código de produção.
 export const __testing = {
   ensureSingletonInit,
   buildSingleton,
   getSingleton: () => singleton,
+  // Só pra testes que precisam plantar uma sessão sem passar pelo fetch
+  // real (ex.: testar o IdleDriver global com um intervalo curto,
+  // sem esperar pelo boot automático de `ensureSingletonInit()`, que
+  // sempre usa IDLE_TICK_INTERVAL_MS).
+  setSingletonForTesting: (value: AdventureSingleton | null) => {
+    singleton = value;
+  },
   resetSingleton: () => {
     singleton = null;
     initPromise = null;
+    if (idleTickIntervalId !== null) clearInterval(idleTickIntervalId);
+    idleDriverInstance = null;
+    idleTickIntervalId = null;
+    subscribers.clear();
+    globalError = null;
+    globalLootRejectedFeedback = [];
+    globalLastTickOutcome = null;
+    externalBlockedCheck = null;
   },
+  ensureIdleDriverStarted,
+  getIdleDriverInstance: () => idleDriverInstance,
+  getIdleTickIntervalId: () => idleTickIntervalId,
+  runGlobalTick,
+  subscribe,
+  unsubscribe,
+  getSubscriberCount: () => subscribers.size,
+  notifySubscribers,
+  registerIdleBlockChecker,
 };
 
 export function useAdventureSession() {
@@ -306,18 +458,20 @@ export function useAdventureSession() {
   // depois que `singleton` existe).
   const [fallback] = useState<AdventureDemoState>(() => createSessionState(Date.now(), null));
   const [renderVersion, forceRender] = useReducer((version: number) => version + 1, 0);
-  const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(() => singleton !== null);
-  // Player Feedback & Retention — Vertical Slice Phase I — Fase 1
-  // (Session Safety): `real === null` (fetchRealCharacter() falhou —
-  // sem login válido, ver comentário da função) significa que NENHUM
-  // dos POSTs de persistTick() abaixo tem efeito real (o backend
-  // rejeita sem sessão autenticada) — a sessão inteira vive só na
-  // memória deste módulo e desaparece só num reload de verdade.
-  // Exposto aqui pra a UI poder avisar isso explicitamente, em vez de
-  // deixar o jogador descobrir sozinho perdendo o progresso (achado #1
-  // do playtest de uma Sprint anterior).
-  const [lootRejectedFeedback, setLootRejectedFeedback] = useState<LootRejectedFeedback[]>([]);
+
+  // Global Idle System — Architecture Refactor: esta tela (ou qualquer
+  // outra que chame `useAdventureSession()` no futuro) se inscreve pra
+  // ser avisada sempre que `runGlobalTick()` rodar — mesmo estando em
+  // Inventário/Personagem/Cidade, sem NENHUM IdleDriver local. É isto
+  // que substitui o antigo `forceRender()` chamado diretamente de
+  // dentro de `advance()`: agora quem muda o estado (o tick global) e
+  // quem re-renderiza (cada tela inscrita) são desacoplados.
+  useEffect(() => {
+    const listener = () => forceRender();
+    subscribe(listener);
+    return () => unsubscribe(listener);
+  }, []);
 
   useEffect(() => {
     if (singleton) {
@@ -328,7 +482,7 @@ export function useAdventureSession() {
     void ensureSingletonInit().then(() => {
       if (cancelled) return;
       setReady(true);
-      forceRender();
+      notifySubscribers();
     });
     return () => {
       cancelled = true;
@@ -345,54 +499,66 @@ export function useAdventureSession() {
 
   const isDemoSession = singleton?.isDemoSession ?? false;
 
-  const advance = useCallback((autoEquip: boolean): AdventureTickOutcome | null => {
-    if (!singleton) return null;
-    let outcome: AdventureTickOutcome | null = null;
-    try {
-      const { events, floatingNumbers } = advanceDungeonTick(singleton.session, singleton.timeline, {
-        autoEquip,
-        currentTime: Date.now(),
-      });
-      outcome = { events, floatingNumbers };
-      setError(null);
-      // Fase 3 (Loot Feedback) / Fase 7 (Timeline Readability): só
-      // atualiza quando ESTA tick teve loot de verdade — igual ao
-      // achado dos banners transitórios (duração curta, clique rápido
-      // perde a mensagem), uma explicação que desaparece na tick
-      // seguinte mesmo sem novo drop teria o MESMO problema. Fica
-      // visível até o PRÓXIMO drop, nunca some sozinha.
-      if (events.some((event) => event.kind === "LootDropped")) {
-        setLootRejectedFeedback(buildLootRejectedFeedback(singleton.session, events));
-      }
-      void persistTick(singleton.session, events, singleton.lastSynced);
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : String(caught));
-    }
-    forceRender();
-    return outcome;
+  // Estado Global (Fase 4) — lido direto do módulo a cada render, não
+  // espelhado em useState: a única forma de saber QUANDO reler é a
+  // notificação de `subscribe()` acima, que já dispara um re-render via
+  // `forceRender()`. Continua correto mesmo se esta tela nunca chamar
+  // `advance` nenhuma vez — nenhuma destas variáveis é escrita por este
+  // hook, só por `runGlobalTick()`.
+  const idleStatus: IdleDriverStatus = idleDriverInstance?.getStatus() ?? "stopped";
+  // "Tempo até o próximo avanço" (Fase 4) — leitura pontual no momento
+  // deste render, não um cronômetro vivo: uma tela que queira mostrar
+  // uma contagem regressiva em tempo real precisa do seu próprio
+  // intervalo curto pra re-renderizar (decisão de apresentação, fora do
+  // escopo desta Sprint — ver docs/design/living-character-phase1.md).
+  const msUntilNextTick: number | null = idleDriverInstance?.msUntilNextTick(Date.now()) ?? null;
+
+  const pauseIdle = useCallback(() => {
+    idleDriverInstance?.pause();
+    notifySubscribers();
+  }, []);
+
+  const resumeIdle = useCallback(() => {
+    idleDriverInstance?.resume();
+    notifySubscribers();
   }, []);
 
   const restart = useCallback(() => {
     // Reset otimista e imediato (mesma UX de sempre: o clique em
     // "Reiniciar" já mostra nível 1 na hora), substituído pelo
-    // personagem real assim que a busca resolver.
+    // personagem real assim que a busca resolver. `idleDriverInstance
+    // .start()` retoma o avanço automático da nova sessão — antes esta
+    // responsabilidade era de `AdventurePage.handleRestart()` chamando
+    // `idleDriver.start()` explicitamente; agora mora aqui porque
+    // reiniciar sempre deve reativar a simulação, não só o estado.
     singleton = buildSingleton(null);
-    setLootRejectedFeedback([]);
-    setError(null);
-    forceRender();
+    globalLootRejectedFeedback = [];
+    globalError = null;
+    idleDriverInstance?.start();
+    notifySubscribers();
     void fetchRealCharacter().then((real) => {
       singleton = buildSingleton(real);
-      forceRender();
+      notifySubscribers();
     });
   }, []);
 
   return {
     hudState,
-    error,
-    advance,
+    error: globalError,
     restart,
     ready,
     isDemoSession,
-    lootRejectedFeedback,
+    lootRejectedFeedback: globalLootRejectedFeedback,
+    idleStatus,
+    pauseIdle,
+    resumeIdle,
+    lastTickOutcome: globalLastTickOutcome,
+    msUntilNextTick,
   };
 }
+
+// Global Idle System — Architecture Refactor: único ponto de acesso
+// externo pra registrar/desregistrar o "block checker" (ver
+// `externalBlockedCheck`, escopo de módulo acima) — hoje só
+// `AdventurePage` usa isto, pra não cortar animações/banners longos.
+export { registerIdleBlockChecker };

@@ -15,7 +15,12 @@ function rarityLabel(rarity: string): string {
 // deriveHudState() só fatia a Adventure Timeline) — "nunca reconstruir
 // eventos": este componente nunca decide o que aconteceu, só formata
 // pra exibição o que já está no evento.
-function describeEvent(event: PresentationEvent): string {
+// Living Character Phase I — exportado pra que adventureDiary.ts
+// (apps/web/src/lib) reaproveite a MESMA formatação de texto pra um
+// subconjunto de eventos, em vez de reimplementar frases equivalentes
+// — nenhuma lógica de "o que aconteceu" duplicada, só um filtro
+// diferente por cima da mesma fonte.
+export function describeEvent(event: PresentationEvent): string {
   switch (event.kind) {
     // Vertical Slice — Commercial Readiness & First Playable Experience
     // Phase I — Fase 2: era o único caso deste arquivo que mostrava

@@ -32,12 +32,22 @@ interface BlacksmithBuildingProps {
   // Sprint Kingdom Evolution Phase I — mesmo PlayerFacts já calculado
   // por CityPage; opcional/default nulo, retrocompat.
   playerFacts?: PlayerFacts | null;
+  // City Foundation Phase I — Fase 4: texto já pronto vindo de CityPage
+  // (citySuggestions.blacksmith) — reage especificamente a itens
+  // AUTO-EQUIPADOS recentes (não só encontrados), ver citySuggestions.ts.
+  suggestion?: string | null;
 }
 
 // Sprint Capital City — reaproveita EquipmentSlots (Sprint Identity &
 // Progression) tal como já existe no Perfil; nenhum dado novo, nenhuma
 // forja real ainda. Sprint NPCs Vivos — Borin apresenta o prédio.
-export function BlacksmithBuilding({ equipped, worldPresenceCtx, playerFacts = null }: BlacksmithBuildingProps) {
+//
+// City Foundation Phase I — Fase 3: papel comunicado mesmo bloqueado —
+// "melhorias; reforjas; equipamentos". Fase 8: reforjar/upgrade vai
+// depender de Ouro (+ possivelmente sucata/materiais, a decidir em
+// docs/design/gold-architecture-phase1.md); consultar o equipamento
+// atual (o que este prédio já faz hoje) permanece gratuito.
+export function BlacksmithBuilding({ equipped, worldPresenceCtx, playerFacts = null, suggestion = null }: BlacksmithBuildingProps) {
   // Sprint First 120 Seconds — Passo 7: fala única do Ferreiro depois que
   // o jogador já viu seu primeiro item (mesma flag client-side que
   // FirstItemCard já usa — nenhuma flag nova). Permanente, não some após
@@ -86,10 +96,12 @@ export function BlacksmithBuilding({ equipped, worldPresenceCtx, playerFacts = n
       <h2>🛠️ Ferreiro</h2>
       {buildingStage ? <p className="building-decor">{BLACKSMITH_DECOR[buildingStage]}</p> : null}
       <NpcIntro npc={NPCS.ferreiro} />
+      <p className="city-building-role">Responsável por: melhorias; reforjas; equipamentos.</p>
       <p className="hint">Seus equipamentos atuais, prontos para a próxima forja.</p>
       {hasSeenFirstItem ? <p className="hint">"...acho que essas luvas serviram para alguma coisa."</p> : null}
       <EquipmentSlots equipped={equipped} />
       <p className="city-building-banner">Forja disponível em breve.</p>
+      {suggestion ? <p className="city-building-suggestion">{suggestion}</p> : null}
 
       {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) — 6 linhas
           ambientes; movidas pra depois do equipamento (o conteúdo real

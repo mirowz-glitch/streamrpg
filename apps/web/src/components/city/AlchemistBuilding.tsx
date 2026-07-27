@@ -15,11 +15,19 @@ const ALCHEMY_ITEMS = [
 // Sprint Capital City — componente próprio, preparado para uma futura
 // Sprint de Alquimia/Poções; hoje só apresentação. Sprint NPCs Vivos —
 // Zoltar apresenta o prédio + bancada visual.
+//
+// City Foundation Phase I — Fase 3: papel comunicado mesmo bloqueado —
+// "poções; materiais; receitas". Fase 8: poções provavelmente vão
+// depender de materiais coletados (não necessariamente Ouro) +
+// possivelmente reputação pra receitas mais raras — decisão real fica
+// pra uma Sprint de Alquimia futura, fora do escopo de
+// docs/design/gold-architecture-phase1.md (que cobre só o Ouro).
 export function AlchemistBuilding() {
   return (
     <section className="city-building-screen">
       <h2>⚗️ Alquimista</h2>
       <NpcIntro npc={NPCS.alquimista} />
+      <p className="city-building-role">Responsável por: poções; materiais; receitas.</p>
       <div className="alchemist-shelf">
         {ALCHEMY_ITEMS.map((item, i) => (
           <span key={i} className="alchemist-shelf-item" title={item.label}>

@@ -676,6 +676,113 @@ nav {
   letter-spacing: 0.03em;
   margin: 0 0 0.5rem;
 }
+/* Backpack Experience Phase I — Fase 4 ("Organização Natural"): as
+   duas seções de nível superior (Equipados / Restante da Mochila) —
+   um degrau visual acima de .inventory-group-title (que continua
+   marcando o slot DENTRO de cada seção), pra deixar a hierarquia
+   "seção > categoria > item" óbvia. */
+.inventory-section {
+  margin-bottom: 1.5rem;
+}
+.inventory-section-title {
+  font-size: 1.05rem;
+  color: #e8eaed;
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(191, 148, 255, 0.25);
+}
+
+/* ============================================================
+   Backpack Experience Phase I — apps/web/src/components/ui/
+   BackpackNarrativePanel.tsx. Mesmo template de card roxo/prioridade
+   já usado por .adventure-live-panel (Living Character/World) — nenhum
+   vocabulário visual novo inventado, só uma composição nova em cima do
+   que já existe.
+   ============================================================ */
+.backpack-narrative {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  background: rgba(145, 70, 255, 0.06);
+  border: 1px solid rgba(145, 70, 255, 0.3);
+  border-radius: 10px;
+}
+.backpack-journey h2,
+.backpack-recent-finds h2 {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  color: #9aa0a6;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.backpack-journey-line {
+  margin: 0.15rem 0;
+  color: #e8eaed;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.backpack-recent-finds {
+  margin-top: 0.75rem;
+}
+.backpack-recent-finds-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.backpack-recent-find-item {
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+  border-left: 3px solid transparent;
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 0.9rem;
+  color: #e8eaed;
+}
+/* Mesmo vocabulário de raridade do Item Generator (common/magic/rare/
+   unique) que rarityLabel() já usa — cores próprias, nunca reaproveita
+   .rarity-border-* (esse é o OUTRO vocabulário, o do modelo persistido
+   de 5 raridades, ver useAdventureSession.ts RARITY_TO_PERSISTED). */
+.backpack-recent-find-item-common {
+  border-left-color: rgba(154, 160, 166, 0.5);
+}
+.backpack-recent-find-item-magic {
+  border-left-color: #4fc3f7;
+}
+.backpack-recent-find-item-rare {
+  border-left-color: #bf94ff;
+}
+.backpack-recent-find-item-unique {
+  border-left-color: #fbbc04;
+}
+.backpack-recent-find-rarity {
+  color: #9aa0a6;
+  font-size: 0.85rem;
+}
+.backpack-recent-find-meta {
+  color: #9aa0a6;
+  font-size: 0.8rem;
+  margin-top: 0.15rem;
+}
+.backpack-recent-find-autoequip {
+  color: #7ee081;
+}
+.backpack-signals {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0.15rem;
+}
+.backpack-signal {
+  margin: 0;
+  color: #9aa0a6;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+.backpack-signal-full {
+  color: #fbbc04;
+}
+.backpack-signal-city {
+  color: #bf94ff;
+}
 .overlay-log {
   list-style: none;
   margin: 0 0 0.75rem;
@@ -1488,6 +1595,46 @@ nav {
   color: #bf94ff;
   font-weight: 600;
   font-size: 0.85rem;
+}
+/* City Foundation Phase I — Fase 3 ("Papéis dos Prédios"): a linha de
+   função ("Responsável por: ...") de cada prédio bloqueado — discreta,
+   nunca compete visualmente com o NPC/banner "em breve" já existente. */
+.city-building-role {
+  margin: 0.35rem 0 0;
+  color: #9aa0a6;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+/* Fase 4 ("Sugestões Inteligentes") — convite pontual dentro do
+   prédio, mesma cor de destaque já usada em .city-building-banner,
+   mas como texto solto (não pílula) pra não parecer um segundo botão. */
+.city-building-suggestion {
+  margin: 0.5rem 0 0;
+  color: #bf94ff;
+  font-size: 0.9rem;
+}
+/* Fase 2 ("Cidade Viva") — resumo contextual ao entrar na Praça; mesmo
+   template de card roxo já usado em .adventure-live-panel/
+   .backpack-narrative (Living Character/World, Backpack Experience) —
+   nenhum vocabulário visual novo. */
+.city-welcome {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  background: rgba(145, 70, 255, 0.06);
+  border: 1px solid rgba(145, 70, 255, 0.3);
+  border-radius: 10px;
+}
+.city-welcome-line {
+  margin: 0.15rem 0;
+  color: #e8eaed;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.city-welcome-suggestion {
+  margin: 0.5rem 0 0;
+  color: #bf94ff;
+  font-size: 0.9rem;
+  font-style: italic;
 }
 .city-founder-list {
   list-style: none;
@@ -4643,6 +4790,161 @@ nav {
 .hud-dungeon-completed-banner-detail {
   font-size: 0.9rem;
   color: #e8eaed;
+}
+
+/* ============================================================
+   Living Character Phase I — apps/web/src/components/ui/
+   AdventureLivePanel.tsx. Mesmo template de card roxo já usado por
+   .expedition-status-card (acima) e .goal-card — nenhum vocabulário
+   visual novo inventado, só uma composição nova em cima do que já
+   existe. O ponto pulsante reusa a MESMA técnica de .nav-glow
+   (text-shadow puramente CSS, @keyframes, nunca JS) — "vida visual sem
+   espetáculo" (Fase 5 da Sprint).
+   ============================================================ */
+.adventure-live-panel {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  background: rgba(145, 70, 255, 0.06);
+  border: 1px solid rgba(145, 70, 255, 0.3);
+  border-radius: 10px;
+  transition:
+    box-shadow 0.4s ease,
+    border-color 0.4s ease;
+}
+.adventure-live-panel-active {
+  border-color: rgba(145, 70, 255, 0.5);
+}
+/* Fase 5/7 — realce breve de ~1.2s quando um tick trouxe algo notável
+   (loot/level up/checkpoint/novo equipamento); transição suave, nunca
+   um piscar contínuo (mesmo princípio já documentado pro vocabulário
+   .ui-feedback-* acima: "nenhum pisca, nenhum anima continuamente"). */
+.adventure-live-panel-flash {
+  box-shadow: 0 0 14px rgba(145, 70, 255, 0.45);
+}
+/* Living World Phase II — Fase 7: realce dourado, mais forte e um
+   pouco mais longo (1.8s), reservado só pra Chefe/Mini-Boss
+   (BOSS_TIER_KINDS em AdventureLivePanel.tsx) — o momento mais
+   dramático da aventura merece um peso visual diferente do loot comum,
+   sem virar uma animação grande (mesma técnica de box-shadow, só cor e
+   duração mudam). */
+.adventure-live-panel-flash-boss {
+  box-shadow: 0 0 18px rgba(251, 188, 4, 0.55);
+  border-color: rgba(251, 188, 4, 0.6);
+}
+.adventure-live-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+.adventure-live-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: #bf94ff;
+}
+.adventure-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7ee081;
+  animation: adventure-live-dot-pulse 2.2s ease-in-out infinite;
+}
+@keyframes adventure-live-dot-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 3px rgba(126, 224, 129, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 9px rgba(126, 224, 129, 1);
+  }
+}
+.adventure-live-status {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+  color: #e8eaed;
+  transition: color 0.3s ease;
+}
+/* Fase 7 — "mudança de estado": pisca a cor do badge de status uma
+   única vez (transição CSS, não @keyframes contínuo) quando o status
+   muda — mais sutil que o realce dourado de Boss, nunca sobreposto a
+   ele (cores diferentes: âmbar aqui, roxo/dourado no painel). */
+.adventure-live-status-changed {
+  color: #fbbc04;
+}
+.adventure-live-journey {
+  margin-bottom: 0.75rem;
+}
+.adventure-live-journey h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  color: #9aa0a6;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.adventure-live-relative-time {
+  text-transform: none;
+  letter-spacing: normal;
+  font-style: italic;
+  color: #7d8288;
+}
+.adventure-live-journey-line {
+  margin: 0.15rem 0;
+  color: #e8eaed;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+.adventure-live-countdown {
+  display: block;
+  margin-top: 0.35rem;
+  color: #9aa0a6;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+.adventure-live-diary h3 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 0.85rem;
+  color: #9aa0a6;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.adventure-live-diary-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.2rem;
+}
+/* Living World Phase II — Fase 4 ("Eventos Relevantes"): as 3
+   prioridades pedidas pelo brief viram 3 pesos visuais distintos —
+   nunca cor nova por evento individual, só por FAIXA de prioridade
+   (adventureDiary.ts, DiaryPriority). Normal fica discreto de
+   propósito, pra não competir com os marcos importantes. */
+.adventure-live-diary-item {
+  color: #c4c7c5;
+  font-size: 0.85rem;
+  padding-left: 0.5rem;
+  border-left: 2px solid transparent;
+}
+.adventure-live-diary-item-alta {
+  color: #fbbc04;
+  font-weight: 600;
+  border-left-color: #fbbc04;
+}
+.adventure-live-diary-item-media {
+  color: #bf94ff;
+  border-left-color: rgba(191, 148, 255, 0.6);
+}
+.adventure-live-diary-item-normal {
+  color: #9aa0a6;
+}
+.adventure-live-diary-empty {
+  margin: 0;
+  color: #9aa0a6;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+.adventure-live-toggle {
+  margin-top: 0.75rem;
 }
 
 .hud-event-feed-item-FinalBossEncounter,

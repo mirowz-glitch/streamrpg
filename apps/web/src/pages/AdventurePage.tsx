@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useBlocker } from "react-router-dom";
-import { useAdventureSession } from "../hooks/useAdventureSession";
+import { registerIdleBlockChecker, useAdventureSession } from "../hooks/useAdventureSession";
 import { useAnimationController } from "../hooks/useAnimationController";
 import { AppNav } from "../components/ui/AppNav";
 import { SessionSafetyBanner } from "../components/hud/SessionSafetyBanner";
@@ -45,14 +45,27 @@ import { DungeonCompletedBanner } from "../components/hud/DungeonCompletedBanner
 // nenhum dado do personagem real do Twitch, nenhuma regra de gameplay
 // aqui.
 //
-// Combat Feel & Animation System Phase I — cada "Avançar" chama
+// Combat Feel & Animation System Phase I — cada avanço chama
 // advanceAdventureWithPresentation() (via useAdventureSession) e
 // repassa os eventos/floating numbers do tick pro Animation Controller
 // (useAnimationController) — o único lugar que decide COMO isso é
 // apresentado (shake/flash/fade/etc). Esta página nunca calcula
 // nenhuma animação sozinha, só conecta os dois hooks.
+//
+// Global Idle System — Architecture Refactor: o IdleDriver e o timer
+// que o alimenta não vivem mais aqui — moraram pra `useAdventureSession
+// .ts` (escopo de módulo), exatamente pra que trocar de página NUNCA
+// interrompa a exploração ("A interface nunca deverá controlar a
+// simulação. A interface apenas observa e envia comandos. A simulação
+// vive sozinha. Sempre."). Esta página agora só OBSERVA
+// (`idleStatus`/`lastTickOutcome`) e ENVIA COMANDOS (`pauseIdle`/
+// `resumeIdle`) — nunca mais possui a instância do driver.
+// advanceDungeonTick()/Combat/Loot/XP/AutoEquip/Session Persistence —
+// tudo intocado; só a localização arquitetural de quem decide "é hora
+// de avançar?" mudou.
 export function AdventurePage() {
-  const { hudState, error, advance, restart, ready, isDemoSession, lootRejectedFeedback } = useAdventureSession();
+  const { hudState, error, restart, ready, isDemoSession, lootRejectedFeedback, idleStatus, pauseIdle, resumeIdle, lastTickOutcome } =
+    useAdventureSession();
   const { active, playTick, reset } = useAnimationController();
   const isDefeated = hudState.sessionStatus === "derrota";
 
@@ -84,9 +97,37 @@ export function AdventurePage() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [shouldGuardSession]);
 
-  function handleAdvance() {
-    const outcome = advance(true);
-    if (outcome) playTick(outcome.events, outcome.floatingNumbers);
+  // Global Idle System — Architecture Refactor: o tick global chama
+  // `advanceDungeonTick()` sozinho (dentro de `runGlobalTick()`, em
+  // useAdventureSession.ts) sempre que o IdleDriver global decide que é
+  // hora — mesmo com esta página desmontada. `lastTickOutcome` é a
+  // única coisa que esta página ainda precisa saber sobre cada tick:
+  // repassar os eventos/floating numbers pro Animation Controller local
+  // (a apresentação, ao contrário da simulação, é mesmo por-tela — não
+  // faz sentido animar um combate na tela de Inventário). `playTick` não
+  // é estável (recriada a cada render de useAnimationController), então
+  // vive num ref "mais recente" pra este efeito poder depender só de
+  // `lastTickOutcome` sem re-disparar em todo re-render.
+  const playTickRef = useRef(playTick);
+  playTickRef.current = playTick;
+  useEffect(() => {
+    if (lastTickOutcome) playTickRef.current(lastTickOutcome.events, lastTickOutcome.floatingNumbers);
+  }, [lastTickOutcome]);
+
+  // `isBlocked` (ex.: Level Up, 2.3s, ainda na tela) precisa do valor
+  // MAIS RECENTE de `active`, mas só deve ser registrado uma vez (não a
+  // cada render, já que `active` muda a cada ~50ms) — mesmo padrão de
+  // ref "mais recente" usado acima.
+  const activeRef = useRef(active);
+  activeRef.current = active;
+  useEffect(() => {
+    registerIdleBlockChecker(() => activeRef.current.length > 0);
+    return () => registerIdleBlockChecker(null);
+  }, []);
+
+  function handlePauseToggle() {
+    if (idleStatus === "paused") resumeIdle();
+    else pauseIdle();
   }
 
   function handleRestart() {
@@ -170,13 +211,28 @@ export function AdventurePage() {
         <FloatingNumbers active={active} />
 
         <div className="hud-controls">
-          <button type="button" onClick={handleAdvance} disabled={isDefeated}>
-            Avançar
-          </button>
+          {!isDefeated ? (
+            <button type="button" onClick={handlePauseToggle}>
+              {idleStatus === "paused" ? "Continuar" : "Pausar"}
+            </button>
+          ) : null}
           <button type="button" onClick={handleRestart}>
             Reiniciar
           </button>
         </div>
+
+        {/* Global Idle System — Architecture Refactor: substitui o
+            antigo botão "Avançar" — a exploração acontece sozinha no
+            IdleDriver global (useAdventureSession.ts), esta linha só
+            comunica o estado atual, nunca exige uma ação do jogador pra
+            continuar. */}
+        <p className="hint hud-idle-status">
+          {isDefeated
+            ? "Aventura interrompida — reinicie para continuar."
+            : idleStatus === "paused"
+              ? "⏸ Pausado — clique em Continuar pra retomar a exploração."
+              : "▶ Explorando automaticamente..."}
+        </p>
 
         {error ? <p className="error">{error}</p> : null}
         {isDefeated ? (

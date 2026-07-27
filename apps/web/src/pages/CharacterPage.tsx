@@ -25,6 +25,7 @@ import { FirstLevelBanner } from "../components/onboarding/FirstLevelBanner";
 import { FirstBossBanner } from "../components/onboarding/FirstBossBanner";
 import { NewTitleModal } from "../components/onboarding/NewTitleModal";
 import { PlayerGoals } from "../components/ui/PlayerGoals";
+import { AdventureLivePanel } from "../components/ui/AdventureLivePanel";
 import { buildPlayerFacts } from "../lib/playerFacts";
 import { getCharacterStage, STAGE_CHARACTER_DESCRIPTION } from "../lib/characterPresence";
 import { buildCollectionInsightContext, getRegionsInsight } from "../lib/collectionInsights";
@@ -221,6 +222,14 @@ export function CharacterPage() {
                 <FirstItemCard />
               </div>
             </div>
+
+            {/* Living Character Phase I — acima das abas de propósito:
+                "o que meu aventureiro está fazendo agora?" precisa ser
+                respondido em <2s, sem exigir clique numa aba (Visão da
+                Sprint). Consome só o Estado Global da Sprint "Global
+                Idle System" — nenhuma regra de Combate/Loot/XP muda
+                aqui, ver AdventureLivePanel.tsx. */}
+            <AdventureLivePanel />
 
             <FirstLevelBanner level={character.level} />
 

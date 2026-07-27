@@ -16,6 +16,7 @@ export * from "./adventure/index.js";
 export * from "./presentation/index.js";
 export * from "./hud/index.js";
 export * from "./animation/index.js";
+export * from "./idle/index.js";
 export * from "./simulation/index.js";
 export * from "./recovery/index.js";
 export * from "./objectives/index.js";

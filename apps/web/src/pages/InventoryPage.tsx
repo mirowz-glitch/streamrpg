@@ -4,6 +4,7 @@ import { getItemPower, getCombatAttributes } from "@streamrpg/shared";
 import { api } from "../lib/api";
 import { AppNav } from "../components/ui/AppNav";
 import { Feedback } from "../components/ui/Feedback";
+import { BackpackNarrativePanel } from "../components/ui/BackpackNarrativePanel";
 import { RARITY_COLOR } from "../lib/rarity";
 import { SLOT_LABEL, SLOT_ORDER } from "../lib/itemSlots";
 import { getItemRelated } from "../lib/knowledgeLinks";
@@ -147,15 +148,64 @@ export function InventoryPage() {
 
   const bestAvailableBySlot = getBestAvailableIdBySlot();
 
-  const bySlot: Partial<Record<ItemSlot, InventoryItem[]>> = {};
-  for (const item of items) {
-    (bySlot[item.slot] ??= []).push(item);
+  // Backpack Experience Phase I — Fase 4 ("Organização Natural"):
+  // agrupamento por SLOT continua exatamente igual a antes (nenhuma
+  // regra de exibição por item mudou) — só passou a ser aplicado a
+  // DUAS listas separadas (equipados primeiro, resto depois) em vez de
+  // uma lista só. `renderItemGroups` é a MESMA lógica de antes extraída
+  // pra uma função, reaproveitada pelas duas seções — nenhuma
+  // duplicação do bloco de JSX do item.
+  function renderItemGroups(itemsForGroups: InventoryItem[]) {
+    const grouped: Partial<Record<ItemSlot, InventoryItem[]>> = {};
+    for (const item of itemsForGroups) {
+      (grouped[item.slot] ??= []).push(item);
+    }
+    return SLOT_ORDER.filter((slot) => grouped[slot]?.length).map((slot) => (
+      <div key={slot} className="inventory-group">
+        <h3 className="inventory-group-title">{SLOT_LABEL[slot]}</h3>
+        <ul className="inventory-list">
+          {grouped[slot]!.map((item) => {
+            const equippedInSlot = getEquippedInSlot(item.slot);
+            return (
+              <li key={item.id} className={`inventory-item rarity-border-${item.rarity}`}>
+                <div>
+                  <strong style={{ color: RARITY_COLOR[item.rarity] ?? "#fff" }}>{item.name}</strong>
+                  {item.is_equipped ? <span className="badge-equipped">EQUIPADO</span> : null}
+                  {isNew(item) ? <span className="badge-new">NOVO</span> : null}
+                  {bestAvailableBySlot[item.slot] === item.id ? <span className="badge-best">⬆ Melhor disponível</span> : null}
+                  <div className="item-meta">
+                    {item.rarity} · {item.slot} · nv. {item.min_level} · {renderPower(item)}
+                    {item.damage_type === "magic" ? " · mágico" : ""}
+                    {item.is_equipped ? ` · equipado (${item.equipped_slot})` : ""}
+                  </div>
+                  {!item.is_equipped ? <div className="item-compare">{renderComparisonDetail(item, equippedInSlot)}</div> : null}
+                  <p className="item-desc">{item.description}</p>
+                  {renderItemOrigin(item)}
+                  {renderItemIdentity(item)}
+                  {renderNextStep(item, echoContext.approach)}
+                </div>
+                <div className="item-actions">
+                  {item.is_equipped ? (
+                    <button onClick={() => void unequip(item.slot)}>Desequipar</button>
+                  ) : (
+                    <button onClick={() => void equip(item.id)}>Equipar</button>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    ));
   }
+
+  const equippedItems = items.filter((item) => item.is_equipped);
+  const restItems = items.filter((item) => !item.is_equipped);
 
   // Sprint Collections & Discovery Phase I — espaços de equipamento
   // preenchidos, via a camada central (lib/collectionInsights.ts).
   const collectionInsight = getInventoryInsight(
-    buildCollectionInsightContext({ equippedSlotCount: items.filter((i) => i.is_equipped).length }),
+    buildCollectionInsightContext({ equippedSlotCount: equippedItems.length }),
   );
 
   return (
@@ -183,61 +233,43 @@ export function InventoryPage() {
             <p>Faça login para ver seu inventário.</p>
             <p className="hint">Os itens que você encontra jogando a Aventura ficam aqui depois de entrar com sua conta.</p>
           </div>
-        ) : items.length === 0 ? (
-          // Fase 6: a frase antiga ("Continue assistindo — drops têm boa
-          // chance a cada minuto de presença") era da mecânica antiga de
-          // espectador passivo — não tem nenhuma relação com o fluxo
-          // atual (jogar a Aventura). Corrigido pra descrever o que
-          // realmente concede itens hoje.
-          <div className="empty-state">
-            <p>Seu inventário está vazio.</p>
-            <p className="hint">Jogue uma Aventura para encontrar seus primeiros equipamentos.</p>
-          </div>
         ) : (
-          SLOT_ORDER.filter((slot) => bySlot[slot]?.length).map((slot) => (
-            <div key={slot} className="inventory-group">
-              <h2 className="inventory-group-title">{SLOT_LABEL[slot]}</h2>
-              <ul className="inventory-list">
-                {bySlot[slot]!.map((item) => {
-                  const equippedInSlot = getEquippedInSlot(item.slot);
-                  return (
-                    <li
-                      key={item.id}
-                      className={`inventory-item rarity-border-${item.rarity}`}
-                    >
-                      <div>
-                        <strong style={{ color: RARITY_COLOR[item.rarity] ?? "#fff" }}>{item.name}</strong>
-                        {item.is_equipped ? <span className="badge-equipped">EQUIPADO</span> : null}
-                        {isNew(item) ? <span className="badge-new">NOVO</span> : null}
-                        {bestAvailableBySlot[item.slot] === item.id ? (
-                          <span className="badge-best">⬆ Melhor disponível</span>
-                        ) : null}
-                        <div className="item-meta">
-                          {item.rarity} · {item.slot} · nv. {item.min_level} · {renderPower(item)}
-                          {item.damage_type === "magic" ? " · mágico" : ""}
-                          {item.is_equipped ? ` · equipado (${item.equipped_slot})` : ""}
-                        </div>
-                        {!item.is_equipped ? (
-                          <div className="item-compare">{renderComparisonDetail(item, equippedInSlot)}</div>
-                        ) : null}
-                        <p className="item-desc">{item.description}</p>
-                        {renderItemOrigin(item)}
-                        {renderItemIdentity(item)}
-                        {renderNextStep(item, echoContext.approach)}
-                      </div>
-                      <div className="item-actions">
-                        {item.is_equipped ? (
-                          <button onClick={() => void unequip(item.slot)}>Desequipar</button>
-                        ) : (
-                          <button onClick={() => void equip(item.id)}>Equipar</button>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))
+          <>
+            {/* Backpack Experience Phase I — Fase 2/3/5: acima de tudo,
+                de propósito ("seção superior", pedido literal do brief).
+                Consome só o Estado Global (useAdventureSession) — nunca
+                a lista persistida abaixo, exceto pra passar a CONTAGEM
+                real (itemCount) que os sinais de capacidade (Fase 5)
+                precisam. Isolado num componente próprio (ver Fase 8). */}
+            <BackpackNarrativePanel itemCount={items.length} />
+
+            {items.length === 0 ? (
+              // Fase 6: a frase antiga ("Continue assistindo — drops têm
+              // boa chance a cada minuto de presença") era da mecânica
+              // antiga de espectador passivo — não tem nenhuma relação
+              // com o fluxo atual (jogar a Aventura). Corrigido pra
+              // descrever o que realmente concede itens hoje.
+              <div className="empty-state">
+                <p>Seu inventário está vazio.</p>
+                <p className="hint">Jogue uma Aventura para encontrar seus primeiros equipamentos.</p>
+              </div>
+            ) : (
+              <>
+                {equippedItems.length > 0 ? (
+                  <section className="inventory-section">
+                    <h2 className="inventory-section-title">Equipados</h2>
+                    {renderItemGroups(equippedItems)}
+                  </section>
+                ) : null}
+                {restItems.length > 0 ? (
+                  <section className="inventory-section">
+                    <h2 className="inventory-section-title">Restante da Mochila</h2>
+                    {renderItemGroups(restItems)}
+                  </section>
+                ) : null}
+              </>
+            )}
+          </>
         )}
       </div>
     </main>

@@ -22,7 +22,12 @@ import { useCharacter } from "../hooks/useCharacter";
 import { useIdentity } from "../hooks/useIdentity";
 import { useKingdomRole } from "../hooks/useKingdomRole";
 import { useExpedition } from "../hooks/useExpedition";
+import { useAdventureSession } from "../hooks/useAdventureSession";
 import { api } from "../lib/api";
+import { buildRecentFinds } from "../lib/backpackFinds";
+import { deriveBackpackSignals } from "../lib/backpackSignals";
+import { buildCityWelcomeLines } from "../lib/cityWelcome";
+import { buildCitySuggestions } from "../lib/citySuggestions";
 import { getStoredChannel, setStoredChannel } from "../hooks/usePing";
 import { GuideBubble } from "../components/onboarding/GuideBubble";
 import { EldrinGuide } from "../components/onboarding/EldrinGuide";
@@ -135,6 +140,32 @@ export function CityPage() {
     const id = window.setInterval(() => setClock(formatClock(Date.now())), CLOCK_TICK_MS);
     return () => window.clearInterval(id);
   }, []);
+
+  // City Foundation Phase I — Fase 2/4/7: ÚNICA assinatura de
+  // useAdventureSession() nesta tela (CityPage já re-renderiza a cada
+  // segundo por causa do relógio acima, então esta assinatura — que só
+  // atualiza a cada tick real da Aventura, ~2.5s — não é uma fonte NOVA
+  // de re-renders frequentes, só reaproveita o mesmo ciclo). Nenhum
+  // prédio/sub-tela precisa da sua própria assinatura: tudo é calculado
+  // aqui uma única vez e repassado como texto puro (mesmo padrão de
+  // prop-drilling que `worldPresenceCtx`/`echoContext`/`playerFacts` já
+  // usam nesta página). `itemCount` é a única leitura adicional — uma
+  // busca única (não uma assinatura viva) à mesma rota que o Inventário
+  // já usa, só pra alimentar o mesmo `deriveBackpackSignals` da Mochila
+  // (Backpack Experience Phase I) — nenhuma lógica de capacidade
+  // duplicada.
+  const { ready: adventureReady, hudState } = useAdventureSession();
+  const [itemCount, setItemCount] = useState(0);
+  useEffect(() => {
+    void api
+      .get<{ items: unknown[] }>("/api/items")
+      .then((data) => setItemCount(data.items.length))
+      .catch(() => undefined);
+  }, []);
+  const recentFinds = adventureReady ? buildRecentFinds(hudState.recentEvents) : [];
+  const backpackSignals = deriveBackpackSignals(itemCount, recentFinds.length);
+  const cityWelcomeLines = adventureReady ? buildCityWelcomeLines(recentFinds, backpackSignals) : [];
+  const citySuggestions = buildCitySuggestions(recentFinds, backpackSignals);
 
   const kingdom = worldState?.channel_kingdom ?? null;
 
@@ -295,9 +326,14 @@ export function CityPage() {
             <ArenaBuilding identity={identity} kingdom={kingdom} worldPresenceCtx={worldPresenceCtx} playerFacts={playerFacts} />
           ) : null}
           {selected === "ferreiro" ? (
-            <BlacksmithBuilding equipped={character?.equipped ?? []} worldPresenceCtx={worldPresenceCtx} playerFacts={playerFacts} />
+            <BlacksmithBuilding
+              equipped={character?.equipped ?? []}
+              worldPresenceCtx={worldPresenceCtx}
+              playerFacts={playerFacts}
+              suggestion={citySuggestions.blacksmith}
+            />
           ) : null}
-          {selected === "mercador" ? <MerchantBuilding /> : null}
+          {selected === "mercador" ? <MerchantBuilding suggestion={citySuggestions.merchant} /> : null}
           {selected === "alquimista" ? <AlchemistBuilding /> : null}
           {selected === "guilda" ? (
             <GuildBuilding
@@ -344,6 +380,22 @@ export function CityPage() {
             clock={clock}
             channelDisplayName={kingdom?.channel_display_name ?? null}
           />
+
+          {/* City Foundation Phase I — Fase 2 ("Cidade Viva"): resumo
+              contextual logo ao entrar na Praça, "estou em segurança,
+              hora de organizar tudo que encontrei" — nunca um dado
+              inventado, só o Estado Global/Mochila já existentes. */}
+          {adventureReady && cityWelcomeLines.length > 0 ? (
+            <div className="city-welcome">
+              {cityWelcomeLines.map((line, index) => (
+                <p key={index} className="city-welcome-line">
+                  {line}
+                </p>
+              ))}
+              {citySuggestions.general ? <p className="city-welcome-suggestion">{citySuggestions.general}</p> : null}
+            </div>
+          ) : null}
+
           <CitySquareDecor />
           {worldState ? (
             <p className={`hint city-of-the-day${eventFeedbackCls ? ` ${eventFeedbackCls}` : ""}`}>

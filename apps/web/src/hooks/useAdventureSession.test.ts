@@ -1,6 +1,10 @@
-import { test, describe, beforeEach } from "node:test";
+import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { __testing } from "./useAdventureSession.js";
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 // Adventure Session Persistence — RC1 Blocker Fix: estes testes cobrem
 // só a garantia que importa pro bug B1 (não o motor de combate, já
@@ -67,5 +71,197 @@ describe("useAdventureSession — persistência entre remontagens", () => {
     assert.equal(singleton.lastSynced.gold, 200);
     assert.ok(singleton.lastSynced.xp > 50, "deve incluir o XP acumulado de níveis anteriores, não só o XP-no-nível");
     assert.equal(singleton.session.statistics.goldFound, 200);
+  });
+});
+
+// Global Idle System — Architecture Refactor: estes testes cobrem a
+// Fase 9 da Sprint — a garantia central é que o IdleDriver e o tick
+// global agora vivem no MESMO singleton de módulo que a sessão, e por
+// isso sobrevivem a QUALQUER coisa que aconteça no lado React (nenhuma
+// tela montada, várias montadas, montagens/desmontagens em sequência
+// simulando navegação real entre Aventura/Inventário/Personagem/
+// Cidade/Mundo). Nenhum destes testes usa React de verdade (sem
+// renderer instalado) — `subscribe`/`unsubscribe` simulam exatamente o
+// que `useAdventureSession()` faz no mount/unmount de cada tela.
+describe("useAdventureSession — Global Idle System (IdleDriver + tick global)", () => {
+  beforeEach(() => {
+    __testing.resetSingleton();
+  });
+
+  afterEach(() => {
+    // Essencial: sem isto, o setInterval real criado por
+    // ensureIdleDriverStarted() (Fase 8) manteria o processo de teste
+    // vivo além do último teste — mesmo cuidado que qualquer outro
+    // timer real precisaria neste projeto.
+    __testing.resetSingleton();
+  });
+
+  test("ensureSingletonInit já sobe o IdleDriver global sozinho (mesmo boot que antes acontecia dentro de AdventurePage)", async () => {
+    assert.equal(__testing.getIdleDriverInstance(), null, "antes de qualquer inicialização, nenhum driver deve existir");
+    await __testing.ensureSingletonInit();
+    assert.notEqual(__testing.getIdleDriverInstance(), null);
+    assert.notEqual(__testing.getIdleTickIntervalId(), null);
+  });
+
+  test("Fase 8 (Singleton): ensureIdleDriverStarted() chamado de novo com um driver já ativo preserva a MESMA instância, nunca cria uma segunda", async () => {
+    await __testing.ensureSingletonInit();
+    const first = __testing.getIdleDriverInstance();
+    const firstIntervalId = __testing.getIdleTickIntervalId();
+    assert.notEqual(first, null);
+
+    // Simula uma 2a tela chamando useAdventureSession() (ex.: Inventário
+    // montado enquanto Aventura também existe) — nunca deve substituir o
+    // driver ativo.
+    __testing.ensureIdleDriverStarted();
+    assert.equal(__testing.getIdleDriverInstance(), first, "esperava a MESMA instância de IdleDriver — criar uma segunda violaria a Fase 8");
+    assert.equal(__testing.getIdleTickIntervalId(), firstIntervalId, "o setInterval original também deve ser preservado, nunca substituído");
+  });
+
+  test("runGlobalTick() avança o mundo (timeline.nextTickIndex incrementa) mesmo sem NENHUM subscriber registrado — a simulação nunca depende de uma tela estar montada", async () => {
+    await __testing.ensureSingletonInit();
+    assert.equal(__testing.getSubscriberCount(), 0, "nenhuma tela 'montada' neste teste");
+
+    const before = __testing.getSingleton()!.timeline.nextTickIndex;
+    __testing.runGlobalTick();
+    __testing.runGlobalTick();
+    __testing.runGlobalTick();
+    const after = __testing.getSingleton()!.timeline.nextTickIndex;
+
+    assert.equal(after, before + 3, "3 ticks devem ter avançado a timeline em 3, independente de qualquer UI observando");
+  });
+
+  test("subscribe()/unsubscribe() simulam múltiplas montagens/desmontagens (troca de rota) — getSubscriberCount() reflete o número real de telas 'observando'", () => {
+    const listenerAdventure = () => {};
+    const listenerInventory = () => {};
+
+    assert.equal(__testing.getSubscriberCount(), 0);
+    __testing.subscribe(listenerAdventure);
+    assert.equal(__testing.getSubscriberCount(), 1, "Aventura monta");
+    __testing.subscribe(listenerInventory);
+    assert.equal(__testing.getSubscriberCount(), 2, "Inventário também monta (ex.: duas abas, ou StrictMode)");
+    __testing.unsubscribe(listenerAdventure);
+    assert.equal(__testing.getSubscriberCount(), 1, "Aventura desmonta ao navegar pra Inventário");
+    __testing.unsubscribe(listenerInventory);
+    assert.equal(__testing.getSubscriberCount(), 0, "Inventário também desmonta");
+  });
+
+  test("notifySubscribers() só chama quem está registrado NO MOMENTO da notificação — um listener já desinscrito nunca é chamado de novo", () => {
+    let adventureCalls = 0;
+    let inventoryCalls = 0;
+    const listenerAdventure = () => {
+      adventureCalls++;
+    };
+    const listenerInventory = () => {
+      inventoryCalls++;
+    };
+
+    __testing.subscribe(listenerAdventure);
+    __testing.subscribe(listenerInventory);
+    __testing.notifySubscribers();
+    assert.equal(adventureCalls, 1);
+    assert.equal(inventoryCalls, 1);
+
+    __testing.unsubscribe(listenerAdventure);
+    __testing.notifySubscribers();
+    assert.equal(adventureCalls, 1, "Aventura já desmontou, não deve mais ser notificada");
+    assert.equal(inventoryCalls, 2);
+  });
+
+  test("navegação longa simulada (Aventura -> Inventário -> Personagem -> Cidade -> Mundo -> Aventura) nunca reseta o progresso acumulado da sessão", async () => {
+    await __testing.ensureSingletonInit();
+    const singleton = __testing.getSingleton()!;
+    const startingTickIndex = singleton.timeline.nextTickIndex;
+
+    // Cada `subscribe`/`unsubscribe` simula uma tela montando/desmontando
+    // ao navegar; `runGlobalTick()` no meio simula o IdleDriver global
+    // continuando a avançar enquanto o jogador está em QUALQUER dessas
+    // telas — nenhuma delas possui o driver, então nenhuma delas pode
+    // interrompê-lo ao desmontar.
+    const screens = ["adventure", "inventory", "character", "city", "world", "adventure"];
+    for (const screen of screens) {
+      const listener = () => {};
+      __testing.subscribe(listener);
+      __testing.runGlobalTick();
+      __testing.unsubscribe(listener);
+      void screen;
+    }
+
+    assert.equal(singleton, __testing.getSingleton(), "mesma referência de sessão do início ao fim da navegação — nunca recriada");
+    assert.equal(
+      __testing.getSingleton()!.timeline.nextTickIndex,
+      startingTickIndex + screens.length,
+      "todas as 6 ticks devem ter avançado a timeline, mesmo cada uma tendo ocorrido com uma tela diferente 'observando' (ou nenhuma)",
+    );
+  });
+
+  test("pause()/resume() no IdleDriver global impedem/retomam avanço mesmo chamados por uma tela diferente da que iniciou a sessão", async () => {
+    await __testing.ensureSingletonInit();
+    const driver = __testing.getIdleDriverInstance()!;
+
+    driver.pause();
+    assert.equal(driver.getStatus(), "paused");
+
+    driver.resume();
+    assert.equal(driver.getStatus(), "running");
+  });
+
+  test("uma sessão derrotada faz runGlobalTick() parar o driver global e nunca mais avançar a timeline, mesmo chamado repetidamente", async () => {
+    await __testing.ensureSingletonInit();
+    const singleton = __testing.getSingleton()!;
+
+    // Derrota simulada diretamente no estado (mais simples e determinístico
+    // que forçar uma derrota real via combate) — o que importa aqui é
+    // só o comportamento de runGlobalTick() perante sessionStatus "derrota".
+    singleton.session.character.currentLife = 0;
+
+    const before = singleton.timeline.nextTickIndex;
+    __testing.runGlobalTick();
+    __testing.runGlobalTick();
+    const after = singleton.timeline.nextTickIndex;
+
+    assert.equal(after, before, "uma sessão derrotada nunca deve avançar a timeline");
+    assert.equal(__testing.getIdleDriverInstance()!.getStatus(), "stopped", "o driver global deve parar sozinho ao detectar derrota");
+  });
+
+  test("Fase 6/Restart: reiniciar após derrota reativa o driver global (status volta a 'running')", async () => {
+    await __testing.ensureSingletonInit();
+    const driver = __testing.getIdleDriverInstance()!;
+    driver.stop();
+    assert.equal(driver.getStatus(), "stopped");
+
+    driver.start();
+    assert.equal(driver.getStatus(), "running", "equivalente ao restart() do hook chamando idleDriverInstance.start()");
+  });
+
+  test("fio-terra: o setInterval real criado por ensureIdleDriverStarted() dispara runGlobalTick() sozinho, sem nenhuma chamada manual — prova a integração completa setInterval -> shouldTick -> runGlobalTick", async () => {
+    // Sessão plantada diretamente (sem passar pelo fetch real de
+    // ensureSingletonInit, que sempre sobe o driver com
+    // IDLE_TICK_INTERVAL_MS=2500 — longo demais pra um teste rápido).
+    // `ensureIdleDriverStarted(50)` sobe um driver curto só pra este
+    // teste conseguir observar o disparo automático em tempo real.
+    __testing.setSingletonForTesting(__testing.buildSingleton(null));
+    __testing.ensureIdleDriverStarted(50);
+
+    const startingTickIndex = __testing.getSingleton()!.timeline.nextTickIndex;
+    await wait(300);
+    const afterTickIndex = __testing.getSingleton()!.timeline.nextTickIndex;
+
+    assert.ok(
+      afterTickIndex > startingTickIndex,
+      `esperava pelo menos 1 tick automático em 300ms com intervalo de 50ms (foi de ${startingTickIndex} pra ${afterTickIndex}) — o polling real precisa disparar runGlobalTick() sozinho, nenhuma chamada manual aqui`,
+    );
+  });
+
+  test("registerIdleBlockChecker() é respeitado pelo polling automático: um bloqueio sempre ativo impede QUALQUER tick automático, mesmo com o intervalo esgotado várias vezes", async () => {
+    __testing.setSingletonForTesting(__testing.buildSingleton(null));
+    __testing.ensureIdleDriverStarted(50);
+    __testing.registerIdleBlockChecker(() => true);
+
+    const startingTickIndex = __testing.getSingleton()!.timeline.nextTickIndex;
+    await wait(300);
+    const afterTickIndex = __testing.getSingleton()!.timeline.nextTickIndex;
+
+    assert.equal(afterTickIndex, startingTickIndex, "com o bloqueio sempre ativo (ex.: Level Up ainda na tela), nenhum tick automático deveria ter ocorrido em 300ms mesmo com um intervalo de 50ms");
+    __testing.registerIdleBlockChecker(null);
   });
 });
