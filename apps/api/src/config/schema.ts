@@ -278,4 +278,38 @@ CREATE TABLE IF NOT EXISTS character_chronicles (
 
 CREATE INDEX IF NOT EXISTS idx_character_chronicles_character
   ON character_chronicles(character_id, created_at ASC);
+
+-- Economy Core Phase I — saldo genérico por recurso (Fase 5). "gold" é
+-- DELIBERADAMENTE excluído desta tabela: characters.gold continua sendo
+-- a única fonte de verdade para Ouro (evita duplicar/desincronizar um
+-- saldo que já existe e já é lido/escrito por rotas em produção); esta
+-- tabela cobre os demais ResourceId (materials, reputation, essence,
+-- token, e futuros) desde o primeiro dia. Ver
+-- apps/api/src/services/economy.service.ts para a fronteira exata.
+CREATE TABLE IF NOT EXISTS character_resources (
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  resource_id TEXT NOT NULL,
+  balance REAL NOT NULL DEFAULT 0,
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+  PRIMARY KEY (character_id, resource_id)
+);
+
+-- Log de auditoria (Fase 3/7) — nunca a fonte do saldo (nem para "gold"
+-- nem para os demais recursos); só um registro append-only de cada
+-- transação, aceita ou rejeitada, para investigação futura ("por que meu
+-- saldo mudou de X para Y").
+CREATE TABLE IF NOT EXISTS resource_transactions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  resource_id TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK (kind IN ('credit', 'debit')),
+  amount REAL NOT NULL,
+  origin TEXT NOT NULL,
+  destination TEXT NOT NULL,
+  result TEXT NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_resource_transactions_character
+  ON resource_transactions(character_id, created_at DESC);
 `;

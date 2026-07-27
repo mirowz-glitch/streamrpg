@@ -23,3 +23,4 @@ export * from "./objectives/index.js";
 export * from "./expeditions/index.js";
 export * from "./factions/index.js";
 export * from "./dungeon/index.js";
+export * from "./economy/index.js";
