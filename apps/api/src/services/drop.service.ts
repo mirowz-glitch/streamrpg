@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { DamageType, InventoryItem, ItemSlot } from "@streamrpg/shared";
+import type { DamageType, InventoryItem, ItemRarity, ItemSlot } from "@streamrpg/shared";
 import { getDb, nowUnix } from "../config/database.js";
 
 // Exportada para reaproveitamento em xp.service.ts (Sprint Player
@@ -21,6 +21,10 @@ export function mapInventoryRow(row: Record<string, unknown>): InventoryItem {
     // a Sprint Character Attributes Schema, agora expostas pela API.
     damage_type: (row.damage_type as DamageType | undefined) ?? "physical",
     uti_bonus: (row.uti_bonus as number | undefined) ?? 0,
+    // Blacksmith Phase I — coluna já existente (Item Generator), agora
+    // exposta pela API.
+    power_score: (row.power_score as number | null | undefined) ?? null,
+    upgrade_level: (row.upgrade_level as number | undefined) ?? 0,
   };
 }
 
@@ -28,7 +32,7 @@ export function listInventory(characterId: string): InventoryItem[] {
   const rows = getDb()
     .prepare(
       `SELECT ci.id, ci.item_id, ci.obtained_at, i.slug, i.name, i.description, i.rarity, i.slot, i.min_level,
-              i.damage_type, i.uti_bonus,
+              i.damage_type, i.uti_bonus, i.power_score, i.upgrade_level,
               CASE WHEN e.character_item_id IS NOT NULL THEN 1 ELSE 0 END AS is_equipped,
               e.slot AS equipped_slot
        FROM character_items ci
@@ -155,7 +159,8 @@ export function removeItem(characterId: string, characterItemId: number): void {
 export function getEquippedItems(characterId: string) {
   return getDb()
     .prepare(
-      `SELECT e.slot, e.character_item_id, i.name, i.rarity, i.damage_type, i.uti_bonus
+      `SELECT e.slot, e.character_item_id, i.name, i.rarity, i.damage_type, i.uti_bonus,
+              i.min_level, i.power_score, i.upgrade_level
        FROM equipped_items e
        JOIN character_items ci ON ci.id = e.character_item_id
        JOIN items i ON i.id = ci.item_id
@@ -165,10 +170,41 @@ export function getEquippedItems(characterId: string) {
       slot: ItemSlot;
       character_item_id: number;
       name: string;
-      rarity: string;
+      rarity: ItemRarity;
       damage_type: DamageType;
       uti_bonus: number;
+      min_level: number;
+      power_score: number | null;
+      upgrade_level: number;
     }>;
+}
+
+// Blacksmith Phase I — Fase 6: única função que escreve o novo estado de
+// um item melhorado. Nenhuma regra de upgrade vive aqui — quem chama já
+// calculou `newPowerScore`/`newUpgradeLevel` (packages/shared, função
+// pura). Esta camada só executa a escrita, dentro da transação aberta
+// pelo blacksmith.service.ts (mesmo padrão de removeItem/ADR-0001).
+export function applyItemUpgrade(
+  characterId: string,
+  characterItemId: number,
+  newPowerScore: number,
+  newUpgradeLevel: number,
+): void {
+  const db = getDb();
+  const owned = db
+    .prepare(
+      `SELECT ci.item_id FROM character_items ci
+       WHERE ci.id = ? AND ci.character_id = ?`,
+    )
+    .get(characterItemId, characterId) as { item_id: number } | undefined;
+  if (!owned) {
+    throw new Error("Item not found in inventory");
+  }
+  db.prepare("UPDATE items SET power_score = ?, upgrade_level = ? WHERE id = ?").run(
+    newPowerScore,
+    newUpgradeLevel,
+    owned.item_id,
+  );
 }
 
 export function getEquippedWeaponName(characterId: string): string | null {

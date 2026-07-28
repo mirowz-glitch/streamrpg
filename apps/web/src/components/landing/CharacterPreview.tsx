@@ -9,9 +9,9 @@ import { ExpeditionCompact } from "../ui/ExpeditionCompact";
 // `EquipmentSlots`/`ExpeditionCompact`) — dados fabricados só para esta
 // vitrine, rotulados como exemplo na tela.
 const MOCK_EQUIPPED: EquippedItem[] = [
-  { slot: "weapon", character_item_id: 1, name: "Espada da Aurora", rarity: "rare", damage_type: "physical", uti_bonus: 0 },
-  { slot: "armor", character_item_id: 2, name: "Cota de Escamas", rarity: "uncommon", damage_type: "physical", uti_bonus: 2 },
-  { slot: "amulet", character_item_id: 3, name: "Amuleto da Maré", rarity: "epic", damage_type: "magic", uti_bonus: 4 },
+  { slot: "weapon", character_item_id: 1, name: "Espada da Aurora", rarity: "rare", damage_type: "physical", uti_bonus: 0, min_level: 1, power_score: null, upgrade_level: 0 },
+  { slot: "armor", character_item_id: 2, name: "Cota de Escamas", rarity: "uncommon", damage_type: "physical", uti_bonus: 2, min_level: 1, power_score: null, upgrade_level: 0 },
+  { slot: "amulet", character_item_id: 3, name: "Amuleto da Maré", rarity: "epic", damage_type: "magic", uti_bonus: 4, min_level: 1, power_score: null, upgrade_level: 0 },
 ];
 
 const MOCK_EXPEDITION: ExpeditionCompactData = {

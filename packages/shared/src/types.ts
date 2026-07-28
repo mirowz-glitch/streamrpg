@@ -121,6 +121,11 @@ export interface InventoryItem {
   // enviadas pela API até agora.
   damage_type: DamageType;
   uti_bonus: number;
+  // Blacksmith Phase I — items.power_score já existia (Item Generator
+  // procedural), nunca exposto pela API. `null` para o catálogo fixo
+  // (itens sem Power Score não são elegíveis para melhoria do Ferreiro).
+  power_score: number | null;
+  upgrade_level: number;
 }
 
 export interface EquippedItem {
@@ -133,6 +138,11 @@ export interface EquippedItem {
   // só reaproveitado aqui para mostrar atributos/bônus no perfil).
   damage_type: DamageType;
   uti_bonus: number;
+  // Blacksmith Phase I — necessário para calcular custo/resultado de
+  // melhoria sem uma segunda consulta.
+  min_level: number;
+  power_score: number | null;
+  upgrade_level: number;
 }
 
 export interface RankingEntry {

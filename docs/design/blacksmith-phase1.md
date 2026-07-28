@@ -82,3 +82,91 @@ Idêntico ao Merchant Phase I Seção 8: se o débito for rejeitado (saldo insuf
 ---
 
 *Referências: `docs/design/merchant-phase1.md` Seção 10 (implementação real do Merchant, o precedente direto — mesmo padrão de composição de transação, ADR-0001); `docs/design/economy-core-phase1.md` (arquitetura base); `docs/design/gold-architecture-phase1.md` Seção 5 (tabela original que já previa "Ferreiro: Reforjar/upgrade → Ouro + possivelmente materiais"); `docs/design/city-foundation-phase1.md` (papel do Ferreiro já comunicado); `docs/roadmap.md` (ordem Merchant → Blacksmith → Salvage → Crafting).*
+
+## 10. Implementação Realizada (Blacksmith Phase I)
+
+**Status:** ✅ Implementado, testado e validado em navegador. Esta seção documenta o que foi de fato construído, substituindo as previsões das Seções 1-9 acima por fatos.
+
+### 10.1 Auditoria confirmada (Fase 1)
+
+As duas lacunas previstas na Seção 1 foram confirmadas e resolvidas exatamente como recomendado:
+
+- **`items.power_score`** já existia na coluna (Item Generator), mas nunca era exposto por `InventoryItem`/`EquippedItem` nem por `mapInventoryRow()`/`getEquippedItems()`. Corrigido de forma aditiva.
+- **`items.upgrade_level`** não existia — nova migração `INTEGER NOT NULL DEFAULT 0` (`apps/api/src/config/database.ts`), mesmo padrão de `power_score`/`base_item_id` (checagem via `PRAGMA table_info`, `ALTER TABLE`, log de confirmação).
+- **Achado adicional não previsto na preparação**: `power_score` é `NULL` para todo o catálogo fixo (itens que nunca passaram pelo Item Generator) — só itens de loot da Aventura têm um valor real. Decisão tomada nesta Sprint: itens com `power_score: null` são tratados como **não elegíveis** para melhoria (`item-not-eligible`), tanto no filtro client-side (`buildBlacksmithOffers`) quanto na validação server-side (`blacksmith.service.ts`).
+- **Escopo confirmado**: Blacksmith Phase I opera exclusivamente sobre itens **equipados** (não a mochila inteira) — decisão já sinalizada por `BlacksmithBuilding.tsx` só receber `equipped: EquippedItem[]` desde City Foundation Phase I.
+
+### 10.2 Arquitetura construída
+
+```
+Player clica "Melhorar" (Ferreiro, item equipado elegível)
+     ↓
+BlacksmithBuilding.tsx → CityPage.handleBlacksmithUpgrade
+     ↓
+POST /api/blacksmith/upgrade { character_item_id }
+     ↓
+blacksmith.service.ts: upgradeItem()
+     ├─ getEquippedItems() → valida existência + elegibilidade (power_score != null)
+     ├─ calculateUpgrade() (packages/shared, puro) → { nextLevel, cost, newPowerScore }
+     ├─ BEGIN
+     ├─ debitCharacterResourceInTransaction("gold", cost, "blacksmith:upgrade", `item:${id}`)
+     │    └─ se rejeitado (saldo insuficiente): ROLLBACK, devolve "debit-rejected"
+     ├─ applyItemUpgrade() → UPDATE items SET power_score=?, upgrade_level=? WHERE id=?
+     ├─ COMMIT
+     └─ devolve { item, cost, newPowerScore, newUpgradeLevel, newGoldBalance, event }
+     ↓
+CityPage: await refreshCharacter() → character.equipped já reflete o novo estado
+(mesmo hook que Gold/Backpack já usam — nenhum estado novo)
+```
+
+Mesmo padrão de composição de transação do Merchant (ADR-0001) — nenhuma ADR nova foi necessária, esta é uma extensão direta e pré-anticipada do padrão já registrado (a própria ADR-0001 já citava Blacksmith como consumidor futuro do lado de débito).
+
+### 10.3 Funções puras (packages/shared/src/equipment/upgrade.ts)
+
+- `calculateUpgradeCost({rarity, upgrade_level})`: `BASE_COST_BY_RARITY[rarity] + upgrade_level * 15`, `BASE_COST_BY_RARITY = {common:20, uncommon:40, rare:80, epic:160, legendary:320}`.
+- `calculateUpgrade({rarity, upgrade_level, power_score})`: chama `calculateUpgradeCost` internamente, soma `POWER_SCORE_INCREMENT = 5` fixo ao `power_score`, retorna `{nextLevel, cost, newPowerScore}`. Lança erro se `power_score` for `null` (item não elegível) — quem chama já filtra antes.
+- **Invariante econômica verificada por teste** (Seção 3 desta prep doc): `calculateUpgradeCost` no `upgrade_level=0` excede `calculateSaleValue` em toda raridade (20>7, 40>14, 80>32, 160>77, 320>182 no nível mínimo) e continua excedendo em níveis de melhoria mais altos — nenhum incentivo perverso "vender e recomprar mais barato que melhorar".
+
+### 10.4 Arquivos alterados/criados
+
+| Arquivo | Responsabilidade |
+|---|---|
+| `packages/shared/src/equipment/upgrade.ts` (novo) | `calculateUpgradeCost`/`calculateUpgrade`, puro |
+| `packages/shared/src/equipment/upgrade.test.ts` (novo) | 7 testes: custo por raridade/nível, resultado do upgrade, item não elegível, invariante econômica |
+| `packages/shared/src/equipment/index.ts` | export do novo módulo |
+| `packages/shared/src/types.ts` | `InventoryItem`/`EquippedItem` ganham `power_score`, `upgrade_level` (+ `min_level` em `EquippedItem`) |
+| `apps/api/src/config/database.ts` | migração `items.upgrade_level` |
+| `apps/api/src/services/drop.service.ts` | `mapInventoryRow`/`getEquippedItems` expõem os novos campos; nova `applyItemUpgrade()` (persistência pura, sem regra) |
+| `apps/api/src/services/economy.service.ts` | nova `debitCharacterResourceInTransaction()`, espelho exato da variante de crédito |
+| `apps/api/src/services/blacksmith.service.ts` (novo) | `upgradeItem()`, orquestrador único |
+| `apps/api/src/services/blacksmith.service.test.ts` (novo) | 8 testes: melhoria válida, Ouro insuficiente, item inexistente, item não equipado, item sem power_score, eventos, persistência, rollback |
+| `apps/api/src/routes/blacksmith.ts` (novo) | `POST /api/blacksmith/upgrade`, delegação pura |
+| `apps/api/src/routes/character.ts` | inclui os novos campos na resposta `equipped` |
+| `apps/api/src/server.ts` | registra `blacksmithRoutes` |
+| `apps/web/src/lib/blacksmithOffers.ts` (novo) | `buildBlacksmithOffers()`, preview client-side reaproveitando `calculateUpgrade` |
+| `apps/web/src/lib/blacksmithOffers.test.ts` (novo) | 3 testes |
+| `apps/web/src/components/city/BlacksmithBuilding.tsx` | placeholder substituído por lista de ofertas + botão "Melhorar" + feedback; nenhuma linha ambiente/narrativa tocada |
+| `apps/web/src/pages/CityPage.tsx` | `blacksmithOffers` (useMemo) + `handleBlacksmithUpgrade` (reaproveita `refreshCharacter`, nenhum estado novo) |
+| `apps/web/styles.css` | CSS da lista de ofertas do Ferreiro, mesma paleta do Merchant |
+| `apps/web/src/components/landing/CharacterPreview.tsx` | fixture `MOCK_EQUIPPED` atualizada com os novos campos obrigatórios |
+| `apps/web/src/lib/merchantOffers.test.ts` | fixture `item()` atualizada com os novos campos obrigatórios |
+
+### 10.5 Testes
+
+18 testes novos (7 shared + 8 api + 3 web). Suítes completas: shared 490/490, web 94/94, api 81/82 (1 falha é a dívida técnica pré-existente documentada `SQLiteCharacterRepository.test.ts`, `TS1308`, idêntica em todas as Sprints anteriores). Typecheck limpo em `packages/shared` e `apps/web`; `apps/api` mantém exatamente os mesmos erros pré-existentes já documentados (`EventBus.test.ts`, `GameEngine.test.ts`, `SQLiteBossParticipationRepository.ts`, `SQLiteBossRepository.ts`, `SQLiteCharacterRepository.test.ts`) — zero erros novos. `npm run build:web` limpo.
+
+### 10.6 Browser Validation
+
+Fluxo completo: Cidade → Ferreiro (lista mostrou "Machado de Validação · Raro · Poder 25→30 · 🪙 80 · Melhorar") → Inventário (personagem tinha uma Aventura idle ativa em segundo plano, que trocou o item equipado via AutoEquip antes do clique — **achado real**, ver Seção 10.7) → nova tentativa no item então equipado ("Cinto") → sucesso: "Cinto melhorado por 40 de Ouro. Poder agora: 24." → confirmado via `/api/character`: `power_score: 24, upgrade_level: 1` persistido → Backpack mostrou o mesmo Cinto equipado (a métrica ATQ/DEF exibida ali vem de `getCombatAttributes(rarity, slot, damage_type)`, independente de `power_score` — **achado esperado da auditoria**, Power Score é uma dimensão nova, ainda não visível fora do Ferreiro) → Banco confirmou "Gold atual 590.0" (500 inicial − 40 custo + ganhos de Ouro do idle contínuo) → zero erros de console em todo o fluxo → idle nunca parou (loot continuou chegando durante toda a validação).
+
+### 10.7 Achado real: AutoEquip pode invalidar uma oferta do Ferreiro entre o carregamento da tela e o clique
+
+O Global Idle System (Sprints anteriores) mantém a Aventura avançando em segundo plano em QUALQUER tela, inclusive dentro do Ferreiro. Se um item melhor cai e é auto-equipado no mesmo slot que o jogador está prestes a melhorar, o `character_item_id` da oferta renderizada fica obsoleto — o clique em "Melhorar" retorna `item-not-found` (comportamento correto e seguro: nenhuma melhoria é aplicada ao item errado, nenhum Ouro é gasto). Não é um bug de lógica — é uma janela de corrida genuína entre dois sistemas legítimos (idle contínuo + oferta client-side desatualizada). Documentado como limitação conhecida (Seção 11), não corrigido nesta Sprint (fora de escopo — a UI mínima do Ferreiro não prevê polling/revalidação automática de ofertas).
+
+### 10.8 Compatibilidade confirmada
+
+RC1 íntegro; Economy Core íntegro (Ledger nunca soube que existe um "Ferreiro" — só recebeu `requestDebit`); Merchant continua funcionando sem alteração; Engine (packages/shared) permanece isolada, zero import de `node:sqlite`/`react`; nenhuma regra de negócio em componente React (custo/elegibilidade sempre vêm de `packages/shared` ou já calculados no servidor); Adventure Session única (nenhum novo estado, `refreshCharacter()` já existente cobre Gold + equipamento + Ferreiro simultaneamente).
+
+### 10.9 Próxima Sprint
+
+`docs/design/salvage-phase1.md` — desmontagem de equipamentos em `materials`, a peça que falta para o Ferreiro algum dia cobrar em materiais além de Ouro (ver Seção 1 desta prep doc).

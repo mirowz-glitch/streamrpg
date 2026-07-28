@@ -18,6 +18,8 @@ function item(overrides: Partial<InventoryItem> = {}): InventoryItem {
     obtained_at: new Date().toISOString(),
     damage_type: "physical",
     uti_bonus: 0,
+    power_score: null,
+    upgrade_level: 0,
     ...overrides,
   };
 }

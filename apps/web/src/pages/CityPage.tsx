@@ -30,6 +30,8 @@ import { buildCityWelcomeLines } from "../lib/cityWelcome";
 import { buildCitySuggestions } from "../lib/citySuggestions";
 import { buildMerchantOffers } from "../lib/merchantOffers";
 import type { SellFeedback } from "../components/city/MerchantBuilding";
+import { buildBlacksmithOffers } from "../lib/blacksmithOffers";
+import type { UpgradeFeedback } from "../components/city/BlacksmithBuilding";
 import { getStoredChannel, setStoredChannel } from "../hooks/usePing";
 import { GuideBubble } from "../components/onboarding/GuideBubble";
 import { EldrinGuide } from "../components/onboarding/EldrinGuide";
@@ -178,6 +180,11 @@ export function CityPage() {
   const cityWelcomeLines = adventureReady ? buildCityWelcomeLines(recentFinds, backpackSignals) : [];
   const citySuggestions = buildCitySuggestions(recentFinds, backpackSignals);
   const merchantOffers = useMemo(() => buildMerchantOffers(items), [items]);
+  // Blacksmith Phase I — Fase 6/7: escopo desta Sprint é só itens
+  // EQUIPADOS (ver docs/design/blacksmith-phase1.md) — `character.equipped`
+  // já é buscado por `useCharacter()` nesta página (mesma fonte que
+  // EquipmentSlots já usa), nenhuma rota nova.
+  const blacksmithOffers = useMemo(() => buildBlacksmithOffers(character?.equipped ?? []), [character]);
 
   // Merchant Phase I — Fase 3/4/7: único caminho do cliente pra vender
   // um item — chama a API (que já delega tudo a merchant.service.ts),
@@ -199,6 +206,28 @@ export function CityPage() {
       }
     },
     [refreshItems, refreshCharacter],
+  );
+
+  // Blacksmith Phase I — Fase 4/8: único caminho do cliente pra melhorar
+  // um item — chama a API (que já delega tudo a blacksmith.service.ts),
+  // depois atualiza Personagem (`refreshCharacter`) reaproveitando o
+  // MESMO estado/hook já existente nesta página — `character.equipped`
+  // já reflete o novo Power Score, nenhum estado novo (mesma disciplina
+  // do Merchant acima).
+  const handleBlacksmithUpgrade = useCallback(
+    async (characterItemId: number): Promise<UpgradeFeedback> => {
+      try {
+        const result = await api.post<{ item: { name: string }; cost: number; power_score: number }>(
+          "/api/blacksmith/upgrade",
+          { character_item_id: characterItemId },
+        );
+        await refreshCharacter();
+        return { ok: true, message: `${result.item.name} melhorado por ${result.cost} de Ouro. Poder agora: ${result.power_score}.` };
+      } catch (err) {
+        return { ok: false, message: err instanceof Error ? err.message : "Não foi possível melhorar este item." };
+      }
+    },
+    [refreshCharacter],
   );
 
   const kingdom = worldState?.channel_kingdom ?? null;
@@ -365,6 +394,8 @@ export function CityPage() {
               worldPresenceCtx={worldPresenceCtx}
               playerFacts={playerFacts}
               suggestion={citySuggestions.blacksmith}
+              offers={blacksmithOffers}
+              onUpgrade={handleBlacksmithUpgrade}
             />
           ) : null}
           {selected === "mercador" ? (

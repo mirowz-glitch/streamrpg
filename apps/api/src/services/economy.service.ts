@@ -195,6 +195,24 @@ export function creditCharacterResourceInTransaction(
   return performTransaction(characterId, resourceId, amount, origin, destination, "credit");
 }
 
+/**
+ * Variante de `debitCharacterResource` que NÃO abre sua própria
+ * transação — mesmo motivo/uso de `creditCharacterResourceInTransaction`
+ * (ver ADR-0001). Usada pelo Blacksmith Service (Blacksmith Phase I)
+ * para combinar o débito de Ouro com a escrita do novo Power Score numa
+ * única transação atômica — primeiro consumidor real do lado de débito
+ * do Economy Core.
+ */
+export function debitCharacterResourceInTransaction(
+  characterId: string,
+  resourceId: ResourceId,
+  amount: number,
+  origin: string,
+  destination: string,
+): TransactionOutcome {
+  return performTransaction(characterId, resourceId, amount, origin, destination, "debit");
+}
+
 export function getCharacterResourceBalance(characterId: string, resourceId: ResourceId): number {
   return loadBalance(characterId, resourceId);
 }

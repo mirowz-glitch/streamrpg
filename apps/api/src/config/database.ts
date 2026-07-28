@@ -170,6 +170,17 @@ function runMigrations(database: DatabaseSync): void {
     database.exec("ALTER TABLE items ADD COLUMN power_score INTEGER");
     console.log("[Migration] items.power_score adicionada.");
   }
+
+  // Blacksmith Phase I — rastreia quantas vezes um item já foi
+  // melhorado (Power Score sozinho não diz "quantas vezes", só "quanto
+  // vale agora" — o Ferreiro precisa do contador pra calcular o próximo
+  // custo, que cresce a cada melhoria). Default 0 para todo o catálogo
+  // existente (nenhum item "nasce" melhorado).
+  const hasUpgradeLevel = itemColumnsV2.some((col) => col.name === "upgrade_level");
+  if (!hasUpgradeLevel) {
+    database.exec("ALTER TABLE items ADD COLUMN upgrade_level INTEGER NOT NULL DEFAULT 0");
+    console.log("[Migration] items.upgrade_level adicionada.");
+  }
 }
 
 export function getDb(): DatabaseSync {

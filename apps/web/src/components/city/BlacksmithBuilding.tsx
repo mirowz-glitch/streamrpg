@@ -1,7 +1,10 @@
+import { useState } from "react";
 import type { EquippedItem } from "@streamrpg/shared";
 import { EquipmentSlots } from "../ui/EquipmentSlots";
 import { NpcIntro } from "./NpcIntro";
 import { NPCS } from "../../lib/npcs";
+import { RARITY_LABEL } from "../../lib/rarity";
+import type { BlacksmithOffer } from "../../lib/blacksmithOffers";
 import { isFlagSet } from "../../lib/onboarding";
 import type { WorldPresenceContext } from "../../lib/worldPresence";
 import { WorldPresenceLine } from "../ui/WorldPresenceLine";
@@ -26,6 +29,11 @@ const BLACKSMITH_DECOR: Record<BuildingStage, string> = {
 };
 import type { PlayerFacts } from "../../lib/playerFacts";
 
+export interface UpgradeFeedback {
+  ok: boolean;
+  message: string;
+}
+
 interface BlacksmithBuildingProps {
   equipped: EquippedItem[];
   worldPresenceCtx?: WorldPresenceContext;
@@ -36,6 +44,13 @@ interface BlacksmithBuildingProps {
   // (citySuggestions.blacksmith) — reage especificamente a itens
   // AUTO-EQUIPADOS recentes (não só encontrados), ver citySuggestions.ts.
   suggestion?: string | null;
+  // Blacksmith Phase I — Fase 6/7: dados/comando vêm prontos de CityPage,
+  // mesma disciplina do Merchant (MerchantBuilding.tsx): este componente
+  // NUNCA calcula custo, NUNCA muta Ouro/item — só apresenta `offers` e
+  // delega o clique a `onUpgrade`, a única porta pra
+  // POST /api/blacksmith/upgrade.
+  offers: BlacksmithOffer[];
+  onUpgrade: (characterItemId: number) => Promise<UpgradeFeedback>;
 }
 
 // Sprint Capital City — reaproveita EquipmentSlots (Sprint Identity &
@@ -47,7 +62,25 @@ interface BlacksmithBuildingProps {
 // depender de Ouro (+ possivelmente sucata/materiais, a decidir em
 // docs/design/gold-architecture-phase1.md); consultar o equipamento
 // atual (o que este prédio já faz hoje) permanece gratuito.
-export function BlacksmithBuilding({ equipped, worldPresenceCtx, playerFacts = null, suggestion = null }: BlacksmithBuildingProps) {
+export function BlacksmithBuilding({
+  equipped,
+  worldPresenceCtx,
+  playerFacts = null,
+  suggestion = null,
+  offers,
+  onUpgrade,
+}: BlacksmithBuildingProps) {
+  const [feedback, setFeedback] = useState<UpgradeFeedback | null>(null);
+  const [pendingId, setPendingId] = useState<number | null>(null);
+
+  async function handleUpgrade(characterItemId: number) {
+    setPendingId(characterItemId);
+    setFeedback(null);
+    const result = await onUpgrade(characterItemId);
+    setFeedback(result);
+    setPendingId(null);
+  }
+
   // Sprint First 120 Seconds — Passo 7: fala única do Ferreiro depois que
   // o jogador já viu seu primeiro item (mesma flag client-side que
   // FirstItemCard já usa — nenhuma flag nova). Permanente, não some após
@@ -100,7 +133,28 @@ export function BlacksmithBuilding({ equipped, worldPresenceCtx, playerFacts = n
       <p className="hint">Seus equipamentos atuais, prontos para a próxima forja.</p>
       {hasSeenFirstItem ? <p className="hint">"...acho que essas luvas serviram para alguma coisa."</p> : null}
       <EquipmentSlots equipped={equipped} />
-      <p className="city-building-banner">Forja disponível em breve.</p>
+
+      {feedback ? (
+        <p className={feedback.ok ? "blacksmith-feedback-success" : "blacksmith-feedback-error"}>{feedback.message}</p>
+      ) : null}
+
+      {offers.length === 0 ? (
+        <p className="hint">Nenhum equipamento elegível para melhoria no momento.</p>
+      ) : (
+        <ul className="blacksmith-offer-list">
+          {offers.map(({ item, upgrade }) => (
+            <li key={item.character_item_id} className="blacksmith-offer-item">
+              <span className="blacksmith-offer-name">{item.name}</span>
+              <span className="blacksmith-offer-rarity">{RARITY_LABEL[item.rarity]}</span>
+              <span className="blacksmith-offer-power">Poder {item.power_score} → {upgrade.newPowerScore}</span>
+              <span className="blacksmith-offer-cost">🪙 {upgrade.cost}</span>
+              <button type="button" disabled={pendingId === item.character_item_id} onClick={() => void handleUpgrade(item.character_item_id)}>
+                {pendingId === item.character_item_id ? "Melhorando..." : "Melhorar"}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
       {suggestion ? <p className="city-building-suggestion">{suggestion}</p> : null}
 
       {/* Sprint Live Readiness Phase III (Polish & Bug Hunt) — 6 linhas

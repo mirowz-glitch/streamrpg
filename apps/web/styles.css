@@ -1654,6 +1654,50 @@ nav {
   color: #ea4335;
   font-size: 0.9rem;
 }
+/* Blacksmith Phase I — Fase 7: UI mínima de melhoria, mesmo vocabulário
+   visual/estrutura do Merchant acima (nenhuma paleta/padrão novo). */
+.blacksmith-offer-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.blacksmith-offer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(145, 70, 255, 0.08);
+}
+.blacksmith-offer-name {
+  flex: 1;
+  font-weight: 600;
+}
+.blacksmith-offer-rarity {
+  color: #9aa0a6;
+  font-size: 0.85rem;
+}
+.blacksmith-offer-power {
+  color: #8ab4f8;
+  font-size: 0.85rem;
+}
+.blacksmith-offer-cost {
+  color: #fbbc04;
+  font-weight: 600;
+}
+.blacksmith-feedback-success {
+  margin: 0.5rem 0 0;
+  color: #34a853;
+  font-size: 0.9rem;
+}
+.blacksmith-feedback-error {
+  margin: 0.5rem 0 0;
+  color: #ea4335;
+  font-size: 0.9rem;
+}
 /* Fase 2 ("Cidade Viva") — resumo contextual ao entrar na Praça; mesmo
    template de card roxo já usado em .adventure-live-panel/
    .backpack-narrative (Living Character/World, Backpack Experience) —

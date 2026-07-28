@@ -60,6 +60,9 @@ export async function getCharacterByProfileId(profileId: string): Promise<Charac
       rarity: e.rarity as CharacterResponse["equipped"][number]["rarity"],
       damage_type: e.damage_type,
       uti_bonus: e.uti_bonus,
+      min_level: e.min_level,
+      power_score: e.power_score,
+      upgrade_level: e.upgrade_level,
     })),
     combat: {
       attack_physical: combat?.attackPhysical ?? 0,
