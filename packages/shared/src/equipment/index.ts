@@ -23,3 +23,4 @@ export * from "./slots.js";
 export * from "./equipment.js";
 export * from "./stats.js";
 export * from "./upgrade.js";
+export * from "./lock.js";

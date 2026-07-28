@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
-import type { DamageType, InventoryItem, ItemRarity, ItemSlot } from "@streamrpg/shared";
+import { EquipmentLockError, type DamageType, type InventoryItem, type ItemRarity, type ItemSlot } from "@streamrpg/shared";
 import { getDb, nowUnix } from "../config/database.js";
+import { equipmentLock } from "./equipmentLock.service.js";
 
 // Exportada para reaproveitamento em xp.service.ts (Sprint Player
 // Feedback Bridge) — o mesmo mapeamento de linha, sem duplicar a lógica.
@@ -90,39 +91,65 @@ export function grantAdventureLoot(characterId: string, channelId: string | null
   return item;
 }
 
-export function equipItem(characterId: string, characterItemId: number): InventoryItem {
-  const db = getDb();
-  const owned = db
-    .prepare(
-      `SELECT ci.id, ci.character_id, i.slot, i.min_level, c.level
-       FROM character_items ci
-       JOIN items i ON i.id = ci.item_id
-       JOIN characters c ON c.id = ci.character_id
-       WHERE ci.id = ? AND ci.character_id = ?`,
-    )
-    .get(characterItemId, characterId) as
-    | { id: number; character_id: string; slot: ItemSlot; min_level: number; level: number }
-    | undefined;
+// Equipment Locking & Concurrency Phase I — Fase 3: `operationOwner`
+// identifica quem está chamando (AutoEquip vs. o clique manual
+// "Equipar" do jogador) só para o Equipment Lock — nenhuma regra de
+// negócio de equipar muda; o parâmetro é aditivo e opcional.
+export function equipItem(
+  characterId: string,
+  characterItemId: number,
+  operationOwner = "equip",
+): InventoryItem {
+  return equipmentLock.withLock(characterItemId, operationOwner, () => {
+    const db = getDb();
+    const owned = db
+      .prepare(
+        `SELECT ci.id, ci.character_id, i.slot, i.min_level, c.level
+         FROM character_items ci
+         JOIN items i ON i.id = ci.item_id
+         JOIN characters c ON c.id = ci.character_id
+         WHERE ci.id = ? AND ci.character_id = ?`,
+      )
+      .get(characterItemId, characterId) as
+      | { id: number; character_id: string; slot: ItemSlot; min_level: number; level: number }
+      | undefined;
 
-  if (!owned) {
-    throw new Error("Item not found in inventory");
-  }
+    if (!owned) {
+      throw new Error("Item not found in inventory");
+    }
 
-  if (owned.level < owned.min_level) {
-    throw new Error(`Requires level ${owned.min_level}`);
-  }
+    if (owned.level < owned.min_level) {
+      throw new Error(`Requires level ${owned.min_level}`);
+    }
 
-  db.prepare("DELETE FROM equipped_items WHERE character_id = ? AND slot = ?").run(characterId, owned.slot);
-  db.prepare(
-    `INSERT INTO equipped_items (character_id, slot, character_item_id, equipped_at)
-     VALUES (?, ?, ?, ?)`,
-  ).run(characterId, owned.slot, characterItemId, nowUnix());
+    // Equipment Locking & Concurrency Phase I — Fase 3: o item
+    // ATUALMENTE equipado nesse slot está prestes a ser desequipado por
+    // esta troca. Se outra operação crítica (ex.: Blacksmith no meio de
+    // um upgrade) já segura o lock desse item, esta troca é rejeitada —
+    // mesmo cenário descrito em docs/design/equipment-locking-phase1.md
+    // (AutoEquip trocando o item que o Ferreiro está prestes a
+    // melhorar).
+    const currentOccupant = db
+      .prepare(
+        `SELECT character_item_id FROM equipped_items WHERE character_id = ? AND slot = ?`,
+      )
+      .get(characterId, owned.slot) as { character_item_id: number } | undefined;
+    if (currentOccupant && equipmentLock.isLocked(currentOccupant.character_item_id)) {
+      throw new EquipmentLockError(currentOccupant.character_item_id);
+    }
 
-  const item = listInventory(characterId).find((i) => i.id === characterItemId);
-  if (!item) {
-    throw new Error("Failed to equip item");
-  }
-  return item;
+    db.prepare("DELETE FROM equipped_items WHERE character_id = ? AND slot = ?").run(characterId, owned.slot);
+    db.prepare(
+      `INSERT INTO equipped_items (character_id, slot, character_item_id, equipped_at)
+       VALUES (?, ?, ?, ?)`,
+    ).run(characterId, owned.slot, characterItemId, nowUnix());
+
+    const item = listInventory(characterId).find((i) => i.id === characterItemId);
+    if (!item) {
+      throw new Error("Failed to equip item");
+    }
+    return item;
+  });
 }
 
 export function unequipItem(characterId: string, slot: ItemSlot): void {

@@ -52,7 +52,10 @@ export const itemsRoutes = [
         powerScore: body.powerScore ?? 0,
       });
       if (body.autoEquip) {
-        item = equipItem(characterId, item.id);
+        // Equipment Locking & Concurrency Phase I — Fase 3: identifica
+        // o AutoEquip como dono do lock, distinto do clique manual
+        // "Equipar" abaixo (docs/design/equipment-locking-phase1.md).
+        item = equipItem(characterId, item.id, "autoequip");
       }
       json(res, 200, { item });
     } catch (err) {
