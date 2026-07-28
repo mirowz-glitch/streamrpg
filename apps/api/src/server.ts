@@ -15,6 +15,7 @@ import { expeditionRoutes } from "./routes/expedition.js";
 import { identityRoutes } from "./routes/identity.js";
 import { kingdomRoutes } from "./routes/kingdom.js";
 import { chronicleRoutes } from "./routes/chronicle.js";
+import { merchantRoutes } from "./routes/merchant.js";
 import { seedItems } from "./services/items.service.js";
 import { seedIdentityCatalog } from "./services/identity.service.js";
 import { sessionManager } from "./engine/SessionManager.js";
@@ -56,6 +57,7 @@ const routes: Route[] = [
   ...identityRoutes,
   ...kingdomRoutes,
   ...chronicleRoutes,
+  ...merchantRoutes,
 ];
 
 getDb();

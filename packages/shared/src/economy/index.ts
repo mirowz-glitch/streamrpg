@@ -17,3 +17,4 @@ export * from "./ledger.js";
 export * from "./transactionLayer.js";
 export * from "./events.js";
 export * from "./persistence.js";
+export * from "./saleValue.js";

@@ -1,8 +1,8 @@
-# Merchant — Especificação Inicial (Phase I)
+# Merchant — Especificação e Implementação (Phase I)
 
-**Status:** 🚧 Preparação — nenhuma funcionalidade de Mercador foi implementada a partir deste documento. Escrito ao final da Sprint "Economy Core Phase I", que entregou a infraestrutura real que esta especificação assume como já existente: `ResourceLedger`/`requestCredit`/`requestDebit`/`EconomicEvent` (`packages/shared/src/economy/`) e a persistência atômica (`apps/api/src/services/economy.service.ts`, tabelas `character_resources`/`resource_transactions`, gold ainda em `characters.gold`).
+**Status:** ✅ Implementado — Sprint "Merchant Phase I" (venda simples de itens). Seções 0-9 abaixo são a especificação original (escrita ao final de "Economy Core Phase I", antes de qualquer código do Mercador existir) — preservadas como registro histórico. Seção 10 documenta o que foi REALMENTE construído, incluindo onde a implementação seguiu a especificação e onde encontrou algo que a especificação não previa.
 
-Este documento não implementa nada. Define o fluxo completo da primeira Sprint funcional do Mercador — venda de itens da Mochila por Ouro — para que essa Sprint futura comece direto na implementação.
+Este documento define o fluxo completo da primeira Sprint funcional do Mercador — venda de itens da Mochila por Ouro.
 
 ## 0. O que já existe (herdado do Economy Core Phase I, não repetido aqui)
 
@@ -85,6 +85,60 @@ Depois de uma venda bem-sucedida, a Mochila (`InventoryPage`/`BackpackNarrativeP
 - **Vender item equipado**: permitir diretamente ou exigir desequipar primeiro (recomendação acima: exigir desequipar).
 - **"Vender tudo" em lote**: se a primeira versão do Mercador oferece só venda unitária ou também em lote — afeta se a transação combinada (Seção 4) precisa suportar N itens numa única chamada atômica ou só 1.
 
+## 10. Implementação Realizada
+
+### 10.1 Fluxo definitivo (o que a Seção 1 previu, confirmado na prática)
+
+```
+Player clica "Vender" (MerchantBuilding.tsx)
+     ↓
+CityPage.handleMerchantSell → POST /api/merchant/sell
+     ↓
+routes/merchant.ts (autentica, valida shape do body, delega)
+     ↓
+merchant.service.ts sellItem() — valida posse/existência/não-equipado,
+calcula preço (calculateSaleValue), abre BEGIN
+     ↓
+creditCharacterResourceInTransaction() (economy.service.ts) → Ledger
+decide, credita characters.gold, registra resource_transactions
+     ↓
+removeItem() (drop.service.ts) — remove de character_items
+     ↓
+COMMIT (ou ROLLBACK se qualquer etapa falhar)
+     ↓
+Resposta → CityPage chama refreshItems()+refreshCharacter() (reaproveita
+useCharacter/estado já existentes, sem recarregar a página)
+     ↓
+Mochila/Backpack/Merchant/Gold atualizam no mesmo ciclo de render
+```
+
+Idêntico ao previsto na Seção 1, com um refinamento real: "Frontend chama uma nova rota" tornou-se, na prática, `CityPage.tsx` chamando a rota (não `MerchantBuilding.tsx` diretamente) — o componente do prédio só recebe `offers`/`onSell` prontos via props, nunca fala com a API sozinho (mesmo padrão de prop-drilling que `citySuggestions`/`cityWelcome` já usavam desde City Foundation Phase I).
+
+### 10.2 Funções criadas
+
+- `calculateSaleValue(item)` (`packages/shared/src/economy/saleValue.ts`) — pura, `BASE_VALUE_BY_RARITY` + `min_level * 2`. Único lugar que decide preço.
+- `creditCharacterResourceInTransaction()` (`apps/api/src/services/economy.service.ts`) — variante de `creditCharacterResource()` sem `BEGIN`/`COMMIT` próprios, pra ser combinada numa transação externa (ver ADR-0001, achado real da Fase 1: SQLite não aceita `BEGIN` aninhado).
+- `removeItem()` (`apps/api/src/services/drop.service.ts`) — remove um item de `character_items`, mesmo sistema de inventário de sempre.
+- `sellItem()` (`apps/api/src/services/merchant.service.ts`) — orquestrador único da venda completa.
+- `buildMerchantOffers()` (`apps/web/src/lib/merchantOffers.ts`) — deriva a lista de ofertas (item + preview de preço) a partir do inventário, filtrando equipados.
+
+### 10.3 Arquivos alterados (resumo — ver relatório da Sprint para a lista com responsabilidades completas)
+
+`packages/shared/src/economy/{saleValue.ts,index.ts}`; `apps/api/src/{config/database.ts,server.ts,routes/merchant.ts,services/{economy.service.ts,drop.service.ts,merchant.service.ts}}`; `apps/web/src/{lib/merchantOffers.ts,components/city/MerchantBuilding.tsx,pages/CityPage.tsx,styles.css}`; `docs/architecture/adr/{README.md,0001-economy-service-transaction-composition.md}`.
+
+### 10.4 Limitações confirmadas na prática
+
+- **`grantAdventureLoot()` hardcoda `min_level = 1`** para todo item de Aventura (`drop.service.ts`, pré-existente, fora de escopo) — o multiplicador de nível de `calculateSaleValue` nunca varia hoje para itens encontrados jogando; só a raridade influencia o preço na prática. Achado durante a Fase 9 (testes), documentado, não corrigido (fora do escopo desta Sprint).
+- **Item procedural vendido deixa uma linha órfã em `items`** (o catálogo) — cada item de Aventura já é uma linha única (`grantAdventureLoot`), e `removeItem()` só apaga `character_items`, nunca `items` (a FK é `ON DELETE RESTRICT`). Dado morto, inofensivo, cresce com o tempo — oportunidade de limpeza futura (job periódico ou `ON DELETE CASCADE` reavaliado), não urgente.
+- **`node:sqlite` sem `busy_timeout` causava "database is locked"** sob escrita concorrente real (achado ao rodar a suíte completa de testes, dois processos escrevendo no mesmo arquivo) — corrigido com `PRAGMA busy_timeout = 5000` em `database.ts` (Fase 1/9), uma correção de robustez real, não só de ambiente de teste: o mesmo cenário aconteceria em produção com duas vendas genuinamente simultâneas.
+
+### 10.5 Decisões arquitetônicas tomadas (resolvendo a Seção 9 "Decisões em Aberto")
+
+- **Fórmula de preço**: rarity + min_level (Seção 10.4 acima nota que min_level é hoje sempre 1) — decisão de Economia simples, documentada em `saleValue.ts`, revisável sem tocar arquitetura.
+- **Vender item equipado**: bloqueado (`reason: "item-equipped"`) — precisa desequipar primeiro, reaproveitando a rota `unequip` já existente. Confirma a recomendação da Seção 2.
+- **Venda em lote**: NÃO implementada — só venda unitária, conforme escopo desta Sprint ("Não implementar: Barganha, Desconto..." e "Somente venda simples").
+- **Nested transaction**: registrado formalmente em ADR-0001 (`docs/architecture/adr/0001-economy-service-transaction-composition.md`) — a única decisão desta Sprint que exigiu um ADR novo.
+
 ---
 
-*Referências: `docs/design/economy-core-phase1.md` (arquitetura que este documento assume pronta), `docs/architecture/decisions.md` D2/D3/D5/D8 (React nunca decide preço/transação; toda regra de negócio do Mercador vive em `apps/api`, nunca em `packages/shared/src/economy`), `docs/design/backpack-experience-plan.md` e `docs/design/city-foundation-phase1.md` (papéis já documentados do Mercador/Mochila/Cidade).*
+*Referências: `docs/design/economy-core-phase1.md` (arquitetura que este documento assume pronta), `docs/architecture/decisions.md` D2/D3/D5/D8 (React nunca decide preço/transação; toda regra de negócio do Mercador vive em `apps/api`, nunca em `packages/shared/src/economy`), `docs/design/backpack-experience-plan.md` e `docs/design/city-foundation-phase1.md` (papéis já documentados do Mercador/Mochila/Cidade), ADR-0001 (composição de transações).*

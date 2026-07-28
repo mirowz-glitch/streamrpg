@@ -127,6 +127,31 @@ export function unequipItem(characterId: string, slot: ItemSlot): void {
     .run(characterId, slot);
 }
 
+// Merchant Phase I — Fase 3/4/5: remove um item da mochila do jogador —
+// mesmo sistema de inventário de sempre (character_items), nenhuma
+// tabela/lógica nova. Quem chama isto (merchant.service.ts) já validou
+// posse/estado do item antes; esta função só garante, na própria query,
+// que o item pertence ao personagem informado (defesa em profundidade,
+// nunca confia só na validação de quem chamou). Não apaga a linha de
+// `items` (o catálogo procedural) — cada item da Aventura já é uma
+// linha única (grantAdventureLoot), removê-la deixaria órfã pra sempre
+// qualquer referência futura de auditoria; a linha órfã em `items` é
+// dado morto inofensivo, não um bug (ver docs/design/merchant-phase1.md
+// "Problemas Encontrados").
+export function removeItem(characterId: string, characterItemId: number): void {
+  const db = getDb();
+  db.prepare("DELETE FROM equipped_items WHERE character_id = ? AND character_item_id = ?").run(
+    characterId,
+    characterItemId,
+  );
+  const result = db
+    .prepare("DELETE FROM character_items WHERE id = ? AND character_id = ?")
+    .run(characterItemId, characterId);
+  if (result.changes === 0) {
+    throw new Error("Item not found in inventory");
+  }
+}
+
 export function getEquippedItems(characterId: string) {
   return getDb()
     .prepare(

@@ -89,9 +89,46 @@ function recordTransaction(
 }
 
 /**
- * Executa um crédito/débito atomicamente: lê o saldo atual, delega a
- * decisão (aceitar/rejeitar) ao Ledger genérico, grava o novo saldo
- * (só se aceito) e registra a transação (sempre, aceita ou rejeitada).
+ * Núcleo de um crédito/débito, SEM abrir transação própria: lê o saldo
+ * atual, delega a decisão (aceitar/rejeitar) ao Ledger genérico, grava
+ * o novo saldo (só se aceito) e registra a transação (sempre, aceita ou
+ * rejeitada). Quem chama esta função é responsável por já estar dentro
+ * de um `BEGIN`/`COMMIT`/`ROLLBACK` — ver ADR-0001
+ * (`docs/architecture/adr/0001-economy-service-transaction-composition.md`)
+ * para por que essa separação existe: SQLite não suporta `BEGIN`
+ * aninhado, então um chamador (ex.: Merchant Service) que precisa
+ * combinar este crédito com OUTRA escrita (remover um item) na mesma
+ * transação não pode usar a variante que já abre sua própria transação.
+ */
+function performTransaction(
+  characterId: string,
+  resourceId: ResourceId,
+  amount: number,
+  origin: string,
+  destination: string,
+  kind: "credit" | "debit",
+): TransactionOutcome {
+  const eventTimestamp = Date.now();
+  const rowTimestamp = nowUnix();
+  const currentBalance = loadBalance(characterId, resourceId);
+  const ledger = new ResourceLedger({ [resourceId]: currentBalance });
+  const request = { resourceId, amount, origin, destination };
+  const outcome =
+    kind === "credit"
+      ? requestCredit(ledger, request, eventTimestamp)
+      : requestDebit(ledger, request, eventTimestamp);
+
+  if (outcome.transaction.result === "success") {
+    writeBalance(characterId, resourceId, ledger.getBalance(resourceId), rowTimestamp);
+  }
+  recordTransaction(characterId, outcome, rowTimestamp);
+  return outcome;
+}
+
+/**
+ * Executa um crédito/débito atomicamente, abrindo e fechando sua
+ * própria transação SQL. Uso: qualquer chamador que só precisa mexer
+ * neste saldo, isoladamente (não combinado com outra escrita).
  *
  * Atomicidade: `DatabaseSync` (node:sqlite) é síncrono e Node é
  * single-threaded — nenhum `await` existe entre a leitura do saldo e a
@@ -110,22 +147,9 @@ function runAtomicTransaction(
   kind: "credit" | "debit",
 ): TransactionOutcome {
   const db = getDb();
-  const eventTimestamp = Date.now();
-  const rowTimestamp = nowUnix();
   db.exec("BEGIN");
   try {
-    const currentBalance = loadBalance(characterId, resourceId);
-    const ledger = new ResourceLedger({ [resourceId]: currentBalance });
-    const request = { resourceId, amount, origin, destination };
-    const outcome =
-      kind === "credit"
-        ? requestCredit(ledger, request, eventTimestamp)
-        : requestDebit(ledger, request, eventTimestamp);
-
-    if (outcome.transaction.result === "success") {
-      writeBalance(characterId, resourceId, ledger.getBalance(resourceId), rowTimestamp);
-    }
-    recordTransaction(characterId, outcome, rowTimestamp);
+    const outcome = performTransaction(characterId, resourceId, amount, origin, destination, kind);
     db.exec("COMMIT");
     return outcome;
   } catch (error) {
@@ -152,6 +176,23 @@ export function debitCharacterResource(
   destination: string,
 ): TransactionOutcome {
   return runAtomicTransaction(characterId, resourceId, amount, origin, destination, "debit");
+}
+
+/**
+ * Variante de `creditCharacterResource` que NÃO abre sua própria
+ * transação — o chamador precisa já estar dentro de um
+ * `BEGIN`/`COMMIT`/`ROLLBACK` (ver ADR-0001). Usada pelo Merchant
+ * Service (Fase 3, Sprint Merchant Phase I) para combinar o crédito de
+ * Ouro com a remoção do item vendido numa única transação atômica.
+ */
+export function creditCharacterResourceInTransaction(
+  characterId: string,
+  resourceId: ResourceId,
+  amount: number,
+  origin: string,
+  destination: string,
+): TransactionOutcome {
+  return performTransaction(characterId, resourceId, amount, origin, destination, "credit");
 }
 
 export function getCharacterResourceBalance(characterId: string, resourceId: ResourceId): number {

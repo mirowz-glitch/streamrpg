@@ -177,6 +177,16 @@ export function getDb(): DatabaseSync {
     mkdirSync(dirname(env.dbPath), { recursive: true });
     db = new DatabaseSync(env.dbPath);
     db.exec("PRAGMA journal_mode = WAL;");
+    // Merchant Phase I — achado real ao rodar a suíte completa: dois
+    // arquivos de teste distintos (cada um seu próprio processo, ambos
+    // apontando pro mesmo arquivo real quando DB_PATH=":memory:" não é
+    // honrado a tempo — ver economy.service.test.ts) colidiram com
+    // "database is locked" (SQLITE_BUSY) ao escrever ao mesmo tempo.
+    // Sem busy_timeout, node:sqlite falha IMEDIATAMENTE em vez de
+    // esperar a outra transação liberar o lock — o mesmo problema
+    // aconteceria em produção com duas requisições genuinamente
+    // concorrentes (ex.: dois personagens vendendo ao mesmo tempo).
+    db.exec("PRAGMA busy_timeout = 5000;");
     db.exec("PRAGMA foreign_keys = ON;");
     db.exec(SCHEMA);
     runMigrations(db);

@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import type { WorldStateResponse } from "@streamrpg/shared";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { InventoryItem, WorldStateResponse } from "@streamrpg/shared";
 import { AppNav } from "../components/ui/AppNav";
 import { CityMap, type BuildingKey } from "../components/city/CityMap";
 import { CityHubBar } from "../components/city/CityHubBar";
@@ -28,6 +28,8 @@ import { buildRecentFinds } from "../lib/backpackFinds";
 import { deriveBackpackSignals } from "../lib/backpackSignals";
 import { buildCityWelcomeLines } from "../lib/cityWelcome";
 import { buildCitySuggestions } from "../lib/citySuggestions";
+import { buildMerchantOffers } from "../lib/merchantOffers";
+import type { SellFeedback } from "../components/city/MerchantBuilding";
 import { getStoredChannel, setStoredChannel } from "../hooks/usePing";
 import { GuideBubble } from "../components/onboarding/GuideBubble";
 import { EldrinGuide } from "../components/onboarding/EldrinGuide";
@@ -93,7 +95,7 @@ const guardComment = pickOfTheDay(NPC_DIALOGUE.guarda.comentarios_reino, 4);
 // /api/world/state?channel=) — nenhuma rota nova, nenhuma regra nova.
 export function CityPage() {
   const { profile } = useAuth();
-  const { character } = useCharacter(!!profile);
+  const { character, refresh: refreshCharacter } = useCharacter(!!profile);
   const { identity } = useIdentity(!!profile);
   const [channel, setChannel] = useState(getStoredChannel());
   // Sprint Character Evolution Presence Phase I — mesmo hook já usado
@@ -155,17 +157,49 @@ export function CityPage() {
   // (Backpack Experience Phase I) — nenhuma lógica de capacidade
   // duplicada.
   const { ready: adventureReady, hudState } = useAdventureSession();
-  const [itemCount, setItemCount] = useState(0);
-  useEffect(() => {
-    void api
-      .get<{ items: unknown[] }>("/api/items")
-      .then((data) => setItemCount(data.items.length))
+  // Merchant Phase I — Fase 6/7: `itemCount` (só um número) virou
+  // `items` (a lista inteira) porque o Mercador agora precisa dos itens
+  // de verdade pra oferecer venda, não só da contagem — mesma rota
+  // (`/api/items`) que já era buscada aqui, nenhuma rota nova. `refreshItems`
+  // é reaproveitado depois de cada venda (Fase 7: "sem duplicar estado",
+  // sem recarregar a página).
+  const [items, setItems] = useState<InventoryItem[]>([]);
+  const refreshItems = useCallback(() => {
+    return api
+      .get<{ items: InventoryItem[] }>("/api/items")
+      .then((data) => setItems(data.items))
       .catch(() => undefined);
   }, []);
+  useEffect(() => {
+    void refreshItems();
+  }, [refreshItems]);
   const recentFinds = adventureReady ? buildRecentFinds(hudState.recentEvents) : [];
-  const backpackSignals = deriveBackpackSignals(itemCount, recentFinds.length);
+  const backpackSignals = deriveBackpackSignals(items.length, recentFinds.length);
   const cityWelcomeLines = adventureReady ? buildCityWelcomeLines(recentFinds, backpackSignals) : [];
   const citySuggestions = buildCitySuggestions(recentFinds, backpackSignals);
+  const merchantOffers = useMemo(() => buildMerchantOffers(items), [items]);
+
+  // Merchant Phase I — Fase 3/4/7: único caminho do cliente pra vender
+  // um item — chama a API (que já delega tudo a merchant.service.ts),
+  // depois atualiza Mochila (`refreshItems`) e Gold (`refreshCharacter`,
+  // useCharacter.ts) reaproveitando os MESMOS estados/hooks já existentes
+  // nesta página — nenhum estado novo, nenhuma regra de venda aqui
+  // (D2/D5, docs/architecture/decisions.md).
+  const handleMerchantSell = useCallback(
+    async (characterItemId: number): Promise<SellFeedback> => {
+      try {
+        const result = await api.post<{ item: InventoryItem; sale_value: number; gold: number }>(
+          "/api/merchant/sell",
+          { character_item_id: characterItemId },
+        );
+        await Promise.all([refreshItems(), refreshCharacter()]);
+        return { ok: true, message: `${result.item.name} vendido por ${result.sale_value} de Ouro.` };
+      } catch (err) {
+        return { ok: false, message: err instanceof Error ? err.message : "Não foi possível vender este item." };
+      }
+    },
+    [refreshItems, refreshCharacter],
+  );
 
   const kingdom = worldState?.channel_kingdom ?? null;
 
@@ -333,7 +367,9 @@ export function CityPage() {
               suggestion={citySuggestions.blacksmith}
             />
           ) : null}
-          {selected === "mercador" ? <MerchantBuilding suggestion={citySuggestions.merchant} /> : null}
+          {selected === "mercador" ? (
+            <MerchantBuilding suggestion={citySuggestions.merchant} offers={merchantOffers} onSell={handleMerchantSell} />
+          ) : null}
           {selected === "alquimista" ? <AlchemistBuilding /> : null}
           {selected === "guilda" ? (
             <GuildBuilding
