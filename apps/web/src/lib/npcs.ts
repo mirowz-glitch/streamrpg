@@ -138,4 +138,16 @@ export const NPCS = {
     color: "#e07a5f",
     shape: "shield",
   },
+  // Salvage Phase I — novo NPC (achado da Fase 1: não existia nenhum
+  // Sucateiro na Cidade até esta Sprint).
+  sucateiro: {
+    key: "sucateiro",
+    name: "Doran, o Sucateiro",
+    profession: "Sucateiro",
+    quote: "Nada se perde — só muda de forma.",
+    description: "Desmonta o que ninguém mais quer e encontra uso pra cada parafuso.",
+    icon: "♻️",
+    color: "#6b8e5a",
+    shape: "hex",
+  },
 } as const satisfies Record<string, NpcDefinition>;

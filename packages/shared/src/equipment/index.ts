@@ -24,3 +24,4 @@ export * from "./equipment.js";
 export * from "./stats.js";
 export * from "./upgrade.js";
 export * from "./lock.js";
+export * from "./salvage.js";

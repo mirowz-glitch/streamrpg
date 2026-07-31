@@ -17,6 +17,7 @@ import { BestiaryBuilding } from "../components/city/BestiaryBuilding";
 import { MuseumBuilding } from "../components/city/MuseumBuilding";
 import { TavernBuilding } from "../components/city/TavernBuilding";
 import { TravellerHouseBuilding } from "../components/city/TravellerHouseBuilding";
+import { SalvageBuilding } from "../components/city/SalvageBuilding";
 import { useAuth } from "../hooks/useAuth";
 import { useCharacter } from "../hooks/useCharacter";
 import { useIdentity } from "../hooks/useIdentity";
@@ -32,6 +33,8 @@ import { buildMerchantOffers } from "../lib/merchantOffers";
 import type { SellFeedback } from "../components/city/MerchantBuilding";
 import { buildBlacksmithOffers } from "../lib/blacksmithOffers";
 import type { UpgradeFeedback } from "../components/city/BlacksmithBuilding";
+import { buildSalvageOffers } from "../lib/salvageOffers";
+import type { DismantleFeedback } from "../components/city/SalvageBuilding";
 import { getStoredChannel, setStoredChannel } from "../hooks/usePing";
 import { GuideBubble } from "../components/onboarding/GuideBubble";
 import { EldrinGuide } from "../components/onboarding/EldrinGuide";
@@ -185,6 +188,10 @@ export function CityPage() {
   // já é buscado por `useCharacter()` nesta página (mesma fonte que
   // EquipmentSlots já usa), nenhuma rota nova.
   const blacksmithOffers = useMemo(() => buildBlacksmithOffers(character?.equipped ?? []), [character]);
+  // Salvage Phase I — Fase 6/7: diferente de Blacksmith, o escopo é a
+  // mochila INTEIRA (equipados ou não — docs/design/salvage-phase1.md
+  // Seção 9), mesma fonte `items` que o Merchant já usa.
+  const salvageOffers = useMemo(() => buildSalvageOffers(items), [items]);
 
   // Merchant Phase I — Fase 3/4/7: único caminho do cliente pra vender
   // um item — chama a API (que já delega tudo a merchant.service.ts),
@@ -228,6 +235,31 @@ export function CityPage() {
       }
     },
     [refreshCharacter],
+  );
+
+  // Salvage Phase I — Fase 4/7/8: único caminho do cliente pra desmontar
+  // um item — chama a API (que já delega tudo a salvage.service.ts).
+  // Diferente de Blacksmith (só Gold/equipamento) e igual a Merchant: a
+  // desmontagem pode remover um item EQUIPADO (docs/design/
+  // salvage-phase1.md Seção 9), então atualiza tanto Mochila
+  // (`refreshItems`) quanto Personagem (`refreshCharacter`, cobre
+  // `character.equipped`) — mesmos hooks já existentes, nenhum estado
+  // novo.
+  const handleSalvageDismantle = useCallback(
+    async (characterItemId: number): Promise<DismantleFeedback> => {
+      try {
+        const result = await api.post<{ item: { name: string }; rewards: Array<{ resourceId: string; amount: number }> }>(
+          "/api/salvage",
+          { character_item_id: characterItemId },
+        );
+        await Promise.all([refreshItems(), refreshCharacter()]);
+        const rewardsText = result.rewards.map((r) => `${r.amount} de ${r.resourceId}`).join(", ");
+        return { ok: true, message: `${result.item.name} desmontado. Recebeu ${rewardsText}.` };
+      } catch (err) {
+        return { ok: false, message: err instanceof Error ? err.message : "Não foi possível desmontar este item." };
+      }
+    },
+    [refreshItems, refreshCharacter],
   );
 
   const kingdom = worldState?.channel_kingdom ?? null;
@@ -436,6 +468,9 @@ export function CityPage() {
           ) : null}
           {selected === "casa-dos-viajantes" ? (
             <TravellerHouseBuilding echoContext={echoContext} playerFacts={playerFacts} />
+          ) : null}
+          {selected === "sucateiro" ? (
+            <SalvageBuilding offers={salvageOffers} onDismantle={handleSalvageDismantle} />
           ) : null}
         </div>
       ) : (

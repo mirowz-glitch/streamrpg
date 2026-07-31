@@ -13,7 +13,8 @@ export type BuildingKey =
   | "bestiario"
   | "museu"
   | "taverna"
-  | "casa-dos-viajantes";
+  | "casa-dos-viajantes"
+  | "sucateiro";
 
 interface BuildingDef {
   key: BuildingKey;
@@ -57,6 +58,11 @@ const BUILDINGS: BuildingDef[] = [
   { key: "museu", name: "Museu do Reino", icon: "🖼️", description: "Onde a história da comunidade fica registrada." },
   { key: "taverna", name: "Taverna", icon: "🍺", description: "Onde o Reino descansa, conversa e inventa histórias." },
   { key: "casa-dos-viajantes", name: "Casa dos Viajantes", icon: "📜", description: "Histórias contadas por gente comum. Ninguém sabe se são verdade." },
+  // Salvage Phase I — novo prédio (achado real da Fase 1: não existia
+  // nenhum placeholder de Salvage na Cidade, diferente de Ferreiro/
+  // Mercador/Alquimista, que já eram prédios "em construção" antes de
+  // ganharem função real). Mesmo padrão dos demais 12 prédios.
+  { key: "sucateiro", name: "Sucateiro", icon: "♻️", description: "Desmonta equipamentos em recursos." },
 ];
 
 interface CityMapProps {
