@@ -1,5 +1,6 @@
 import type { RareMapInstance } from "../raremap/types.js";
 import type { CorruptedMap } from "../mapcorruption/types.js";
+import type { WaystoneInstance } from "../waystone/types.js";
 
 // Sprint 36 — Atlas Phase I. "O Atlas não cria mapas. O Atlas organiza
 // mapas. O jogador escolhe qual explorar. O Atlas é persistente.
@@ -83,6 +84,12 @@ export interface AdventureConfiguration {
 // "Nunca inicia Adventure. Nunca abre mapas. Nunca aplica combate" — um
 // MapDevice é sempre um valor descartável, criado e consumido na hora,
 // nunca uma entidade com ciclo de vida próprio.
+//
+// Sprint 37 — Waystones Phase I, Fase 4: "Map Device passa a aceitar
+// WaystoneInstance... Continuar aceitando RareMap, CorruptedMap sem
+// regressões." `loadedMap` alarga pra um terceiro tipo alternativo —
+// todos os três já compartilham `.mapId`, o único campo que este tipo
+// sempre precisou garantir.
 export interface MapDevice {
-  loadedMap?: RareMapInstance | CorruptedMap;
+  loadedMap?: RareMapInstance | CorruptedMap | WaystoneInstance;
 }

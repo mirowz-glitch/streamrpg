@@ -130,3 +130,14 @@ export * from "./mapcorruption/index.js";
 // (adventure/session.ts) delega 100% para `createAdventureSession()`,
 // intocada desde a Sprint 34.
 export * from "./atlas/index.js";
+
+// Sprint 37 — Waystones Phase I. "O Atlas organiza. O Waystone abre o
+// mapa." `Waystone`/`WaystoneInstance` são estruturalmente paralelos a
+// `RareMap`/`RareMapInstance` (Sprint 34), mas DELIBERADAMENTE sem
+// `mods` — um Waystone puro sempre abre um Mapa neutro; Map Modifiers
+// continuam exclusivos de Rare/Corrupted Maps. `generateWaystone()` só
+// escolhe Mapa/raridade/tier; Map Device (atlas/mapDevice.ts) passa a
+// aceitar `WaystoneInstance` como um terceiro tipo alternativo de Mapa
+// carregável, ao lado de `RareMapInstance`/`CorruptedMap` — nenhuma
+// regressão em nenhum dos dois caminhos já existentes.
+export * from "./waystone/index.js";
