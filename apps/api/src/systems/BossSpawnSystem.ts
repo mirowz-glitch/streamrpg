@@ -21,9 +21,9 @@ import type {
   BossRepository,
   BossSnapshot,
   BossSpawnedEvent,
+  PresenceProvider,
   WorldTickEvent,
 } from "../engine/types.js";
-import { isChannelLive } from "../services/twitch.service.js";
 import { nowUnix } from "../config/database.js";
 
 const BOSS_COOLDOWN_SECONDS = 3 * 60 * 60; // 3h, ilustrativo (capítulo 6)
@@ -39,7 +39,10 @@ const TIER_MAX_HP: Record<number, number> = {
 export class BossSpawnSystem {
   private bus: EventBus | null = null;
 
-  constructor(private repo: BossRepository) {}
+  constructor(
+    private repo: BossRepository,
+    private presence: PresenceProvider,
+  ) {}
 
   register(bus: EventBus): () => void {
     this.bus = bus;
@@ -81,7 +84,7 @@ export class BossSpawnSystem {
       return; // ainda em cooldown
     }
 
-    const live = await isChannelLive(channelId);
+    const live = await this.presence.isLive(channelId);
     if (!live) return;
 
     const tier = 1; // placeholder — cálculo real de tier é a Sprint B5

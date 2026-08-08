@@ -2,7 +2,7 @@ import { getBaseItem } from "../itemgen/baseItems.js";
 import type { ItemGenGeneratedItem } from "../itemgen/types.js";
 import type { Inventory } from "../inventory/inventory.js";
 import { validateGeneratedItem } from "../inventory/validation.js";
-import { EQUIPMENT_SLOT_DEFINITIONS, getEquipmentSlotDefinition } from "./slots.js";
+import { EQUIPMENT_SLOT_DEFINITIONS } from "./slots.js";
 import type { EquipItemResult, EquipmentSlotState, UnequipItemResult } from "./types.js";
 
 // Equipment System Phase I — Inventory -> Equip() -> Equipment ->

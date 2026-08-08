@@ -5,6 +5,7 @@ import type { LootResult } from "../lootgen/types.js";
 import { ELITE_MODIFIER } from "../worldencounter/eliteModifiers.js";
 import { getUniqueRelicDefinition, getUniqueRelicIdsForBoss } from "../dungeon/uniqueRelicDefinitions.js";
 import { getRegionItemLevelAnchor } from "../regions.js";
+import type { CombinedRuntimeConfig } from "../worldencounter/types.js";
 import type { EnemyInstance, KillEnemyResult } from "./types.js";
 
 // Vertical Slice — Unique Dungeon Relics & Boss Loot Phase I — Fase 3:
@@ -61,18 +62,54 @@ const MINIBOSS_GOLD_MAX = 120;
 // Level (`instance.level`) continua exatamente como antes para TUDO
 // mais (stats de combate, XP, futureState) — não é lido nem alterado
 // aqui além do que já era (`instance.futureState.variant`).
-export function generateLootForKilledEnemy(killResult: KillEnemyResult, instance: EnemyInstance, seed: number, regionId: string): LootResult {
+// Sprint 33 — Map Modifiers Phase II, Fase 4/5: `runtimeConfig` (novo
+// 5º parâmetro, opcional — ausente/neutro = comportamento idêntico a
+// antes desta Sprint) traz `lootRarityMultiplier`/`lootMultiplier`
+// (Map Modifiers `rarity-up`/`loot-quantity-up`, já combinados com
+// World Tier + Dungeon Modifiers no ÚNICO ponto de resolução —
+// dungeon/dungeonController.ts) e `rewardMultiplier` (`gold-quantity-up`)
+// pro roll de ouro do Mini-Boss abaixo. "Nunca ignorar o Loot Table.
+// Nunca ignorar Monster Signature. Nunca ignorar World Region. Somente
+// modificar pesos" — nenhum dos dois eixos substitui nada, só multiplica
+// por cima do que `generateMonsterLoot()` já calculava.
+export function generateLootForKilledEnemy(
+  killResult: KillEnemyResult,
+  instance: EnemyInstance,
+  seed: number,
+  regionId: string,
+  runtimeConfig?: CombinedRuntimeConfig,
+): LootResult {
   const variant = instance.futureState.variant;
   const itemLevelAnchor = getRegionItemLevelAnchor(regionId);
 
+  // Ausente/1 vira `undefined` antes de chegar em
+  // generateMonsterLoot()/generateLoot() — preserva o mesmo caminho de
+  // código (e portanto o mesmo stream de RNG/determinismo de testes já
+  // existentes) do caso neutro, exatamente como `rarityMultiplierBonus`
+  // já fazia para o Elite antes desta Sprint.
+  const mapRarityMultiplier = runtimeConfig?.lootRarityMultiplier ?? 1;
+  const mapQuantityMultiplier = runtimeConfig?.lootMultiplier ?? 1;
+  const quantityMultiplierBonus = mapQuantityMultiplier !== 1 ? mapQuantityMultiplier : undefined;
+
+  // Loot Integration Phase I (Sprint 29) — Fase 4: `regionId` já era
+  // recebido por esta função (Region-Anchored Item Level), agora também
+  // repassado pra `generateMonsterLoot()` como influência LEVE de Bioma
+  // sobre o peso de Base (World Region, Sprint 25) — nunca alterou o
+  // que esta função já fazia com `regionId` antes (Item Level Anchor).
   const result =
     variant === "elite"
       ? generateMonsterLoot(killResult.lootIdentityId, itemLevelAnchor, seed, {
           dropChanceOverride: 1,
           minimumQuantity: 1,
-          rarityMultiplierBonus: ELITE_MODIFIER.lootRarityMultiplier,
+          rarityMultiplierBonus: ELITE_MODIFIER.lootRarityMultiplier * mapRarityMultiplier,
+          quantityMultiplierBonus,
+          regionId,
         })
-      : generateMonsterLoot(killResult.lootIdentityId, itemLevelAnchor, seed);
+      : generateMonsterLoot(killResult.lootIdentityId, itemLevelAnchor, seed, {
+          regionId,
+          rarityMultiplierBonus: mapRarityMultiplier !== 1 ? mapRarityMultiplier : undefined,
+          quantityMultiplierBonus,
+        });
 
   if (!variant) {
     return result;
@@ -89,7 +126,12 @@ export function generateLootForKilledEnemy(killResult: KillEnemyResult, instance
   }
 
   const goldRng = createSeededRandom(seed + MINIBOSS_GOLD_SEED_OFFSET);
-  const goldAmount = randomInt(goldRng, MINIBOSS_GOLD_MIN, MINIBOSS_GOLD_MAX);
+  // Sprint 33 — Map Modifiers Phase II, Fase 5: `gold-quantity-up`
+  // (`runtimeConfig.rewardMultiplier`) — o único eixo de ouro por
+  // abate que este roll já tinha; nunca lido por nenhum runtime config
+  // antes desta Sprint (nem World Tier). Ausente/1 preserva o valor
+  // exato de antes (Math.round de um inteiro já é o próprio inteiro).
+  const goldAmount = Math.round(randomInt(goldRng, MINIBOSS_GOLD_MIN, MINIBOSS_GOLD_MAX) * (runtimeConfig?.rewardMultiplier ?? 1));
 
   // Vertical Slice — Unique Dungeon Relics & Boss Loot Phase I — Fase
   // 2/3: "cada Boss poderá declarar uniqueRelics... resolução das

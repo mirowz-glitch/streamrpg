@@ -38,7 +38,8 @@
  * (B5), Modifiers, qualquer suposição de que Boss é o único tipo de
  * evento do Reino (ver docs/technical-design/boss-system.md).
  */
-import { pickRarity } from "@streamrpg/shared";
+import { pickRarity, rollSphereDrop } from "@streamrpg/shared";
+import { grantSphereDrop } from "../services/sphere.service.js";
 import type { EventBus } from "../engine/EventBus.js";
 import type {
   BossDefeatedEvent,
@@ -157,6 +158,17 @@ export class BossRewardSystem {
           ? new Set(drawItemWinners(ITEM_SLOTS_PER_BOSS, participants, this.randomProvider))
           : new Set<string>();
 
+      // Sprint 13 — Sphere Economy Phase I, Fase 6: World Boss é a ÚNICA
+      // fonte com chance "significativa" (ainda extremamente rara) de
+      // Maldição. UMA rolagem por derrota — nunca por participante, pra
+      // não inflar a chance com o tamanho do raid — concedida a um único
+      // vencedor sorteado pelo mesmo mecanismo ponderado por
+      // ticksPresent já usado por drawItemWinners (uma tiragem
+      // independente, mesmo princípio do roll de raridade de item logo
+      // abaixo). "escaped" nunca sorteia Esfera, só "defeated".
+      const sphereWinnerCharacterId = outcome === "defeated" ? drawItemWinners(1, participants, this.randomProvider)[0] : undefined;
+      const sphereRoll = outcome === "defeated" ? rollSphereDrop("world_boss", () => this.randomProvider.next()) : null;
+
       for (const participant of participants) {
         const characterId = participant.characterId;
         try {
@@ -217,6 +229,10 @@ export class BossRewardSystem {
                 console.log(`[BossRewardSystem] Character: ${characterId} | Rarity: ${rarity} | No eligible item found (Boss ${bossId})`);
               }
             }
+          }
+
+          if (sphereWinnerCharacterId === characterId && sphereRoll?.sphereId) {
+            await grantSphereDrop(characterId, sphereRoll.sphereId, "world_boss", timestamp);
           }
 
           await this.rewardRepo.recordReward(bossId, characterId, xpAmount, itemId, outcome, timestamp);

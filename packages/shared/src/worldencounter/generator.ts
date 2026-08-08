@@ -3,8 +3,9 @@ import { getEnemyTemplate } from "../enemy/templates.js";
 import { getEncounterTable } from "./encounterTables.js";
 import { getExplorationEventTable } from "../worldevents/worldEventTables.js";
 import { selectExplorationEvent } from "../worldevents/generator.js";
+import { getMapDefinition } from "../worldmap/mapRegistry.js";
 import { WORLD_ENCOUNTER_CONFIG } from "./config.js";
-import type { DungeonRuntimeConfig, EncounterGroupResult, EncounterResult, EncounterTable, EncounterVariant } from "./types.js";
+import type { DungeonRuntimeConfig, EncounterGroupResult, EncounterResult, EncounterTable, EncounterTableEntry, EncounterVariant } from "./types.js";
 
 // Requisito 3 — Level Scaling: o nível de um grupo respeita a
 // interseção de 3 faixas — "Faixa da região" (table.levelRange),
@@ -56,6 +57,31 @@ function rollVariant(rng: ReturnType<typeof createSeededRandom>, table: Encounte
   return pickWeighted(rng, options).variant;
 }
 
+// Sprint 31 — Map Integration Phase I, Fase 3: "Adventure deve usar
+// Map.enemyPool como universo permitido. Nunca mais apenas
+// EnemyTemplate.region." `table.entries` (a lista real de spawn de uma
+// região, worldencounter/encounterTables.ts) passa a ser filtrada pelo
+// `Map.enemyPool` correspondente (worldmap/mapRegistry.ts, Sprint 30 —
+// já corrigido nesta MESMA Sprint pra incluir tudo que `table.entries`
+// realmente usa, ver comentário em mapRegistry.ts) ANTES de qualquer
+// `pickWeighted()`. Hoje isso nunca remove nada de verdade (união por
+// construção) — o valor real é arquitetural: a partir de agora existe
+// um PONTO ÚNICO de gate entre "o que a região declara" e "o que o
+// Mapa autoriza", pronto pra um Mapa futuro (Rare/Unique) restringir de
+// verdade sem tocar neste arquivo. Fallback de segurança idêntico ao já
+// usado por `rollBaseItemId()` (lootgen/generator.ts, Sprint 29): se a
+// interseção ficar vazia (não deveria acontecer nunca, dado a união),
+// cai de volta pra `table.entries` cheio — nunca um encontro impossível
+// de gerar.
+function resolveAllowedEntries(table: EncounterTable, regionId: string): EncounterTableEntry[] {
+  const map = getMapDefinition(regionId);
+  if (!map) return table.entries;
+
+  const pool = new Set(map.enemyPool);
+  const filtered = table.entries.filter((entry) => pool.has(entry.enemyTemplateId));
+  return filtered.length > 0 ? filtered : table.entries;
+}
+
 // Requisito 4 — Enemy Groups: quantos entries DISTINTOS da tabela
 // compõem este encontro (1 slot = só um tipo de inimigo; 2+ slots =
 // composição, ex.: "2 Goblins + 1 Bandit"). Algoritmo original,
@@ -64,10 +90,11 @@ function rollVariant(rng: ReturnType<typeof createSeededRandom>, table: Encounte
 // conseguir chamar EXATAMENTE o mesmo código, sem duplicar nada.
 function buildNormalGroups(rng: ReturnType<typeof createSeededRandom>, table: EncounterTable, playerLevel: number, regionId: string): EncounterGroupResult[] {
   const packSlots = pickWeighted(rng, table.packSizeOptions).slots;
+  const allowedEntries = resolveAllowedEntries(table, regionId);
 
   const groups: EncounterGroupResult[] = [];
   for (let slot = 0; slot < packSlots; slot++) {
-    const entry = pickWeighted(rng, table.entries);
+    const entry = pickWeighted(rng, allowedEntries);
     const template = getEnemyTemplate(entry.enemyTemplateId);
     if (!template) {
       throw new Error(`World Encounter: Enemy Template desconhecido "${entry.enemyTemplateId}" (região "${regionId}")`);
@@ -192,7 +219,7 @@ export function generateEncounter(regionId: string, playerLevel: number, seed: n
   // grupo), pra o multiplicador de stats (aplicado em spawn.ts) valer
   // pra um único inimigo perigoso, não pra um grupo inteiro.
   if (variant === "elite") {
-    const entry = pickWeighted(rng, table.entries);
+    const entry = pickWeighted(rng, resolveAllowedEntries(table, regionId));
     const template = getEnemyTemplate(entry.enemyTemplateId);
     if (!template) {
       throw new Error(`World Encounter: Enemy Template desconhecido "${entry.enemyTemplateId}" (região "${regionId}")`);

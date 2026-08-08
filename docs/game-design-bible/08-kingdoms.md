@@ -25,5 +25,11 @@ do capítulo 6 (Bosses).
 ## Dependências
 
 Kingdoms depende de:
-- Bosses e Quests (ordem de construção)
+- Bosses e Quests (ordem de construção histórica, ver capítulo 12)
 - Roadmap (Auditoria de Plataforma — frente de Escalabilidade/sharding)
+
+**Nota (2026-07-31):** o desenho real de Kingdom nasceu fora desta Bible,
+em `docs/design/kingdom-domain-2.0.md` (Reino permanente, liderança
+plugável) — este capítulo ainda não foi reconciliado com aquele documento
+(ver nota do README). A ordem de Sprint de Kingdom/Citizen/Housing/etc. vive
+em `docs/design/new-roadmap.md`, não neste capítulo nem no capítulo 12.

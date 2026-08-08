@@ -77,6 +77,66 @@ describe("merchant.service — venda simples", () => {
   });
 });
 
+// Sprint 14 — Legendary Items + Legacy System, Fase 3/5: o item some de
+// `character_items` (listInventory), mas a linha de `items` (o
+// catálogo procedural) sobrevive pra sempre — é ali que o evento
+// "sold" fica gravado, lido de volta direto por SQL já que não existe
+// mais um `character_item_id` pra consultar via listInventory().
+describe("merchant.service — Legado (Sprint 14): evento 'sold' sobrevive à venda", () => {
+  test("depois de vender, a linha de 'items' (não character_items) ganha um evento 'sold' com o preço", () => {
+    const item = grantTestItem("rare");
+    const expectedValue = calculateSaleValue({ rarity: "rare", min_level: 1 });
+
+    const result = sellItem(CHARACTER_ID, item.id);
+    assert.equal(result.success, true);
+
+    const row = getDb().prepare(`SELECT history FROM items WHERE id = ?`).get(item.item_id) as { history: string };
+    const history = JSON.parse(row.history);
+    const soldEvent = history.events.find((e: { event: string }) => e.event === "sold");
+    assert.ok(soldEvent, "esperava um evento 'sold' na linha órfã de items");
+    assert.equal(soldEvent.detail, String(expectedValue));
+    assert.equal(soldEvent.characterId, CHARACTER_ID);
+  });
+});
+
+describe("merchant.service — raridades do Item Generator (bug fix)", () => {
+  // World Autonomy Phase II (Vision 2.0, Sprint 9) — bug encontrado ao
+  // construir o Offline Summary: grantAdventureLoot() persistia a
+  // raridade crua do Item Generator ("magic"/"unique",
+  // itemgen/rarities.ts), que não bate com nenhuma chave de
+  // BASE_VALUE_BY_RARITY (economy/saleValue.ts, só as 5 raridades de
+  // ItemRarity) — vender esses itens devolvia NaN de ouro. Corrigido em
+  // drop.service.ts (normalizeItemRarity, na persistência); estes testes
+  // provam que a venda real agora produz o valor correto, não NaN.
+  test("vende um item 'magic' (Item Generator) e credita o valor de 'uncommon', nunca NaN", () => {
+    const item = grantTestItem("magic");
+    const goldBefore = getCharacterResourceBalance(CHARACTER_ID, "gold");
+    const expectedValue = calculateSaleValue({ rarity: "uncommon", min_level: 1 });
+
+    const result = sellItem(CHARACTER_ID, item.id);
+
+    assert.equal(result.success, true);
+    if (!result.success) return;
+    assert.ok(!Number.isNaN(result.saleValue), "saleValue nunca deveria ser NaN");
+    assert.equal(result.saleValue, expectedValue);
+    assert.equal(result.newGoldBalance, goldBefore + expectedValue);
+  });
+
+  test("vende um item 'unique' (Item Generator) e credita o valor de 'legendary', nunca NaN", () => {
+    const item = grantTestItem("unique");
+    const goldBefore = getCharacterResourceBalance(CHARACTER_ID, "gold");
+    const expectedValue = calculateSaleValue({ rarity: "legendary", min_level: 1 });
+
+    const result = sellItem(CHARACTER_ID, item.id);
+
+    assert.equal(result.success, true);
+    if (!result.success) return;
+    assert.ok(!Number.isNaN(result.saleValue), "saleValue nunca deveria ser NaN");
+    assert.equal(result.saleValue, expectedValue);
+    assert.equal(result.newGoldBalance, goldBefore + expectedValue);
+  });
+});
+
 describe("merchant.service — item equipado", () => {
   test("rejeita a venda de um item equipado, sem alterar Ouro nem inventário", () => {
     const item = grantTestItem("common");

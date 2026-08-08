@@ -3,12 +3,18 @@ import { getDb } from "../config/database.js";
 import { applyItemUpgrade, getEquippedItems } from "./drop.service.js";
 import { debitCharacterResourceInTransaction, getCharacterResourceBalance } from "./economy.service.js";
 import { equipmentLock } from "./equipmentLock.service.js";
+import { pushNotification } from "./notifications.service.js";
 
 export type UpgradeItemFailureReason =
   | "item-not-found"
   | "item-not-eligible"
   | "debit-rejected"
-  | "item-locked";
+  | "item-locked"
+  // Sprint 11, Fase 9 — Esfera da Maldição (itemization/spheres.ts):
+  // um item selado ("não aceita reforja") não pode ser melhorado pelo
+  // Ferreiro — mesma garantia que `canApplySphere()` já impõe pras
+  // Esferas, agora respeitada pelo único outro escritor de item.
+  | "item-sealed";
 
 export interface UpgradeItemSuccess {
   success: true;
@@ -61,6 +67,9 @@ export function upgradeItem(characterId: string, characterItemId: number): Upgra
       if (item.power_score === null) {
         return { success: false, reason: "item-not-eligible" };
       }
+      if (item.craft_state === "sealed") {
+        return { success: false, reason: "item-sealed" };
+      }
 
       const upgrade = calculateUpgrade({
         rarity: item.rarity,
@@ -84,6 +93,10 @@ export function upgradeItem(characterId: string, characterItemId: number): Upgra
         }
         applyItemUpgrade(characterId, characterItemId, upgrade.newPowerScore, upgrade.nextLevel);
         db.exec("COMMIT");
+        // World Autonomy Phase II (Vision 2.0, Sprint 9), Fase 7 —
+        // mesmo princípio de merchant.service.ts: notificação pessoal
+        // direto no ponto de sucesso.
+        pushNotification(characterId, "⚒️", `A melhoria de ${item.name} foi concluída (nível ${upgrade.nextLevel}).`);
         return {
           success: true,
           item: { ...item, power_score: upgrade.newPowerScore, upgrade_level: upgrade.nextLevel },

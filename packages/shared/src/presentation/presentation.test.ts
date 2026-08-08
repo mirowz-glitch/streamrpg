@@ -319,6 +319,31 @@ describe("Combat Presentation Layer Phase I", () => {
     });
   });
 
+  // Sprint 13 — Sphere Economy Phase I: `SphereDropped` é derivado de
+  // `tickResult.sphereDrops` no MESMO padrão de `LootDropped` (loop
+  // logo abaixo do de loot em presentationLayer.ts) — o teste confirma
+  // 1:1 entre fato do engine e evento de apresentação, sem torcer pela
+  // sorte de um drop acontecer (dropChance real é minúsculo).
+  describe("SphereDropped (Sprint 13)", () => {
+    it("todo SphereDropped emitido corresponde 1:1 a um tickResult.sphereDrops, mesmo sphereId/source", () => {
+      const session = freshSession("bosque-sussurrante", 5, "sphere-presentation");
+      const timeline = createAdventureTimeline(session.sessionId);
+      const maxLife = session.character.currentLife;
+      for (let i = 0; i < 500; i++) {
+        session.character.currentLife = maxLife;
+        const { events, tickResult } = advanceAdventureWithPresentation(session, timeline, { currentTime: 1000 * (i + 1) });
+        const sphereEvents = events.filter((e) => e.kind === "SphereDropped");
+        assert.equal(sphereEvents.length, tickResult.sphereDrops.length);
+        for (let j = 0; j < sphereEvents.length; j++) {
+          const event = sphereEvents[j]!;
+          if (event.kind !== "SphereDropped") continue;
+          assert.equal(event.sphereId, tickResult.sphereDrops[j]!.sphereId);
+          assert.equal(event.source, tickResult.sphereDrops[j]!.source);
+        }
+      }
+    });
+  });
+
   describe("performance", () => {
     it("100 ticks com presentation completam rapidamente", () => {
       const session = freshSession("bosque-sussurrante", 1, "perf");

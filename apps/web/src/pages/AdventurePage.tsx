@@ -3,6 +3,7 @@ import { useBlocker } from "react-router-dom";
 import { registerIdleBlockChecker, useAdventureSession } from "../hooks/useAdventureSession";
 import { useAnimationController } from "../hooks/useAnimationController";
 import { AppNav } from "../components/ui/AppNav";
+import { OfflineSummaryBanner } from "../components/ui/OfflineSummaryBanner";
 import { SessionSafetyBanner } from "../components/hud/SessionSafetyBanner";
 import { LeaveSessionModal } from "../components/hud/LeaveSessionModal";
 import { LootRejectedFeedback } from "../components/hud/LootRejectedFeedback";
@@ -64,8 +65,20 @@ import { DungeonCompletedBanner } from "../components/hud/DungeonCompletedBanner
 // tudo intocado; só a localização arquitetural de quem decide "é hora
 // de avançar?" mudou.
 export function AdventurePage() {
-  const { hudState, error, restart, ready, isDemoSession, lootRejectedFeedback, idleStatus, pauseIdle, resumeIdle, lastTickOutcome } =
-    useAdventureSession();
+  const {
+    hudState,
+    error,
+    restart,
+    ready,
+    isDemoSession,
+    lootRejectedFeedback,
+    idleStatus,
+    pauseIdle,
+    resumeIdle,
+    lastTickOutcome,
+    offlineSummary,
+    dismissOfflineSummary,
+  } = useAdventureSession();
   const { active, playTick, reset } = useAnimationController();
   const isDefeated = hudState.sessionStatus === "derrota";
 
@@ -110,7 +123,22 @@ export function AdventurePage() {
   // `lastTickOutcome` sem re-disparar em todo re-render.
   const playTickRef = useRef(playTick);
   playTickRef.current = playTick;
+  // RC-1 Fase 3 — Integração: `lastTickOutcome` sobrevive à desmontagem
+  // desta página (mora no singleton de módulo, mesmo motivo do
+  // comentário acima) — sem este guard, remontar (voltar de
+  // Personagem/Inventário/Cidade pra Aventura) reproduzia o ÚLTIMO tick
+  // já visto antes de sair, disparando de novo banners de Level
+  // Up/Chefe Derrotado/Dungeon Concluída fora de contexto. Só o
+  // primeiro disparo deste efeito por montagem é descartado — qualquer
+  // tick novo que aconteça DEPOIS, com a página já montada, continua
+  // tocando normalmente (mesma identidade de objeto nova a cada tick,
+  // ver runGlobalTick()).
+  const hasSkippedCarriedOverOutcomeRef = useRef(false);
   useEffect(() => {
+    if (!hasSkippedCarriedOverOutcomeRef.current) {
+      hasSkippedCarriedOverOutcomeRef.current = true;
+      return;
+    }
     if (lastTickOutcome) playTickRef.current(lastTickOutcome.events, lastTickOutcome.floatingNumbers);
   }, [lastTickOutcome]);
 
@@ -159,6 +187,7 @@ export function AdventurePage() {
   return (
     <main className="page">
       <AppNav />
+      <OfflineSummaryBanner summary={offlineSummary} onDismiss={dismissOfflineSummary} />
       {blocker.state === "blocked" ? <LeaveSessionModal onConfirm={() => blocker.proceed()} onCancel={() => blocker.reset()} /> : null}
       <div className="card hud-adventure-page">
         {isDemoSession ? <SessionSafetyBanner /> : null}

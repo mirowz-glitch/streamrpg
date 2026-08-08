@@ -5,6 +5,7 @@ import { getEnemyTemplate } from "../enemy/templates.js";
 import { getExpeditionDefinition } from "../expeditions/expeditionDefinitions.js";
 import { resolveDungeonRuntimeConfig } from "../expeditions/expeditionModifiers.js";
 import { resolveCombinedRuntimeConfig } from "../worldtiers/worldTierDefinitions.js";
+import { applyMapModifiers } from "../mapmods/mapModifierRuntimeConfig.js";
 import { generateLoot } from "../lootgen/generator.js";
 import { getRegionItemLevelAnchor } from "../regions.js";
 import type { AdvanceAdventureOptions } from "../adventure/adventureLoop.js";
@@ -160,12 +161,32 @@ export function advanceDungeonTick(
   // CombinedRuntimeConfig único que toda a cadeia de baixo (e
   // Combat/Encounter/Recovery/Rewards/HUD, todos já ligados na Sprint
   // anterior) consome sem saber que World Tiers existem.
+  //
+  // Sprint 33 — Map Modifiers Phase II, Fase 2-6: mesmo ponto único
+  // agora também dobra Map Modifiers por CIMA do resultado de World
+  // Tier + Dungeon Modifiers (`applyMapModifiers()`,
+  // mapmods/mapModifierRuntimeConfig.ts) — "Runtime Final = World Tier
+  // + Dungeon Modifiers + Map Modifiers", ainda um único
+  // CombinedRuntimeConfig, ainda o único formato que desce pra
+  // Combat/Encounter/Loot/Rewards. `session.activeMapModifiers` vazio
+  // (padrão desde Sprint 32) devolve o config inalterado — nenhuma
+  // regressão quando nenhum Mod está ativo.
   const activeExpeditionIdBeforeTick = findMostRecentExpeditionId(timeline.events);
   const activeDefinitionBeforeTick = activeExpeditionIdBeforeTick ? getExpeditionDefinition(activeExpeditionIdBeforeTick) : undefined;
   const dungeonRuntimeConfig = resolveDungeonRuntimeConfig(activeDefinitionBeforeTick?.modifiers);
   const optionsWithRuntimeConfig: AdvanceAdventureOptions = {
     ...options,
-    runtimeConfig: options.runtimeConfig ?? resolveCombinedRuntimeConfig(session.worldTier, dungeonRuntimeConfig),
+    runtimeConfig:
+      options.runtimeConfig ??
+      applyMapModifiers(resolveCombinedRuntimeConfig(session.worldTier, dungeonRuntimeConfig), session.activeMapModifiers),
+    // Sprint 13 — Sphere Economy Phase I, Fase 4: reusa o MESMO
+    // `activeExpeditionIdBeforeTick` que já resolve o
+    // DungeonRuntimeConfig acima — "existe uma Expedição-Dungeon ativa
+    // agora" é exatamente a pergunta que `isDungeonExpedition()` já
+    // respondia pra outro propósito (Requisito 7, DungeonCompleted,
+    // abaixo); reaproveitada aqui pela mesma razão de sempre: nunca
+    // recalcular o que já foi resolvido.
+    inDungeon: options.inDungeon ?? (activeExpeditionIdBeforeTick ? isDungeonExpedition(activeExpeditionIdBeforeTick) : false),
   };
 
   const { tickResult, events, floatingNumbers, recovery, objective } = advanceFactionTick(session, timeline, optionsWithRuntimeConfig);
@@ -254,6 +275,10 @@ export function advanceDungeonTick(
             powerScore: generatedItem.powerScore,
             regionId: session.currentRegion,
             stored: addResult.success,
+            itemLevel: generatedItem.itemLevel,
+            seed: generatedItem.seed,
+            prefixes: generatedItem.prefixes,
+            suffixes: generatedItem.suffixes,
             tickIndex,
             timestamp,
           };

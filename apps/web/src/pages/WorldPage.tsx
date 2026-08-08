@@ -20,6 +20,45 @@ function formatClock(ms: number): string {
   return new Date(ms).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
+// World Autonomy Phase II (Vision 2.0, Sprint 9) — os 4 novos endpoints
+// desta Sprint (WorldPresence/Activity Feed/World News/Notifications)
+// vivem em apps/api, não em packages/shared (nenhum destes 4 é parte
+// do motor de gameplay puro) — tipos locais, mesmo padrão de qualquer
+// outra resposta de rota já tipada localmente neste arquivo.
+interface WorldPresenceResponse {
+  dayCount: number;
+  timeOfDay: "madrugada" | "manha" | "tarde" | "noite";
+  weatherByRegion: Record<string, string>;
+  regionActivity: Record<string, "active" | "dormant">;
+}
+interface ActivityFeedEntry {
+  id: string;
+  icon: string;
+  text: string;
+  timestamp: number;
+}
+interface WorldNewsResponse {
+  bossesDefeatedTotal: number;
+  housesBuiltTotal: number;
+  housesSoldTotal: number;
+  citizensTotal: number;
+  largestKingdom: { name: string; citizenCount: number } | null;
+}
+interface NotificationEntry {
+  id: string;
+  icon: string;
+  text: string;
+  timestamp: number;
+  read: boolean;
+}
+
+const TIME_OF_DAY_LABEL: Record<WorldPresenceResponse["timeOfDay"], string> = {
+  madrugada: "Madrugada",
+  manha: "Manhã",
+  tarde: "Tarde",
+  noite: "Noite",
+};
+
 export function WorldPage() {
   const [data, setData] = useState<WorldStateResponse | null>(null);
   const [clock, setClock] = useState(() => formatClock(Date.now()));
@@ -61,6 +100,40 @@ export function WorldPage() {
   // existente. Nunca cita o jogador; cada eco aparece só até a próxima
   // vez que este componente recalcular `echoes` (marcado como visto logo
   // abaixo), nunca mais que uma vez por jogador.
+  // World Autonomy Phase II (Vision 2.0, Sprint 9) — mesmo padrão de
+  // poll de `data` acima (10s), 4 chamadas independentes: nenhuma
+  // depende de login (worldPresence/feed/news são rotas públicas,
+  // mesmo princípio "o Mundo existe sem login"), notifications exige
+  // auth e falha silenciosamente sem sessão (mesmo padrão de
+  // fire-and-forget já usado no heartbeat de presença).
+  const [worldPresence, setWorldPresence] = useState<WorldPresenceResponse | null>(null);
+  const [activityFeed, setActivityFeed] = useState<ActivityFeedEntry[]>([]);
+  const [worldNews, setWorldNews] = useState<WorldNewsResponse | null>(null);
+  const [notifications, setNotifications] = useState<NotificationEntry[]>([]);
+
+  useEffect(() => {
+    const load = () => {
+      void api.get<WorldPresenceResponse>("/api/world/presence").then(setWorldPresence).catch(() => undefined);
+      void api
+        .get<{ entries: ActivityFeedEntry[] }>("/api/world/feed")
+        .then((res) => setActivityFeed(res.entries))
+        .catch(() => undefined);
+      void api.get<WorldNewsResponse>("/api/world/news").then(setWorldNews).catch(() => undefined);
+      void api
+        .get<{ notifications: NotificationEntry[] }>("/api/notifications")
+        .then((res) => setNotifications(res.notifications))
+        .catch(() => undefined);
+    };
+    load();
+    const id = window.setInterval(load, WORLD_POLL_MS);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const dismissNotifications = () => {
+    setNotifications([]);
+    void api.post("/api/notifications/dismiss", {}).catch(() => undefined);
+  };
+
   const { identity } = useIdentity(true);
   const echoes = useMemo(
     () => getKingdomEchoes({ regionsDiscovered: identity?.regions_discovered ?? 0 }),
@@ -285,6 +358,77 @@ export function WorldPage() {
         <GuideBubble flag="world_gallery_seen" message="Onze regiões, cada uma com sua própria história — seu personagem só visitou uma fração delas até agora." />
         <RegionGallery />
       </div>
+
+      {worldPresence ? (
+        <div className="card">
+          <h1>🌍 Mundo Vivo</h1>
+          <p className="hint">
+            O Mundo continua avançando mesmo sem ninguém online — Dia {worldPresence.dayCount}, {TIME_OF_DAY_LABEL[worldPresence.timeOfDay]}.
+          </p>
+          <StatsRow
+            items={[
+              { label: "Dia do Mundo", value: worldPresence.dayCount },
+              { label: "Horário", value: TIME_OF_DAY_LABEL[worldPresence.timeOfDay] },
+              {
+                label: "Regiões ativas agora",
+                value: Object.values(worldPresence.regionActivity).filter((activity) => activity === "active").length,
+              },
+            ]}
+          />
+        </div>
+      ) : null}
+
+      {worldNews ? (
+        <div className="card">
+          <h1>📊 Notícias do Mundo</h1>
+          <ul className="kingdom-stats-list">
+            <li>{worldNews.bossesDefeatedTotal} Boss{worldNews.bossesDefeatedTotal === 1 ? "" : "es"} derrotado{worldNews.bossesDefeatedTotal === 1 ? "" : "s"} no total.</li>
+            <li>{worldNews.housesBuiltTotal} casa{worldNews.housesBuiltTotal === 1 ? "" : "s"} construída{worldNews.housesBuiltTotal === 1 ? "" : "s"}.</li>
+            <li>{worldNews.housesSoldTotal} casa{worldNews.housesSoldTotal === 1 ? "" : "s"} vendida{worldNews.housesSoldTotal === 1 ? "" : "s"}.</li>
+            <li>{worldNews.citizensTotal} cidadão{worldNews.citizensTotal === 1 ? "" : "s"} ativo{worldNews.citizensTotal === 1 ? "" : "s"} no Mundo.</li>
+            {worldNews.largestKingdom ? (
+              <li>
+                Maior Reino: {worldNews.largestKingdom.name} ({worldNews.largestKingdom.citizenCount} cidadão
+                {worldNews.largestKingdom.citizenCount === 1 ? "" : "s"}).
+              </li>
+            ) : null}
+          </ul>
+        </div>
+      ) : null}
+
+      <div className="card">
+        <h1>📰 Feed de Atividade do Mundo</h1>
+        <p className="hint">Fatos reais do Mundo inteiro — nunca chat, nenhuma interação.</p>
+        {activityFeed.length === 0 ? (
+          <p className="hint">Nenhum evento notável registrado ainda nesta sessão do servidor.</p>
+        ) : (
+          <ul className="encounter-recent-list">
+            {activityFeed.map((entry) => (
+              <li key={entry.id}>
+                <span className="encounter-recent-icon">{entry.icon}</span> {entry.text}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {identity && notifications.length > 0 ? (
+        <div className="card">
+          <div className="offline-summary-header">
+            <h1>🔔 Notificações</h1>
+            <button type="button" className="offline-summary-dismiss" onClick={dismissNotifications} aria-label="Limpar notificações">
+              ✕
+            </button>
+          </div>
+          <ul className="kingdom-stats-list">
+            {notifications.map((notification) => (
+              <li key={notification.id}>
+                {notification.icon} {notification.text}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </main>
   );
 }

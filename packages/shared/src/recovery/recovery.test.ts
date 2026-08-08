@@ -70,8 +70,6 @@ describe("Recovery & Adventure Flow Phase I", () => {
     });
 
     it("nunca cura um personagem morto (sem EncounterFinished quando o personagem morre no meio do encontro)", () => {
-      const session = freshSession("colinas-aridas", 3, "recover-death");
-      const timeline = createAdventureTimeline(session.sessionId);
       // Personagem fraco de propósito (sem o kit forte) pra morrer.
       const weakBuild = new CharacterBuild("recovery-weak", "warrior", 0);
       const weakInventory = new Inventory("recovery-weak", 10);

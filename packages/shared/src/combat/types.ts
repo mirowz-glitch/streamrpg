@@ -39,6 +39,15 @@ export interface FutureCombatModifiers {
   damageMultiplier?: number;
   armorPenetration?: number;
   lifeLeechMultiplier?: number;
+  // Sprint 23 — Sockets & Gems Phase II: dano ADITIVO (não multiplicador),
+  // somado no Damage Roll depois da variância/crítico, antes da
+  // mitigação — atravessa Armor/Resistência normalmente como qualquer
+  // dano do mesmo `attackType`, nunca bypassa. Fonte real hoje: Gem
+  // Behaviors (`onHitBonusFireDamage`, ex.: Rubi) — o pipeline
+  // continua sendo a ÚNICA função que calcula dano ("nenhuma ação
+  // ofensiva calcula dano fora dele"), este campo é só mais uma
+  // entrada opcional, exatamente como os outros.
+  bonusFlatDamage?: number;
 }
 
 // Requisito 2 — Combat Context: tudo que resolveCombat() precisa,

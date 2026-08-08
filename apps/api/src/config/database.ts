@@ -181,6 +181,134 @@ function runMigrations(database: DatabaseSync): void {
     database.exec("ALTER TABLE items ADD COLUMN upgrade_level INTEGER NOT NULL DEFAULT 0");
     console.log("[Migration] items.upgrade_level adicionada.");
   }
+
+  // Sprint Identity Core (Vision 2.0) — profiles.twitch_id deixa de ser
+  // NOT NULL (uma Pessoa não exige mais Twitch para existir). SQLite não
+  // suporta ALTER COLUMN DROP NOT NULL — a única forma correta é
+  // reconstruir a tabela (padrão documentado do próprio SQLite:
+  // CREATE nova → copiar dados → DROP antiga → RENAME). Feito dentro de
+  // uma transação, com foreign_keys desligado durante a troca (nenhuma
+  // linha filha é tocada — só o nome/definição da tabela pai muda, então
+  // isso é seguro; religado logo depois). Idempotente: só roda se a
+  // coluna hoje ainda for NOT NULL (PRAGMA table_info.notnull === 1).
+  const profileColumns = database
+    .prepare("PRAGMA table_info(profiles)")
+    .all() as Array<{ name: string; notnull: number }>;
+  const twitchIdStillRequired = profileColumns.some(
+    (col) => col.name === "twitch_id" && col.notnull === 1,
+  );
+  if (twitchIdStillRequired) {
+    database.exec("PRAGMA foreign_keys = OFF;");
+    database.exec("BEGIN TRANSACTION;");
+    try {
+      database.exec(`
+        CREATE TABLE profiles_new (
+          id TEXT PRIMARY KEY,
+          twitch_id TEXT UNIQUE,
+          username TEXT NOT NULL,
+          avatar_url TEXT,
+          email TEXT,
+          created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+          updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+        );
+      `);
+      database.exec(`
+        INSERT INTO profiles_new (id, twitch_id, username, avatar_url, email, created_at, updated_at)
+        SELECT id, twitch_id, username, avatar_url, email, created_at, updated_at FROM profiles;
+      `);
+      database.exec("DROP TABLE profiles;");
+      database.exec("ALTER TABLE profiles_new RENAME TO profiles;");
+      database.exec("COMMIT;");
+      console.log("[Migration] profiles.twitch_id não é mais NOT NULL (rebuild de tabela).");
+    } catch (err) {
+      database.exec("ROLLBACK;");
+      throw err;
+    } finally {
+      database.exec("PRAGMA foreign_keys = ON;");
+    }
+  }
+
+  // World Autonomy Phase II (Vision 2.0, Sprint 9), Fase 4 — Offline
+  // Summary precisa de um "quando este personagem foi visto pela última
+  // vez" independente de Twitch (o `last_ping_at` já existente é escrito
+  // só pelo fluxo legado `/api/ping`, que exige um canal). Populado a
+  // partir de agora para personagens já existentes (nenhuma ausência
+  // retroativa é inventada na primeira migração); atualizado depois só
+  // por `POST /api/presence/ping` (routes/presence.ts).
+  const characterColumnsV2 = database
+    .prepare("PRAGMA table_info(characters)")
+    .all() as Array<{ name: string }>;
+  const hasLastActiveAt = characterColumnsV2.some((col) => col.name === "last_active_at");
+  if (!hasLastActiveAt) {
+    database.exec("ALTER TABLE characters ADD COLUMN last_active_at INTEGER");
+    database.exec(`UPDATE characters SET last_active_at = strftime('%s','now') WHERE last_active_at IS NULL`);
+    console.log("[Migration] characters.last_active_at adicionada e populada com o momento atual.");
+  }
+
+  // Sprint 11 — Persistent Items + Affixes: "Nenhum item procedural
+  // poderá perder informação ao ser salvo. Nunca mais." Mesmo mecanismo
+  // de sempre (ALTER TABLE items ADD COLUMN, nunca uma segunda tabela
+  // de item — ver hasBaseItemId/hasPowerScore acima). `affixes`/
+  // `history` são JSON serializado como TEXT (mesmo padrão já usado por
+  // `houses.history`); `quality`/`potential` idem. `craft_state` é
+  // sempre 'open' pro catálogo fixo e para todo item já dropado antes
+  // desta migração (nenhum item antigo nasce retroativamente selado).
+  const itemColumnsV3 = database.prepare("PRAGMA table_info(items)").all() as Array<{ name: string }>;
+
+  const hasItemLevel = itemColumnsV3.some((col) => col.name === "item_level");
+  if (!hasItemLevel) {
+    database.exec("ALTER TABLE items ADD COLUMN item_level INTEGER");
+    console.log("[Migration] items.item_level adicionada.");
+  }
+
+  const hasSeed = itemColumnsV3.some((col) => col.name === "seed");
+  if (!hasSeed) {
+    database.exec("ALTER TABLE items ADD COLUMN seed INTEGER");
+    console.log("[Migration] items.seed adicionada.");
+  }
+
+  const hasAffixes = itemColumnsV3.some((col) => col.name === "affixes");
+  if (!hasAffixes) {
+    database.exec("ALTER TABLE items ADD COLUMN affixes TEXT NOT NULL DEFAULT '[]'");
+    console.log("[Migration] items.affixes adicionada (default '[]').");
+  }
+
+  const hasPotential = itemColumnsV3.some((col) => col.name === "potential");
+  if (!hasPotential) {
+    database.exec("ALTER TABLE items ADD COLUMN potential TEXT");
+    console.log("[Migration] items.potential adicionada.");
+  }
+
+  const hasQuality = itemColumnsV3.some((col) => col.name === "quality");
+  if (!hasQuality) {
+    database.exec(`ALTER TABLE items ADD COLUMN quality TEXT NOT NULL DEFAULT '{"value":0,"scalesAttribute":""}'`);
+    console.log("[Migration] items.quality adicionada (default value:0).");
+  }
+
+  const hasCraftState = itemColumnsV3.some((col) => col.name === "craft_state");
+  if (!hasCraftState) {
+    database.exec("ALTER TABLE items ADD COLUMN craft_state TEXT NOT NULL DEFAULT 'open'");
+    console.log("[Migration] items.craft_state adicionada (default 'open').");
+  }
+
+  const hasHistory = itemColumnsV3.some((col) => col.name === "history");
+  if (!hasHistory) {
+    database.exec("ALTER TABLE items ADD COLUMN history TEXT");
+    console.log("[Migration] items.history adicionada.");
+  }
+
+  // Sprint 15 — Sockets + Gem System (Foundation): mesmo mecanismo de
+  // sempre (ALTER TABLE items ADD COLUMN, nunca uma segunda tabela de
+  // item) — `sockets` é a `SocketConfiguration` inteira serializada
+  // (mesmo padrão JSON-como-TEXT de `affixes`/`potential`). `NULL` pro
+  // catálogo fixo e para todo item já dropado antes desta migração
+  // (nenhum item antigo ganha Sockets retroativos — mesma disciplina
+  // de `potential`/`history` na Sprint 11).
+  const hasSockets = itemColumnsV3.some((col) => col.name === "sockets");
+  if (!hasSockets) {
+    database.exec("ALTER TABLE items ADD COLUMN sockets TEXT");
+    console.log("[Migration] items.sockets adicionada.");
+  }
 }
 
 export function getDb(): DatabaseSync {

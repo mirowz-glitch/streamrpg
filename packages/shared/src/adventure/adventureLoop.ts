@@ -6,10 +6,14 @@ import { killEnemy, applyCombatResultToEnemy } from "../enemy/instance.js";
 import { toCombatant } from "../enemy/combatant.js";
 import { generateLootForKilledEnemy } from "../enemy/lootIntegration.js";
 import { resolveCombat } from "../combat/combatEngine.js";
+import { resolveOffensiveBehaviorModifiers, resolveChillChancePercent, resolveDefensiveDamageMultiplier } from "../combat/behaviorModifiers.js";
+import type { ActiveBehaviorSummary } from "../combat/combatSnapshot.js";
 import { toAdventureCombatant } from "./session.js";
 import { tryAutoEquip } from "./autoEquip.js";
+import { rollSphereDrop } from "../spheredrop/rollSphereDrop.js";
+import type { SphereSource } from "../spheredrop/types.js";
 import type { CombinedRuntimeConfig } from "../worldencounter/types.js";
-import type { AdventureSession, AdventureTickResult, LootDropRecord } from "./types.js";
+import type { AdventureSession, AdventureTickResult, LootDropRecord, SphereDropRecord } from "./types.js";
 
 export interface AdvanceAdventureOptions {
   autoEquip?: boolean;
@@ -33,6 +37,15 @@ export interface AdvanceAdventureOptions {
   // arquivo continua sem saber que World Tiers existem, só ganhou 2
   // campos novos no MESMO objeto que já lia.
   runtimeConfig?: CombinedRuntimeConfig;
+  // Sprint 13 — Sphere Economy Phase I, Fase 4: mesmo princípio de
+  // `runtimeConfig` acima — um campo opcional resolvido UMA vez por
+  // `dungeon/dungeonController.ts` (o único lugar que sabe "existe uma
+  // Expedição-Dungeon ativa agora", via `isDungeonExpedition()`) e
+  // atravessando a mesma cadeia de wrappers sem que nenhum deles
+  // precise entender Dungeons. `undefined`/`false` fora de uma Dungeon
+  // (incluindo todo Simulador/teste que nunca passa isso) = mesmo
+  // comportamento de sempre (fonte de Esfera "adventure").
+  inDungeon?: boolean;
 }
 
 // Requisito 2 — Adventure Tick: a ÚNICA função que orquestra um ciclo
@@ -86,6 +99,7 @@ export function advanceAdventure(session: AdventureSession, options: AdvanceAdve
   let itemsFoundThisTick = 0;
   let itemsEquippedThisTick = 0;
   const lootDrops: LootDropRecord[] = [];
+  const sphereDrops: SphereDropRecord[] = [];
 
   // Engine Observability & Event Derivation Phase I — capturados AQUI,
   // antes de `session.currentEncounter` poder ser zerado (linha 150
@@ -95,6 +109,23 @@ export function advanceAdventure(session: AdventureSession, options: AdvanceAdve
   // pelo World Encounter Generator), daí `enemies[0]`.
   const encounterVariant = encounter.variant;
   const variantEnemyTemplateId = encounterVariant !== "normal" ? (encounter.enemies[0]?.templateId ?? null) : null;
+
+  // Sprint 13 — Sphere Economy Phase I: a fonte é decidida UMA vez por
+  // tick (o `variant` de um encontro não muda no meio dele) — Elite/
+  // MiniBoss (inclusive o Chefe Final de uma Dungeon, que é um
+  // MiniBoss com template designado, ver dungeon/dungeonController.ts)
+  // sempre vencem "dungeon" mesmo quando `options.inDungeon` é true:
+  // "Boss" (Fase 5) é uma fonte estritamente melhor que "Dungeon"
+  // (Fase 4), nunca as duas ao mesmo tempo.
+  const sphereSource: SphereSource = encounterVariant !== "normal" ? "boss" : options.inDungeon ? "dungeon" : "adventure";
+
+  // Sprint 23 — Sockets & Gems Phase II, Fase 6/7: Gem Behaviors ativos
+  // do personagem, lidos direto do Combat Snapshot já resolvido (nunca
+  // recalculados aqui) — mesma lista pro encontro inteiro (um Behavior
+  // não muda no meio de um encontro, igual `sphereSource` acima).
+  // Dungeon herda de graça (mesmo `advanceAdventure`, nenhuma lógica
+  // paralela).
+  const activeBehaviors: ActiveBehaviorSummary[] = session.character.realCombatSnapshot?.activeBehaviors ?? [];
 
   // 2/3. Executar combate contra cada inimigo do encontro, em ordem.
   for (let i = 0; i < encounter.enemies.length; i++) {
@@ -108,12 +139,21 @@ export function advanceAdventure(session: AdventureSession, options: AdvanceAdve
       const playerCombatant = toAdventureCombatant(session.character);
       const enemyCombatant = toCombatant(enemy, template);
 
+      // Rubi (dano de fogo aditivo) + Ônix (crítico bônus) — os dois
+      // Behaviors que afetam o ATAQUE do personagem, traduzidos pros
+      // hooks já existentes do Combat Engine (`FutureCombatModifiers`).
+      const offensiveModifiers = resolveOffensiveBehaviorModifiers(activeBehaviors, playerCombatant.finalStats.criticalChance);
+
       const attackResult = resolveCombat({
         attacker: playerCombatant,
         target: enemyCombatant,
         seed: randomInt(rng, 0, 2_147_483_647),
         timestamp: currentTime,
         attackType: "physical",
+        futureModifiers: {
+          bonusFlatDamage: offensiveModifiers.bonusFlatDamage,
+          criticalChanceMultiplier: offensiveModifiers.criticalChanceMultiplier,
+        },
       });
 
       enemy = applyCombatResultToEnemy(enemy, attackResult);
@@ -125,12 +165,21 @@ export function advanceAdventure(session: AdventureSession, options: AdvanceAdve
 
       if (enemy.currentLife <= 0) break;
 
+      // Safira (congelar) — rolado aqui, contra o MESMO stream de rng
+      // (D1: nenhuma nova fonte) — quando proca, reduz o contra-ataque
+      // desta mesma tick. Ametista (resistência) é sempre ativa,
+      // combinada multiplicativamente com o chill (nunca somada).
+      const chillChancePercent = resolveChillChancePercent(activeBehaviors);
+      const chillProcced = chillChancePercent > 0 && rng() < chillChancePercent / 100;
+      const damageMultiplier = resolveDefensiveDamageMultiplier(activeBehaviors, chillProcced);
+
       const counterResult = resolveCombat({
         attacker: enemyCombatant,
         target: playerCombatant,
         seed: randomInt(rng, 0, 2_147_483_647),
         timestamp: currentTime,
         attackType: "physical",
+        futureModifiers: { damageMultiplier },
       });
 
       session.character.currentLife = counterResult.remainingLife;
@@ -148,7 +197,7 @@ export function advanceAdventure(session: AdventureSession, options: AdvanceAdve
       session.statistics.enemiesKilled++;
 
       const lootSeed = randomInt(rng, 0, 2_147_483_647);
-      const loot = generateLootForKilledEnemy(killResult, killResult.instance, lootSeed, session.currentRegion);
+      const loot = generateLootForKilledEnemy(killResult, killResult.instance, lootSeed, session.currentRegion, options.runtimeConfig);
 
       for (const item of loot.generatedItems) {
         const instanceId = `${session.sessionId}-item-${randomInt(rng, 0, 2_147_483_647)}`;
@@ -159,7 +208,17 @@ export function advanceAdventure(session: AdventureSession, options: AdvanceAdve
         // `stored` indicando o resultado real de `addItem()`; nenhuma
         // regra de loot/probabilidade muda aqui, só o que fica visível
         // pra quem consome o resultado da tick.
-        lootDrops.push({ instanceId, baseItemId: item.baseItemId, rarity: item.rarity, powerScore: item.powerScore, stored: addResult.success });
+        lootDrops.push({
+          instanceId,
+          baseItemId: item.baseItemId,
+          rarity: item.rarity,
+          powerScore: item.powerScore,
+          stored: addResult.success,
+          itemLevel: item.itemLevel,
+          seed: item.seed,
+          prefixes: item.prefixes,
+          suffixes: item.suffixes,
+        });
 
         if (!addResult.success) continue;
 
@@ -174,6 +233,18 @@ export function advanceAdventure(session: AdventureSession, options: AdvanceAdve
 
       // requisito 3 — sempre 0 nesta fase (ver types.ts).
       session.statistics.goldFound += loot.currencies.length;
+
+      // Sprint 13 — Sphere Economy Phase I: uma rolagem por MORTE (não
+      // por item de loot) — mesmo espírito de `lootSeed` acima, MESMO
+      // stream de `rng` (D1: nenhuma nova fonte de RNG). "Nunca
+      // diretamente no inventário de itens" (Fase 7) — por isso isto
+      // só produz um FATO (`SphereDropRecord`), nunca chama
+      // `inventory.addItem()`; a persistência real em
+      // `character_spheres` acontece fora do Engine (apps/api).
+      const sphereRoll = rollSphereDrop(sphereSource, rng);
+      if (sphereRoll.sphereId) {
+        sphereDrops.push({ sphereId: sphereRoll.sphereId, source: sphereRoll.source });
+      }
     }
 
     if (session.character.currentLife <= 0) break;
@@ -199,6 +270,7 @@ export function advanceAdventure(session: AdventureSession, options: AdvanceAdve
     itemsEquippedThisTick,
     characterAlive: session.character.currentLife > 0,
     lootDrops,
+    sphereDrops,
     encounterVariant,
     variantEnemyTemplateId,
     variantEnemyDefeated,

@@ -37,12 +37,26 @@ function rollItemLevel(rng: ItemGenRandom, itemLevelAnchor: number, table: LootT
 // peso ausente pra um id cai para 1 (default), sem nenhum if/switch por
 // id. `baseItemWeightOverrides` (Monster Loot Identity — Base Item
 // Affinity) multiplica esse peso por fora; ausente = 1 (neutro).
+//
+// Loot Integration Phase I (Sprint 29) — `restrictedBaseItemIds`
+// (Monster Loot Table, Fase 2) INTERSECTA (nunca substitui)
+// `table.allowedBaseItems` — a Loot Table real desta função continua
+// sendo a única fonte de verdade sobre o universo de Bases desta fonte;
+// Monster Loot Table só pode ESTREITAR esse universo, nunca alargá-lo.
+// Fallback de segurança (Fase 8, "nenhuma Loot Table fica vazia"): se a
+// interseção for vazia (Monster Loot Table e Loot Table real nunca
+// tiveram nenhuma auditoria cruzada até esta Sprint), volta pro
+// universo original da tabela — nenhum monstro pode ficar sem loot por
+// causa de uma restrição mais nova.
 function rollBaseItemId(
   rng: ItemGenRandom,
   table: LootTable,
   baseItemWeightOverrides: Partial<Record<string, number>> | undefined,
+  restrictedBaseItemIds: readonly string[] | undefined,
 ): string {
-  const candidates = table.allowedBaseItems.map((id) => ({
+  const intersected = restrictedBaseItemIds ? table.allowedBaseItems.filter((id) => restrictedBaseItemIds.includes(id)) : table.allowedBaseItems;
+  const pool = intersected.length > 0 ? intersected : table.allowedBaseItems;
+  const candidates = pool.map((id) => ({
     id,
     weight: (table.baseItemWeights[id] ?? 1) * (baseItemWeightOverrides?.[id] ?? 1),
   }));
@@ -71,6 +85,17 @@ export interface GenerateLootOptions {
   modTagWeightMultipliers?: Partial<Record<string, number>>;
   dropChanceOverride?: number;
   minimumQuantity?: number;
+  // Loot Integration Phase I (Sprint 29) — Monster Loot Table
+  // (monsterLootTable/), opcional, ausente = comportamento idêntico a
+  // antes desta Sprint. Ver `rollBaseItemId()`.
+  allowedBaseItemIds?: readonly string[];
+  // Sprint 33 — Map Modifiers Phase II, Fase 4: multiplicador puro POR
+  // CIMA de `table.quantityMultiplier` — o eixo que faltava pra
+  // `loot-quantity-up` existir de verdade ("Somente modificar pesos",
+  // nunca ignorar a Loot Table: a quantidade base ainda vem 100% da
+  // tabela, isto só escala o resultado já calculado). Ausente/1 =
+  // comportamento idêntico a antes desta Sprint.
+  quantityMultiplierBonus?: number;
 }
 
 // Pipeline completo do Loot Generator (requisitos 1-7):
@@ -129,7 +154,10 @@ export function generateLoot(
   // Requisito 3 — quantidade: distribuição ponderada (nenhum if/switch),
   // escalada pelo multiplicador da tabela.
   const quantityRoll = pickWeighted(rng, table.quantityOptions);
-  const quantity = Math.max(options.minimumQuantity ?? 0, Math.round(quantityRoll.quantity * table.quantityMultiplier));
+  const quantity = Math.max(
+    options.minimumQuantity ?? 0,
+    Math.round(quantityRoll.quantity * table.quantityMultiplier * (options.quantityMultiplierBonus ?? 1)),
+  );
 
   // Requisito 4 — "chance da raridade": o multiplicador da Loot Table
   // vira um viés por raridade pro Item Generator (Common nunca é
@@ -145,7 +173,7 @@ export function generateLoot(
   const generatedItems: ItemGenGeneratedItem[] = [];
   for (let i = 0; i < quantity; i++) {
     const itemLevel = rollItemLevel(rng, itemLevelAnchor, table);
-    const baseItemId = rollBaseItemId(rng, table, options.baseItemWeightOverrides);
+    const baseItemId = rollBaseItemId(rng, table, options.baseItemWeightOverrides, options.allowedBaseItemIds);
     // Seed própria por item, derivada do MESMO stream determinístico —
     // generateItem() nunca reaproveita a seed da Loot Table diretamente,
     // então dois itens da mesma rolagem nunca saem idênticos por

@@ -57,6 +57,53 @@ export interface ActiveSession {
 }
 
 // ============================================================
+// KINGDOM — Sprint Kingdom Domain 2.0 (Vision 2.0, Sprint 2)
+// ============================================================
+
+/**
+ * `KingdomId` é o nome conceitual correto para o que os eventos/contratos
+ * abaixo ainda chamam de `channelId` — cada `channelId` neste arquivo já
+ * é, hoje, um identificador de Reino (fisicamente `streamer_channels.id`),
+ * nunca um identificador de plataforma de streaming.
+ *
+ * Esta Sprint NÃO renomeia `channelId` → `kingdomId` nos ~15 arquivos que
+ * já usam esse campo (SessionManager, GameEngine, XPSystemV2,
+ * WelcomeRewardSystem, BossSpawnSystem/CombatSystem/ParticipationSystem/
+ * RewardSystem, ChronicleSystem, IdentitySystem, KingdomPrestigeSystem,
+ * KingdomNewsSystem, ExpeditionSystem) — esse rename pertence à mesma
+ * Sprint que migra `streamer_channels` para `kingdoms` de verdade (fora
+ * de escopo aqui, ver docs/design/kingdom-domain-implementation.md Seção
+ * 7). O que esta Sprint garante é que nenhum código NOVO (o domínio
+ * `Kingdom` real, `kingdom.service.ts`, as rotas `/api/kingdom*`) introduz
+ * uma nova dependência de `channelId`/`StreamerId`/`ViewerSession` — todo
+ * ele já nasce falando `kingdomId`/`Kingdom`.
+ */
+export type KingdomId = string;
+
+// ============================================================
+// PRESENÇA — Sprint Identity Core (Vision 2.0)
+// ============================================================
+
+/**
+ * Abstração de "este contexto está ao vivo agora?" — antes desta Sprint,
+ * XPSystem/WelcomeRewardSystem/BossSpawnSystem importavam
+ * `isChannelLive()` de `services/twitch.service.ts` diretamente, uma
+ * exceção já documentada e registrada (ver `docs/game-design-bible/
+ * 02-principles.md`, princípio 3) ao princípio deste arquivo de que a
+ * Engine nunca conhece uma plataforma específica.
+ *
+ * `PresenceProvider` fecha essa exceção por inversão de dependência: os
+ * Systems dependem só desta interface, nunca de `twitch.service.ts`
+ * diretamente. Quem decide QUAL provider usar é a fronteira de
+ * composição (`server.ts`), nunca o System. Comportamento idêntico ao
+ * de antes — mesma função `isChannelLive` é chamada, só que agora
+ * injetada, não importada.
+ */
+export interface PresenceProvider {
+  isLive(contextId: string): Promise<boolean>;
+}
+
+// ============================================================
 // EVENTOS DO JOGO
 // ============================================================
 

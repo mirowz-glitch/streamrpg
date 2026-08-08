@@ -41,6 +41,7 @@ export * from "./types.js";
 export * from "./rng.js";
 export * from "./baseItems.js";
 export * from "./rarities.js";
+export * from "./rarityMapping.js";
 export * from "./modGroups.js";
 export * from "./weights.js";
 export * from "./prefixes.js";

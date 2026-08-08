@@ -12,7 +12,13 @@ const AuthCallbackPage = lazy(() => import("../pages/AuthCallbackPage").then((m)
 const CharacterPage = lazy(() => import("../pages/CharacterPage").then((m) => ({ default: m.CharacterPage })));
 const CityPage = lazy(() => import("../pages/CityPage").then((m) => ({ default: m.CityPage })));
 const ChroniclePage = lazy(() => import("../pages/ChroniclePage").then((m) => ({ default: m.ChroniclePage })));
+const HousingPage = lazy(() => import("../pages/HousingPage").then((m) => ({ default: m.HousingPage })));
 const InventoryPage = lazy(() => import("../pages/InventoryPage").then((m) => ({ default: m.InventoryPage })));
+const KingdomsPage = lazy(() => import("../pages/KingdomsPage").then((m) => ({ default: m.KingdomsPage })));
+const KingdomIntegrationsPage = lazy(() =>
+  import("../pages/KingdomIntegrationsPage").then((m) => ({ default: m.KingdomIntegrationsPage })),
+);
+const RealEstatePage = lazy(() => import("../pages/RealEstatePage").then((m) => ({ default: m.RealEstatePage })));
 const LoginPage = lazy(() => import("../pages/LoginPage").then((m) => ({ default: m.LoginPage })));
 const OverlayPage = lazy(() => import("../pages/OverlayPage").then((m) => ({ default: m.OverlayPage })));
 const RankingPage = lazy(() => import("../pages/RankingPage").then((m) => ({ default: m.RankingPage })));
@@ -40,6 +46,10 @@ export const router = createBrowserRouter([
   { path: "/app/city", element: withSuspense(<CityPage />) },
   { path: "/app/chronicle", element: withSuspense(<ChroniclePage />) },
   { path: "/app/inventory", element: withSuspense(<InventoryPage />) },
+  { path: "/app/kingdoms", element: withSuspense(<KingdomsPage />) },
+  { path: "/app/kingdom-integrations", element: withSuspense(<KingdomIntegrationsPage />) },
+  { path: "/app/housing", element: withSuspense(<HousingPage />) },
+  { path: "/app/real-estate", element: withSuspense(<RealEstatePage />) },
   { path: "/app/ranking", element: withSuspense(<RankingPage />) },
   { path: "/app/world", element: withSuspense(<WorldPage />) },
   { path: "/app/streamer", element: withSuspense(<StreamerPage />) },

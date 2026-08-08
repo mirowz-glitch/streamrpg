@@ -173,6 +173,60 @@ describe("Adventure Loop Phase I", () => {
     });
   });
 
+  // Sprint 13 — Sphere Economy Phase I: `tickResult.sphereDrops` nunca é
+  // testado "torcendo pra acontecer" (dropChance real é minúsculo,
+  // ~0.08% em Adventure) — em vez disso valida a PROPRIEDADE que sempre
+  // vale, não importa a sorte do RNG: a fonte resolvida (Fase 3/4) nunca
+  // produz um sphereId proibido pro contexto, e o resultado é
+  // determinístico pra mesma seed.
+  describe("sphereDrops (Sprint 13: distribuição real)", () => {
+    it("uma sessão sem nenhum encontro (tick 0) começa com sphereDrops vazio", () => {
+      const session = freshSession("bosque-sussurrante", 1, "sphere-empty");
+      assert.deepEqual(session.currentEncounter, null);
+    });
+
+    it("fora de Dungeon (inDungeon ausente/false): sphereDrops nunca inclui 'dungeon' — só 'adventure' ou 'boss'", () => {
+      const session = freshSession("bosque-sussurrante", 5, "sphere-adv");
+      const maxLife = session.character.currentLife;
+      const sourcesSeen = new Set<string>();
+      for (let i = 0; i < 800; i++) {
+        session.character.currentLife = maxLife;
+        const tickResult = advanceAdventure(session, { currentTime: 1000 * (i + 1) });
+        for (const drop of tickResult.sphereDrops) sourcesSeen.add(drop.source);
+      }
+      assert.ok(!sourcesSeen.has("dungeon"), `esperava nunca ver source 'dungeon' fora de Dungeon, viu: ${[...sourcesSeen]}`);
+      assert.ok(!sourcesSeen.has("world_boss"), "World Boss nunca vem do Adventure Loop (packages/shared) — só de BossRewardSystem.ts");
+    });
+
+    it("dentro de Dungeon (inDungeon: true): sphereDrops nunca inclui 'adventure' — só 'dungeon' ou 'boss'", () => {
+      const session = freshSession("bosque-sussurrante", 9, "sphere-dungeon");
+      const maxLife = session.character.currentLife;
+      const sourcesSeen = new Set<string>();
+      for (let i = 0; i < 800; i++) {
+        session.character.currentLife = maxLife;
+        const tickResult = advanceAdventure(session, { currentTime: 1000 * (i + 1), inDungeon: true });
+        for (const drop of tickResult.sphereDrops) sourcesSeen.add(drop.source);
+      }
+      assert.ok(!sourcesSeen.has("adventure"), `esperava nunca ver source 'adventure' dentro de Dungeon, viu: ${[...sourcesSeen]}`);
+      assert.ok(!sourcesSeen.has("world_boss"), "World Boss nunca vem do Adventure Loop (packages/shared) — só de BossRewardSystem.ts");
+    });
+
+    it("determinístico: mesma seed + mesmas options sempre produzem o mesmo sphereDrops tick a tick", () => {
+      function run() {
+        const session = freshSession("bosque-sussurrante", 13, "sphere-det");
+        const maxLife = session.character.currentLife;
+        const allDrops = [];
+        for (let i = 0; i < 300; i++) {
+          session.character.currentLife = maxLife;
+          const tickResult = advanceAdventure(session, { currentTime: 1000 * (i + 1) });
+          allDrops.push(...tickResult.sphereDrops);
+        }
+        return allDrops;
+      }
+      assert.deepEqual(run(), run());
+    });
+  });
+
   describe("performance", () => {
     it("100 ticks completam rapidamente", () => {
       // Mede a performance de resolver encontros, não a sobrevivência —

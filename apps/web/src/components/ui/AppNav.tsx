@@ -15,6 +15,10 @@ export function AppNav() {
       <Link to="/app/city" className={isFlagSet("city_seen") ? "" : "nav-glow"}>
         Cidade
       </Link>
+      <Link to="/app/kingdoms">👑 Reinos</Link>
+      <Link to="/app/kingdom-integrations">🔌 Integrações</Link>
+      <Link to="/app/housing">🏠 Casas</Link>
+      <Link to="/app/real-estate">💰 Mercado</Link>
       <Link to="/app/ranking" className={isFlagSet("ranking_seen") ? "" : "nav-glow"}>
         Ranking
       </Link>

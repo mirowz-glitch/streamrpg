@@ -59,13 +59,9 @@ type CharacterTab = "geral" | "identidade" | "expedicao";
 export function CharacterPage() {
   const [activeTab, setActiveTab] = useState<CharacterTab>("geral");
   const { profile, logout } = useAuth();
-  const { character, loading, refresh } = useCharacter(!!profile);
+  const { character, loading } = useCharacter(!!profile);
   const { identity, equipTitle, unequipTitle, equipFrame, unequipFrame } = useIdentity(!!profile);
-  const [channelInput, setChannelInput] = useState("");
-  const { lastPing, cooldownMs, ping, canPing, error, channel, setChannel } = usePing(
-    !!profile,
-    channelInput || undefined,
-  );
+  const { lastPing, channel } = usePing(!!profile);
   const kingdomRoles = useKingdomRole(channel || undefined, !!profile);
   // Sprint Live Experience Phase II (Guided Discovery) — mesmo hook já
   // usado por ExpeditionPanel/CityPage (nenhum fetch novo), só pra
@@ -318,6 +314,44 @@ export function CharacterPage() {
                     <div><span>UTI</span><strong>{character.combat.uti}</strong></div>
                   </div>
                 </section>
+
+                {/* Sprint 22 — Living Combat Phase I, Fase 10: "adicionar
+                    apenas Combat Power e Derived Stats, nada além" — bloco
+                    novo, aditivo, lendo o MESMO combatSnapshot que
+                    Adventure/Idle/Dungeon/Boss agora usam pra combate real
+                    (nunca um valor calculado separadamente aqui). */}
+                <section className="power-summary">
+                  <h2>Combat Power</h2>
+                  <div className="power-grid">
+                    <div><span>Combat Power</span><strong>{character.combatSnapshot.powerScore}</strong></div>
+                    <div><span>Item Score</span><strong>{character.combatSnapshot.itemScore}</strong></div>
+                    <div><span>Precisão</span><strong>{character.combatSnapshot.derivedStats.accuracy}</strong></div>
+                    <div><span>Velocidade de Movimento</span><strong>{character.combatSnapshot.derivedStats.movementSpeed}</strong></div>
+                    <div><span>Roubo de Vida</span><strong>{character.combatSnapshot.derivedStats.lifeLeech}</strong></div>
+                  </div>
+                </section>
+
+                {/* Sprint 23 — Sockets & Gems Phase II, Fase 10: "Gema →
+                    Efeito → Comportamento" — lê o MESMO
+                    `character.activeGemBehaviors` que o Combat Snapshot já
+                    resolveu (Fase 9, nunca recalculado aqui). Texto puro,
+                    sem ícone/animação nova além do 💎 já usado desde a
+                    Sprint 21 pra Gemas. */}
+                {character.activeGemBehaviors.length > 0 ? (
+                  <section className="power-summary">
+                    <h2>Builds Ativas</h2>
+                    <ul className="gem-behavior-list">
+                      {character.activeGemBehaviors.map((active) => (
+                        <li key={active.socketId}>
+                          💎 {active.gemDisplayName}
+                          {active.effectDescription ? ` / ${active.effectDescription}` : ""}
+                          {" / "}
+                          {active.behaviorDescription}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ) : null}
 
                 {/* Sprint Character Page — UX Polish Phase I — o bloco
                     técnico de canal/cooldown/ping manual saiu da tela

@@ -69,6 +69,16 @@ export interface CharacterResistances {
 }
 
 // Requisito 5 — Stat Aggregator: os 9 stats pedidos + Power Score.
+//
+// Sprint 22 — Living Combat Phase I: `mana`/`movementSpeed` são campos
+// NOVOS, aditivos — antes desta Sprint, NENHUM equipamento concedia
+// esses dois stats (mana só vinha de Base Attributes via
+// `characterbuild/derivedAttributes.ts`; movementSpeed idem). Agora
+// que Gem Effects (Sprint 21, tipo "mana") e Implicit Mods (Sprint 19,
+// ex.: "Velocidade de Movimento" das Botas) precisam de um destino
+// real, esses campos existem pra recebê-los — `0` continua sendo o
+// valor de todo item sem essa fonte (mesmo padrão de `spellDamage`
+// antes de existir um mod de dano mágico real).
 export interface CharacterStats {
   life: number;
   attack: number;
@@ -80,4 +90,6 @@ export interface CharacterStats {
   lifeLeech: number;
   resistances: CharacterResistances;
   powerScore: number;
+  mana: number;
+  movementSpeed: number;
 }

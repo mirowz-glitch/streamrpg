@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ExpeditionApproach, InventoryItem, ItemSlot } from "@streamrpg/shared";
-import { getItemPower, getCombatAttributes } from "@streamrpg/shared";
+import { getItemPower, getCombatAttributes, POTENTIAL_LABEL } from "@streamrpg/shared";
 import { api } from "../lib/api";
 import { AppNav } from "../components/ui/AppNav";
 import { Feedback } from "../components/ui/Feedback";
@@ -183,6 +183,11 @@ export function InventoryPage() {
                   {renderItemOrigin(item)}
                   {renderItemIdentity(item)}
                   {renderNextStep(item, echoContext.approach)}
+                  {renderItemLegacy(item)}
+                  {renderItemSockets(item)}
+                  {renderUncertaintyHint(item)}
+                  {renderMythicOrigin(item)}
+                  {renderBaseIdentity(item)}
                 </div>
                 <div className="item-actions">
                   {item.is_equipped ? (
@@ -318,6 +323,118 @@ function renderNextStep(item: InventoryItem, approach: ExpeditionApproach | null
   const lines = getNextSteps([getItemDiscoveryCandidates(item.slug), getItemNpcThreadCandidates(item.slug)], approach);
   if (lines.length === 0) return null;
   return <p className="item-origin">{lines.join(" ")}</p>;
+}
+
+// Sprint 14 — Legendary Items + Legacy System, Fase 9: UI mínima,
+// "Nada além disso" (brief explícito) — uma única linha compacta,
+// mesmo estilo visual de renderItemOrigin/renderItemIdentity (reusa a
+// classe `item-origin`, nenhum CSS novo). `item.legacy` é `null` pro
+// catálogo fixo pré-Sprint 11 (sem História real) — nesse caso não
+// renderiza nada, mesmo padrão já usado pelos outros `render*` acima.
+// Só o título (Fase 7, quando existe) ganha destaque próprio.
+function renderItemLegacy(item: InventoryItem) {
+  if (!item.legacy) return null;
+  const { ownerCount, bossesWitnessed, sphereEventsCount, ageInDays } = item.legacy;
+  const parts = [
+    `${ageInDays} dia${ageInDays === 1 ? "" : "s"} de história`,
+    `${ownerCount} dono${ownerCount === 1 ? "" : "s"}`,
+  ];
+  if (bossesWitnessed > 0) parts.push(`${bossesWitnessed} chefe${bossesWitnessed === 1 ? "" : "s"} derrotado${bossesWitnessed === 1 ? "" : "s"}`);
+  if (sphereEventsCount > 0) parts.push(`${sphereEventsCount} Esfera${sphereEventsCount === 1 ? "" : "s"} usada${sphereEventsCount === 1 ? "" : "s"}`);
+  return (
+    <>
+      {item.legacySummary?.title ? <p className="item-legacy-title">🏺 {item.legacySummary.title}</p> : null}
+      <p className="item-origin">📜 {parts.join(" · ")}</p>
+    </>
+  );
+}
+
+// Sprint 15 — Sockets + Gem System (Foundation), Fase 9: UI mínima,
+// "○ ◐ ● ou outro indicador simples... nada de arte, redesign,
+// animação" (brief explícito). Um Socket sem Gema (vazio) é ○, com
+// Gema (preenchido) é ●, desabilitado é ◐ — nenhuma cor/forma/efeito
+// de Gema é exibido ainda (Fase 6 não concede nenhum efeito). Mesmo
+// estilo compacto de renderItemLegacy (reusa a classe `item-origin`,
+// nenhum CSS novo). `item.sockets` é `null` pra todo item gerado antes
+// desta Sprint — nesse caso não renderiza nada.
+// Sprint 20 — Sockets & Gemas Phase I, Fase 10: "nome da Gema" além do
+// indicador ○/●/◐ já existente (Sprint 15) — sem cor/forma/efeito
+// (Fase 6 do Sprint 20 não concedia efeito algum ainda). `item.socketGems`
+// é `null` pra todo item sem Socket `filled` (economiza a query no
+// backend).
+// Sprint 21 — Gem Effects Phase I, Fase 8: acrescenta a descrição do
+// efeito entre parênteses quando a Gema tem um `GemEffect` real
+// (`item.socketGemEffects`) — "Na Gema: Ataque +5%", texto puro, sem
+// ícone/animação novos (brief explícito).
+function renderItemSockets(item: InventoryItem) {
+  if (!item.sockets || item.sockets.sockets.length === 0) return null;
+  const indicators = item.sockets.sockets
+    .map((socket) => (socket.state === "filled" ? "●" : socket.state === "disabled" ? "◐" : "○"))
+    .join(" ");
+  const gemLabels = item.sockets.sockets
+    .filter((socket) => socket.state === "filled")
+    .map((socket) => {
+      const name = item.socketGems?.[socket.id];
+      if (!name) return null;
+      const effect = item.socketGemEffects?.[socket.id];
+      return effect ? `${name} (${effect})` : name;
+    })
+    .filter((label): label is string => Boolean(label));
+  return (
+    <>
+      <p className="item-origin">🔘 Sockets: {indicators}</p>
+      {gemLabels.length > 0 ? <p className="item-origin">💎 Gemas: {gemLabels.join(", ")}</p> : null}
+    </>
+  );
+}
+
+// Sprint 17 — Esfera da Incerteza 2.0, Fase 10: UI mínima, "sem
+// animações, sem efeitos" (brief explícito) — mensagem de aviso, não
+// mais uma promessa de "pode revelar" (Sprint 16): agora a Esfera
+// NUNCA falha, então o aviso precisa deixar claro que o resultado é
+// permanente e pode ser pior, não só melhor. Mesmo estilo compacto de
+// renderItemLegacy/renderItemSockets (reusa a classe `item-origin`,
+// nenhum CSS novo). `uncertaintyEligible` já vem derivado da API (mesma
+// infraestrutura que valida o uso real) — esta função nunca decide
+// elegibilidade sozinha; itens inelegíveis (Base fora do
+// BaseTransformationPool) continuam sinalizados, só com uma frase
+// diferente.
+function renderUncertaintyHint(item: InventoryItem) {
+  return (
+    <p className="item-origin">
+      {item.uncertaintyEligible
+        ? "⚠ Ao utilizar uma Esfera da Incerteza este Item será alterado permanentemente. O resultado pode ser melhor ou pior."
+        : "🔮 Esta Base não é compatível com a Esfera da Incerteza."}
+    </p>
+  );
+}
+
+// Sprint 18 — Mythic Foundation, Fase 10: "Adicionar apenas: Origem.
+// Nada além." — sem menção a quem foi o primeiro, sem ranking, sem
+// selo especial (Discovery, Fase 5, é infraestrutura silenciosa esta
+// Sprint). `item.mythicOrigin` já vem derivado da API
+// (drop.service.ts, via mythic/mythicLegacy.ts) — `null`/`isMythic:
+// false` pra esmagadora maioria dos itens, então esta linha só
+// aparece pra um item que realmente carrega um evento
+// `mythic_revealed` no History real.
+function renderMythicOrigin(item: InventoryItem) {
+  if (!item.mythicOrigin?.isMythic) return null;
+  return <p className="item-origin">Origem: Revelado pela Esfera da Incerteza.</p>;
+}
+
+// Sprint 19 — Base Identity, Fase 10: "adicionar apenas uma linha —
+// Base: Espada Longa / Tier 4 / Potential: High. Nada além." Sem
+// Tags/Implicit Mods/Lore aqui (infraestrutura ainda não consumida por
+// nenhuma UI real nesta Sprint) — `item.baseIdentity` já vem como o
+// resumo mínimo exato que esta linha precisa (drop.service.ts).
+function renderBaseIdentity(item: InventoryItem) {
+  if (!item.baseIdentity) return null;
+  const { displayName, tier, potential } = item.baseIdentity;
+  return (
+    <p className="item-origin">
+      Base: {displayName} · Tier {tier} · Potential: {POTENTIAL_LABEL[potential]}
+    </p>
+  );
 }
 
 // Etapa 3 — comparação detalhada, nunca escondendo números. Arma: ATQ

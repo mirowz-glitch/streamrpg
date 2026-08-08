@@ -1,3 +1,7 @@
+import type { ItemGenRolledMod } from "../itemgen/types.js";
+import type { SphereTypeId } from "../itemization/spheres.js";
+import type { SphereSource } from "../spheredrop/types.js";
+
 // Combat Presentation Layer Phase I — tipos isolados de propósito.
 //
 // Decisão de arquitetura (confirmada com o usuário antes de
@@ -59,6 +63,26 @@ export type PresentationEvent =
       powerScore: number;
       regionId: string;
       stored: boolean;
+      // Sprint 11 — Persistent Items + Affixes: espelha os mesmos 4
+      // campos novos de LootDropRecord (adventure/types.ts) — opcionais
+      // pelo mesmo motivo (não quebrar animation.test.ts's lootDropped()
+      // fixture), sempre populados pelos 3 pontos reais de emissão.
+      itemLevel?: number;
+      seed?: number;
+      prefixes?: ItemGenRolledMod[];
+      suffixes?: ItemGenRolledMod[];
+    })
+  // Sprint 13 — Sphere Economy Phase I: espelha `LootDropped` (mesma
+  // razão de existir — "fato do engine, publicado sempre") mas nunca
+  // carrega `stored`/`instanceId` — Esferas nunca entram no Inventory
+  // (Fase 7: "nunca diretamente no inventário de itens"), a
+  // persistência real acontece via `POST /api/items/sphere-drop`
+  // (apps/api), disparado por `useAdventureSession.ts` ao observar
+  // este evento, nunca aqui.
+  | (PresentationEventBase & {
+      kind: "SphereDropped";
+      sphereId: SphereTypeId;
+      source: SphereSource;
     })
   // `previousPowerScore` — extensão aditiva da Sprint HUD & Gameplay
   // UI Phase I: o Equipment Popup precisa mostrar a diferença de Power

@@ -1,8 +1,10 @@
 import { EquipmentLockError, calculateSaleValue, type EconomicEvent, type InventoryItem } from "@streamrpg/shared";
 import { getDb } from "../config/database.js";
-import { listInventory, removeItem } from "./drop.service.js";
+import { listInventory, recordItemHistoryEvent, removeItem } from "./drop.service.js";
 import { creditCharacterResourceInTransaction, getCharacterResourceBalance } from "./economy.service.js";
 import { equipmentLock } from "./equipmentLock.service.js";
+import { pushNotification } from "./notifications.service.js";
+import { unsocketAllGemsForItem } from "./gem.service.js";
 
 export type SellItemFailureReason = "item-not-found" | "item-equipped" | "credit-rejected" | "item-locked";
 
@@ -73,8 +75,26 @@ export function sellItem(characterId: string, characterItemId: number): SellItem
           db.exec("ROLLBACK");
           return { success: false, reason: "credit-rejected" };
         }
+        // Sprint 14 — Legendary Items + Legacy System, Fase 3/5: grava
+        // ANTES de removeItem() — a mesma linha de `items` (não a de
+        // `character_items`, que remove agora) sobrevive pra sempre;
+        // este é o único jeito de "quantidade de vendas"/"maior preço"
+        // (Legado econômico) existirem depois que o item some da
+        // mochila. Preço vai no `detail` (número puro, parseável por
+        // `deriveItemLegacyFromHistory`).
+        recordItemHistoryEvent(item.item_id, item.history, "sold", characterId, String(saleValue));
+        // Sprint 15 — Sockets + Gem System (Foundation), Fase 10
+        // (Compatibilidade): mesma posição de recordItemHistoryEvent
+        // acima — SEMPRE ANTES de removeItem(), pra nenhuma Gema
+        // continuar apontando pra um item que o personagem não possui
+        // mais.
+        unsocketAllGemsForItem(item.item_id, "sold");
         removeItem(characterId, characterItemId);
         db.exec("COMMIT");
+        // World Autonomy Phase II (Vision 2.0, Sprint 9), Fase 7 —
+        // Notificação pessoal (nunca Discord/Twitch), mesmo princípio
+        // de chamada direta no ponto de sucesso do Activity Feed acima.
+        pushNotification(characterId, "💰", `Você vendeu ${item.name} por ${saleValue} de ouro.`);
         return {
           success: true,
           item,

@@ -1,4 +1,4 @@
-import { getRegionName, getBaseItem, getEquipmentSlotDefinition, ITEM_GEN_RARITIES, type PresentationEvent } from "@streamrpg/shared";
+import { getRegionName, getBaseItem, getEquipmentSlotDefinition, getSphereDefinition, ITEM_GEN_RARITIES, type PresentationEvent } from "@streamrpg/shared";
 
 interface EventFeedProps {
   events: PresentationEvent[];
@@ -119,6 +119,10 @@ export function describeEvent(event: PresentationEvent): string {
       return `Chefe Final derrotado: ${event.enemyName} (+${event.xpAmount} XP, +${event.goldAmount} ouro)`;
     case "DungeonCompleted":
       return `Dungeon concluída: ${event.name} (Chefe Final: ${event.bossName})`;
+    // Sprint 13 — Sphere Economy Phase I: mesmo padrão de todos os
+    // outros casos, só formata o que o próprio evento já carrega.
+    case "SphereDropped":
+      return `Esfera encontrada: ${getSphereDefinition(event.sphereId).name}`;
     default:
       return event satisfies never;
   }

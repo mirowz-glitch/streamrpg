@@ -1,11 +1,234 @@
+// Sprint 11 — Persistent Items + Affixes: único import deste arquivo
+// (types.ts sempre foi auto-contido) — seguro porque itemization/
+// nunca importa de volta `./types.js` (só de `./itemgen/types.js`),
+// então não há ciclo.
+import type { ItemAffix, ItemCraftState, ItemHistory, ItemLegacy, ItemPotential, ItemQuality, LegacyEvent, LegacySummary } from "./itemization/index.js";
+// Sprint 15 — Sockets + Gem System (Foundation): mesmo princípio de
+// itemization/ — `socket/` nunca importa de volta `./types.js`, sem
+// ciclo.
+import type { SocketConfiguration } from "./socket/index.js";
+import type { MythicOrigin } from "./mythic/index.js";
+import type { BaseIdentitySummary } from "./baseIdentity/index.js";
+// Sprint 22 — Living Combat Phase I: `import type` é apagado na
+// compilação (nenhum import de valor/runtime) — combat/combatSnapshot.ts
+// também só importa `EquippedItem` daqui via `import type`, então não
+// existe ciclo real em tempo de execução, só uma referência de tipo nos
+// dois sentidos (mesmo princípio seguro de tipos mutuamente recursivos).
+import type { CombatSnapshotDTO, ActiveBehaviorSummary } from "./combat/combatSnapshot.js";
+
+// Sprint Identity Core (Vision 2.0) — uma Pessoa não exige mais Twitch
+// para existir; twitch_id nunca mais é a identidade, só um campo legado
+// (ver `Account`/`AuthProvider` abaixo, o vínculo de autenticação real).
 export interface Profile {
   id: string;
-  twitch_id: string;
+  twitch_id: string | null;
   username: string;
   avatar_url: string | null;
   email: string | null;
   created_at: string;
   updated_at: string;
+}
+
+// Sprint Identity Core (Vision 2.0) — os seis provedores de login já
+// nomeados em docs/design/login-providers.md. Só "twitch" é implementado
+// de fato nesta Sprint (login real) — os demais existem como valor
+// possível do tipo, arquitetura pronta sem OAuth implementado.
+export type AuthProvider = "twitch" | "google" | "discord" | "kick" | "youtube" | "email";
+
+// Um Vínculo de Autenticação — uma Pessoa (Profile) pode ter zero, um, ou
+// vários, nunca o inverso (docs/design/identity-core.md Seção 2).
+export interface Account {
+  id: string;
+  profile_id: string;
+  provider: AuthProvider;
+  provider_user_id: string;
+  connected_at: string;
+}
+
+// Sprint Kingdom Domain 2.0 (Vision 2.0, Sprint 2) — o Reino como domínio
+// permanente do mundo (docs/design/kingdom-domain-2.0.md). Deliberadamente
+// separado de `StreamerChannel` abaixo (o modelo antigo, ainda em uso por
+// Kingdom Prestige/Boss/City nesta Sprint, não migrado ainda — ver
+// docs/design/kingdom-domain-implementation.md Seção 7). Um Kingdom nunca
+// depende de Twitch/Kick/YouTube/Discord para existir.
+export type KingdomStatus = "active" | "dormant";
+export type KingdomVisibility = "public" | "private";
+
+export interface Kingdom {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  founder_profile_id: string | null;
+  leader_profile_id: string | null;
+  status: KingdomStatus;
+  visibility: KingdomVisibility;
+  banner: string | null;
+  symbol: string | null;
+  motto: string | null;
+  created_at: string;
+  updated_at: string;
+  // "history" (per docs/design/kingdom-domain-2.0.md Fase 2) é
+  // deliberadamente NÃO um campo de dado nesta Sprint — mapeia para uma
+  // futura tabela de Crônica do Reino (mesmo padrão de
+  // `character_chronicles`), Citizen System/World Events, não construída
+  // aqui ("sem implementar funcionalidades futuras", Fase 2 do brief).
+}
+
+// Sprint Citizen System (Vision 2.0, Sprint 3) — a ligação permanente
+// entre Character e Kingdom (docs/design/citizen-system.md). Um
+// personagem "pertence" a um Reino porque tem uma linha ativa aqui —
+// nunca por viewer_sessions/channel_rankings (ver
+// docs/design/citizen-system-implementation.md Fase 1, auditoria).
+//
+// `rank` cobre os 5 estágios documentados (Visitante → Residente →
+// Cidadão → Veterano → Lenda), mas esta Sprint só atribui "residente"
+// no momento de entrar num Reino — a progressão para os estágios
+// seguintes (métricas de contribuição real: tempo, expedições, Bosses)
+// é escopo de uma Sprint futura, não implementada aqui. "Visitante" não
+// tem linha nesta tabela — é qualquer personagem sem citizenship ativa.
+//
+// Sprint Citizen Progression (Vision 2.0, Sprint 4) — formaliza os 5
+// estágios como um domínio próprio (docs/design/
+// citizen-progression-implementation.md). `PersistedCitizenRank` é o
+// subconjunto que de fato existe como coluna em `citizens.rank`
+// (Visitante nunca é uma linha, per Sprint 3) — `CitizenRank` é a escada
+// completa de 5 estágios, usada por qualquer leitura/exibição que
+// precise responder "qual o rank deste personagem agora", incluindo o
+// caso derivado (sem linha = Visitante). Nenhum critério de promoção
+// automática (tempo, contribuição) é definido aqui — só a infraestrutura
+// de armazenar/ler/mudar manualmente o estágio atual.
+export type PersistedCitizenRank = "residente" | "cidadao" | "veterano" | "lenda";
+export type CitizenRank = "visitante" | PersistedCitizenRank;
+
+// Ordem oficial da escada (Fase 2). Usada por promote()/demote() para
+// mover um passo por vez — nunca pula estágio, nunca decide sozinho
+// quando promover (isso é critério de uma Sprint futura).
+export const CITIZEN_RANK_ORDER: PersistedCitizenRank[] = ["residente", "cidadao", "veterano", "lenda"];
+export const CITIZEN_RANK_LADDER: CitizenRank[] = ["visitante", ...CITIZEN_RANK_ORDER];
+
+export type CitizenStatus = "active" | "left";
+
+export interface Citizen {
+  id: string;
+  character_id: string;
+  kingdom_id: string;
+  joined_at: string;
+  status: CitizenStatus;
+  rank: PersistedCitizenRank;
+  // Nunca colunas persistidas — sempre derivados por comparação com
+  // kingdoms.founder_profile_id/leader_profile_id no momento da leitura,
+  // para nunca ficarem desatualizados se a liderança do Reino mudar de
+  // mãos numa Sprint futura (Kingdom Domain já documenta liderança como
+  // transitória, ver kingdom-domain-2.0.md Seção 2).
+  is_founder: boolean;
+  is_leader: boolean;
+  notes: string | null;
+  last_activity: string;
+  // Também derivado (join com characters.display_name), nunca uma coluna
+  // própria — só para permitir uma lista de cidadãos legível na UI
+  // mínima desta Sprint, sem duplicar a fonte de verdade do nome.
+  character_display_name: string;
+}
+
+// Sprint Housing Phase I (Vision 2.0, Sprint 5) — o primeiro ativo
+// verdadeiramente permanente do mundo (docs/design/housing-phase1.md).
+// Uma Casa pertence ao Reino, nunca ao personagem — o mesmo princípio de
+// "fundação permanente / posse transitória" já aplicado a Kingdom
+// (`kingdom-domain-2.0.md` Seção 1), um nível abaixo.
+// `original_builder_character_id` nunca muda depois de construída (fato
+// histórico permanente); `current_owner_character_id` é quem possui
+// agora (transitório — nasce igual ao construtor, muda só via
+// transferOwnership). "status"/"house_type" existem como enums desde já
+// (mesmo padrão de kingdoms.status), mas esta Sprint só escreve
+// 'active'/o tipo padrão — abandono/tipos variados são escopo futuro.
+export type HouseStatus = "active" | "abandoned";
+
+// Log append-only de fatos permanentes (Fase 8, "Legado") — nunca
+// editado, só recebe novas entradas. "built" é sempre a primeira; cada
+// "transferred"/"sold" subsequente registra quem entregou/recebeu e
+// quando. "sold" (Sprint Real Estate Phase I) é uma transferência que
+// aconteceu através de uma venda real — carrega `price` — distinta de
+// "transferred", que continua existindo para transferência
+// administrativa pura (sem preço, ver docs/design/
+// housing-phase1-implementation.md Seção 13).
+export interface HouseHistoryEvent {
+  event: "built" | "transferred" | "sold";
+  from_character_id: string | null;
+  to_character_id: string;
+  at: string;
+  price?: number;
+}
+
+export interface House {
+  id: string;
+  kingdom_id: string;
+  // district/plot são texto livre nesta Sprint — a divisão real em
+  // bairros com capacidade/disponibilidade (housing-phase1.md Seção 2)
+  // é escopo futuro, não implementada aqui.
+  district: string | null;
+  plot: string | null;
+  name: string;
+  current_owner_character_id: string;
+  original_builder_character_id: string;
+  created_at: string;
+  status: HouseStatus;
+  house_type: string;
+  history: HouseHistoryEvent[];
+  // Derivados via join (characters.display_name), nunca colunas —
+  // mesmo padrão de Citizen.character_display_name.
+  current_owner_display_name: string;
+  original_builder_display_name: string;
+  kingdom_name: string;
+}
+
+// Sprint Real Estate Phase I (Vision 2.0, Sprint 6) — o Mercado
+// Imobiliário do Reino (docs/design/real-estate.md). Transforma uma
+// Casa em patrimônio negociável entre jogadores, sem nunca alterar
+// `houses` fora de `transferOwnership()` (Fase 4 do brief — "nunca
+// duplicar regra"). `status` cobre o ciclo trivial desta Sprint:
+// 'active' (anunciada) → 'sold' (comprada) ou 'cancelled' (retirada
+// pelo vendedor) — nenhum leilão, imposto ou tomada pelo Reino.
+export type HouseSaleStatus = "active" | "sold" | "cancelled";
+
+export interface HouseSale {
+  id: string;
+  house_id: string;
+  seller_character_id: string;
+  asking_price: number;
+  created_at: string;
+  status: HouseSaleStatus;
+  buyer_character_id: string | null;
+  sold_at: string | null;
+  // Derivados via join, nunca colunas — mesmo padrão de House/Citizen.
+  house_name: string;
+  kingdom_name: string;
+  seller_display_name: string;
+}
+
+// Kingdom Integration Phase I (Vision 2.0, Sprint 8) — Streamer vira
+// apenas uma Integração de Reino ("Kingdom Integration"), nunca um
+// requisito, nunca dono do Reino. Um Kingdom pode ter zero, uma ou
+// várias — Twitch/Kick/YouTube/Discord tratados exatamente igual,
+// nenhum privilegiado. `provider` é deliberadamente `string`, nunca uma
+// union fechada de Twitch — o brief é explícito ("Não limitar
+// providers. Nunca usar enum Twitch-only.") para que uma integração
+// futura (qualquer uma) nunca exija mexer neste tipo. Puramente
+// infraestrutura: nenhuma regra de liderança/gameplay lê esta tabela
+// (per o brief, "apenas infraestrutura" — sem OAuth completo, chat,
+// drops, eventos, notificações, webhooks, tempo real ou benefício
+// exclusivo).
+export type KingdomIntegrationStatus = "connected" | "disconnected";
+
+export interface KingdomIntegration {
+  id: string;
+  kingdom_id: string;
+  provider: string;
+  external_id: string;
+  display_name: string;
+  status: KingdomIntegrationStatus;
+  connected_at: string;
+  metadata: Record<string, unknown> | null;
 }
 
 export interface StreamerChannel {
@@ -53,8 +276,27 @@ export interface CharacterResponse {
   primary_channel_id: string | null;
   equipped: EquippedItem[];
   // Sprint Equipment Experience — reaproveita CharacterRepository.getCombatAttributes()
-  // (já existente desde a Sprint Character Attributes Schema), nenhum cálculo novo.
+  // (já existente desde a Sprint Character Attributes Schema). Sprint 22
+  // — Living Combat Phase I, Fase 8: os 4 campos de dano/resistência
+  // agora são sourceados do MESMO `combatSnapshot` abaixo (nunca um
+  // segundo cálculo) — só `sus`/`uti` continuam vindo de
+  // `getCombatAttributes()` (fora do vocabulário de 7 stats do Combat
+  // Snapshot). `resistance_magic` fica sempre 0 — simplificação honesta:
+  // o modelo antigo separava física/mágica por peça de armadura, o
+  // Combat Snapshot unificado (armor único) não reproduz esse split.
   combat: CharacterCombatSummary;
+  // Sprint 22 — Living Combat Phase I, Fase 2/3/8: "Character API deve
+  // devolver exatamente o Snapshot utilizado pelo combate, nunca duas
+  // versões" — substitui o `resolvedStats`/`activeGemEffects` da Sprint
+  // 21 (agregado paralelo, nunca consumido por nenhuma UI) pelo MESMO
+  // CombatSnapshotDTO que Adventure/Idle/Dungeon/Boss agora consultam
+  // (combat/combatSnapshot.ts, buildCombatSnapshot). Sempre derivado,
+  // nunca persistido.
+  combatSnapshot: CombatSnapshotDTO;
+  // Sprint 23 — Sockets & Gems Phase II, Fase 9: "Nunca duplicar" — a
+  // MESMA lista de `combatSnapshot.activeBehaviors`, também exposta no
+  // nível raiz (nome que o brief desta Sprint pede).
+  activeGemBehaviors: ActiveBehaviorSummary[];
   created_at: string;
 }
 
@@ -104,7 +346,68 @@ export interface ItemCatalogEntry {
   uti_bonus?: number;
 }
 
-export interface InventoryItem {
+// Sprint 11 — Persistent Items + Affixes. Campos comuns aos dois shapes
+// abaixo (InventoryItem/EquippedItem) — extraídos pra nunca divergir
+// entre eles. `affixes`/`history` são `[]`/`null` para o catálogo fixo
+// (itens sem Item Generator por trás nunca tiveram afixo algum);
+// `potential`/`quality`/`craft_state` sempre presentes (mesmo que
+// neutros) porque toda LINHA de `items` ganhou essas colunas na
+// migração desta Sprint, catálogo fixo incluso (potential neutro,
+// quality 0, craft_state 'open').
+export interface PersistedItemFields {
+  item_level: number | null;
+  seed: number | null;
+  affixes: ItemAffix[];
+  potential: ItemPotential | null;
+  quality: ItemQuality;
+  craft_state: ItemCraftState;
+  history: ItemHistory | null;
+  // Sprint 14 — Legendary Items + Legacy System, Fase 8: os 3 campos que
+  // o brief pede em toda resposta de Item — sempre DERIVADOS de
+  // `history` na camada de leitura (mapInventoryRow/getEquippedItems,
+  // drop.service.ts), nunca uma coluna nova/migração; `null` sempre que
+  // `history` também é `null` (catálogo fixo pré-Sprint 11, mesmo
+  // padrão de `potential`).
+  legacy: ItemLegacy | null;
+  legacyEvents: LegacyEvent[];
+  legacySummary: LegacySummary | null;
+  // Sprint 15 — Sockets + Gem System (Foundation), Fase 8: "Todo Item
+  // retorna Sockets" — `null` pro catálogo fixo e todo item dropado
+  // antes desta migração (mesmo padrão de `potential`). Gemas (Fase 8)
+  // não vivem aqui — elas têm identidade própria numa tabela separada
+  // (`gems`), nunca embutidas dentro do item; ver `GET /api/items/gems`.
+  sockets: SocketConfiguration | null;
+  // Sprint 16 — Economy Foundation, Fase 9: sinal derivado pra UI
+  // mínima da Esfera da Incerteza — `true` só quando o `base_item_id`
+  // do item está no BaseItemChancePool (transformation/); nunca indica
+  // SE vai acontecer algo, só SE é possível tentar.
+  uncertaintyEligible: boolean;
+  // Sprint 18 — Mythic Foundation, Fase 6/10: "Origem" de um item —
+  // `null` só quando `history` também é `null` (catálogo fixo
+  // pré-Sprint 11, mesmo padrão de `legacy`); pra todo item com
+  // History real, sempre um `MythicOrigin` (com `isMythic: false` pra
+  // esmagadora maioria — só itens revelados pela Esfera da Incerteza
+  // como `mythic_reveal` têm `isMythic: true`).
+  mythicOrigin: MythicOrigin | null;
+  // Sprint 19 — Base Identity, Fase 10: "adicionar apenas uma linha —
+  // Base: X / Tier N / Potential: Y". `null` pra item sem
+  // `base_item_id` (catálogo fixo pré-Sprint 11) ou cujo `base_item_id`
+  // ainda não tem BaseIdentity registrada — mesmo padrão de
+  // `uncertaintyEligible`/`mythicOrigin`, nunca inventa identidade.
+  baseIdentity: BaseIdentitySummary | null;
+  // Sprint 20 — Sockets & Gemas Phase I, Fase 10: nome de Gema por
+  // Socket ocupado (`Socket.id` → nome exibível). `null` sempre que
+  // `sockets` também é `null` OU nenhum Socket está `filled` — mesmo
+  // padrão de nunca consultar `gems` sem necessidade real.
+  socketGems: Record<string, string> | null;
+  // Sprint 21 — Gem Effects Phase I, Fase 8: descrição do efeito por
+  // Socket ocupado (`Socket.id` → "Ataque +5%", etc.) — só presente
+  // quando a Gema socketada tem um `GemEffect` real (`effectId`
+  // resolvido); mesmo padrão de `null` de `socketGems`.
+  socketGemEffects: Record<string, string> | null;
+}
+
+export interface InventoryItem extends PersistedItemFields {
   id: number;
   item_id: number;
   slug: string;
@@ -128,9 +431,18 @@ export interface InventoryItem {
   upgrade_level: number;
 }
 
-export interface EquippedItem {
+export interface EquippedItem extends PersistedItemFields {
   slot: ItemSlot;
   character_item_id: number;
+  // Sprint 21 — Gem Effects Phase I: `items.id` (o catalog real, mesmo
+  // campo que `InventoryItem.item_id` já expõe) — necessário pra
+  // consultar `gems.socketed_item_id` a partir de um EquippedItem fora
+  // do escopo de `parsePersistedItemFields` (drop.service.ts), que já
+  // tinha acesso direto à linha crua e nunca precisou deste campo até
+  // agora. Nunca confundir com `character_item_id` (a posse do
+  // personagem, `character_items.id`) — são chaves de tabelas
+  // diferentes.
+  item_id: number;
   name: string;
   rarity: ItemRarity;
   // Sprint Identity & Progression — mesmas colunas já expostas em

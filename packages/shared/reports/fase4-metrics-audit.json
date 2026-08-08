@@ -1,0 +1,113 @@
+{
+  "meta": {
+    "runs": 30,
+    "maxSimulatedSeconds": 10800,
+    "secondsPerTick": 22,
+    "totalSimulatedHours": 30.592222222222222
+  },
+  "progression": {
+    "xpPerMinute": 1829.0890059014896,
+    "levelsPerHour": 23.178867166927137,
+    "averageFinalLevel": 23.766666666666666,
+    "timeToLevel10": {
+      "reachedBy": 30,
+      "totalRuns": 30,
+      "averageSeconds": 1655.8666666666666
+    },
+    "timeToLevel20": {
+      "reachedBy": 25,
+      "totalRuns": 30,
+      "averageSeconds": 3321.12
+    },
+    "timeToLevel30": {
+      "reachedBy": 5,
+      "totalRuns": 30,
+      "averageSeconds": 4219.6
+    },
+    "runsSurvivedFullDuration": 0
+  },
+  "economy": {
+    "goldPerMinute": 27.075495640407887,
+    "goldPerHour": 1624.5297384244732,
+    "potentialMerchantGoldPerHour": 1904.5036864853084,
+    "potentialSalvageMaterialsPerHour": 1890.9381469509317,
+    "blacksmithCostTable": [
+      {
+        "rarity": "common",
+        "costAtUpgradeLevel0": 20,
+        "costAtUpgradeLevel5": 95
+      },
+      {
+        "rarity": "uncommon",
+        "costAtUpgradeLevel0": 40,
+        "costAtUpgradeLevel5": 115
+      },
+      {
+        "rarity": "rare",
+        "costAtUpgradeLevel0": 80,
+        "costAtUpgradeLevel5": 155
+      },
+      {
+        "rarity": "epic",
+        "costAtUpgradeLevel0": 160,
+        "costAtUpgradeLevel5": 235
+      },
+      {
+        "rarity": "legendary",
+        "costAtUpgradeLevel0": 320,
+        "costAtUpgradeLevel5": 395
+      }
+    ]
+  },
+  "loot": {
+    "itemsByRarityTotal": {
+      "common": 1907,
+      "magic": 1194,
+      "rare": 485,
+      "unique": 85
+    },
+    "itemsPerHour": {
+      "common": 62.3361057639923,
+      "magic": 39.02952820252061,
+      "rare": 15.853702829332073,
+      "unique": 2.7784840010169614,
+      "elite": 6.17804089637889,
+      "miniBoss": 10.264046780227364,
+      "boss": 4.249446119202411
+    }
+  },
+  "equipment": {
+    "powerScoreAtLevel1": {
+      "reachedBy": 30,
+      "average": 8.443333333333335
+    },
+    "powerScoreAtLevel5": {
+      "reachedBy": 30,
+      "average": 28.928888888888892
+    },
+    "powerScoreAtLevel10": {
+      "reachedBy": 30,
+      "average": 37.64444444444444
+    },
+    "powerScoreAtLevel20": {
+      "reachedBy": 25,
+      "average": 37.84266666666667
+    },
+    "powerScoreAtLevel30": {
+      "reachedBy": 5,
+      "average": 41.57333333333334
+    }
+  },
+  "autoEquip": {
+    "averageUpgradesPerRun": 4.533333333333333,
+    "totalTransitionsObserved": 106,
+    "regressionsObserved": 0,
+    "regressionRate": 0
+  },
+  "extremeCaseScan": {
+    "maxGoldInAnySingleRun": 3506,
+    "maxGoldPerMinuteInAnySingleRun": 52.25037257824143,
+    "minLevelsAfter30Min": 9,
+    "uniqueDropRatePercent": 2.3154453827295014
+  }
+}

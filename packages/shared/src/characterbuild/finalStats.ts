@@ -1,7 +1,8 @@
 import { calculateCharacterStats } from "../equipment/stats.js";
 import type { Equipment } from "../equipment/equipment.js";
+import type { CharacterStats } from "../equipment/types.js";
 import type { CharacterBuild } from "./characterBuild.js";
-import type { FinalStats, FinalStatsModifier, FutureStatModifiers } from "./types.js";
+import type { DerivedAttributes, FinalStats, FinalStatsModifier, FutureStatModifiers } from "./types.js";
 
 function applyModifiers(stats: FinalStats, modifier: FinalStatsModifier | undefined): void {
   if (!modifier) return;
@@ -36,23 +37,34 @@ function applyModifiers(stats: FinalStats, modifier: FinalStatsModifier | undefi
 //   lifeLeech      = equipmentStats.lifeLeech (Character Build não tem baseline própria de leech)
 //   resistances    = equipmentStats.resistances (passthrough — nenhum dos dois sistemas soma resistência real ainda)
 //   powerScore     = derived.powerScore + equipmentStats.powerScore
-export function calculateFinalStats(
-  build: CharacterBuild,
-  equipment: Equipment,
+//
+// Sprint 22 — Living Combat Phase I: `maximumMana`/`movementSpeed`
+// agora também somam `equipmentStats.mana`/`equipmentStats.movementSpeed`
+// (campos novos em CharacterStats — Gem Effects/Implicit Mods podem
+// concedê-los pela primeira vez; antes desta Sprint eram sempre 0, então
+// somar não muda nenhum resultado existente).
+//
+// Requisito 4 (Sprint 22) — "nunca dois cálculos de atributos": a
+// combinação Derived Attributes + Equipment Stats -> Final Stats é UMA
+// função só (`combineFinalStats`), reusada tanto pelo Equipment-class
+// path (`calculateFinalStats`, abaixo — Adventure/Idle/Dungeon
+// client-side, kit de sessão) quanto pelo path de itens equipados REAIS
+// (`realEquipmentStats.ts` -> `combat/combatSnapshot.ts`, server-side)
+// — nenhuma soma de Derived+Equipment duplicada em nenhum outro lugar.
+export function combineFinalStats(
+  derived: DerivedAttributes,
+  equipmentStats: CharacterStats,
   modifiers: FutureStatModifiers = {},
 ): FinalStats {
-  const derived = build.getDerivedAttributes();
-  const equipmentStats = calculateCharacterStats(equipment);
-
   const stats: FinalStats = {
     maximumLife: derived.maximumLife + equipmentStats.life,
-    maximumMana: derived.maximumMana,
+    maximumMana: derived.maximumMana + equipmentStats.mana,
     physicalDamage: derived.physicalDamage + equipmentStats.attack,
     spellDamage: derived.spellDamage + equipmentStats.spellDamage,
     criticalChance: derived.criticalChance + equipmentStats.critical,
     accuracy: derived.accuracy + equipmentStats.accuracy,
     attackSpeed: derived.attackSpeed + equipmentStats.attackSpeed,
-    movementSpeed: derived.movementSpeed,
+    movementSpeed: derived.movementSpeed + equipmentStats.movementSpeed,
     armor: derived.armor + equipmentStats.defense,
     lifeLeech: equipmentStats.lifeLeech,
     resistances: { ...equipmentStats.resistances },
@@ -69,4 +81,12 @@ export function calculateFinalStats(
   applyModifiers(stats, modifiers.talents);
 
   return stats;
+}
+
+export function calculateFinalStats(
+  build: CharacterBuild,
+  equipment: Equipment,
+  modifiers: FutureStatModifiers = {},
+): FinalStats {
+  return combineFinalStats(build.getDerivedAttributes(), calculateCharacterStats(equipment), modifiers);
 }

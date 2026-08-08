@@ -17,7 +17,12 @@ import type {
 // Phase II (Affix System) — `requiredTags` substitui o antigo
 // `allowedSlots`: o mod só é elegível se o Base Item tiver TODAS as
 // tags exigidas (ver baseItems.ts/prefixes.ts/suffixes.ts).
-function isModEligibleForBase(mod: ItemGenModDefinition, base: ItemGenBaseItem): boolean {
+//
+// Sprint 12 (Crafting Phase I) — exportada: a Esfera da Ascensão
+// (`crafting/sphereCrafting.ts`) precisa da MESMA regra de
+// elegibilidade que o pipeline de geração já usa, "nunca criar regras
+// paralelas" (diretriz explícita do brief).
+export function isModEligibleForBase(mod: ItemGenModDefinition, base: ItemGenBaseItem): boolean {
   return mod.requiredTags.every((tag) => base.tags.includes(tag));
 }
 
@@ -94,7 +99,10 @@ function rollDistinctMods(
 // retorna null — todo mod agora produz um valor em qualquer Item Level
 // (o antigo "Item Level baixo demais, mod nem entra no item" deixou de
 // existir junto com a elegibilidade por limiar).
-function rollMod(rng: ItemGenRandom, mod: ItemGenModDefinition, itemLevel: number): ItemGenRolledMod {
+// Sprint 12 (Crafting Phase I) — exportada: a Esfera da Fortuna
+// (reroll de valor) e a Esfera da Ascensão (novo afixo) reusam esta
+// MESMA função para produzir um valor/tier, nunca uma fórmula paralela.
+export function rollMod(rng: ItemGenRandom, mod: ItemGenModDefinition, itemLevel: number): ItemGenRolledMod {
   const envelope = getAffixEnvelope(mod.group);
   const value = rollContinuousAffixValue(rng, envelope, itemLevel);
   const tier = identityTierForValue(mod.tiers, value);
@@ -203,4 +211,38 @@ export function generateItem(
     suffixes: rolledSuffixes,
     powerScore,
   };
+}
+
+// Sprint 12 (Crafting Phase I) — a Esfera da Ascensão precisa saber
+// "quais mods este item AINDA poderia receber", dado o que ele já tem
+// rolado. Reaplica exatamente a mesma regra de compatibilidade de
+// `isModCompatibleWithState`/`commitMod` acima, só que reconstruída a
+// partir de um `ItemGenRolledMod[]` já persistido (não de um
+// `ModRollState` em construção durante uma geração nova) — "nunca criar
+// regras paralelas": é a MESMA checagem de grupo/exclusão bidirecional,
+// só com uma fonte de estado diferente (afixos já no item, não afixos
+// sendo escolhidos nesta mesma rolagem).
+export function findEligibleNewMods(baseItemId: string, existingAffixes: readonly ItemGenRolledMod[]): ItemGenModDefinition[] {
+  const base = getBaseItem(baseItemId);
+  if (!base) return [];
+
+  const committedGroups = new Set(existingAffixes.map((affix) => affix.group));
+  const blockedGroups = new Set<string>();
+  const allMods = [...ITEM_GEN_PREFIXES, ...ITEM_GEN_SUFFIXES];
+  for (const affix of existingAffixes) {
+    const definition = allMods.find((mod) => mod.id === affix.modId);
+    if (!definition) continue;
+    for (const group of definition.excludesGroups) blockedGroups.add(group);
+  }
+
+  const existingModIds = new Set(existingAffixes.map((affix) => affix.modId));
+
+  return allMods.filter((mod) => {
+    if (existingModIds.has(mod.id)) return false;
+    if (!isModEligibleForBase(mod, base)) return false;
+    if (committedGroups.has(mod.group)) return false;
+    if (blockedGroups.has(mod.group)) return false;
+    if (mod.excludesGroups.some((group) => committedGroups.has(group))) return false;
+    return true;
+  });
 }

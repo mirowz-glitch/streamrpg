@@ -37,8 +37,35 @@
  * ataca personagens, não tem mecânica de controle/detecção) — carregam e
  * calculam corretamente, sem erro, e ficam prontos para quando essas
  * mecânicas existirem.
+ *
+ * Sprint 22 — Living Combat Phase I, Fase 7: `attackPhysical`/`attackMagic`
+ * + `CRITICAL_HIT_CHANCE` fixo vinham do modelo simples paralelo
+ * (`characterRepo.getCombatAttributes()`) — agora vêm do Combat
+ * Snapshot único (combatSnapshot.service.ts, o MESMO usado por
+ * `/api/character` desde a Fase 8): `isCritical` lê
+ * `snapshot.critical/100`, nunca um valor fixo; `attackPhysical`/
+ * `attackMagic` leem `snapshot.attack`/`snapshot.magic`. `level`
+ * continua vindo de `characterRepo.getCombatAttributes()` — fica fora
+ * do vocabulário de 7 stats do Combat Snapshot (mesmo residual
+ * legítimo que `/api/character` mantém pra `sus`/`uti`, Fase 8) — a
+ * fórmula canônica (`Base(level) = level × 1`) não muda, só a origem
+ * de attack/critical.
+ *
+ * Sprint 23 — Sockets & Gems Phase II, Fase 8: `snapshot.activeBehaviors`
+ * agora também alimenta o dano contra Boss — mas só os dois Behaviors
+ * que têm alvo mecânico aqui. Rubi (`onHitBonusFireDamage`) soma
+ * `bonusFlatDamage` direto no resultado de `calculateCanonicalDamage()`
+ * (mesmo termo aditivo que Adventure usa via `FutureCombatModifiers`,
+ * só que aplicado depois porque a fórmula canônica do Boss não passa
+ * por `resolveCombat()`). Ônix (`bonusCriticalChance`) entra como
+ * `criticalChanceMultiplier` no MESMO check de `isCritical` que já
+ * existia. Safira (congelar), Esmeralda (regen) e Ametista
+ * (resistência) NÃO se aplicam: Boss nunca ataca personagens neste
+ * modelo (dano é só personagem→Boss, ver comentário acima), então não
+ * há contra-ataque pra congelar/mitigar nem fim-de-encontro pra
+ * regenerar — documentado, não um bug.
  */
-import { CRITICAL_HIT_CHANCE } from "@streamrpg/shared";
+import { resolveOffensiveBehaviorModifiers } from "@streamrpg/shared";
 import type { EventBus } from "../engine/EventBus.js";
 import type {
   BossDefeatedEvent,
@@ -50,6 +77,7 @@ import type {
   RandomProvider,
   WorldTickEvent,
 } from "../engine/types.js";
+import { getCombatSnapshotForCharacter } from "../services/combatSnapshot.service.js";
 
 // ============================================================
 // Fórmula canônica (docs/combat-model/canonical-formula.md) — função
@@ -178,32 +206,41 @@ export class BossCombatSystem {
     if (characterIds.length > 0) {
       let totalDamage = 0;
 
-      // Uma única leitura por personagem por tick — getCombatAttributes()
-      // já reúne level/equipamento/susBase/utiBonus numa consulta própria
-      // do CharacterRepository (Sprint Character Attributes Schema).
-      // Nenhuma consulta adicional é feita aqui além desta.
+      // Duas leituras por personagem por tick: `combat.level`/`susBase`/
+      // `utiBonus` (fora do vocabulário de 7 stats do Combat Snapshot,
+      // mesmo residual legítimo de `/api/character`, Fase 8) +
+      // `snapshot.attack`/`snapshot.magic`/`snapshot.critical` (Sprint 22
+      // — Fase 7, o MESMO Combat Snapshot que Adventure/Idle/Dungeon/
+      // Character API consultam, "nunca dois cálculos").
       for (const characterId of characterIds) {
         try {
           const combat: CombatAttributesSnapshot | null =
             await this.characterRepo.getCombatAttributes(characterId);
           if (!combat) continue; // personagem não encontrado — segue sem quebrar (Etapa 4)
+          const snapshot = getCombatSnapshotForCharacter(characterId);
+          if (!snapshot) continue;
 
-          const isCritical = this.randomProvider.next() < CRITICAL_HIT_CHANCE;
-          const { damage, tipo } = calculateCanonicalDamage({
+          // Rubi (bonusFlatDamage) + Ônix (criticalChanceMultiplier) —
+          // os únicos dois Behaviors com alvo mecânico no combate
+          // contra Boss (ver comentário de topo do arquivo).
+          const offensiveModifiers = resolveOffensiveBehaviorModifiers(snapshot.activeBehaviors, snapshot.critical);
+          const isCritical = this.randomProvider.next() < (snapshot.critical * offensiveModifiers.criticalChanceMultiplier) / 100;
+          const { damage: canonicalDamage, tipo } = calculateCanonicalDamage({
             level: combat.level,
-            attackPhysical: combat.attackPhysical,
-            attackMagic: combat.attackMagic,
+            attackPhysical: snapshot.attack,
+            attackMagic: snapshot.magic,
             isCritical,
           });
+          const damage = canonicalDamage + offensiveModifiers.bonusFlatDamage;
           totalDamage += damage;
 
           const curaPorTick = calculateSusRegen(combat.susBase);
 
           console.log(
-            `[BossCombatSystem][CharacterAttributes] character=${characterId} ` +
+            `[BossCombatSystem][CombatSnapshot] character=${characterId} ` +
               `level=${combat.level} tipo=${tipo} ` +
-              `atqFisico=${combat.attackPhysical} atqMagico=${combat.attackMagic} ` +
-              `critico=${isCritical} sus=${combat.susBase}(cura/tick=${curaPorTick}) uti=${combat.utiBonus} ` +
+              `atqFisico=${snapshot.attack} atqMagico=${snapshot.magic} ` +
+              `critico=${isCritical}(${snapshot.critical}%) sus=${combat.susBase}(cura/tick=${curaPorTick}) uti=${combat.utiBonus} ` +
               `dano=${damage}`,
           );
         } catch (err) {

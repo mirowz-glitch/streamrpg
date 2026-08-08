@@ -73,6 +73,66 @@ describe("salvage.service — desmontagem válida", () => {
   });
 });
 
+// Sprint 14 — Legendary Items + Legacy System, Fase 3/5: mesmo achado
+// do Merchant — a linha de `items` sobrevive à desmontagem.
+describe("salvage.service — Legado (Sprint 14): evento 'salvaged' sobrevive à desmontagem", () => {
+  test("depois de desmontar, a linha de 'items' ganha um evento 'salvaged' com os materiais", () => {
+    const item = grantTestItem("rare", 20);
+    const expectedRewards = calculateSalvageRewards({ rarity: "rare", upgrade_level: 0, power_score: 20 });
+
+    const result = dismantleItem(CHARACTER_ID, item.id);
+    assert.equal(result.success, true);
+
+    const row = getDb().prepare(`SELECT history FROM items WHERE id = ?`).get(item.item_id) as { history: string };
+    const history = JSON.parse(row.history);
+    const salvagedEvent = history.events.find((e: { event: string }) => e.event === "salvaged");
+    assert.ok(salvagedEvent, "esperava um evento 'salvaged' na linha órfã de items");
+    assert.equal(salvagedEvent.detail, `${expectedRewards[0].resourceId}:${expectedRewards[0].amount}`);
+  });
+});
+
+describe("salvage.service — raridades do Item Generator (bug fix)", () => {
+  // World Autonomy Phase II (Vision 2.0, Sprint 9) — mesma causa raiz
+  // documentada em merchant.service.test.ts: BASE_MATERIALS_BY_RARITY
+  // (equipment/salvage.ts) só conhece as 5 raridades de ItemRarity, e a
+  // raridade crua do Item Generator ("magic"/"unique") não batia com
+  // nenhuma chave, produzindo NaN materials. Corrigido na persistência
+  // (drop.service.ts, normalizeItemRarity).
+  test("desmonta um item 'magic' e credita os materials de 'uncommon', nunca NaN", () => {
+    const item = grantTestItem("magic", 20);
+    const balanceBefore = getCharacterResourceBalance(CHARACTER_ID, "materials");
+    const expectedRewards = calculateSalvageRewards({ rarity: "uncommon", upgrade_level: 0, power_score: 20 });
+
+    const result = dismantleItem(CHARACTER_ID, item.id);
+
+    assert.equal(result.success, true);
+    if (!result.success) return;
+    assert.ok(!Number.isNaN(result.rewards[0].amount), "amount nunca deveria ser NaN");
+    assert.deepEqual(result.rewards, expectedRewards);
+    assert.equal(
+      getCharacterResourceBalance(CHARACTER_ID, "materials"),
+      balanceBefore + expectedRewards[0].amount,
+    );
+  });
+
+  test("desmonta um item 'unique' e credita os materials de 'legendary', nunca NaN", () => {
+    const item = grantTestItem("unique", 20);
+    const balanceBefore = getCharacterResourceBalance(CHARACTER_ID, "materials");
+    const expectedRewards = calculateSalvageRewards({ rarity: "legendary", upgrade_level: 0, power_score: 20 });
+
+    const result = dismantleItem(CHARACTER_ID, item.id);
+
+    assert.equal(result.success, true);
+    if (!result.success) return;
+    assert.ok(!Number.isNaN(result.rewards[0].amount), "amount nunca deveria ser NaN");
+    assert.deepEqual(result.rewards, expectedRewards);
+    assert.equal(
+      getCharacterResourceBalance(CHARACTER_ID, "materials"),
+      balanceBefore + expectedRewards[0].amount,
+    );
+  });
+});
+
 describe("salvage.service — item equipado (diferente de Merchant)", () => {
   test("desmonta um item EQUIPADO diretamente, sem exigir desequipar primeiro", () => {
     const item = grantTestItem("uncommon", 15, "helmet");

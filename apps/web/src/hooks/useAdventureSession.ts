@@ -24,6 +24,8 @@ import {
   type ItemGenSlot,
   type ItemRarity,
   type ItemSlot,
+  type OfflineSummary,
+  type CombatSnapshotDTO,
 } from "@streamrpg/shared";
 import { api } from "../lib/api";
 
@@ -36,9 +38,25 @@ import { api } from "../lib/api";
 const IDLE_TICK_INTERVAL_MS = 2500;
 const IDLE_POLL_INTERVAL_MS = 100;
 
+// World Autonomy Phase I (Vision 2.0, Sprint 7), Fase 3 — Player Session:
+// Login -> Character -> Player Session -> Idle Loop -> World. Este
+// heartbeat é o que fecha essa cadeia: reporta presença real do Jogador
+// (POST /api/presence/ping, sem nenhum "canal"/Twitch envolvido) no
+// mesmo intervalo generoso já usado pelo antigo /api/ping (60s) — só que
+// automático, disparado pra TODO Jogador logado, nunca dependente de
+// `?canal=` estar na URL (achado da Fase 1: sem isso, um Jogador direto
+// nunca gerava nenhuma Sessão real).
+const PRESENCE_PING_INTERVAL_MS = 60_000;
+
 const DEMO_CHARACTER_ID = "vertical-slice-hero";
 const DEMO_CLASS_ID = "warrior";
-const DEMO_REGION_ID = "bosque-sussurrante";
+// Sprint 31 — Map Integration Phase I, Fase 2: renomeado de
+// `DEMO_REGION_ID` — "Map -> Region" agora é a entrada oficial da
+// Aventura (createAdventureSession() deriva `currentMapId` a partir
+// deste valor, adventure/session.ts). Mesmo valor de sempre — Map:Região
+// é 1:1 nesta Fase (nenhum seletor de Mapa real ainda, Atlas/Waystones
+// explicitamente fora de escopo) — só a moldura conceitual muda.
+const DEFAULT_MAP_ID = "bosque-sussurrante";
 // Backpack Experience Phase I — exportado pra que a Mochila (Fase 5,
 // "sinais de mochila") use a MESMA referência de capacidade que o
 // motor já usa, em vez de inventar um número novo — só leitura, nunca
@@ -172,6 +190,10 @@ interface RealCharacterSnapshot {
   level: number;
   xp: number;
   gold: number;
+  // Sprint 22 — Living Combat Phase I, Fase 4/5/6: o MESMO Combat
+  // Snapshot que Character API/Boss consultam — carregado junto do
+  // resto do personagem real, nunca uma segunda chamada.
+  combatSnapshot: CombatSnapshotDTO;
 }
 
 function createSessionState(seed: number, real: RealCharacterSnapshot | null): AdventureDemoState {
@@ -185,7 +207,14 @@ function createSessionState(seed: number, real: RealCharacterSnapshot | null): A
 
   const inventory = new Inventory(DEMO_CHARACTER_ID, DEMO_INVENTORY_CAPACITY);
   const equipment = new Equipment(DEMO_CHARACTER_ID);
-  const character = createAdventureCharacter(build, inventory, equipment);
+  // Sprint 22 — Living Combat Phase I, Fase 4/5/6: quando existe um
+  // personagem real, `createAdventureCharacter` recebe o Combat
+  // Snapshot real de uma vez — `toAdventureCombatant()` (packages/
+  // shared/adventure/session.ts) passa a usá-lo em vez de recalcular
+  // via o kit de sessão local (Equipment-class, que nunca reflete
+  // Sockets/Gemas/afixos reais). Sessão de demonstração (real === null)
+  // continua sem Snapshot, cai no cálculo antigo — nunca quebra.
+  const character = createAdventureCharacter(build, inventory, equipment, undefined, real?.combatSnapshot ?? undefined);
   // Kit inicial sempre equipado client-side (mesmo já existente) — os
   // itens REAIS já equipados no modelo antigo (antes desta Sprint) não
   // têm baseItemId/afixos procedurais pra reconstruir aqui; qualquer
@@ -194,7 +223,7 @@ function createSessionState(seed: number, real: RealCharacterSnapshot | null): A
   // única lacuna restante.
   equipStarterKit(character, DEMO_CLASS_ID, seed);
 
-  const session = createAdventureSession(`${DEMO_CHARACTER_ID}-session`, character, DEMO_REGION_ID, seed, Date.now());
+  const session = createAdventureSession(`${DEMO_CHARACTER_ID}-session`, character, DEFAULT_MAP_ID, seed, Date.now());
   // Fase 3 — Ouro real como ponto de partida (campo mutável simples,
   // mesmo padrão que equipStarterKit já usa pra customizar o estado
   // inicial logo após a criação — nenhuma fórmula do motor muda).
@@ -206,10 +235,28 @@ function createSessionState(seed: number, real: RealCharacterSnapshot | null): A
 
 async function fetchRealCharacter(): Promise<RealCharacterSnapshot | null> {
   try {
-    const character = await api.get<{ level: number; xp: number; gold: number }>("/api/character");
-    return { level: character.level, xp: character.xp, gold: character.gold };
+    const character = await api.get<{ level: number; xp: number; gold: number; combatSnapshot: CombatSnapshotDTO }>("/api/character");
+    return { level: character.level, xp: character.xp, gold: character.gold, combatSnapshot: character.combatSnapshot };
   } catch {
     return null;
+  }
+}
+
+// Sprint 22 — Living Combat Phase I, Fase 4/5/6: "Idle nunca recalcula,
+// só relê o Snapshot já calculado pelo servidor" — refetch fire-and-
+// forget a cada tick global (mesmo espírito de `persistTick`, nunca
+// bloqueia a simulação). Mutação in-place de `character.realCombatSnapshot`
+// (nunca substitui o objeto `character`/`session` inteiro) — resolve de
+// graça a sincronização entre abas/páginas (Merchant/Blacksmith/Gemas
+// mudando o equipamento enquanto o Idle roda em outra tela) sem
+// precisar de um mecanismo de invalidação dedicado.
+async function refreshCombatSnapshot(session: AdventureSession): Promise<void> {
+  try {
+    const character = await api.get<{ combatSnapshot: CombatSnapshotDTO }>("/api/character");
+    session.character.realCombatSnapshot = character.combatSnapshot;
+  } catch {
+    // Fire-and-forget — uma falha pontual de rede mantém o último
+    // Snapshot conhecido (nunca derruba o combate corrente).
   }
 }
 
@@ -234,6 +281,21 @@ async function persistTick(session: AdventureSession, events: PresentationEvent[
   if (goldDelta > 0) requests.push(api.post("/api/character/adventure/gold", { amount: goldDelta }));
 
   for (const event of events) {
+    if (event.kind === "FinalBossDefeated") {
+      // Sprint 14 — Legendary Items + Legacy System, Fase 4: mesmo
+      // padrão fire-and-forget dos outros ramos deste loop — grava
+      // "boss_defeated_with" na arma equipada no momento do abate.
+      requests.push(api.post("/api/items/boss-defeated", { enemyName: event.enemyName }));
+      continue;
+    }
+    if (event.kind === "SphereDropped") {
+      // Sprint 13 — Sphere Economy Phase I, Fase 7: espelha o mesmo
+      // padrão fire-and-forget do LootDropped abaixo, mas nunca toca
+      // items/character_items — só character_spheres (POST
+      // /api/items/sphere-drop -> grantSphereDrop, sphere.service.ts).
+      requests.push(api.post("/api/items/sphere-drop", { sphereId: event.sphereId, source: event.source }));
+      continue;
+    }
     if (event.kind !== "LootDropped") continue;
     const baseItem = getBaseItem(event.baseItemId);
     const autoEquip = events.some((e) => e.kind === "ItemEquipped" && e.baseItemId === event.baseItemId);
@@ -245,6 +307,14 @@ async function persistTick(session: AdventureSession, events: PresentationEvent[
         slot: baseItem ? SLOT_TO_PERSISTED[baseItem.slot] : "weapon",
         powerScore: event.powerScore,
         autoEquip,
+        // Sprint 11 — Persistent Items + Affixes: o próprio LootDropped
+        // já carrega o item gerado completo (ver presentation/types.ts)
+        // — repassado sem transformação, mesmo princípio de "nenhuma
+        // simplificação" desta Sprint.
+        itemLevel: event.itemLevel,
+        seed: event.seed,
+        prefixes: event.prefixes,
+        suffixes: event.suffixes,
       }),
     );
   }
@@ -288,10 +358,16 @@ let initPromise: Promise<void> | null = null;
 // nunca conhece React, só chama `notifySubscribers()` no final.
 let idleDriverInstance: IdleDriver | null = null;
 let idleTickIntervalId: ReturnType<typeof setInterval> | null = null;
+let presencePingIntervalId: ReturnType<typeof setInterval> | null = null;
 const subscribers = new Set<() => void>();
 let globalError: string | null = null;
 let globalLootRejectedFeedback: LootRejectedFeedback[] = [];
 let globalLastTickOutcome: AdventureTickOutcome | null = null;
+// World Autonomy Phase II (Vision 2.0, Sprint 9), Fase 4 — "enquanto
+// você esteve fora": preenchido no máximo uma vez por retorno real
+// (ver ensurePresenceHeartbeatStarted), nunca reescrito pelo IdleDriver
+// normal. `dismissOfflineSummary()` (abaixo) é o único jeito de limpar.
+let globalOfflineSummary: OfflineSummary | null = null;
 // Registrado por quem precisa adiar um tick (hoje só AdventurePage, via
 // registerIdleBlockChecker) — ex.: um banner de Level Up ainda tocando.
 // O driver não sabe POR QUE está bloqueado, só respeita o sinal (mesma
@@ -346,6 +422,11 @@ function runGlobalTick(): void {
       globalLootRejectedFeedback = buildLootRejectedFeedback(singleton.session, events);
     }
     void persistTick(singleton.session, events, singleton.lastSynced);
+    // Sprint 22 — Fase 5: sessão de demonstração (real === null) nunca
+    // teve um Combat Snapshot pra começo de conversa — GET /api/character
+    // sempre devolveria 401, sem nenhum efeito útil (mesmo princípio já
+    // usado por ensurePresenceHeartbeatStarted acima).
+    if (!singleton.isDemoSession) void refreshCombatSnapshot(singleton.session);
   } catch (caught) {
     globalError = caught instanceof Error ? caught.message : String(caught);
   }
@@ -375,11 +456,55 @@ function ensureIdleDriverStarted(intervalMs: number = IDLE_TICK_INTERVAL_MS): vo
   }, IDLE_POLL_INTERVAL_MS);
 }
 
+// World Autonomy Phase I (Vision 2.0, Sprint 7), Fase 3 — mesmo padrão
+// de proteção de `ensureIdleDriverStarted()`: um heartbeat já ativo
+// nunca é substituído. Fire-and-forget deliberado (mesmo princípio de
+// `persistTick`, acima) — uma falha de rede pontual não deveria
+// interromper a Aventura nem gerar erro visível; o próximo heartbeat
+// tenta de novo sozinho 60s depois.
+function ensurePresenceHeartbeatStarted(intervalMs: number = PRESENCE_PING_INTERVAL_MS): void {
+  if (presencePingIntervalId !== null) return;
+  void sendPresencePingAndFetchOfflineSummary();
+  presencePingIntervalId = setInterval(() => {
+    void api.post("/api/presence/ping", {}).catch(() => undefined);
+  }, intervalMs);
+}
+
+// World Autonomy Phase II (Vision 2.0, Sprint 9), Fase 4 — só o
+// PRIMEIRO ping de uma sessão (o "retorno" de verdade) busca o resumo
+// pendente; os pings periódicos seguintes (a cada 60s, sessão já
+// aberta) nunca deveriam mostrar um resumo de novo. O servidor já
+// resolve a mesma ausência no MESMO ping (checkAndComputeOfflineSummary,
+// offlineSummary.service.ts) — buscar o resumo logo em seguida é seguro,
+// sem corrida.
+async function sendPresencePingAndFetchOfflineSummary(): Promise<void> {
+  try {
+    await api.post("/api/presence/ping", {});
+    const response = await api.get<{ summary: OfflineSummary | null }>("/api/character/offline-summary");
+    if (response.summary) {
+      globalOfflineSummary = response.summary;
+      notifySubscribers();
+    }
+  } catch {
+    // mesmo espírito de fire-and-forget do heartbeat: falha pontual de
+    // rede não deveria interromper a Aventura nem gerar erro visível.
+  }
+}
+
 // Único ponto de entrada pra quem precisa adiar um tick (ver
 // `externalBlockedCheck` acima). Passar `null` desregistra — usado pelo
 // cleanup de montagem/desmontagem de AdventurePage.
 function registerIdleBlockChecker(checker: (() => boolean) | null): void {
   externalBlockedCheck = checker;
+}
+
+// World Autonomy Phase II (Vision 2.0, Sprint 9), Fase 4 — o Jogador
+// fecha o banner "enquanto você esteve fora" uma vez e ele nunca mais
+// reaparece nesta sessão de módulo (o servidor já o consumiu de
+// qualquer forma, ver GET /api/character/offline-summary).
+function dismissOfflineSummary(): void {
+  globalOfflineSummary = null;
+  notifySubscribers();
 }
 
 function subscribe(listener: () => void): void {
@@ -408,6 +533,11 @@ function ensureSingletonInit(): Promise<void> {
     initPromise = fetchRealCharacter().then((real) => {
       singleton = buildSingleton(real);
       ensureIdleDriverStarted();
+      // Só personagens autenticados de verdade (GET /api/character
+      // respondeu) têm uma Sessão de servidor válida para reportar —
+      // a sessão de demonstração (real === null, ninguém logado) nunca
+      // chama a rota, que sempre devolveria 401 sem nenhum efeito útil.
+      if (real) ensurePresenceHeartbeatStarted();
     });
   }
   return initPromise;
@@ -432,17 +562,22 @@ export const __testing = {
     singleton = null;
     initPromise = null;
     if (idleTickIntervalId !== null) clearInterval(idleTickIntervalId);
+    if (presencePingIntervalId !== null) clearInterval(presencePingIntervalId);
     idleDriverInstance = null;
     idleTickIntervalId = null;
+    presencePingIntervalId = null;
     subscribers.clear();
     globalError = null;
     globalLootRejectedFeedback = [];
     globalLastTickOutcome = null;
+    globalOfflineSummary = null;
     externalBlockedCheck = null;
   },
   ensureIdleDriverStarted,
   getIdleDriverInstance: () => idleDriverInstance,
   getIdleTickIntervalId: () => idleTickIntervalId,
+  ensurePresenceHeartbeatStarted,
+  getPresencePingIntervalId: () => presencePingIntervalId,
   runGlobalTick,
   subscribe,
   unsubscribe,
@@ -554,6 +689,8 @@ export function useAdventureSession() {
     resumeIdle,
     lastTickOutcome: globalLastTickOutcome,
     msUntilNextTick,
+    offlineSummary: globalOfflineSummary,
+    dismissOfflineSummary,
   };
 }
 

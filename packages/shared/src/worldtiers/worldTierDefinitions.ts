@@ -134,6 +134,12 @@ export function combineRuntimeConfigs(dungeonConfig: DungeonRuntimeConfig, world
     rewardMultiplier: dungeonConfig.rewardMultiplier * worldConfig.rewardMultiplier,
     xpMultiplier: dungeonConfig.rewardMultiplier * worldConfig.xpMultiplier,
     lootMultiplier: dungeonConfig.rewardMultiplier * worldConfig.lootMultiplier,
+    // Sprint 33 — Map Modifiers Phase II: nem Dungeon Modifiers nem
+    // World Tier definem um eixo de raridade próprio — sempre neutro
+    // aqui; só `mapmods/mapModifierRuntimeConfig.ts` (aplicado por CIMA
+    // deste resultado, em dungeon/dungeonController.ts) multiplica de
+    // verdade este campo.
+    lootRarityMultiplier: 1,
   };
 }
 

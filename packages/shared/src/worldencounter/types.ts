@@ -132,15 +132,28 @@ export const NEUTRAL_DUNGEON_RUNTIME_CONFIG: DungeonRuntimeConfig = {
 // circular — quem CONSTRÓI este objeto (worldtiers/
 // worldTierDefinitions.ts: combineRuntimeConfigs()) importa o tipo
 // daqui, nunca o inverso.
+// Sprint 33 — Map Modifiers Phase II, Fase 4: `lootRarityMultiplier`
+// (novo campo) — o eixo de raridade que faltava aqui. `lootMultiplier`
+// já existia (World Tiers Phase I) mas nunca tinha um consumidor real
+// até esta Sprint (Fase 4: passa a alimentar a quantidade de loot via
+// `enemy/lootIntegration.ts`); `lootRarityMultiplier` nasce já com
+// consumidor real no mesmo lugar — nenhum dos dois eixos tem análogo em
+// `DungeonRuntimeConfig`/`WorldRuntimeConfig` hoje (World Tier nunca
+// definiu raridade própria), então `combineRuntimeConfigs()`
+// (worldtiers/worldTierDefinitions.ts) sempre devolve `1` (neutro) pra
+// este campo — só `mapmods/mapModifierRuntimeConfig.ts` (Sprint 33) o
+// multiplica de verdade.
 export interface CombinedRuntimeConfig extends DungeonRuntimeConfig {
   xpMultiplier: number;
   lootMultiplier: number;
+  lootRarityMultiplier: number;
 }
 
 export const NEUTRAL_COMBINED_RUNTIME_CONFIG: CombinedRuntimeConfig = {
   ...NEUTRAL_DUNGEON_RUNTIME_CONFIG,
   xpMultiplier: 1,
   lootMultiplier: 1,
+  lootRarityMultiplier: 1,
 };
 
 // Requisito 2/5 — resultado de UM grupo dentro de um encontro (ex.: "2

@@ -7,6 +7,20 @@ export interface AuthContext {
   sessionId: string | null;
 }
 
+/**
+ * Sprint Identity Core (Vision 2.0), Fase 5 — nome formal daqui pra
+ * frente para o que este arquivo inteiro já implementa: uma sessão de
+ * jogador autenticado (cookie HTTP-only + tabela `sessions` + resolução
+ * via `profileId`), nunca uma sessão de "canal"/Twitch. Alias, não um
+ * tipo novo — `AuthContext` continua sendo o nome real exportado por
+ * todo o resto do arquivo (nenhuma quebra de import existente); consumo
+ * novo deveria preferir `PlayerSession` pelo nome, pela clareza do que
+ * representa. Distinto de "World Session" (o Reino/Mundo persiste
+ * independente de qualquer PlayerSession existir — ver
+ * `docs/design/identity-core-implementation.md` Seção 6).
+ */
+export type PlayerSession = AuthContext;
+
 const SESSION_COOKIE = "streamrpg_session";
 
 export function parseCookies(req: IncomingMessage): Record<string, string> {

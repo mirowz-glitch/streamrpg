@@ -20,28 +20,32 @@ import { XP_PER_PING } from "@streamrpg/shared";
 import type { EventBus } from "../engine/EventBus.js";
 import type {
   CharacterRepository,
+  PresenceProvider,
   SessionStartedEvent,
   XPGrantedEvent,
   LevelUpEvent,
 } from "../engine/types.js";
-import { isChannelLive } from "../services/twitch.service.js";
 
 // Mantém paridade com o comportamento atual do applyPing():
 // primeiro ping de um personagem novo concede XP_PER_PING (10) imediatamente.
 const WELCOME_XP = XP_PER_PING;
 
 export class WelcomeRewardSystem {
-  constructor(private repo: CharacterRepository) {}
+  constructor(
+    private repo: CharacterRepository,
+    private presence: PresenceProvider,
+  ) {}
 
   register(bus: EventBus): () => void {
     const repo = this.repo;
+    const presence = this.presence;
     return bus.subscribe("session.started", async (event) => {
       const { characterId, channelId, timestamp } = event as SessionStartedEvent;
       try {
         const alreadyRewarded = await repo.hasReceivedWelcomeReward(characterId);
         if (alreadyRewarded) return; // saída rápida pro caso comum (personagem já não é novo)
 
-        const live = await isChannelLive(channelId);
+        const live = await presence.isLive(channelId);
         if (!live) return;
 
         // Reivindicação atômica logo antes de conceder — não depois. Se

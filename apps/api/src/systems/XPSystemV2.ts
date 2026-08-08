@@ -2,22 +2,26 @@ import { XP_PER_PING } from "@streamrpg/shared";
 import type { EventBus } from "../engine/EventBus.js";
 import type {
   CharacterRepository,
+  PresenceProvider,
   WorldTickEvent,
   XPGrantedEvent,
   LevelUpEvent,
 } from "../engine/types.js";
-import { isChannelLive } from "../services/twitch.service.js";
 
 export class XPSystem {
-  constructor(private repo: CharacterRepository) {}
+  constructor(
+    private repo: CharacterRepository,
+    private presence: PresenceProvider,
+  ) {}
 
   register(bus: EventBus): () => void {
     const repo = this.repo;
+    const presence = this.presence;
     return bus.subscribe("world.tick", async (event) => {
       if (event.sessions.length === 0) return;
 
       // Mapa channelId -> live?, existe apenas durante este tick.
-      const liveByChannel = await checkLiveStatusPerChannel(event.sessions);
+      const liveByChannel = await checkLiveStatusPerChannel(event.sessions, presence);
 
       // Reduz sessões (uma por characterId:channelId) para personagens
       // únicos. Progressão é sempre por Character — um personagem
@@ -72,8 +76,9 @@ export class XPSystem {
  * Em caso de erro na consulta de um canal específico, esse canal é
  * tratado como offline neste tick (comportamento conservador).
  */
-async function checkLiveStatusPerChannel(
+export async function checkLiveStatusPerChannel(
   sessions: WorldTickEvent["sessions"],
+  presence: PresenceProvider,
 ): Promise<Map<string, boolean>> {
   const uniqueChannelIds = Array.from(
     new Set(sessions.map((session) => session.channelId)),
@@ -82,7 +87,7 @@ async function checkLiveStatusPerChannel(
   const results = await Promise.all(
     uniqueChannelIds.map(async (channelId) => {
       try {
-        const live = await isChannelLive(channelId);
+        const live = await presence.isLive(channelId);
         return { channelId, live };
       } catch (err) {
         console.error(`[XPSystem] Erro ao verificar live do canal ${channelId}:`, err);
@@ -109,7 +114,7 @@ async function checkLiveStatusPerChannel(
  * simultaneamente, mas progresso é concedido apenas uma vez por tick.
  * Esta função reduz múltiplas sessões para um único Character elegível.
  */
-function reduceSessionsToCharacters(
+export function reduceSessionsToCharacters(
   sessions: WorldTickEvent["sessions"],
   liveByChannel: Map<string, boolean>,
 ): Map<string, boolean> {

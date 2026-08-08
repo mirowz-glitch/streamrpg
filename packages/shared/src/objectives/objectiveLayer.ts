@@ -1,5 +1,6 @@
 import { advanceAdventureWithRecovery } from "../recovery/recoveryLayer.js";
 import { checkRegionUnlock } from "../worldencounter/regionProgression.js";
+import { getMapDefinition } from "../worldmap/mapRegistry.js";
 import type { AdvanceAdventureOptions } from "../adventure/adventureLoop.js";
 import type { AdventureSession, AdventureTickResult } from "../adventure/types.js";
 import type { AdventureTimeline, FloatingNumberEvent, PresentationEvent } from "../presentation/types.js";
@@ -86,6 +87,16 @@ export function advanceAdventureWithObjectives(
       const previousRegionId = session.currentRegion;
       timeline.unlockedRegionIds.push(unlockCheck.newRegionId);
       session.currentRegion = unlockCheck.newRegionId;
+      // Sprint 31 — Map Integration Phase I, Fase 2 (achado real da
+      // auditoria de compatibilidade, Fase 7): este é o ÚNICO outro
+      // lugar do Engine (além de createAdventureSession()) que muta
+      // `session.currentRegion` — a Progressão Automática de Região
+      // (Biomes, Regions & World Progression Phase I). Sem esta linha,
+      // `currentMapId` ficaria desincronizado de `currentRegion` assim
+      // que o personagem desbloqueasse automaticamente uma nova
+      // região/bioma — exatamente o tipo de regressão silenciosa que um
+      // teste real (não só leitura de código) capturou antes da entrega.
+      session.currentMapId = getMapDefinition(unlockCheck.newRegionId)?.id ?? unlockCheck.newRegionId;
 
       const tickIndex = timeline.nextTickIndex - 1;
       const unlockedEvent: PresentationEvent = {

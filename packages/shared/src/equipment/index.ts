@@ -25,3 +25,6 @@ export * from "./stats.js";
 export * from "./upgrade.js";
 export * from "./lock.js";
 export * from "./salvage.js";
+// Sprint 22 — Living Combat Phase I: irmã de calculateCharacterStats()
+// acima, lendo itens PERSISTIDOS reais em vez da classe Equipment.
+export * from "./realEquipmentStats.js";

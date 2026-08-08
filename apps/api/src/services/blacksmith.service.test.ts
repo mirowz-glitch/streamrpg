@@ -86,6 +86,44 @@ describe("blacksmith.service — melhoria válida", () => {
   });
 });
 
+describe("blacksmith.service — raridades do Item Generator (bug fix)", () => {
+  // World Autonomy Phase II (Vision 2.0, Sprint 9) — mesma causa raiz
+  // documentada em merchant.service.test.ts: BASE_COST_BY_RARITY
+  // (equipment/upgrade.ts) só conhece as 5 raridades de ItemRarity, e a
+  // raridade crua do Item Generator ("magic"/"unique") não batia com
+  // nenhuma chave, produzindo custo NaN. Corrigido na persistência
+  // (drop.service.ts, normalizeItemRarity).
+  test("melhora um item 'magic' cobrando o custo de 'uncommon', nunca NaN", () => {
+    const item = grantAndEquipTestItem("magic", 10);
+    giveGold(1000);
+    const goldBefore = getCharacterResourceBalance(CHARACTER_ID, "gold");
+    const expectedCost = calculateUpgradeCost({ rarity: "uncommon", upgrade_level: 0 });
+
+    const result = upgradeItem(CHARACTER_ID, item.id);
+
+    assert.equal(result.success, true);
+    if (!result.success) return;
+    assert.ok(!Number.isNaN(result.cost), "cost nunca deveria ser NaN");
+    assert.equal(result.cost, expectedCost);
+    assert.equal(result.newGoldBalance, goldBefore - expectedCost);
+  });
+
+  test("melhora um item 'unique' cobrando o custo de 'legendary', nunca NaN", () => {
+    const item = grantAndEquipTestItem("unique", 10);
+    giveGold(1000);
+    const goldBefore = getCharacterResourceBalance(CHARACTER_ID, "gold");
+    const expectedCost = calculateUpgradeCost({ rarity: "legendary", upgrade_level: 0 });
+
+    const result = upgradeItem(CHARACTER_ID, item.id);
+
+    assert.equal(result.success, true);
+    if (!result.success) return;
+    assert.ok(!Number.isNaN(result.cost), "cost nunca deveria ser NaN");
+    assert.equal(result.cost, expectedCost);
+    assert.equal(result.newGoldBalance, goldBefore - expectedCost);
+  });
+});
+
 describe("blacksmith.service — Ouro insuficiente", () => {
   test("rejeita a melhoria sem debitar nem alterar o item", () => {
     const item = grantAndEquipTestItem("legendary", 20);
@@ -205,6 +243,27 @@ describe("blacksmith.service — persistência (resource_transactions)", () => {
     assert.equal(row?.kind, "debit");
     assert.equal(row?.origin, "blacksmith:upgrade");
     assert.equal(row?.result, "success");
+  });
+});
+
+describe("blacksmith.service — item selado (Sprint 11, Fase 9)", () => {
+  test("rejeita a melhoria de um item selado pela Esfera da Maldição, sem debitar nem mudar power_score", () => {
+    const item = grantAndEquipTestItem("rare", 10);
+    giveGold(1000);
+    const db = getDb();
+    db.prepare(`UPDATE items SET craft_state = 'sealed' WHERE id = (SELECT item_id FROM character_items WHERE id = ?)`).run(item.id);
+    const goldBefore = getCharacterResourceBalance(CHARACTER_ID, "gold");
+
+    const result = upgradeItem(CHARACTER_ID, item.id);
+
+    assert.equal(result.success, false);
+    if (result.success) return;
+    assert.equal(result.reason, "item-sealed");
+    assert.equal(getCharacterResourceBalance(CHARACTER_ID, "gold"), goldBefore);
+
+    const equipped = getEquippedItems(CHARACTER_ID).find((i) => i.character_item_id === item.id);
+    assert.equal(equipped?.power_score, 10);
+    assert.equal(equipped?.upgrade_level, 0);
   });
 });
 

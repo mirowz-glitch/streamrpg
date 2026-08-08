@@ -3,6 +3,7 @@ import type { AdvanceAdventureOptions } from "../adventure/adventureLoop.js";
 import type { AdventureSession, AdventureTickResult } from "../adventure/types.js";
 import type { AdventureTimeline, FloatingNumberEvent, PresentationEvent } from "../presentation/types.js";
 import { calculateFinalStats } from "../characterbuild/finalStats.js";
+import { resolveRegenBonus } from "../combat/behaviorModifiers.js";
 import { RECOVERY_CONFIG } from "./config.js";
 import type { RecoveryConfig, RecoveryResult, RecoveryStrategyType } from "./types.js";
 
@@ -78,7 +79,12 @@ export function advanceAdventureWithRecovery(
     // (resolveHealAmount(), RECOVERY_CONFIG, intocados), nunca uma
     // segunda fórmula de cura. Ausente = multiplicador 1, comportamento
     // idêntico a antes.
-    const healAmount = resolveHealAmount(config, finalStats.maximumLife) * (options.runtimeConfig?.healingMultiplier ?? 1);
+    // Sprint 23 — Sockets & Gems Phase II, Fase 6: Esmeralda
+    // (`regenPerTick`) soma vida flat à MESMA cura de fim de encontro
+    // que já existia — nunca um segundo gatilho/fórmula de cura, só
+    // mais um termo aditivo antes do multiplicador de runtime.
+    const regenBonus = resolveRegenBonus(session.character.realCombatSnapshot?.activeBehaviors ?? []);
+    const healAmount = (resolveHealAmount(config, finalStats.maximumLife) + regenBonus) * (options.runtimeConfig?.healingMultiplier ?? 1);
     const lifeBefore = session.character.currentLife;
     const lifeAfter = Math.min(finalStats.maximumLife, lifeBefore + healAmount);
     const lifeHealed = lifeAfter - lifeBefore;

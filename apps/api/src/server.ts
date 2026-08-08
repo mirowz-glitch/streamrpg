@@ -18,6 +18,12 @@ import { chronicleRoutes } from "./routes/chronicle.js";
 import { merchantRoutes } from "./routes/merchant.js";
 import { blacksmithRoutes } from "./routes/blacksmith.js";
 import { salvageRoutes } from "./routes/salvage.js";
+import { kingdomDomainRoutes } from "./routes/kingdoms.js";
+import { kingdomIntegrationRoutes } from "./routes/kingdomIntegration.js";
+import { citizenRoutes } from "./routes/citizen.js";
+import { housingRoutes } from "./routes/housing.js";
+import { realEstateRoutes } from "./routes/realEstate.js";
+import { presenceRoutes } from "./routes/presence.js";
 import { seedItems } from "./services/items.service.js";
 import { seedIdentityCatalog } from "./services/identity.service.js";
 import { sessionManager } from "./engine/SessionManager.js";
@@ -46,6 +52,13 @@ import { KingdomPrestigeSystem } from "./systems/KingdomPrestigeSystem.js";
 import { DebugEventSubscriber } from "./debug/DebugEventSubscriber.js";
 import { WorldEventSubscriber } from "./services/world-state.service.js";
 import { KingdomNewsSystem } from "./systems/KingdomNewsSystem.js";
+import { WorldPresenceSystem } from "./systems/WorldPresenceSystem.js";
+import { playerPresenceProvider } from "./services/presence.service.js";
+import { worldPresenceRoutes } from "./routes/worldPresence.js";
+import { registerActivityFeedBusListeners } from "./services/activityFeed.service.js";
+import { activityFeedRoutes } from "./routes/activityFeed.js";
+import { notificationsRoutes } from "./routes/notifications.js";
+import { worldNewsRoutes } from "./routes/worldNews.js";
 
 const routes: Route[] = [
   ...authRoutes,
@@ -62,6 +75,27 @@ const routes: Route[] = [
   ...merchantRoutes,
   ...blacksmithRoutes,
   ...salvageRoutes,
+  // kingdomIntegrationRoutes ANTES de kingdomDomainRoutes: GET
+  // /api/kingdom/integrations (rota estática) precisa ser testada
+  // antes de GET /api/kingdom/:slug (rota dinâmica, kingdomDomainRoutes)
+  // — mesmo número de segmentos, mesma classe de colisão já documentada
+  // em Real Estate Phase I (ver routes/kingdomIntegration.ts).
+  ...kingdomIntegrationRoutes,
+  ...kingdomDomainRoutes,
+  ...citizenRoutes,
+  // realEstateRoutes ANTES de housingRoutes: GET /api/house/sales (rota
+  // estática) precisa ser testada antes de GET /api/house/:id (rota
+  // dinâmica, housingRoutes) — mesmo número de segmentos, o roteador
+  // (middleware/router.ts) casa na ordem do array e devolveria "sales"
+  // como se fosse um house id se a ordem fosse invertida. Ver Fase 6 de
+  // docs/design/real-estate-phase1-implementation.md.
+  ...realEstateRoutes,
+  ...housingRoutes,
+  ...presenceRoutes,
+  ...worldPresenceRoutes,
+  ...activityFeedRoutes,
+  ...notificationsRoutes,
+  ...worldNewsRoutes,
 ];
 
 getDb();
@@ -72,9 +106,20 @@ const characterRepository = new SQLiteCharacterRepository();
 const bus = new EventBus();
 sessionManager.setEventBus(bus);
 const engine = new GameEngine(bus, sessionManager);
-const xpSystem = new XPSystem(characterRepository);
+// World Autonomy Phase I (Vision 2.0, Sprint 7) — XPSystem/
+// WelcomeRewardSystem passam a usar playerPresenceProvider em vez de
+// twitchPresenceProvider: presença real do Jogador (SessionManager),
+// nunca "canal ao vivo na Twitch" (achado mais severo da Fase 1 —
+// nenhum dos dois produzia efeito nenhum sem uma live Twitch real
+// acontecendo). Nenhuma linha dos Systems muda — só qual
+// PresenceProvider a fronteira de composição injeta (mesmo ponto de
+// extensão que services/presence.service.ts já documentava desde a
+// Sprint Identity Core). twitchPresenceProvider continua exportado,
+// disponível para uma futura Sprint Cross Platform usá-lo como bônus
+// opcional, nunca como requisito.
+const xpSystem = new XPSystem(characterRepository, playerPresenceProvider);
 xpSystem.register(bus);
-const welcomeRewardSystem = new WelcomeRewardSystem(characterRepository);
+const welcomeRewardSystem = new WelcomeRewardSystem(characterRepository, playerPresenceProvider);
 welcomeRewardSystem.register(bus);
 const itemRepository = new SQLiteItemRepository();
 const randomProvider = new RandomProviderImpl();
@@ -97,7 +142,7 @@ firstItemQuestSystem.register(bus);
 const bossRepository = new SQLiteBossRepository();
 const bossParticipationRepository = new SQLiteBossParticipationRepository();
 const bossRewardRepository = new SQLiteBossRewardRepository();
-const bossSpawnSystem = new BossSpawnSystem(bossRepository);
+const bossSpawnSystem = new BossSpawnSystem(bossRepository, playerPresenceProvider);
 bossSpawnSystem.register(bus);
 const bossParticipationSystem = new BossParticipationSystem(bossRepository, bossParticipationRepository);
 bossParticipationSystem.register(bus);
@@ -161,6 +206,20 @@ new WorldEventSubscriber().register(bus);
 // separado da Timeline acima; mesmo espírito (sempre ativo, read-only,
 // nenhuma regra de jogo, remoção seria inócua).
 new KingdomNewsSystem().register(bus);
+
+// World Autonomy Phase II (Vision 2.0, Sprint 9, Fase 3 — World Tick) —
+// primeiro consumidor a transformar o "world.tick" que a GameEngine já
+// emite sozinha (independente de qualquer Jogador presente) em estado
+// real do Mundo (horário/dia/clima/regiões ativas). Mesmo padrão de
+// WorldEventSubscriber/KingdomNewsSystem acima: sempre ativo, read-only,
+// nenhuma regra de jogo.
+new WorldPresenceSystem().register(bus);
+
+// World Autonomy Phase II (Vision 2.0, Sprint 9), Fase 6 — Activity
+// Feed: boss.defeated é o único dos 4 gatilhos deste Fase que já tinha
+// EventBus; Housing/Kingdom/Real Estate/item lendário chamam
+// pushActivityFeedEntry() direto no ponto de sucesso (ver cada serviço).
+registerActivityFeedBusListeners(bus);
 
 bus.subscribe("world.tick", (event) => {
   console.log(`[Engine] World Tick #${event.tickNumber} — sessões ativas: ${event.sessions.length}`);

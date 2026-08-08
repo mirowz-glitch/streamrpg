@@ -6,6 +6,27 @@ function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Sprint 22 — Living Combat Phase I: fixture mínima de CombatSnapshotDTO
+// pros testes que passam um RealCharacterSnapshot completo — os valores
+// numéricos não importam pra estes testes (cobrem persistência de
+// singleton/XP/ouro, não o Combat Snapshot em si, já coberto em
+// packages/shared/src/adventure/realCombatSnapshot.test.ts).
+const fakeCombatSnapshot = {
+  attack: 0,
+  defense: 0,
+  life: 0,
+  mana: 0,
+  critical: 0,
+  attackSpeed: 0,
+  magic: 0,
+  powerScore: 0,
+  itemScore: 0,
+  derivedStats: { accuracy: 0, movementSpeed: 0, lifeLeech: 0, resistances: { physical: 0, fire: 0, cold: 0, lightning: 0 } },
+  // Sprint 23 — Sockets & Gems Phase II: campo novo obrigatório em
+  // CombatSnapshotDTO, sem comportamentos ativos nesta fixture.
+  activeBehaviors: [],
+};
+
 // Adventure Session Persistence — RC1 Blocker Fix: estes testes cobrem
 // só a garantia que importa pro bug B1 (não o motor de combate, já
 // coberto em packages/shared) — o singleton de módulo NÃO deve ser
@@ -66,7 +87,7 @@ describe("useAdventureSession — persistência entre remontagens", () => {
   });
 
   test("buildSingleton(real) reconstrói o XP acumulado e o ouro a partir do personagem persistido, não reinicia do zero", () => {
-    const singleton = __testing.buildSingleton({ level: 3, xp: 50, gold: 200 });
+    const singleton = __testing.buildSingleton({ level: 3, xp: 50, gold: 200, combatSnapshot: fakeCombatSnapshot });
     assert.equal(singleton.isDemoSession, false);
     assert.equal(singleton.lastSynced.gold, 200);
     assert.ok(singleton.lastSynced.xp > 50, "deve incluir o XP acumulado de níveis anteriores, não só o XP-no-nível");
@@ -263,5 +284,44 @@ describe("useAdventureSession — Global Idle System (IdleDriver + tick global)"
 
     assert.equal(afterTickIndex, startingTickIndex, "com o bloqueio sempre ativo (ex.: Level Up ainda na tela), nenhum tick automático deveria ter ocorrido em 300ms mesmo com um intervalo de 50ms");
     __testing.registerIdleBlockChecker(null);
+  });
+});
+
+// World Autonomy Phase I (Vision 2.0, Sprint 7), Fase 3 — Player Session:
+// o heartbeat de presença (POST /api/presence/ping) não depende de
+// nenhum "canal"/Twitch para existir, ao contrário do antigo usePing()
+// (que exige um canal digitado). Sem servidor real rodando neste
+// ambiente de teste, `ensureSingletonInit()` sempre resolve `real` como
+// `null` (fetchRealCharacter() captura a falha de rede) — por isso estes
+// testes chamam `ensurePresenceHeartbeatStarted()` diretamente (exposta
+// via __testing), o mesmo padrão já usado para `ensureIdleDriverStarted`.
+describe("useAdventureSession — Player Session heartbeat (presença sem canal/Twitch)", () => {
+  beforeEach(() => {
+    __testing.resetSingleton();
+  });
+
+  afterEach(() => {
+    __testing.resetSingleton();
+  });
+
+  test("ensurePresenceHeartbeatStarted() registra um interval (getPresencePingIntervalId deixa de ser null)", () => {
+    assert.equal(__testing.getPresencePingIntervalId(), null);
+    __testing.ensurePresenceHeartbeatStarted(1000);
+    assert.notEqual(__testing.getPresencePingIntervalId(), null);
+  });
+
+  test("chamado de novo com um heartbeat já ativo não substitui o interval existente (mesma proteção de ensureIdleDriverStarted)", () => {
+    __testing.ensurePresenceHeartbeatStarted(1000);
+    const first = __testing.getPresencePingIntervalId();
+    __testing.ensurePresenceHeartbeatStarted(1000);
+    const second = __testing.getPresencePingIntervalId();
+    assert.equal(first, second);
+  });
+
+  test("resetSingleton() (equivalente a um F5 real) limpa o interval do heartbeat de volta a null", () => {
+    __testing.ensurePresenceHeartbeatStarted(1000);
+    assert.notEqual(__testing.getPresencePingIntervalId(), null);
+    __testing.resetSingleton();
+    assert.equal(__testing.getPresencePingIntervalId(), null);
   });
 });

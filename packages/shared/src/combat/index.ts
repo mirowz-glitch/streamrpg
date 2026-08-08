@@ -26,3 +26,9 @@ export * from "./damageTypes.js";
 export * from "./config.js";
 export * from "./pipeline.js";
 export * from "./combatEngine.js";
+// Sprint 22 — Living Combat Phase I: Combat Resolver + Combat Snapshot,
+// a fonte única usada por Character API/Adventure/Idle/Dungeon/Boss.
+export * from "./combatSnapshot.js";
+// Sprint 23 — Sockets & Gems Phase II: tradução de Gem Behaviors pros
+// hooks do Combat Engine, reusada por Adventure/Dungeon/Boss/Recovery.
+export * from "./behaviorModifiers.js";

@@ -38,6 +38,20 @@ Cada item é classificado em exatamente uma categoria:
 | F4 | Identidade visual própria (hoje 100% emoji, sem paleta/fonte/logo dedicados) | Não comunicado explicitamente na interface — registrar aqui para que o moderador saiba responder se um participante perguntar |
 | F5 | Efeitos sonoros e música | Ausentes, sem indicação na interface — mesmo tratamento que F4 |
 
+## Known Integration Gaps (congelados — RC-1, Fase 3 de Integração)
+
+Achados reais da Fase 3 (Integração) do Sprint RC-1 — Vertical Slice / Live Test (2026-08-07), que **não são bugs corrigíveis com uma mudança pontual**: cada um exigiria um novo sistema, um redesenho de modelo de dados, ou infraestrutura ainda não construída. Diferente da tabela de Bugs acima (achados do freeze audit de 2026-07-26), esta seção é específica da Fase 3 e existe para que nenhuma Sprint futura os redescubra do zero ou tente "corrigir" com um patch pontual fora de escopo.
+
+**Regra**: estes itens ficam **congelados** até que uma Sprint dedicada os aborde explicitamente. Nenhuma Sprint deve reportá-los como "bug novo encontrado" nem tentar uma correção pontual — a correção real de cada um está descrita na coluna "O que a correção real exige".
+
+| # | Descrição | Onde | O que a correção real exige |
+| --- | --- | --- | --- |
+| G1 | Multi-tab/multi-dispositivo duplica XP/Gold/Loot — `useAdventureSession.ts` dedupe é só por-módulo (uma aba); `/api/character/adventure/xp`, `/gold` e `/api/items/loot` aceitam qualquer delta do cliente sem token de idempotência nem trava de sessão ativa | `apps/web/src/hooks/useAdventureSession.ts`, `apps/api/src/routes/character.ts`, `apps/api/src/routes/items.ts` | Infraestrutura de sessão exclusiva por personagem + idempotência nas rotas de sync — um novo sistema, não um fix pontual |
+| G2 | `BossSpawnSystem` (World Boss) falha em todo `world.tick` com `FOREIGN KEY constraint failed` para qualquer sessão cujo `channelId` não existe em `streamer_channels` — confirmado ao vivo, repete continuamente durante toda a sessão | `apps/api/src/systems/BossSpawnSystem.ts`, `apps/api/src/infrastructure/SQLiteBossRepository.ts` | Redesenho do modelo de canal do World Boss pós-desacoplamento do Twitch — já nomeado como gap da "World Events Sprint" desde World Autonomy Phase II (2026-08-01) |
+| G3 | UI usa um objeto `Equipment` local desatualizado para textos de feedback ("loot rejeitado", power score mostrado) — nunca é sincronizado após transações de Cidade (Blacksmith/Merchant/Salvage); combate real não é afetado (usa `realCombatSnapshot`, sempre correto) | `apps/web/src/hooks/useAdventureSession.ts` (`session.character.equipment`) | Sincronizar o objeto Equipment local com o estado real do personagem, ou eliminar essa cópia local em favor do Combat Snapshot em todo lugar — mudança arquitetural, não um fix pontual |
+| G4 | Sincronização de XP/Gold com o servidor é fire-and-forget sem retry — uma falha de rede pontual descarta o delta daquele tick permanentemente | `apps/web/src/hooks/useAdventureSession.ts` (`persistTick`) | Fila de retry ou sincronização baseada em confirmação — já documentado no próprio código como gap conhecido |
+| G5 | Janela residual "Boss derrotado mas Dungeon marca Falha" em Fortaleza Sombria — já reduzida de ~90 para ~12 encontros numa Sprint anterior, não eliminada; morrer nesse trecho pós-boss faz perder o banner/bônus de conclusão da Dungeon mesmo já tendo a recompensa do boss | `packages/shared/src/expeditions/expeditionDefinitions.ts`, `packages/shared/src/dungeon/dungeonController.ts` | Desacoplar "Boss derrotado" de "Dungeon completada" no estado da expedição — mudança de modelo de estado, não um ajuste de número |
+
 ---
 
 ## Como usar este documento

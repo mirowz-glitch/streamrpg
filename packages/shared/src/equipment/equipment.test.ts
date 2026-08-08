@@ -211,6 +211,9 @@ describe("Equipment System Phase I", () => {
         lifeLeech: 0,
         resistances: { physical: 0, fire: 0, cold: 0, lightning: 0 },
         powerScore: 0,
+        // Sprint 22 — Living Combat Phase I: campos novos de CharacterStats.
+        mana: 0,
+        movementSpeed: 0,
       });
     });
 
@@ -238,7 +241,6 @@ describe("Equipment System Phase I", () => {
     });
 
     it("mods de Life somam em stats.life; Strength (fora dos 10 stats pedidos) é ignorado", () => {
-      const { inventory, equipment } = setup();
       let found = false;
       for (let seed = 0; seed < 200 && !found; seed++) {
         const item = generateItem("chest", 70, seed);

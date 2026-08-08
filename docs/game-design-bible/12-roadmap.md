@@ -1,6 +1,16 @@
 # 12. Roadmap
 
-**Status:** ✅ Estável
+**Status:** 🗂️ Histórico — válido como registro do que foi decidido até Marco
+1.0, mas **não é mais a sequência vigente a partir de Kingdoms em diante**.
+A ordem oficial de Sprints para a era Kingdom/World-Foundation (tudo depois
+do RC1 vertical slice) vive exclusivamente em
+[`docs/design/new-roadmap.md`](../design/new-roadmap.md) — este capítulo não
+deve ser lido como concorrente daquele documento. A lista "BossSystem →
+QuestSystem → Kingdoms → Economia 1.0 → Marketplace → Referral →
+MetricsSystem" abaixo é a ordem que fazia sentido na era do Engine
+legado (EventBus/Systems, anterior ao RC1 vertical slice e ao pivot de
+independência da Twitch) — mantida aqui só como registro histórico de
+decisão, nunca como guia de sequenciamento atual.
 
 ## Migração da Engine — concluída (Marco 1.0)
 
@@ -31,5 +41,6 @@ uma revisão de plataforma "saindo do beta".
 
 ## Dependências
 
-Nenhuma — este capítulo consolida a sequência de construção já decidida em
-todos os outros; reflete decisões, não impõe novas.
+Nenhuma — este capítulo consolida a sequência de construção decidida até
+Marco 1.0. Para a sequência vigente a partir de Kingdoms, ver
+`docs/design/new-roadmap.md`, não este capítulo.

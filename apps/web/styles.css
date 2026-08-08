@@ -165,6 +165,58 @@ nav {
 .error {
   color: #ff6b6b;
 }
+/* Sprint Kingdom Domain 2.0 (Vision 2.0, Sprint 2) — tela mínima
+   deliberada, sem estilo visual complexo. */
+.kingdom-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.kingdom-list-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0.9rem;
+}
+.citizen-membership {
+  margin: 1rem 0;
+  padding: 0.75rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.citizen-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.citizen-rank-ladder {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.citizen-rank-ladder li {
+  padding: 0.25rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  opacity: 0.5;
+}
+.citizen-rank-ladder li.citizen-rank-current {
+  opacity: 1;
+  border-color: #fbbc04;
+  font-weight: 700;
+}
 .level-up {
   color: #fbbc04;
   font-weight: 700;
@@ -208,6 +260,15 @@ nav {
   color: #9aa0a6;
   font-size: 0.78rem;
   font-style: italic;
+}
+/* Sprint 14 — Legendary Items + Legacy System, Fase 9: mesma base de
+   .item-origin, cor/peso levemente destacados só pro título automático
+   (Fase 7) — nunca um estilo novo do zero. */
+.item-legacy-title {
+  margin: 0.3rem 0 0;
+  color: #d4af37;
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 .item-actions {
   flex-shrink: 0;
@@ -444,6 +505,21 @@ nav {
 }
 .power-grid span {
   color: #9aa0a6;
+}
+/* Sprint 23 — Sockets & Gems Phase II, Fase 10: "Gema → Efeito →
+   Comportamento" — lista simples, mesma tipografia de .power-summary,
+   nenhum estilo novo além do necessário pra alinhar as linhas. */
+.gem-behavior-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.gem-behavior-list li {
+  font-size: 0.9rem;
+  color: #e8eaed;
 }
 
 /* Sprint Boss Experience */
@@ -3926,6 +4002,38 @@ nav {
 }
 .hud-session-safety-banner-text strong {
   color: #fbbc04;
+}
+
+/* World Autonomy Phase II (Vision 2.0, Sprint 9), Fase 4 — Offline Summary. */
+.offline-summary-banner {
+  border: 1px solid #4a9eff;
+  background: rgba(74, 158, 255, 0.08);
+  margin-bottom: 0.75rem;
+}
+.offline-summary-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.offline-summary-header h2 {
+  margin: 0;
+}
+.offline-summary-dismiss {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.2rem 0.4rem;
+}
+.offline-summary-list {
+  margin: 0.5rem 0;
+  padding-left: 1.2rem;
+}
+.offline-summary-list li {
+  margin-bottom: 0.25rem;
 }
 
 .hud-leave-session-overlay {

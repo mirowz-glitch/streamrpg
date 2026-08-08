@@ -1,8 +1,9 @@
 import { EquipmentLockError, calculateSalvageRewards, type EconomicEvent, type InventoryItem, type SalvageReward } from "@streamrpg/shared";
 import { getDb } from "../config/database.js";
-import { listInventory, removeItem } from "./drop.service.js";
+import { listInventory, recordItemHistoryEvent, removeItem } from "./drop.service.js";
 import { creditCharacterResourceInTransaction } from "./economy.service.js";
 import { equipmentLock } from "./equipmentLock.service.js";
+import { unsocketAllGemsForItem } from "./gem.service.js";
 
 export type DismantleItemFailureReason = "item-not-found" | "item-not-eligible" | "credit-rejected" | "item-locked";
 
@@ -78,6 +79,16 @@ export function dismantleItem(characterId: string, characterItemId: number): Dis
           }
           events.push(outcome.event);
         }
+        // Sprint 14 — Legendary Items + Legacy System, Fase 3/5: mesmo
+        // princípio do Merchant — grava antes de removeItem() remover a
+        // posse; a linha de `items` sobrevive pra sempre.
+        const detail = rewards.map((r) => `${r.resourceId}:${r.amount}`).join(",");
+        recordItemHistoryEvent(item.item_id, item.history, "salvaged", characterId, detail);
+        // Sprint 15 — Sockets + Gem System (Foundation), Fase 10
+        // (Compatibilidade): mesmo princípio do Merchant — ANTES de
+        // removeItem(), nenhuma Gema fica apontando pra um item
+        // desmontado.
+        unsocketAllGemsForItem(item.item_id, "salvaged");
         removeItem(characterId, characterItemId);
         db.exec("COMMIT");
         return { success: true, item, rewards, events };

@@ -1,13 +1,41 @@
 export const SCHEMA = `
+-- Sprint Identity Core (Vision 2.0) — twitch_id NÃO é mais NOT NULL aqui:
+-- uma Pessoa não exige mais uma identidade Twitch para existir. Bancos já
+-- existentes (que criaram esta tabela antes desta Sprint, com a constraint
+-- antiga) são corrigidos por runMigrations() em database.ts (rebuild de
+-- tabela — SQLite não tem ALTER COLUMN DROP NOT NULL). Nenhum código novo
+-- deve tratar profiles.twitch_id como a identidade — ver a tabela
+-- accounts abaixo, o vínculo de autenticação real (docs/design/
+-- identity-core.md).
 CREATE TABLE IF NOT EXISTS profiles (
   id TEXT PRIMARY KEY,
-  twitch_id TEXT NOT NULL UNIQUE,
+  twitch_id TEXT UNIQUE,
   username TEXT NOT NULL,
   avatar_url TEXT,
   email TEXT,
   created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
   updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
 );
+
+-- Sprint Identity Core (Vision 2.0) — o Vínculo de Autenticação
+-- (docs/design/identity-core.md Seção 2): uma Pessoa (profiles) pode ter
+-- zero, um, ou vários vínculos (Google/Discord/E-mail/Twitch/Kick/
+-- YouTube), nunca o inverso. Nenhum provedor é dono da Pessoa — só prova
+-- quem ela é. Nesta Sprint só "twitch" é populado de verdade (login real);
+-- os demais provedores só existem como valor possível da coluna provider,
+-- arquitetura pronta sem OAuth implementado (ver docs/design/
+-- login-providers.md — "Sem OAuth" é explícito nesta Sprint).
+CREATE TABLE IF NOT EXISTS accounts (
+  id TEXT PRIMARY KEY,
+  profile_id TEXT NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  provider TEXT NOT NULL CHECK (provider IN ('twitch', 'google', 'discord', 'kick', 'youtube', 'email')),
+  provider_user_id TEXT NOT NULL,
+  connected_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+  UNIQUE (provider, provider_user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_accounts_profile
+  ON accounts(profile_id);
 
 CREATE TABLE IF NOT EXISTS streamer_channels (
   id TEXT PRIMARY KEY,
@@ -312,4 +340,214 @@ CREATE TABLE IF NOT EXISTS resource_transactions (
 
 CREATE INDEX IF NOT EXISTS idx_resource_transactions_character
   ON resource_transactions(character_id, created_at DESC);
+
+-- Sprint Kingdom Domain 2.0 (Vision 2.0, Sprint 2) — o Reino como domínio
+-- permanente do mundo, nunca uma live/canal/plataforma (docs/design/
+-- kingdom-domain-2.0.md). Tabela NOVA e ADITIVA, deliberadamente separada
+-- de streamer_channels (o modelo antigo, ainda em uso por Kingdom
+-- Prestige/Boss/City nesta Sprint — não tocado, não migrado; ver Fase 7
+-- de docs/design/kingdom-domain-implementation.md). founder_profile_id
+-- nunca muda depois de fundado (fato histórico permanente);
+-- leader_profile_id é quem lidera agora (hoje sempre = founder, já que
+-- liderança plugável/Coroa/Eleição/Guilda/Conquista é escopo do Citizen
+-- System e de Sprints futuras, nunca implementadas aqui). "history" (do
+-- brief) é deliberadamente NÃO uma coluna aqui — mapeia para uma futura
+-- tabela de Crônica do Reino, mesmo padrão de character_chronicles, fora
+-- de escopo desta Sprint ("sem implementar funcionalidades futuras").
+CREATE TABLE IF NOT EXISTS kingdoms (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  description TEXT NOT NULL DEFAULT '',
+  founder_profile_id TEXT REFERENCES profiles(id) ON DELETE SET NULL,
+  leader_profile_id TEXT REFERENCES profiles(id) ON DELETE SET NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'dormant')),
+  visibility TEXT NOT NULL DEFAULT 'public' CHECK (visibility IN ('public', 'private')),
+  banner TEXT,
+  symbol TEXT,
+  motto TEXT,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+  updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_kingdoms_slug
+  ON kingdoms(slug);
+
+CREATE INDEX IF NOT EXISTS idx_kingdoms_status
+  ON kingdoms(status);
+
+-- Sprint Citizen System (Vision 2.0, Sprint 3) — a ligação permanente
+-- entre Character e Kingdom (docs/design/citizen-system.md), substituindo
+-- "assistiu = membro" por "escolheu morar". Tabela NOVA e ADITIVA,
+-- separada de streamer_channels/viewer_sessions/channel_rankings (o
+-- modelo antigo, ainda em uso por Kingdom Prestige nesta Sprint — não
+-- tocado, ver Fase 1 de docs/design/citizen-system-implementation.md).
+-- character_id é UNIQUE: um personagem só pode ter uma linha aqui por
+-- vez (Fase 7 do brief — "um personagem só pode pertencer a um Reino por
+-- vez"). Trocar de Reino atualiza a mesma linha (kingdom_id + joined_at
+-- reiniciam, per citizen-system.md Seção 4) em vez de criar uma segunda
+-- linha; sair (leave) marca status='left' sem apagar a linha — nenhuma
+-- consequência de troca (impostos, penalidade, histórico multi-Reino
+-- completo) é implementada aqui, per Fase 7/DoD do brief ("apenas troca,
+-- nada mais"). is_founder/is_leader são deliberadamente NÃO colunas
+-- aqui — ver comentário em packages/shared/src/types.ts.
+CREATE TABLE IF NOT EXISTS citizens (
+  id TEXT PRIMARY KEY,
+  character_id TEXT NOT NULL UNIQUE REFERENCES characters(id) ON DELETE CASCADE,
+  kingdom_id TEXT NOT NULL REFERENCES kingdoms(id) ON DELETE CASCADE,
+  joined_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'left')),
+  rank TEXT NOT NULL DEFAULT 'residente' CHECK (rank IN ('residente', 'cidadao', 'veterano', 'lenda')),
+  notes TEXT,
+  last_activity INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_citizens_kingdom
+  ON citizens(kingdom_id, status);
+
+-- Sprint Housing Phase I (Vision 2.0, Sprint 5) — a Casa como primeiro
+-- ativo verdadeiramente permanente do mundo (docs/design/
+-- housing-phase1.md). Tabela NOVA e ADITIVA. current_owner_character_id
+-- e original_builder_character_id nunca usam ON DELETE CASCADE/SET NULL
+-- deliberadamente — uma Casa nunca deveria perder seu construtor
+-- original nem ficar sem dono por causa da exclusão de um personagem (a
+-- própria filosofia da Sprint: "a casa permanece no mundo... o
+-- histórico nunca desaparece"). district/plot são texto livre — a
+-- divisão real em bairros com capacidade é escopo futuro. O campo
+-- history é um log append-only serializado em JSON (ver HouseHistoryEvent em
+-- packages/shared/src/types.ts) — nunca editado, só recebe novas
+-- entradas a cada fato (construção, transferência).
+CREATE TABLE IF NOT EXISTS houses (
+  id TEXT PRIMARY KEY,
+  kingdom_id TEXT NOT NULL REFERENCES kingdoms(id) ON DELETE CASCADE,
+  district TEXT,
+  plot TEXT,
+  name TEXT NOT NULL,
+  current_owner_character_id TEXT NOT NULL REFERENCES characters(id),
+  original_builder_character_id TEXT NOT NULL REFERENCES characters(id),
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'abandoned')),
+  house_type TEXT NOT NULL DEFAULT 'residencia',
+  history TEXT NOT NULL DEFAULT '[]'
+);
+
+CREATE INDEX IF NOT EXISTS idx_houses_kingdom
+  ON houses(kingdom_id, status);
+
+-- Sprint Real Estate Phase I (Vision 2.0, Sprint 6) — o Mercado
+-- Imobiliário do Reino (docs/design/real-estate.md). Tabela NOVA e
+-- ADITIVA, separada de houses — nunca escrita diretamente por esta
+-- feature; a única forma de mudar o dono de uma Casa continua sendo
+-- transferOwnership() (housing.service.ts), reaproveitado por
+-- realEstate.service.ts (Fase 4 do brief, "nunca duplicar regra").
+-- status cobre o ciclo trivial desta Sprint: 'active' (anunciada) →
+-- 'sold' ou 'cancelled' — nenhum leilão, imposto ou tomada pelo Reino.
+CREATE TABLE IF NOT EXISTS house_sales (
+  id TEXT PRIMARY KEY,
+  house_id TEXT NOT NULL REFERENCES houses(id) ON DELETE CASCADE,
+  seller_character_id TEXT NOT NULL REFERENCES characters(id),
+  asking_price REAL NOT NULL,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'sold', 'cancelled')),
+  buyer_character_id TEXT REFERENCES characters(id),
+  sold_at INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS idx_house_sales_house
+  ON house_sales(house_id, status);
+
+CREATE INDEX IF NOT EXISTS idx_house_sales_status
+  ON house_sales(status);
+
+-- Kingdom Integration Phase I (Vision 2.0, Sprint 8) -- Streamer vira
+-- apenas uma Integracao de Reino, nunca um requisito, nunca dono do
+-- Reino. Tabela nova e aditiva: um Reino pode ter zero, uma ou varias
+-- integracoes. A coluna provider e deliberadamente sem CHECK fechado
+-- (era CHECK IN twitch/kick/youtube na Sprint anterior) -- o brief e
+-- explicito: nao limitar providers, nunca usar enum Twitch-only.
+-- Desconectar nunca apaga a linha (status vira disconnected), mesma
+-- filosofia de nunca apagar historico ja usada por Housing/Real
+-- Estate -- reconectar o mesmo provider atualiza a linha existente de
+-- volta para connected em vez de duplicar.
+CREATE TABLE IF NOT EXISTS kingdom_integrations (
+  id TEXT PRIMARY KEY,
+  kingdom_id TEXT NOT NULL REFERENCES kingdoms(id) ON DELETE CASCADE,
+  provider TEXT NOT NULL,
+  external_id TEXT NOT NULL,
+  display_name TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'connected' CHECK (status IN ('connected', 'disconnected')),
+  connected_at INTEGER NOT NULL DEFAULT (strftime('%s','now')),
+  metadata TEXT,
+  UNIQUE (kingdom_id, provider)
+);
+
+CREATE INDEX IF NOT EXISTS idx_kingdom_integrations_kingdom
+  ON kingdom_integrations(kingdom_id);
+
+-- Sprint 12 (Crafting Phase I, Sphere System) -- posse de Esferas por
+-- personagem. "Esferas nao podem ser compradas... entram no mundo
+-- apenas por gameplay" -- esta tabela so guarda QUANTIDADE possuida,
+-- nunca um catalogo de loja. Nenhuma linha eh criada por nenhum fluxo
+-- de compra/drop real ainda (ver scripts/qaGrantSpheres.ts, a UNICA
+-- fonte de escrita nesta Sprint). PRIMARY KEY composta (character_id,
+-- sphere_id) -- no maximo uma pilha por Esfera por personagem, mesmo
+-- padrao de UPSERT ja usado por character_resources (Economy Core).
+CREATE TABLE IF NOT EXISTS character_spheres (
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  sphere_id TEXT NOT NULL,
+  quantity INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (character_id, sphere_id)
+);
+
+-- Sprint 15 (Sockets + Gem System, Foundation) -- uma Gema tem
+-- identidade PROPRIA (id/tier/quality/level/experience/history),
+-- diferente de Esfera (fungivel, so quantidade) -- por isso cada linha
+-- eh UMA instancia, mesmo padrao da tabela items (nao um par
+-- character/quantidade como character_spheres). socketed_item_id
+-- referencia items.id (o catalogo procedural, nunca character_items
+-- -- a mesma linha de item sobrevive a venda/desmontagem, ver Sprint 14);
+-- NULL = Gema solta na posse do personagem, nunca socketada ainda ou
+-- removida de um item. ON DELETE SET NULL -- se a linha de item um
+-- dia for removida por outro motivo, a Gema nunca eh apagada junto
+-- (ela sobrevive, so fica solta) -- "Gemas nunca alteram a
+-- identidade do Item" tambem quer dizer o inverso: o item nunca
+-- carrega a Gema pra sua propria morte.
+CREATE TABLE IF NOT EXISTS gems (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  gem_type TEXT NOT NULL,
+  tier INTEGER NOT NULL DEFAULT 1,
+  quality TEXT NOT NULL DEFAULT '{"value":0}',
+  level INTEGER NOT NULL DEFAULT 1,
+  experience INTEGER NOT NULL DEFAULT 0,
+  history TEXT NOT NULL,
+  socketed_item_id INTEGER REFERENCES items(id) ON DELETE SET NULL,
+  socketed_socket_id TEXT,
+  created_at INTEGER NOT NULL DEFAULT (strftime('%s','now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_gems_character
+  ON gems(character_id);
+CREATE INDEX IF NOT EXISTS idx_gems_socketed_item
+  ON gems(socketed_item_id);
+
+-- Sprint 18 (Mythic Foundation) -- registro global de quem foi o
+-- PRIMEIRO a revelar cada Item Mitico no servidor (mythic_id como
+-- PRIMARY KEY -- no maximo UMA linha por Mitico, para sempre). "Nunca
+-- apagar. Nunca sobrescrever." -- a camada de servico so faz INSERT
+-- OR IGNORE (mesmo espirito first-write-wins de
+-- mythic/discovery.ts, packages/shared); nenhum UPDATE/DELETE real
+-- nesta tabela jamais. first_kingdom_id fica NULL quando o
+-- personagem que revelou nao pertencia a nenhum Reino no momento --
+-- sem FK pra kingdoms porque um Reino pode em tese deixar de existir
+-- (nunca acontece por design, mas a tabela nao deve travar nesse
+-- caso hipotetico). "Sem ranking, sem UI" -- nenhuma coluna de
+-- ordenacao/contagem, so o fato pontual.
+CREATE TABLE IF NOT EXISTS mythic_discoveries (
+  mythic_id TEXT PRIMARY KEY,
+  first_character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+  first_kingdom_id TEXT,
+  first_at TEXT NOT NULL,
+  server TEXT NOT NULL
+);
 `;

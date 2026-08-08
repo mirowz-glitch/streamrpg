@@ -2,6 +2,11 @@ import type { CharacterBuild } from "../characterbuild/characterBuild.js";
 import { Inventory } from "../inventory/inventory.js";
 import { Equipment } from "../equipment/equipment.js";
 import type { WorldEncounter, EncounterVariant } from "../worldencounter/types.js";
+import type { ItemGenRolledMod } from "../itemgen/types.js";
+import type { SphereTypeId } from "../itemization/spheres.js";
+import type { SphereSource } from "../spheredrop/types.js";
+import type { CombatSnapshotDTO } from "../combat/combatSnapshot.js";
+import type { MapModifierId } from "../mapmods/types.js";
 
 // Adventure Loop Phase I — tipos isolados de propósito. Conecta TODOS
 // os sistemas anteriores sem alterar nenhum deles — só consome as
@@ -19,6 +24,15 @@ export interface AdventureCharacter {
   equipment: Equipment;
   criticalMultiplier: number;
   currentLife: number;
+  // Sprint 22 — Living Combat Phase I, Fase 4/5/6: quando um Combat
+  // Snapshot real (o MESMO que Character API/Boss consultam) já foi
+  // buscado em `/api/character`, `toAdventureCombatant()` (session.ts)
+  // o usa em vez de recalcular via `calculateFinalStats(characterBuild,
+  // equipment)` (o kit de sessão local, que nunca reflete Sockets/
+  // Gemas/afixos reais). `undefined`/`null` = ainda não buscado, ou
+  // sessão de demonstração sem personagem persistido — cai no cálculo
+  // antigo, nunca quebra.
+  realCombatSnapshot?: CombatSnapshotDTO | null;
 }
 
 // Requisito 3 — Adventure Statistics: tudo centralizado num objeto só,
@@ -61,6 +75,16 @@ export interface AdventureFutureHooks {
 export interface AdventureSession {
   sessionId: string;
   character: AdventureCharacter;
+  // Sprint 31 — Map Integration Phase I, Fase 2: "Adventure -> Map ->
+  // Region" — Map passa a ser a entrada OFICIAL, `currentRegion`
+  // continua existindo e sendo o campo que TODO o resto do engine já lia
+  // (Encounter/Loot/Recovery/Faction/Dungeon) — nada foi removido dele,
+  // "Nada pode ser perdido" (Fase 4). `currentMapId` é sempre derivado
+  // de `currentRegion` em `createAdventureSession()` (Map:Região é 1:1
+  // nesta Fase — Sprint 30, worldmap/mapRegistry.ts — `Map.id ===
+  // Map.regionId` pras 9 regiões jogáveis reais), nunca um valor
+  // independente que possa divergir.
+  currentMapId: string;
   currentRegion: string;
   currentEncounter: WorldEncounter | null;
   statistics: AdventureStatistics;
@@ -77,6 +101,16 @@ export interface AdventureSession {
   // expeditions/expeditionProgress.ts (pro HUD mostrar o Tier atual)
   // leem este campo. `undefined` = WT1/comportamento neutro.
   worldTier?: string;
+  // Sprint 32 — Map Modifiers Phase I, Fase 5: "Adicionar
+  // activeMapModifiers. Ainda não aplicam efeito. Apenas existem."
+  // Sempre `[]` nesta Fase — não existe nenhuma rolagem/atribuição de
+  // Map Modifier ainda (isso é Atlas/Map Device, explicitamente fora de
+  // escopo). Tipado como `MapModifierId[]` (mapmods/types.ts) pra já
+  // ter o formato certo quando uma Sprint futura precisar preenchê-lo
+  // de verdade — mesmo padrão de scaffold já usado por `futureHooks`
+  // (Adventure Loop Phase I) e por `worldTier` acima antes de ganhar um
+  // resolvedor real.
+  activeMapModifiers: MapModifierId[];
 }
 
 // Engine Observability & Event Derivation Phase I — fato bruto de UM
@@ -93,6 +127,31 @@ export interface LootDropRecord {
   rarity: string;
   powerScore: number;
   stored: boolean;
+  // Sprint 11 — Persistent Items + Affixes: os 4 campos que o Item
+  // Generator (itemgen/generator.ts) já produz de verdade
+  // (ItemGenGeneratedItem.itemLevel/seed/prefixes/suffixes), mas que
+  // este record nunca carregava — a causa raiz do achado da Fase 1 de
+  // Itemization 2.0 ("o roll de afixos é descartado na persistência").
+  // Opcionais (nunca omitidos pelos 3 pontos reais de emissão —
+  // adventureLoop.ts/presentationLayer.ts/dungeonController.ts —, mas
+  // opcionais no TIPO para não quebrar nenhuma fixture de teste
+  // existente que só testa animação/HUD, sem afixo algum).
+  itemLevel?: number;
+  seed?: number;
+  prefixes?: ItemGenRolledMod[];
+  suffixes?: ItemGenRolledMod[];
+}
+
+// Sprint 13 — Sphere Economy Phase I: mesmo princípio de
+// `LootDropRecord` acima (fato bruto do engine, nunca inferido por
+// diff) — mas Esferas NUNCA entram no Inventory (Fase 7: "Nunca
+// diretamente no inventário de itens"), então não existe um campo
+// `stored` aqui — toda `SphereDropRecord` emitida é, por definição, um
+// drop real que ainda precisa ser persistido em `character_spheres`
+// (apps/api, fora do Engine).
+export interface SphereDropRecord {
+  sphereId: SphereTypeId;
+  source: SphereSource;
 }
 
 // Requisito 2 — resumo do que aconteceu numa única chamada de
@@ -116,6 +175,7 @@ export interface AdventureTickResult {
   itemsEquippedThisTick: number;
   characterAlive: boolean;
   lootDrops: LootDropRecord[];
+  sphereDrops: SphereDropRecord[];
   encounterVariant: EncounterVariant;
   variantEnemyTemplateId: string | null;
   variantEnemyDefeated: boolean;
@@ -126,6 +186,13 @@ export interface AdventureTickResult {
 export interface AdventureSessionResult {
   sessionId: string;
   characterId: string;
+  // Sprint 31 — Map Integration Phase I, Fase 5: `mapId` exposto aqui
+  // (mesmo campo que `session.currentMapId`) é como Dungeon (que reusa
+  // esta MESMA sessão via advanceAdventure()/advanceDungeonTick(), sem
+  // nenhuma lógica de região/mapa própria — achado da auditoria Fase 1)
+  // "recebe contexto de Mapa": de graça, sem nenhum parâmetro novo em
+  // nenhuma das funções de Dungeon.
+  mapId: string;
   region: string;
   statistics: AdventureStatistics;
   finalLevel: number;

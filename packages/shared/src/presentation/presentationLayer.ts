@@ -86,7 +86,17 @@ function applyExplorationEventReward(
       const item = loot.generatedItems[i];
       const instanceId = `${session.sessionId}-explorationevent-${lootSeed}-${i}`;
       const addResult = session.character.inventory.addItem(instanceId, item);
-      lootDrops.push({ instanceId, baseItemId: item.baseItemId, rarity: item.rarity, powerScore: item.powerScore, stored: addResult.success });
+      lootDrops.push({
+        instanceId,
+        baseItemId: item.baseItemId,
+        rarity: item.rarity,
+        powerScore: item.powerScore,
+        stored: addResult.success,
+        itemLevel: item.itemLevel,
+        seed: item.seed,
+        prefixes: item.prefixes,
+        suffixes: item.suffixes,
+      });
       if (addResult.success) {
         lootItemCount++;
         if (!bestLootRarity || rarityRank(item.rarity) > rarityRank(bestLootRarity)) bestLootRarity = item.rarity;
@@ -261,8 +271,18 @@ export function advanceAdventureWithPresentation(
   // World Events, Dynamic Encounters & Exploration Phase I — requisito
   // 4: XP de recompensa (Shrine/Discovery) somado ao MESMO pool, nunca
   // uma terceira curva — vem pronto de `applyExplorationEventReward()`.
+  // Sprint 33 — Map Modifiers Phase II, Fase 5: `experience-up`
+  // (`options.runtimeConfig.xpMultiplier`) — este é o mecanismo de XP
+  // REAL durante exploração normal (bem mais frequente que o XP de
+  // conclusão de expedição, expeditionController.ts, que já lia este
+  // mesmo campo desde World Tiers Phase I). Ausente/1 = comportamento
+  // idêntico a antes desta Sprint. Só o XP por abate é escalado — o
+  // bônus de World Event (`explorationEventXpAmount`, já vem pronto de
+  // `applyExplorationEventReward()`) permanece fora de propósito, mesma
+  // decisão de escopo já documentada ali.
+  const xpMultiplier = options.runtimeConfig?.xpMultiplier ?? 1;
   const levelBefore = session.character.characterBuild.level;
-  const baseXpAwarded = tickResult.enemiesKilledThisTick * xpRewardForKill(levelBefore);
+  const baseXpAwarded = Math.round(tickResult.enemiesKilledThisTick * xpRewardForKill(levelBefore) * xpMultiplier);
   // Engine Observability & Event Derivation Phase I — antes gated em
   // `variantKill` (só existia se o loot do Elite/Mini-Boss tivesse
   // conseguido `addItem()`); agora gated em `variantEnemyDefeated`, um
@@ -272,7 +292,7 @@ export function advanceAdventureWithPresentation(
   // do bônus em si (VARIANT_XP_MULTIPLIERS) continua intocado.
   const variantXpBonus =
     tickResult.variantEnemyDefeated && tickResult.encounterVariant !== "normal"
-      ? Math.round(xpRewardForKill(levelBefore) * (VARIANT_XP_MULTIPLIERS[tickResult.encounterVariant] - 1))
+      ? Math.round(xpRewardForKill(levelBefore) * (VARIANT_XP_MULTIPLIERS[tickResult.encounterVariant] - 1) * xpMultiplier)
       : 0;
   const explorationEventXpAmount = appliedExplorationReward?.xpAmount ?? 0;
   const xpAwarded = baseXpAwarded + variantXpBonus + explorationEventXpAmount;
@@ -299,6 +319,26 @@ export function advanceAdventureWithPresentation(
       powerScore: drop.powerScore,
       regionId: region,
       stored: drop.stored,
+      itemLevel: drop.itemLevel,
+      seed: drop.seed,
+      prefixes: drop.prefixes,
+      suffixes: drop.suffixes,
+      tickIndex,
+      timestamp,
+    });
+  }
+
+  // Sprint 13 — Sphere Economy Phase I: mesmo padrão do loop de
+  // `LootDropped` acima — `tickResult.sphereDrops` já é a lista
+  // filtrada (só drops reais, `rollSphereDrop()` nunca produz uma
+  // entrada quando `sphereId` é null, ver adventureLoop.ts). Nunca
+  // deriva de `appliedExplorationReward` — Tesouro/exploração não
+  // rola Esfera nesta Sprint (só kills, Fase 1-6 do brief).
+  for (const drop of tickResult.sphereDrops) {
+    events.push({
+      kind: "SphereDropped",
+      sphereId: drop.sphereId,
+      source: drop.source,
       tickIndex,
       timestamp,
     });
@@ -313,6 +353,10 @@ export function advanceAdventureWithPresentation(
         powerScore: drop.powerScore,
         regionId: region,
         stored: drop.stored,
+        itemLevel: drop.itemLevel,
+        seed: drop.seed,
+        prefixes: drop.prefixes,
+        suffixes: drop.suffixes,
         tickIndex,
         timestamp,
       });

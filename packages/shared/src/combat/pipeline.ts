@@ -55,6 +55,11 @@ export function rollDamage(rng: ItemGenRandom, context: CombatContext, critical:
 
   damage *= context.futureModifiers?.damageMultiplier ?? 1;
 
+  // Sprint 23 — Sockets & Gems Phase II: bônus aditivo (Gem Behaviors,
+  // ex.: Rubi) somado DEPOIS do multiplicador — nunca amplificado por
+  // crítico/damageMultiplier, sempre o mesmo valor fixo por acerto.
+  damage += context.futureModifiers?.bonusFlatDamage ?? 0;
+
   return Math.max(0, damage);
 }
 

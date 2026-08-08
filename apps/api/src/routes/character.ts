@@ -1,10 +1,11 @@
 import { randomUUID } from "node:crypto";
-import { getProgress } from "@streamrpg/shared";
+import { getProgress, buildCombatSnapshot } from "@streamrpg/shared";
 import type { CharacterResponse } from "@streamrpg/shared";
 import { getDb } from "../config/database.js";
 import { requireAuth } from "../middleware/auth.js";
 import { readBody, json, route } from "../middleware/router.js";
 import { getEquippedItems } from "../services/drop.service.js";
+import { resolveAllActiveGemEffectsForEquippedItems, resolveAllActiveGemBehaviorsForEquippedItems } from "../services/combatSnapshot.service.js";
 import { SQLiteCharacterRepository } from "../infrastructure/SQLiteCharacterRepository.js";
 
 // Instância só de leitura, reaproveitada em cada chamada — mesmo padrão
@@ -37,10 +38,26 @@ export async function getCharacterByProfileId(profileId: string): Promise<Charac
 
   const progress = getProgress(row.xp);
   const equipped = getEquippedItems(row.id);
-  // Sprint Equipment Experience — reaproveita getCombatAttributes() já
-  // existente (Sprint Character Attributes Schema); nenhum cálculo novo,
-  // só exposto pela primeira vez na resposta do personagem.
-  const combat = await characterRepository.getCombatAttributes(row.id);
+  // Sprint Equipment Experience — sus/uti/level continuam vindo daqui
+  // (fora do vocabulário de 7 stats do Combat Snapshot, Sprint 22);
+  // attack/defense/etc NÃO são mais lidos deste objeto, ver combatSnapshot abaixo.
+  const legacyCombat = await characterRepository.getCombatAttributes(row.id);
+
+  // Sprint 21/22 — Effect Resolver (packages/shared, puro) através de
+  // TODOS os itens equipados — extraído pra services/combatSnapshot.service.ts
+  // (Fase 7) pra ser reusado por BossCombatSystem também, nunca duplicado.
+  const allActiveEffects = resolveAllActiveGemEffectsForEquippedItems(equipped);
+  // Sprint 23 — Sockets & Gems Phase II, Fase 9: mesmo padrão pro
+  // Behavior Resolver.
+  const allActiveBehaviors = resolveAllActiveGemBehaviorsForEquippedItems(equipped);
+
+  // Sprint 22 — Living Combat Phase I, Fase 2/3/8: o Combat Resolver
+  // único (packages/shared/src/combat/combatSnapshot.ts) — o MESMO que
+  // Adventure/Idle/Dungeon/Boss agora consultam. Base Attributes reais
+  // (nível real via `row.xp`, mesma classe hardcoded "warrior" que o
+  // cliente já usa) + itens equipados reais + efeitos/comportamentos de
+  // Gema ativos.
+  const combatSnapshot = buildCombatSnapshot(row.id, row.xp, equipped, allActiveEffects, allActiveBehaviors);
 
   return {
     id: row.id,
@@ -56,6 +73,7 @@ export async function getCharacterByProfileId(profileId: string): Promise<Charac
     equipped: equipped.map((e) => ({
       slot: e.slot,
       character_item_id: e.character_item_id,
+      item_id: e.item_id,
       name: e.name,
       rarity: e.rarity as CharacterResponse["equipped"][number]["rarity"],
       damage_type: e.damage_type,
@@ -63,15 +81,52 @@ export async function getCharacterByProfileId(profileId: string): Promise<Charac
       min_level: e.min_level,
       power_score: e.power_score,
       upgrade_level: e.upgrade_level,
+      // Sprint 11, Fase 11 — "toda API que retorna um Item deve
+      // retornar Afixos/Histórico/Potencial/Qualidade/Craft State" —
+      // já vêm completos de getEquippedItems() (drop.service.ts), só
+      // repassados aqui (este .map() é um allowlist manual, não um
+      // spread — precisa listar cada campo explicitamente).
+      item_level: e.item_level,
+      seed: e.seed,
+      affixes: e.affixes,
+      potential: e.potential,
+      quality: e.quality,
+      craft_state: e.craft_state,
+      history: e.history,
+      // Sprint 14 — Legendary Items + Legacy System, Fase 8: mesmo
+      // allowlist manual, 3 campos novos (sempre derivados por
+      // getEquippedItems, nunca calculados aqui).
+      legacy: e.legacy,
+      legacyEvents: e.legacyEvents,
+      legacySummary: e.legacySummary,
+      // Sprint 15 — Sockets + Gem System (Foundation), Fase 8: mesmo
+      // allowlist manual.
+      sockets: e.sockets,
+      // Sprint 16 — Economy Foundation, Fase 9: mesmo allowlist manual.
+      uncertaintyEligible: e.uncertaintyEligible,
+      // Sprint 18 — Mythic Foundation, Fase 6/10: mesmo allowlist manual.
+      mythicOrigin: e.mythicOrigin,
+      // Sprint 19 — Base Identity, Fase 10: mesmo allowlist manual.
+      baseIdentity: e.baseIdentity,
+      // Sprint 20 — Sockets & Gemas Phase I, Fase 10: mesmo allowlist manual.
+      socketGems: e.socketGems,
+      // Sprint 21 — Gem Effects Phase I, Fase 8: mesmo allowlist manual.
+      socketGemEffects: e.socketGemEffects,
     })),
     combat: {
-      attack_physical: combat?.attackPhysical ?? 0,
-      attack_magic: combat?.attackMagic ?? 0,
-      resistance_physical: combat?.resistancePhysical ?? 0,
-      resistance_magic: combat?.resistanceMagic ?? 0,
-      sus: combat?.susBase ?? 0,
-      uti: combat?.utiBonus ?? 0,
+      attack_physical: combatSnapshot.attack,
+      attack_magic: combatSnapshot.magic,
+      resistance_physical: combatSnapshot.defense,
+      resistance_magic: 0,
+      sus: legacyCombat?.susBase ?? 0,
+      uti: legacyCombat?.utiBonus ?? 0,
     },
+    // Sprint 22 — Living Combat Phase I, Fase 2/3/8.
+    combatSnapshot,
+    // Sprint 23 — Sockets & Gems Phase II, Fase 9: "Nunca duplicar" —
+    // a MESMA lista de `combatSnapshot.activeBehaviors`, só exposta
+    // também no nível raiz com o nome que o brief pede.
+    activeGemBehaviors: combatSnapshot.activeBehaviors,
     created_at: new Date(row.created_at * 1000).toISOString(),
   };
 }
